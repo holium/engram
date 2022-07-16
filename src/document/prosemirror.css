@@ -1,0 +1,25 @@
+.ProseMirror {
+  outline-style: none;
+  white-space: pre-wrap;
+}
+
+p.Prosemirror-placeholder:before {
+  cursor: text;
+  position: absolute;
+  content: "Start typing...";
+  opacity: 0.3;
+}
+
+header h1.Prosemirror-placeholder:before {
+  cursor: text;
+  position: absolute;
+  content: "Title";
+  opacity: 0.3;
+}
+
+header p.Prosemirror-placeholder:before {
+  cursor: text;
+  position: absolute;
+  content: "description";
+  opacity: 0.5;
+}
