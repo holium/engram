@@ -1,0 +1,40 @@
+/*
+  f0 = 1em / 16px;
+  r = 2;
+  n = 3;
+  f(i) = f0 * r^(i/n)
+*/
+
+
+
+
+/* Variables */
+body {
+  /* Font Size */
+  --title: 2.5198em;
+  --h1: 2em;
+  --h2: 1.5874em;
+  --h3: 1.2599em;
+  --small: 0.7937em;
+  --margin-before: 1em;
+  --margin-after: 0.5em;
+  --frequency: 1em;
+  /* Leading */
+  --leading-body: 1.2599em;
+  --leading-heading: 1.5874em;
+  /* Colour */
+  --paper: #FBFBFB;
+  --type: #262626;
+  --off: #E2DCC9;
+  --paper-glass: #FBFBFB20;
+  --type-glass: #26262620;
+  --off-glass: #E2DCC920;
+
+  /* Widths */
+  --doc-width: 60ch;
+
+  font-size: var(--frequency);
+  line-height: var(--leading-body);
+  color: var(--type);
+  background-color: var(--paper)
+}

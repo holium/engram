@@ -18,6 +18,7 @@ import HighlightMenu from "./plugins/HighlightMenu.tsx";
 import { collab } from "prosemirror-collab";
 
 function Document() {
+
   const [view, setView] = useState(null);
   const [showConfig, setConfig] = useState(false);
 
@@ -28,7 +29,7 @@ function Document() {
     setConfig(!showConfig);
   }
   function hideSideMenu(event) {
-    setSideMenu(null);
+    //setSideMenu(null);
   }
   function initDrag(event) {
     console.log(event);
@@ -72,9 +73,7 @@ function Document() {
       <article id="document" style={{ position: "relative" }}>
         {sideMenu ? (
           <SideMenu
-            style={{
-              top: `${sideMenu.top}px`,
-            }}
+            menu={sideMenu}
             hide={hideSideMenu}
           />
         ) : (
@@ -82,10 +81,7 @@ function Document() {
         )}
         {highlightMenu ? (
           <HighlightMenu
-            style={{
-              left: `${highlightMenu.left}px`,
-              top: `calc(${highlightMenu.top}px - 1em - 12px)`,
-            }}
+            menu={highlightMenu}
           />
         ) : (
           ""

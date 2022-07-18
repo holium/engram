@@ -1,22 +1,4 @@
-/*
-  f0 = 1em / 16px;
-  r = 2;
-  n = 3;
-*/
 
-/* Variables */
-html {
-  --title: 2.5198em;
-  --h1: 2em;
-  --h2: 1.5874em;
-  --h3: 1.2599em;
-  --small: 0.7937em;
-  --margin-before: 1em;
-  --margin-after: 0.5em;
-  --frequency: 1em;
-  --doc-width: 60ch;
-  font-size: var(--frequency);
-}
 
 /* Element Styles */
 p,

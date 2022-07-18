@@ -1,6 +1,9 @@
 function SideMenu(props) {
+  console.log(props)
   return (
-    <div className="sidemenu" style={props.style} onMouseLeave={props.hide}>
+    <div className="sidemenu" style={{
+      top: `${props.menu.top - 8}px`,
+    }} onMouseLeave={props.hide}>
       <div>
         <svg
           xmlns="http://www.w3.org/2000/svg"
