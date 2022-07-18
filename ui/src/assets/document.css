@@ -1,22 +1,4 @@
-/*
-  f0 = 1em / 16px;
-  r = 2;
-  n = 3;
-*/
 
-/* Variables */
-html {
-  --title: 2.5198em;
-  --h1: 2em;
-  --h2: 1.5874em;
-  --h3: 1.2599em;
-  --small: 0.7937em;
-  --margin-before: 1em;
-  --margin-after: 0.5em;
-  --frequency: 1em;
-  --doc-width: 60ch;
-  font-size: var(--frequency);
-}
 
 /* Element Styles */
 p,
@@ -164,7 +146,7 @@ input {
   outline-style: none;
   border: none;
   min-width: 0;
-  font-size: var(--frequency);
+  font-size: var(--body);
 }
 
 dl li {
@@ -184,14 +166,14 @@ dd {
 li p:first-child {
   margin-top: 0;
   margin-bottom: 0;
-  font-size: var(--frequency);
+  font-size: var(--body);
   line-height: var(--h3);
 }
 
 /* Layout Styles */
 #document {
-  font-size: var(--frequency);
-  width: var(--doc-width);
+  font-size: var(--body);
+  width: var(--document-width);
   margin: auto;
   flex-flow: column nowrap;
 }

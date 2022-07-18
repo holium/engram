@@ -1,9 +1,17 @@
-import Document from "./document/Document.tsx";
+import { createContext, useState, useEffect } from "react"
+import Document from "./components/document/Document.tsx";
+import ThemeConfig from "./config.ts"
+
+export const ThemeContext = createContext()
 
 function App() {
+  const theme = new ThemeConfig({})
+
   return (
     <div id="app">
-      <Document />
+      <ThemeContext.Provider value={theme}>
+        <Document />
+      </ThemeContext.Provider>
     </div>
   );
 }

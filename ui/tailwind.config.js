@@ -3,13 +3,9 @@ const unit = 2;
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
-    color: {
-      paper: "#FBFBFB",
-      type: "#474747",
-      gray: "#6F6F6F",
-      glass: "FFFFFF66",
-    },
     spacing: {
+      before: "1em",
+      after: `${unit ** -1}em`,
       /* Pixels */
       0: "0px",
       1: `${unit ** 1}px`,

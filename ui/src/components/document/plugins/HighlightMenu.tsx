@@ -1,6 +1,9 @@
 function HighlightMenu(props) {
   return (
-    <div className="highlightmenu" style={props.style}>
+    <div className="highlightmenu" style={{
+      left: `${props.menu.left}px`,
+      top: `calc(${props.menu.top}px - 2em)`,
+    }}>
       <div>
         <svg
           xmlns="http://www.w3.org/2000/svg"
