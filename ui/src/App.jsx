@@ -1,25 +1,15 @@
-import { createContext } from "react"
+import { createContext, useState, useEffect } from "react"
 import Document from "./components/document/Document.tsx";
 import ThemeConfig from "./config.ts"
 
-export const ThemeContext = createContext({
-  theme: new ThemeConfig({}),
-  setConfigItem: (key, value) => {}
-})
+export const ThemeContext = createContext()
 
 function App() {
-
-  const state = {
-    theme: new ThemeConfig({}),
-    setConfigItem: (key, value) => {
-      console.log("does this run?")
-      state.theme.config[key].value = value;
-    }
-  };
+  const theme = new ThemeConfig({})
 
   return (
     <div id="app">
-      <ThemeContext.Provider value={state}>
+      <ThemeContext.Provider value={theme}>
         <Document />
       </ThemeContext.Provider>
     </div>

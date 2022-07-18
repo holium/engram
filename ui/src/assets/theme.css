@@ -9,32 +9,37 @@
 
 
 /* Variables */
-body {
-  /* Font Size */
-  --title: 2.5198em;
-  --h1: 2em;
-  --h2: 1.5874em;
-  --h3: 1.2599em;
-  --small: 0.7937em;
+html {
+  /* Theme Variables */
+  --root-frequency: 1em;
+  --ratio: 2;
+  --paper-color: #FBFBFB;
+  --type-color: #262626;
+  --off-color: #E2DCC9;
+  --document-width: 60ch;
+
+  /* Effects */
+  --body: 1em;
+  --title: 2.5198rem;
+  --h1: 2rem;
+  --h2: 1.5874rem;
+  --h3: 1.2599rem;
+  --small: 0.7937rem;
   --margin-before: 1em;
   --margin-after: 0.5em;
-  --frequency: 1em;
   /* Leading */
   --leading-body: 1.2599em;
   --leading-heading: 1.5874em;
   /* Colour */
-  --paper: #FBFBFB;
-  --type: #262626;
-  --off: #E2DCC9;
-  --paper-glass: #FBFBFB20;
+  --paper-glass-color: #FBFBFB20;
   --type-glass: #26262620;
   --off-glass: #E2DCC920;
 
   /* Widths */
-  --doc-width: 60ch;
 
-  font-size: var(--frequency);
+
+  font-size: var(--root-frequency);
   line-height: var(--leading-body);
-  color: var(--type);
-  background-color: var(--paper)
+  color: var(--type-color);
+  background-color: var(--paper-color)
 }

@@ -2,22 +2,31 @@ import { useContext, useEffect, useState } from "react"
 import { ThemeContext } from "../../App.jsx"
 
 function ConfigItem(props) {
-  const { theme, setConfigItem } = useContext(ThemeContext);
+  const theme = useContext(ThemeContext);
+
+  const [value, setValue] = useState(theme.config[props.key].value)
 
   const handleChange = (event) => {
-    console.log(props, event)
-    setConfigItem(props.key, event.target.value);
+    setValue(event.target.value)
+  }
+  const implementChange = () => {
+    Object.keys(theme.config[props.key].styles).forEach((style: string) => {
+      document.documentElement.style.setProperty(
+        style,
+        theme.config[props.key].styles[style](value)
+      )
+    })
   }
 
   useEffect(() => {
-    console.log(theme.config[props.key])
-  }, [theme])
+    implementChange();
+  }, [])
 
   return (
-    <li>
-    <dt>{ props.display }</dt>
+    <li key={props.key}>
+    <dt>{ theme.config[props.key].display }</dt>
       <dd>
-        <input value={props.value} type={props.type} onChange={handleChange} />
+        <input value={value} type={theme.config[props.key].type} onChange={handleChange} onBlur={implementChange} />
       </dd>
     </li>
   )
