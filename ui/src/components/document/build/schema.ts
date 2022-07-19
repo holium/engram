@@ -166,7 +166,7 @@ const schema = new Schema({
       Using a mark seems to make the most sense, thought it would have to be designed in a wonky way
     */
     checklistitem: {
-      atts: { checked: { default: false } },
+      attrs: { checked: { default: false } },
       parseDOM: [{ tag: `li[data-type="checklist"]` }],
       toDOM(node) {
         return [
@@ -216,6 +216,13 @@ const schema = new Schema({
     text: {
       group: "inline",
     } as NodeSpec,
+
+    /* Complex ============================================================== */
+    portal: {
+      attrs: { url: { default: ""}},
+      parseDom: [{ tag: "article"}],
+      toDom: [{tag: "article"}]
+    } as NodeSpec
   },
   marks: {
     // Italic

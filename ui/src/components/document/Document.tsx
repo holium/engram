@@ -70,7 +70,7 @@ function Document() {
         <button onClick={toggleConfig}>{showConfig ? "hide" : "config"}</button>
         {showConfig ? <Config view={view} dev={true} /> : ""}
       </section>
-      <article id="document" style={{ position: "relative" }}>
+      <main id="document" style={{ position: "relative" }}>
         {sideMenu ? (
           <SideMenu
             menu={sideMenu}
@@ -92,7 +92,7 @@ function Document() {
             connected
           </div>
         </div>
-      </article>
+      </main>
     </div>
   );
 }
