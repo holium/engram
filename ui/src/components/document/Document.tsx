@@ -16,6 +16,7 @@ import highlightmenu from "./plugins/highlightmenu.ts";
 import HighlightMenu from "./plugins/HighlightMenu.tsx";
 
 import { collab } from "prosemirror-collab";
+import { history } from "prosemirror-history"
 
 function Document() {
 
@@ -48,6 +49,7 @@ function Document() {
         sidemenu(setSideMenu),
         highlightmenu(setHighlightMenu),
         collab(),
+        history({}),
       ],
     });
     setView(

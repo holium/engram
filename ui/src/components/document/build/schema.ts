@@ -218,11 +218,21 @@ const schema = new Schema({
     } as NodeSpec,
 
     /* Complex ============================================================== */
+    image: {
+      group: "block",
+      attrs: { src: { default: "" }},
+      parseDOM: [{ tag: "img"}],
+      toDom(node) {
+        return ["img", { src: node.attrs.src}]
+      }
+    },
+
     portal: {
+      group: "block",
       attrs: { src: { default: ""}},
       parseDom: [{ tag: "article"}],
       toDom(node) {
-        return ["article", { src: node.attrs.src}, 0]
+        return ["article", { src: node.attrs.src}]
       }
     } as NodeSpec
   },
