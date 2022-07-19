@@ -82,6 +82,7 @@ function Document() {
         {highlightMenu ? (
           <HighlightMenu
             menu={highlightMenu}
+            view={view}
           />
         ) : (
           ""
