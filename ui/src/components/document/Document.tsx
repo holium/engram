@@ -14,6 +14,8 @@ import sidemenu from "./plugins/sidemenu.ts";
 import SideMenu from "./plugins/SideMenu.tsx";
 import highlightmenu from "./plugins/highlightmenu.ts";
 import HighlightMenu from "./plugins/HighlightMenu.tsx";
+import slashmenu from "./plugins/slashmenu.ts"
+import SlashMenu from "./plugins/SlashMenu.tsx"
 
 import { collab } from "prosemirror-collab";
 import { history } from "prosemirror-history"
@@ -25,6 +27,12 @@ function Document() {
 
   const [sideMenu, setSideMenu] = useState(null);
   const [highlightMenu, setHighlightMenu] = useState(null);
+  const [slashMenu, setSlashMenu] = useState(null);
+  const [slashMenuSearch, setSlashMenuSearch] = useState("");
+  function updateSlashMenu(search: string | null) {
+    if(search == null) setSlashMenuSearch("")
+    else setSlashMenuSearch(`${slashMenuSearch}${search}`)
+  }
 
   function toggleConfig() {
     setConfig(!showConfig);
@@ -48,6 +56,7 @@ function Document() {
         placeholders,
         sidemenu(setSideMenu),
         highlightmenu(setHighlightMenu),
+        slashmenu(setSlashMenu, updateSlashMenu),
         collab(),
         history({}),
       ],
@@ -87,6 +96,16 @@ function Document() {
             view={view}
           />
         ) : (
+          ""
+        )}
+        {slashMenu ? (
+          <SlashMenu
+            menu={slashMenu}
+            search={slashMenuSearch}
+            hide={() => {setSlashMenu(null); updateSlashMenu(null);}}
+            view={view}
+            />
+        ) :(
           ""
         )}
         <div className="text-center my-3">

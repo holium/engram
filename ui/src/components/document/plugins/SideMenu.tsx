@@ -1,5 +1,4 @@
 function SideMenu(props) {
-  console.log(props)
   return (
     <div className="sidemenu" style={{
       top: `${props.menu.top - 8}px`,

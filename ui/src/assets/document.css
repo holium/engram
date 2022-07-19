@@ -179,6 +179,21 @@ header p {
   background-color: #47474733;
 }
 
+.slashmenu {
+  @apply rounded-2;
+  overflow: hidden;
+  background: #fbfbfb;
+  position: absolute;
+  display: flex-col;
+  box-shadow: 0 0 4px 2px #47474722;
+}
+.slashmenu > div {
+  cursor: pointer;
+}
+.slashmenu > div:hover {
+  background-color: #47474733;
+}
+
 /* Config */
 
 input {

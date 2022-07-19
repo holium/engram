@@ -43,7 +43,6 @@ const schema = new Schema({
     },
 
     /* Block ================================================================ */
-
     // Paragraph
     paragraph: {
       content: "inline*",

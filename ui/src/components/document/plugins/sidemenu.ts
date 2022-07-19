@@ -21,7 +21,6 @@ export default (renderMenu: (loc: BlockLocation | null) => void) => {
             event.relatedTarget &&
             (event.relatedTarget as any).className != "sidemenu"
           ) {
-            console.log(event);
             renderMenu(null);
           }
         },
