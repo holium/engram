@@ -113,17 +113,29 @@ const CheckListRule = new InputRule(
   }
 );
 
-/*
-const italicRule = wrappingInputRule(
-  /(?:^|s)((?:\*)((?:[^*]+))(?:\*))$/,
-  schema.marks["em"]
+const boldRule = markInputRule(
+  /(?:^|\s)((?:\*\*)(?<content>(?:[^*]+))(?:\*\*))$/,
+  schema.marks["strong"],
+  null
 );
 
-const boldRule = wrappingInputRule(
-  /(?:^|s)((?:\*\*)((?:[^*]+))(?:\*\*))$/,
-  schema.marks["strong"]
+const italicRule = markInputRule(
+  /(?:^|\s)((?:\*)(?<content>(?:[^*]+))(?:\*))$/,
+  schema.marks["italic"],
+  null
 );
-*/
+
+const strikeRule = markInputRule(
+  /(?:^|\s)((?:~~)((?<content>[^~]+))(?:~~))$/,
+  schema.marks["strike"],
+  null
+);
+
+const codeRule = markInputRule(
+  /(?:^|\s)\`(?<content>[^\`]+)\`$/,
+  schema.marks["code"],
+  null
+);
 
 export default (schema: Schema) => {
   const rules = [];
@@ -140,13 +152,11 @@ export default (schema: Schema) => {
   if (typeof schema.nodes["unordered-list"] != undefined)
     rules.push(UnorderedListRule);
   if (typeof schema.nodes["check-list"] != undefined) rules.push(CheckListRule);
-  /*
-  if (typeof schema.marks["em"] != undefined) rules.push(italicRule);
   if (typeof schema.marks["strong"] != undefined) rules.push(boldRule);
-  if (typeof schema.marks["underline"] != undefined) rules.push(underlineRule);
+  if (typeof schema.marks["italic"] != undefined) rules.push(italicRule);
   if (typeof schema.marks["strike"] != undefined) rules.push(strikeRule);
   if (typeof schema.marks["code"] != undefined) rules.push(codeRule);
-  */
+
   return inputRules({ rules: rules });
 };
 
@@ -171,4 +181,20 @@ export function setNodeType(
   });
   if (!applicable) return null;
   return state.tr.setBlockType(from, to, nodeType, attrs);
+}
+
+function markInputRule(regexp, markType, getAttrs) {
+  return new InputRule(regexp, (state, match, start, end) => {
+    let attrs = getAttrs instanceof Function ? getAttrs(match) : getAttrs
+    let tr = state.tr
+    console.log(match)
+    if (match.groups["content"]) {
+      let textStart = start + match[0].indexOf(match.groups["content"])
+      let textEnd = textStart + match.groups["content"].length
+      if (textEnd < end) tr.delete(textEnd, end)
+      if (textStart > start) tr.delete(start, textStart)
+      end = start + match.groups["content"].length
+    }
+    return tr.addMark(start, end, markType.create(attrs))
+  })
 }

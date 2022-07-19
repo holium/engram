@@ -219,7 +219,7 @@ const schema = new Schema({
   },
   marks: {
     // Italic
-    em: {
+    italic: {
       parseDOM: [{ tag: "i" }, { tag: "em" }, { style: "font-style=italic" }],
       toDOM() {
         return ["em", 0];
