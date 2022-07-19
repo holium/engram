@@ -1,6 +1,6 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import Config from "./Config.tsx";
+import Config from "../config/Config.tsx";
 
 import { EditorState } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
@@ -16,6 +16,7 @@ import highlightmenu from "./plugins/highlightmenu.ts";
 import HighlightMenu from "./plugins/HighlightMenu.tsx";
 
 import { collab } from "prosemirror-collab";
+import { history } from "prosemirror-history"
 
 function Document() {
 
@@ -48,6 +49,7 @@ function Document() {
         sidemenu(setSideMenu),
         highlightmenu(setHighlightMenu),
         collab(),
+        history({}),
       ],
     });
     setView(
@@ -70,7 +72,7 @@ function Document() {
         <button onClick={toggleConfig}>{showConfig ? "hide" : "config"}</button>
         {showConfig ? <Config view={view} dev={true} /> : ""}
       </section>
-      <article id="document" style={{ position: "relative" }}>
+      <main id="document" style={{ position: "relative" }}>
         {sideMenu ? (
           <SideMenu
             menu={sideMenu}
@@ -82,6 +84,7 @@ function Document() {
         {highlightMenu ? (
           <HighlightMenu
             menu={highlightMenu}
+            view={view}
           />
         ) : (
           ""
@@ -91,7 +94,7 @@ function Document() {
             connected
           </div>
         </div>
-      </article>
+      </main>
     </div>
   );
 }

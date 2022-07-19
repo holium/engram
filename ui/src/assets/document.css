@@ -12,25 +12,27 @@ img {
   margin-bottom: var(--margin-after);
 }
 
+/* Nodes */
 p {
-  line-height: var(--h3);
+  line-height: var(--leading-body);
 }
 
 h1 {
   font-size: var(--h1);
-  line-height: var(--h3);
+  line-height: var(--leading-heading);
 }
 h2 {
   font-size: var(--h2);
-  line-height: var(--h3);
+  line-height: var(--leading-heading);
 }
 h3 {
   font-size: var(--h3);
-  line-height: var(--h3);
+  line-height: var(--leading-heading);
 }
 
 small {
   font-size: var(--small);
+  line-height: var(--leading-body);
 }
 
 blockquote {
@@ -39,6 +41,14 @@ blockquote {
   margin-right: 0;
   padding-left: 32px;
   padding-right: 32px;
+}
+
+pre {
+  font-family: JetBrains Mono, monospace;
+  @apply rounded-1;
+  background-color: var(--type-glass-color);
+  margin: 0;
+  padding: 16px 32px;
 }
 
 aside {
@@ -50,6 +60,13 @@ aside {
   padding-left: 8px;
   padding-right: 8px;
 }
+
+hr {
+  margin: var(--margin-before) 0;
+  border-top: 2px solid var(--type-glass-color);
+}
+
+/* List Nodes */
 
 ul {
   padding-left: 32px;
@@ -72,6 +89,29 @@ li[data-type="checklist"] {
 li[data-type="checklist"] label {
   position: absolute;
   left: -24px;
+}
+
+/* Marks */
+strong {
+  font-weight: bold;
+}
+
+em {
+  font-style: italic;
+}
+
+u {
+  text-decoration: underline;
+}
+
+s {
+  text-decoration: line-through;
+}
+
+code {
+  @apply px-2 rounded-1;
+  background-color: var(--type-glass-color);
+  font-family: JetBrains Mono, monospace;
 }
 
 /* Header */

@@ -23,3 +23,7 @@ header p.Prosemirror-placeholder:before {
   content: "description";
   opacity: 0.5;
 }
+
+.ProseMirror-selectednode {
+  outline: 2px solid var(--status-primary-color); 
+}

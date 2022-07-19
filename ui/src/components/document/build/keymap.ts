@@ -90,6 +90,10 @@ export function buildKeymap(
     bind("Mod-i", toggleMark(type));
     bind("Mod-I", toggleMark(type));
   }
+  if ((type = schema.marks["underline"])) {
+    bind("Mod-u", toggleMark(type));
+    bind("Mod-u", toggleMark(type));
+  }
   if ((type = schema.marks.code)) bind("Mod-`", toggleMark(type));
 
   if ((type = schema.nodes["unordered-list"]))

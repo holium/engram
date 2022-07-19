@@ -84,6 +84,18 @@ const schema = new Schema({
       defining: true,
     } as NodeSpec,
 
+    // Blockquote
+    "code-block": {
+      content: "text*",
+      group: "block",
+      code: true,
+      defining: true,
+      parseDOM: [{ tag: "pre" }],
+      toDOM() {
+        return ["pre", 0];
+      },
+    } as NodeSpec,
+
     // Aside
     aside: {
       content: "inline*",
@@ -154,7 +166,7 @@ const schema = new Schema({
       Using a mark seems to make the most sense, thought it would have to be designed in a wonky way
     */
     checklistitem: {
-      atts: { checked: { default: false } },
+      attrs: { checked: { default: false } },
       parseDOM: [{ tag: `li[data-type="checklist"]` }],
       toDOM(node) {
         return [
@@ -204,10 +216,30 @@ const schema = new Schema({
     text: {
       group: "inline",
     } as NodeSpec,
+
+    /* Complex ============================================================== */
+    image: {
+      group: "block",
+      attrs: { src: { default: "" }},
+      parseDOM: [{ tag: "img"}],
+      toDom(node) {
+        return ["img", { src: node.attrs.src}]
+      }
+    },
+
+    portal: {
+      group: "block",
+      attrs: { src: { default: ""}},
+      parseDom: [{ tag: "article"}],
+      toDom(node) {
+        return ["article", { src: node.attrs.src}]
+      }
+    } as NodeSpec
   },
   marks: {
+    /* Basic ================================================================ */
     // Italic
-    em: {
+    italic: {
       parseDOM: [{ tag: "i" }, { tag: "em" }, { style: "font-style=italic" }],
       toDOM() {
         return ["em", 0];
@@ -232,6 +264,93 @@ const schema = new Schema({
       toDOM() {
         return ["strong", 0];
       },
+    } as MarkSpec,
+
+    // Underline
+    underline: {
+      parseDOM: [
+        { tag: "u" },
+        {
+        style: 'text-decoration',
+        consuming: false,
+        getAttrs: style => ((style as string).includes('underline') ? {} : false),
+      },
+      ],
+      toDOM() {
+        return ["u", 0];
+      },
+    } as MarkSpec,
+
+    // Strike
+    strike: {
+      parseDOM: [
+        {
+        tag: 's',
+      },
+      {
+        tag: 'del',
+      },
+      {
+        tag: 'strike',
+      },
+      {
+        style: 'text-decoration',
+        consuming: false,
+        getAttrs: style => ((style as string).includes('line-through') ? {} : false),
+      },
+      ],
+      toDOM() {
+        return ["s", 0];
+      },
+    } as MarkSpec,
+
+    // Code
+    code: {
+      parseDOM: [
+        {
+        tag: 'code',
+      },
+      ],
+      toDOM() {
+        return ["code", 0];
+      },
+    } as MarkSpec,
+
+    /* links ================================================================ */
+    // Web2 Hyperlink
+    hyperlink: {
+      attrs: { href: { default: "" }, target: { default: "_blank"}},
+      parseDOM: [{ tag: 'a[href]:not([href *= "javascript:" i])' }],
+      toDom(node) {
+        return ["a", { href: node.attrs.url, target: node.attrs.target }, 0]
+      }
+    } as MarkSpec,
+
+    // Engram Concept Link
+    concept: {
+      attrs: { title: { default: "" }},
+      parseDOM: [{ tag: "abbr"}],
+      toDom(node) {
+        return ["abbr", { title: node.attrs.concept }, 0]
+      }
+    } as MarkSpec,
+
+    // Comment Link
+    comment: {
+      attrs: { comment: { default: "" }},
+      parseDOM: [{ tag: "mark"}],
+      toDom(node) {
+        return ["mark", { concept: node.attrs.concept, title: node.attrs.concept }, 0]
+      }
+    } as MarkSpec,
+
+    // Azimuth
+    azimuth: {
+      attrs: { aref: { default: "" }},
+      parseDOM: [{ tag: 'a[aref]:not([aref *= "javascript:" i])' }],
+      toDom(node) {
+        return ["a", { aref: node.attrs.src }, 0]
+      }
     } as MarkSpec,
   },
 });
