@@ -39,7 +39,7 @@ const blockquoteRule = new InputRule(
 );
 
 const asideRule = new InputRule(
-  new RegExp("^>>\\s$"),
+  new RegExp("^>>>\\s$"),
   (state, match, start, end) => {
     return state.tr.replaceWith(start - 1, end, schema.nodes["aside"].create());
   }
@@ -52,6 +52,17 @@ const horizontalRuleRule = new InputRule(
       start - 1,
       end,
       schema.nodes["horizontal-rule"].create()
+    );
+  }
+);
+
+const codeBlockRule = new InputRule(
+  new RegExp("^```\\s$"),
+  (state, match, start, end) => {
+    return state.tr.replaceWith(
+      start - 1,
+      end,
+      schema.nodes["code-block"].create()
     );
   }
 );
@@ -102,6 +113,7 @@ const CheckListRule = new InputRule(
   }
 );
 
+/*
 const italicRule = wrappingInputRule(
   /(?:^|s)((?:\*)((?:[^*]+))(?:\*))$/,
   schema.marks["em"]
@@ -111,12 +123,15 @@ const boldRule = wrappingInputRule(
   /(?:^|s)((?:\*\*)((?:[^*]+))(?:\*\*))$/,
   schema.marks["strong"]
 );
+*/
 
 export default (schema: Schema) => {
   const rules = [];
   if (typeof schema.nodes["heading"] != undefined) rules.push(headingRule);
   if (typeof schema.nodes["blockquote"] != undefined)
     rules.push(blockquoteRule);
+  if (typeof schema.nodes["code-block"] != undefined)
+    rules.push(codeBlockRule);
   if (typeof schema.nodes["aside"] != undefined) rules.push(asideRule);
   if (typeof schema.nodes["horizontal-rule"] != undefined)
     rules.push(horizontalRuleRule);
@@ -125,8 +140,13 @@ export default (schema: Schema) => {
   if (typeof schema.nodes["unordered-list"] != undefined)
     rules.push(UnorderedListRule);
   if (typeof schema.nodes["check-list"] != undefined) rules.push(CheckListRule);
+  /*
   if (typeof schema.marks["em"] != undefined) rules.push(italicRule);
   if (typeof schema.marks["strong"] != undefined) rules.push(boldRule);
+  if (typeof schema.marks["underline"] != undefined) rules.push(underlineRule);
+  if (typeof schema.marks["strike"] != undefined) rules.push(strikeRule);
+  if (typeof schema.marks["code"] != undefined) rules.push(codeRule);
+  */
   return inputRules({ rules: rules });
 };
 

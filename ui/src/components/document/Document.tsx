@@ -1,6 +1,6 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import Config from "./Config.tsx";
+import Config from "../config/Config.tsx";
 
 import { EditorState } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";

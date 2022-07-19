@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect } from "react"
 import Document from "./components/document/Document.tsx";
-import ThemeConfig from "./config.ts"
+import ThemeConfig from "./components/config/config.ts"
 
 export const ThemeContext = createContext()
 

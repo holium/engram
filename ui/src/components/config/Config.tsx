@@ -3,7 +3,7 @@ import { useEffect, useState, useContext } from "react";
 import { ThemeContext } from "../../App.jsx"
 import ConfigItem from "./ConfigItem.tsx"
 
-import schema from "./build/schema.ts";
+import schema from "../document/build/schema.ts";
 
 function Config(props) {
 

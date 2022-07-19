@@ -17,6 +17,14 @@ html {
   --type-color: #262626;
   --off-color: #E2DCC9;
   --document-width: 60ch;
+  --status-primary-color: #38BDF8;
+  --status-primary-glass-color: #38BDF866;
+  --status-success-color: #10A30D;
+  --status-success-glass-color: #10A30D66;
+  --status-warning-color: #FACA1F;
+  --status-warning-glass-color: #FACA1F66;
+  --status-failure-color: #E71F1F;
+  --status-failure-glass-color: #E71F1F66;
 
   /* Effects */
   --body: 1em;
@@ -32,12 +40,10 @@ html {
   --leading-heading: 1.5874em;
   /* Colour */
   --paper-glass-color: #FBFBFB20;
-  --type-glass: #26262620;
-  --off-glass: #E2DCC920;
+  --type-glass-color: #26262620;
+  --off-glass-color: #E2DCC920;
 
-  /* Widths */
-
-
+  /* Root Styles */
   font-size: var(--root-frequency);
   line-height: var(--leading-body);
   color: var(--type-color);
