@@ -219,12 +219,15 @@ const schema = new Schema({
 
     /* Complex ============================================================== */
     portal: {
-      attrs: { url: { default: ""}},
+      attrs: { src: { default: ""}},
       parseDom: [{ tag: "article"}],
-      toDom: [{tag: "article"}]
+      toDom(node) {
+        return ["article", { src: node.attrs.src}, 0]
+      }
     } as NodeSpec
   },
   marks: {
+    /* Basic ================================================================ */
     // Italic
     italic: {
       parseDOM: [{ tag: "i" }, { tag: "em" }, { style: "font-style=italic" }],
@@ -303,6 +306,42 @@ const schema = new Schema({
       },
     } as MarkSpec,
 
+    /* links ================================================================ */
+    // Web2 Hyperlink
+    hyperlink: {
+      attrs: { href: { default: "" }, target: { default: "_blank"}},
+      parseDOM: [{ tag: 'a[href]:not([href *= "javascript:" i])' }],
+      toDom(node) {
+        return ["a", { href: node.attrs.url, target: node.attrs.target }, 0]
+      }
+    } as MarkSpec,
+
+    // Engram Concept Link
+    concept: {
+      attrs: { title: { default: "" }},
+      parseDOM: [{ tag: "abbr"}],
+      toDom(node) {
+        return ["abbr", { title: node.attrs.concept }, 0]
+      }
+    } as MarkSpec,
+
+    // Comment Link
+    comment: {
+      attrs: { comment: { default: "" }},
+      parseDOM: [{ tag: "mark"}],
+      toDom(node) {
+        return ["mark", { concept: node.attrs.concept, title: node.attrs.concept }, 0]
+      }
+    } as MarkSpec,
+
+    // Azimuth
+    azimuth: {
+      attrs: { aref: { default: "" }},
+      parseDOM: [{ tag: 'a[aref]:not([aref *= "javascript:" i])' }],
+      toDom(node) {
+        return ["a", { aref: node.attrs.src }, 0]
+      }
+    } as MarkSpec,
   },
 });
 
