@@ -10,6 +10,7 @@ import {
   wrappingInputRule,
   inputRules,
 } from "prosemirror-inputrules";
+import { EditorView } from "prosemirror-view"
 import { Schema, NodeType, Attrs, MarkType } from "prosemirror-model";
 import schema from "../build/schema.ts";
 import { getNodeType } from "../build/schema.ts";
@@ -228,4 +229,26 @@ export function extendMark(state: EditorState, from: number, to: number, mark: M
     return {from: start, to: end}
   }
   return null;
+}
+
+export function insertAtNextPossible(view: EditorView, pos: number, node: any): { pos: number, tr: Transaction} | null {
+  let inserted = false;
+  let out = null;
+  view.state.doc.descendants((childNode, childPos, parentNode) => {
+    if(!inserted && childPos > pos) {
+      const tr = view.state.tr.insert(childPos, node);
+      if(tr.docChanged) {
+        inserted = true;
+        view.dispatch(tr);
+        out = { pos: childPos, tr: tr };
+      }
+    }
+    return false;
+  })
+  if(!inserted) {
+    const tr = view.state.tr.insert(view.state.doc.nodeSize - 2, node);
+    view.dispatch(tr);
+    out = { pos: view.state.doc.nodeSize - 1, tr: tr };
+  }
+  return out;
 }
