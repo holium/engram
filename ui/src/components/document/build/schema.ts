@@ -43,7 +43,6 @@ const schema = new Schema({
     },
 
     /* Block ================================================================ */
-
     // Paragraph
     paragraph: {
       content: "inline*",
@@ -106,6 +105,16 @@ const schema = new Schema({
       },
       defining: true,
     } as NodeSpec,
+
+    // Caption
+    "caption": {
+      content: "text*",
+      parseDOM: [{ tag: "figcaption" }],
+      toDOM(){
+        return ["figcaption", 0]
+      },
+      atom: false,
+    },
 
     /// A horizontal rule (`<hr>`).
     "horizontal-rule": {
@@ -218,23 +227,30 @@ const schema = new Schema({
     } as NodeSpec,
 
     /* Complex ============================================================== */
+    // Image
     image: {
       group: "block",
       attrs: { src: { default: "" }},
-      parseDOM: [{ tag: "img"}],
-      toDom(node) {
-        return ["img", { src: node.attrs.src}]
+      parseDOM: [{ tag: "img" }],
+      toDOM(node) {
+        return ["img", { src: node.attrs.src }]
       }
     },
 
-    portal: {
+    // Figure =============================================================== */
+    // how we embed content from other docs
+    figure: {
       group: "block",
-      attrs: { src: { default: ""}},
-      parseDom: [{ tag: "article"}],
-      toDom(node) {
-        return ["article", { src: node.attrs.src}]
+      content: "(block caption)+",
+      parseDOM: [{ tag: "figure"}],
+      atom: true,
+      toDOM(node) {
+        return [
+          "figure",
+          0
+        ]
       }
-    } as NodeSpec
+    } as NodeSpec,
   },
   marks: {
     /* Basic ================================================================ */
@@ -321,8 +337,8 @@ const schema = new Schema({
     hyperlink: {
       attrs: { href: { default: "" }, target: { default: "_blank"}},
       parseDOM: [{ tag: 'a[href]:not([href *= "javascript:" i])' }],
-      toDom(node) {
-        return ["a", { href: node.attrs.url, target: node.attrs.target }, 0]
+      toDOM(node) {
+        return ["a", { href: node.attrs.href, target: node.attrs.target }, 0]
       }
     } as MarkSpec,
 
@@ -330,7 +346,7 @@ const schema = new Schema({
     concept: {
       attrs: { title: { default: "" }},
       parseDOM: [{ tag: "abbr"}],
-      toDom(node) {
+      toDOM(node) {
         return ["abbr", { title: node.attrs.concept }, 0]
       }
     } as MarkSpec,
@@ -339,7 +355,7 @@ const schema = new Schema({
     comment: {
       attrs: { comment: { default: "" }},
       parseDOM: [{ tag: "mark"}],
-      toDom(node) {
+      toDOM(node) {
         return ["mark", { concept: node.attrs.concept, title: node.attrs.concept }, 0]
       }
     } as MarkSpec,
@@ -348,7 +364,7 @@ const schema = new Schema({
     azimuth: {
       attrs: { aref: { default: "" }},
       parseDOM: [{ tag: 'a[aref]:not([aref *= "javascript:" i])' }],
-      toDom(node) {
+      toDOM(node) {
         return ["a", { aref: node.attrs.src }, 0]
       }
     } as MarkSpec,

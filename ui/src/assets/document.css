@@ -91,6 +91,12 @@ li[data-type="checklist"] label {
   left: -24px;
 }
 
+/* Figures */
+figcaption {
+  font-size: var(--footer);
+  text-align: center;
+}
+
 /* Marks */
 strong {
   font-weight: bold;
@@ -112,6 +118,11 @@ code {
   @apply px-2 rounded-1;
   background-color: var(--type-glass-color);
   font-family: JetBrains Mono, monospace;
+}
+
+a {
+  color: var(--status-primary-color);
+  text-decoration: underline;
 }
 
 /* Header */
@@ -145,7 +156,7 @@ header p {
   padding: 0;
 }
 
-.sidemenu > div {
+.sidemenu > li {
   @apply p-1 rounded-2;
   vertical-align: center;
   text-align: center;
@@ -154,7 +165,7 @@ header p {
   height: 20px;
 }
 
-.sidemenu div:hover {
+.sidemenu li:hover {
   background-color: #47474733;
 }
 
@@ -164,10 +175,11 @@ header p {
   background: #fbfbfb;
   position: absolute;
   display: flex;
+  flex-flow: column nowrap;
   box-shadow: 0 0 4px 2px #47474722;
 }
 
-.highlightmenu > div {
+.highlightmenu li {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -175,7 +187,22 @@ header p {
   width: 24px;
   height: 24px;
 }
-.highlightmenu > div:hover {
+.highlightmenu li:hover {
+  background-color: #47474733;
+}
+
+.slashmenu {
+  @apply rounded-2;
+  overflow: hidden;
+  background: #fbfbfb;
+  position: absolute;
+  display: flex-col;
+  box-shadow: 0 0 4px 2px #47474722;
+}
+.slashmenu > div {
+  cursor: pointer;
+}
+.slashmenu > div:hover {
   background-color: #47474733;
 }
 

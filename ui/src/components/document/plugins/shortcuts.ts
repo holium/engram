@@ -10,7 +10,7 @@ import {
   wrappingInputRule,
   inputRules,
 } from "prosemirror-inputrules";
-import { Schema, NodeType, Attrs } from "prosemirror-model";
+import { Schema, NodeType, Attrs, MarkType } from "prosemirror-model";
 import schema from "../build/schema.ts";
 import { getNodeType } from "../build/schema.ts";
 
@@ -183,7 +183,7 @@ export function setNodeType(
   return state.tr.setBlockType(from, to, nodeType, attrs);
 }
 
-function markInputRule(regexp, markType, getAttrs) {
+export function markInputRule(regexp, markType, getAttrs) {
   return new InputRule(regexp, (state, match, start, end) => {
     let attrs = getAttrs instanceof Function ? getAttrs(match) : getAttrs
     let tr = state.tr
@@ -197,4 +197,35 @@ function markInputRule(regexp, markType, getAttrs) {
     }
     return tr.addMark(start, end, markType.create(attrs))
   })
+}
+
+export function extendMark(state: EditorState, from: number, to: number, mark: MarkType) {
+  if(state.doc.rangeHasMark(from, to, mark)) {
+    let start = from;
+    let end = to;
+    // start
+    if(state.doc.rangeHasMark(start - 1, start, mark)) {
+      while((state.doc.rangeHasMark(start - 1, start, mark))) {
+        console.log(start)
+        start--;
+      }
+    } else {
+      while(!(state.doc.rangeHasMark(start, start + 1, mark))) {
+        start++;
+      }
+    }
+    //end
+    if(state.doc.rangeHasMark(end, end + 1, mark)) {
+      while((state.doc.rangeHasMark(end, end + 1, mark))) {
+        end++;
+      }
+    } else {
+      while(!(state.doc.rangeHasMark(end - 1, end, mark))) {
+        end--;
+      }
+    }
+
+    return {from: start, to: end}
+  }
+  return null;
 }

@@ -14,6 +14,10 @@ import sidemenu from "./plugins/sidemenu.ts";
 import SideMenu from "./plugins/SideMenu.tsx";
 import highlightmenu from "./plugins/highlightmenu.ts";
 import HighlightMenu from "./plugins/HighlightMenu.tsx";
+import slashmenu from "./plugins/slashmenu.ts"
+import NodeMenu from "./plugins/NodeMenu.tsx"
+import srcmenu from "./plugins/srcmenu.ts"
+import SrcMenu from "./plugins/SrcMenu.tsx"
 
 import { collab } from "prosemirror-collab";
 import { history } from "prosemirror-history"
@@ -25,6 +29,13 @@ function Document() {
 
   const [sideMenu, setSideMenu] = useState(null);
   const [highlightMenu, setHighlightMenu] = useState(null);
+  const [srcMenu, setSrcMenu] = useState(null);
+  const [nodeMenu, setNodeMenu] = useState(null);
+  const [nodeMenuSearch, setNodeMenuSearch] = useState("");
+  function updateNodeMenu(search: string | null) {
+    if(search == null) setNodeMenuSearch("")
+    else setNodeMenuSearch(`${nodeMenuSearch}${search}`)
+  }
 
   function toggleConfig() {
     setConfig(!showConfig);
@@ -48,6 +59,8 @@ function Document() {
         placeholders,
         sidemenu(setSideMenu),
         highlightmenu(setHighlightMenu),
+        slashmenu(setNodeMenu, updateNodeMenu),
+        srcmenu(setSrcMenu),
         collab(),
         history({}),
       ],
@@ -77,6 +90,7 @@ function Document() {
           <SideMenu
             menu={sideMenu}
             hide={hideSideMenu}
+            view={view}
           />
         ) : (
           ""
@@ -87,6 +101,24 @@ function Document() {
             view={view}
           />
         ) : (
+          ""
+        )}
+        {srcMenu ? (
+          <SrcMenu
+            menu={srcMenu}
+            view={view}
+          />
+        ) : (
+          ""
+        )}
+        {nodeMenu ? (
+          <NodeMenu
+            menu={nodeMenu}
+            search={nodeMenuSearch}
+            hide={() => {setNodeMenu(null); updateNodeMenu(null);}}
+            view={view}
+            />
+        ) :(
           ""
         )}
         <div className="text-center my-3">

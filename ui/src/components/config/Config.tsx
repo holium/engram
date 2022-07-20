@@ -16,7 +16,7 @@ function Config(props) {
   }
   function addDescription() {
     const description = schema.nodes.description.create();
-    for (let pos = 0; pos < 50; pos++) {
+    for (let pos = 0; pos < props.view.state.doc.nodeSize; pos++) {
       const node = props.view.state.doc.nodeAt(pos);
       if (node && node.type.name == "description") {
         break;

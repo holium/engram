@@ -22,6 +22,11 @@ export default (renderMenu: (loc: SelectionLocation | null) => void) => {
             return;
           }
 
+          if ((state.selection as any).node) {
+            renderMenu(null);
+            return;
+          }
+
           const { from, to } = state.selection;
           const start = view.coordsAtPos(from);
           const end = view.coordsAtPos(to);
@@ -29,7 +34,7 @@ export default (renderMenu: (loc: SelectionLocation | null) => void) => {
             .querySelector("#document")
             .getBoundingClientRect().left;
           const left =
-            Math.max((start.left + end.left) / 2, start.left + 3) - parentLeft;
+            Math.min(start.left, end.left) - parentLeft;
           renderMenu({
             node: view.state.doc.nodeAt(from),
             to: to,
