@@ -1,6 +1,7 @@
 import { EditorView } from "prosemirror-view"
 import { TextSelection } from "prosemirror-state"
 import { Command, setBlockType, wrapIn,  } from "prosemirror-commands"
+import { insertAtNextPossible } from "./shortcuts.ts"
 import schema from "../build/schema.ts"
 
 export interface SuggestionItem {
@@ -121,16 +122,3 @@ const suggestions: { [key: string]: SuggestionItem } = {
 }
 
 export default suggestions
-
-export function insertAtNextPossible(view: EditorView, pos: number, node: any): boolean {
-  let status = false;
-  for (let walk = pos; walk < view.state.doc.nodeSize; walk++) {
-    const tr = view.state.tr.insert(pos, node);
-    if (tr.docChanged) {
-      view.dispatch(tr);
-      status = true;
-      break;
-    }
-  }
-  return status;
-}

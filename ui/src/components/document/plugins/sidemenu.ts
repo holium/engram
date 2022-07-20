@@ -10,8 +10,35 @@ export default (renderMenu: (loc: BlockLocation | null) => void) => {
           if (event.target) {
             const box = (event.target as any).getBoundingClientRect();
             const pos = view.posAtCoords(box);
-            const loc = getBlockLoc(view, view.state.doc, pos.pos);
-            renderMenu(loc);
+            if(pos.inside > 0) {
+              let rendered = false;
+              let lastPos = 0;
+              let lastNode = null;
+              view.state.doc.descendants((node, nodePos) => {
+                if(!rendered && pos.pos < nodePos) {
+                  rendered = true;
+                  const top = (view.domAtPos(lastPos + 1).node as any).getBoundingClientRect().top;
+                  const loc = {
+                    node: lastNode,
+                    pos: lastPos,
+                    top: top,
+                  }
+                  renderMenu(loc);
+                }
+                lastPos = nodePos;
+                lastNode = node;
+                return false;
+              })
+              if(!rendered) {
+                const top = (view.domAtPos(lastPos + 1).node as any).getBoundingClientRect().top;
+                const loc = {
+                  node: lastNode,
+                  pos: lastPos,
+                  top: top,
+                }
+                renderMenu(loc);
+              }
+            }
           } else {
             renderMenu(null);
           }

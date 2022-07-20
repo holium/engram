@@ -1,14 +1,21 @@
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import NodeMenu from "./NodeMenu.tsx"
+import { TextSelection } from "prosemirror-state"
+import { toggleMark } from "prosemirror-commands"
+import schema from "../build/schema.ts"
+import { insertAtNextPossible } from "./shortcuts.ts"
 
 function SideMenu(props) {
-  console.log(props)
 
   const menuButton = useRef()
   const [nodeMenu, setNodeMenu] = useState(null);
+  const [pos, setPos] = useState(props.menu.pos)
+
+  useEffect(() => {
+    setPos(props.menu.pos)
+  }, [props.menu.pos])
 
   function openNodeMenu(event) {
-    console.log(event)
     const box = event.target.getBoundingClientRect()
     setNodeMenu({
       node: props.menu.node,
@@ -20,7 +27,35 @@ function SideMenu(props) {
   }
 
   function handleDrag(event) {
-    console.log(event)
+    /*
+    const cursor = props.view.posAtCoords({left: event.clientX, top: event.clientY});
+    if(cursor && cursor.pos != pos) {
+      const move = insertAtNextPossible(props.view, cursor.pos, props.menu.node);
+      if(move != null) {
+        const prev = move.tr.mapping.map(pos);
+        //const cleanup = props.view.state.tr.setSelection(new TextSelection(props.view.state.doc.resolve(prev + 1), props.view.state.doc.resolve(prev + props.menu.node.nodeSize - 1)))
+        const cleanup = props.view.state.tr.deleteRange(prev, prev + props.menu.node.nodeSize)
+        props.view.dispatch(cleanup)
+        //toggleMark(schema.marks["strong"])(props.view.state, props.view.dispatch, props.view)
+        setPos(move.pos)
+      }
+    }
+    */
+  }
+
+  function handleDragEnd(event) {
+    const cursor = props.view.posAtCoords({left: event.clientX, top: event.clientY});
+    if(cursor && cursor.pos != pos) {
+      const move = insertAtNextPossible(props.view, cursor.pos, props.menu.node);
+      if(move != null) {
+        const prev = move.tr.mapping.map(pos);
+        //const cleanup = props.view.state.tr.setSelection(new TextSelection(props.view.state.doc.resolve(prev + 1), props.view.state.doc.resolve(prev + props.menu.node.nodeSize - 1)))
+        const cleanup = props.view.state.tr.deleteRange(prev, prev + props.menu.node.nodeSize)
+        props.view.dispatch(cleanup)
+        //toggleMark(schema.marks["strong"])(props.view.state, props.view.dispatch, props.view)
+        setPos(move.pos)
+      }
+    }
   }
 
 
@@ -48,7 +83,7 @@ function SideMenu(props) {
         ""
       )}
       {/* Drag Handle */}
-      <li draggable="true">
+      <li draggable="true" onDrag={handleDrag} onDragEnd={handleDragEnd}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 256 512"
