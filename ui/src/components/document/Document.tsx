@@ -15,7 +15,9 @@ import SideMenu from "./plugins/SideMenu.tsx";
 import highlightmenu from "./plugins/highlightmenu.ts";
 import HighlightMenu from "./plugins/HighlightMenu.tsx";
 import slashmenu from "./plugins/slashmenu.ts"
-import SlashMenu from "./plugins/SlashMenu.tsx"
+import NodeMenu from "./plugins/NodeMenu.tsx"
+import srcmenu from "./plugins/srcmenu.ts"
+import SrcMenu from "./plugins/SrcMenu.tsx"
 
 import { collab } from "prosemirror-collab";
 import { history } from "prosemirror-history"
@@ -27,11 +29,12 @@ function Document() {
 
   const [sideMenu, setSideMenu] = useState(null);
   const [highlightMenu, setHighlightMenu] = useState(null);
-  const [slashMenu, setSlashMenu] = useState(null);
-  const [slashMenuSearch, setSlashMenuSearch] = useState("");
-  function updateSlashMenu(search: string | null) {
-    if(search == null) setSlashMenuSearch("")
-    else setSlashMenuSearch(`${slashMenuSearch}${search}`)
+  const [srcMenu, setSrcMenu] = useState(null);
+  const [nodeMenu, setNodeMenu] = useState(null);
+  const [nodeMenuSearch, setNodeMenuSearch] = useState("");
+  function updateNodeMenu(search: string | null) {
+    if(search == null) setNodeMenuSearch("")
+    else setNodeMenuSearch(`${nodeMenuSearch}${search}`)
   }
 
   function toggleConfig() {
@@ -56,7 +59,8 @@ function Document() {
         placeholders,
         sidemenu(setSideMenu),
         highlightmenu(setHighlightMenu),
-        slashmenu(setSlashMenu, updateSlashMenu),
+        slashmenu(setNodeMenu, updateNodeMenu),
+        srcmenu(setSrcMenu),
         collab(),
         history({}),
       ],
@@ -86,6 +90,7 @@ function Document() {
           <SideMenu
             menu={sideMenu}
             hide={hideSideMenu}
+            view={view}
           />
         ) : (
           ""
@@ -98,11 +103,19 @@ function Document() {
         ) : (
           ""
         )}
-        {slashMenu ? (
-          <SlashMenu
-            menu={slashMenu}
-            search={slashMenuSearch}
-            hide={() => {setSlashMenu(null); updateSlashMenu(null);}}
+        {srcMenu ? (
+          <SrcMenu
+            menu={srcMenu}
+            view={view}
+          />
+        ) : (
+          ""
+        )}
+        {nodeMenu ? (
+          <NodeMenu
+            menu={nodeMenu}
+            search={nodeMenuSearch}
+            hide={() => {setNodeMenu(null); updateNodeMenu(null);}}
             view={view}
             />
         ) :(
