@@ -5,6 +5,7 @@ import {
   MarkSpec,
   DOMOutputSpec,
 } from "prosemirror-model";
+import { ConfigSpec, ConfigTermSpec } from "./config.ts"
 
 const schema = new Schema({
   nodes: {
@@ -14,13 +15,17 @@ const schema = new Schema({
     } as NodeSpec,
 
     header: {
-      content: "title description{0,1}",
+      content: "title config description{0,1}",
       group: "header",
       parseDOM: [{ tag: "header" }],
       toDOM() {
         return ["header", 0] as DOMOutputSpec;
       },
+      selectable: false,
     } as NodeSpec,
+
+    config: ConfigSpec as NodeSpec,
+    configfield: ConfigTermSpec as NodeSpec,
 
     // Title
     title: {
@@ -30,6 +35,7 @@ const schema = new Schema({
       toDOM() {
         return ["h1", { "data-type": "header" }, 0] as DOMOutputSpec;
       },
+      selectable: true,
     },
 
     // Description
@@ -40,6 +46,7 @@ const schema = new Schema({
       toDOM() {
         return ["p", { "data-type": "header" }, 0] as DOMOutputSpec;
       },
+      selectable: true,
     },
 
     /* Block ================================================================ */
