@@ -1,15 +1,22 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import Config from "../config/Config.tsx";
 
 import { EditorState } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
+// Build
 import schema from "./build/schema.ts";
-import shortcuts from "./plugins/shortcuts.ts";
 import { baseKeymap, buildKeymap } from "./build/keymap.ts";
 import dispatchTransaction from "./build/dispatchTransaction.ts";
+import { config } from "./build/config.ts"
 
+//Plugins
+import { collab } from "prosemirror-collab";
+import { history } from "prosemirror-history"
 import placeholders from "./plugins/placeholders.ts";
+import shortcuts from "./plugins/shortcuts.ts";
+
+
+// Menus
 import sidemenu from "./plugins/sidemenu.ts";
 import SideMenu from "./plugins/SideMenu.tsx";
 import highlightmenu from "./plugins/highlightmenu.ts";
@@ -19,8 +26,6 @@ import NodeMenu from "./plugins/NodeMenu.tsx"
 import srcmenu from "./plugins/srcmenu.ts"
 import SrcMenu from "./plugins/SrcMenu.tsx"
 
-import { collab } from "prosemirror-collab";
-import { history } from "prosemirror-history"
 
 function Document() {
 
@@ -56,6 +61,7 @@ function Document() {
         buildKeymap(schema),
         baseKeymap,
         shortcuts(schema),
+        config("#document"),
         placeholders,
         sidemenu(setSideMenu),
         highlightmenu(setHighlightMenu),
@@ -82,8 +88,6 @@ function Document() {
           width: "50ch",
         }}
       >
-        <button onClick={toggleConfig}>{showConfig ? "hide" : "config"}</button>
-        {showConfig ? <Config view={view} dev={true} /> : ""}
       </section>
       <main id="document" style={{ position: "relative" }}>
         {sideMenu ? (

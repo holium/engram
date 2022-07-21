@@ -166,17 +166,17 @@ header p {
 }
 
 .sidemenu li:hover {
-  background-color: #47474733;
+  background-color: var(--type-glass-color);
 }
 
 .highlightmenu {
   @apply rounded-2;
   overflow: hidden;
-  background: #fbfbfb;
+  background: var(--paper-color);
   position: absolute;
   display: flex;
   flex-flow: column nowrap;
-  box-shadow: 0 0 4px 2px #47474722;
+  box-shadow: 0 0 4px 2px var(--type-glass-color);
 }
 
 .highlightmenu li {
@@ -188,45 +188,53 @@ header p {
   height: 24px;
 }
 .highlightmenu li:hover {
-  background-color: #47474733;
+  background-color: var(--type-glass-color);
 }
 
 .slashmenu {
   @apply rounded-2;
   overflow: hidden;
-  background: #fbfbfb;
+  background: var(--paper-color);
   position: absolute;
   display: flex-col;
-  box-shadow: 0 0 4px 2px #47474722;
+  box-shadow: 0 0 4px 2px var(--type-glass-color);
 }
 .slashmenu > div {
   cursor: pointer;
 }
 .slashmenu > div:hover {
-  background-color: #47474733;
+  background-color: var(--type-glass-color);
 }
 
 /* Config */
-
-input {
-  font-family: monospace;
-  outline-style: none;
-  border: none;
-  min-width: 0;
-  font-size: var(--body);
-}
 
 dl li {
   list-style-type: none;
   padding: 0;
 }
+
 dt {
+  width: calc(var(--document-width) / 2);
+  font-family: "IBM Plex Mono", monospace;
   display: inline-block;
-  width: 5ch;
+  cursor: pointer;
 }
+dt:after {
+  content: ":"
+}
+
 dd {
   display: inline-block;
-  margin-left: 0;
+}
+
+dd input {
+  width: calc(var(--document-width) / 2);
+  height: 1.3em;
+  font-family: "IBM Plex Mono", monospace;
+  background: #ffffff00;
+  outline-style: none;
+  border: none;
+  font-size: var(--body);
 }
 
 /* Exceptions */
