@@ -113,8 +113,8 @@ export class DocumentConfig {
       }
     },
     "heading-font-family": {
-      key: "body-font-family",
-      display: "Body Font Family",
+      key: "heading-font-family",
+      display: "Heading Font Family",
       type: "select",
       options: {
         "sans": 0,

@@ -208,7 +208,7 @@ dl li {
 }
 
 dt {
-  width: calc(var(--document-width) / 2);
+  width: calc(var(--document-width) / 2 - 1ch);
   font-family: "IBM Plex Mono", monospace;
   display: inline-block;
   cursor: pointer;
@@ -222,7 +222,7 @@ dd {
 }
 
 dd input {
-  width: calc(var(--document-width) / 2);
+  width: calc(var(--document-width) / 2 - 1ch);
   height: 1.3em;
   font-family: "IBM Plex Mono", monospace;
   background: #ffffff00;

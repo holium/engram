@@ -73,8 +73,20 @@ export function assembleConfigTermNodeView(view: EditorView, term: ConfigTerm, g
   dom.appendChild(termItem);
 
   const definition = document.createElement("dd")
-  const input = document.createElement("input")
-  input.setAttribute("type", term.type);
+  let input;
+  if(term.type === "select") {
+    input = document.createElement("select")
+    Object.keys(term.options).forEach((option) => {
+      const optionEl = document.createElement("option");
+      optionEl.setAttribute("value", term.options[option])
+      optionEl.innerHTML = option;
+      input.appendChild(optionEl)
+    })
+  } else {
+    input = document.createElement("input")
+    input.setAttribute("type", term.type);
+  }
+
   input.setAttribute("value", term.value);
   input.addEventListener("change", (event) => {
     console.log(event)
