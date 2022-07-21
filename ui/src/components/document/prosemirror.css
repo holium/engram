@@ -25,5 +25,46 @@ header p.Prosemirror-placeholder:before {
 }
 
 .ProseMirror-selectednode {
-  outline: 2px solid var(--status-primary-color); 
+  outline: 2px solid var(--status-primary-color);
+}
+
+.Prosemirror-config dl, .Prosemirror-config label {
+  display: none;
+}
+
+#Prosemirror-config-toggle {
+  display: none;
+}
+
+.Prosemirror-config-panel {
+  @apply gap-1;
+  display: flex;
+}
+
+.Prosemirror-config-panel label {
+  line-height: 1em;
+  @apply rounded-1 p-2;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.Prosemirror-config-panel label:hover {
+  background-color: var(--type-glass-color);
+}
+
+#Prosemirror-config-toggle:checked ~ dl.Prosemirror-config-terms {
+  display: block;
+}
+
+#Prosemirror-config-toggle:checked ~ .Prosemirror-config-panel label {
+  display: flex;
+}
+
+#Prosemirror-config-toggle:checked ~ .Prosemirror-config-panel #Prosemirror-config-toggler {
+  background-color: var(--type-glass-color);
+}
+
+#Prosemirror-config-toggler {
+  display: flex;
 }

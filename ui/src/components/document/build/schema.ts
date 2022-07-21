@@ -15,7 +15,7 @@ const schema = new Schema({
     } as NodeSpec,
 
     header: {
-      content: "title config description{0,1}",
+      content: "config title description{0,1}",
       group: "header",
       parseDOM: [{ tag: "header" }],
       toDOM() {
