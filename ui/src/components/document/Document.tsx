@@ -7,7 +7,7 @@ import { EditorView } from "prosemirror-view";
 import schema from "./build/schema.ts";
 import { baseKeymap, buildKeymap } from "./build/keymap.ts";
 import dispatchTransaction from "./build/dispatchTransaction.ts";
-import { config } from "./build/config.ts"
+import { config } from "./plugins/config/plugin.ts"
 
 //Plugins
 import { collab } from "prosemirror-collab";
@@ -80,16 +80,10 @@ function Document() {
   }, []);
 
   return (
-    <div>
-      <section
-        style={{
-          position: "absolute",
-          left: "calc(50% + 30ch)",
-          width: "50ch",
-        }}
-      >
-      </section>
-      <main id="document" style={{ position: "relative" }}>
+    <div id="document-wrapper">
+
+      {/* Document --------------------------------------------------------- */}
+      <main id="document">
         {sideMenu ? (
           <SideMenu
             menu={sideMenu}
@@ -125,11 +119,7 @@ function Document() {
         ) :(
           ""
         )}
-        <div className="text-center my-3">
-          <div className="inline-block px-3 py-2 border rounded-2 border-type">
-            connected
-          </div>
-        </div>
+
       </main>
     </div>
   );

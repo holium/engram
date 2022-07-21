@@ -1,4 +1,4 @@
-
+/* Styles for strictly within the document */
 
 /* Element Styles */
 p,
@@ -12,73 +12,68 @@ img {
   margin-bottom: var(--margin-after);
 }
 
+li {
+  margin-bottom: var(--margin-after);
+}
+
 /* Nodes */
 p {
+  font-family: var(--body-font-family);
   line-height: var(--leading-body);
+}
+
+h1,h2,h3 {
+  font-family: var(--heading-font-family);
+  font-weight: var(--heading-weight);
+  line-height: var(--leading-heading);
 }
 
 h1 {
   font-size: var(--h1);
-  line-height: var(--leading-heading);
-}
-h2 {
-  font-size: var(--h2);
-  line-height: var(--leading-heading);
-}
-h3 {
-  font-size: var(--h3);
-  line-height: var(--leading-heading);
 }
 
-small {
-  font-size: var(--small);
-  line-height: var(--leading-body);
+h2 {
+  font-size: var(--h2);
+}
+
+h3 {
+  font-size: var(--h3);
 }
 
 blockquote {
-  border-left: 1px solid #262626;
+  @apply px-5;
+  border-left: 1px solid var(--type-color);
   margin-left: 0;
   margin-right: 0;
-  padding-left: 32px;
-  padding-right: 32px;
 }
 
 pre {
+  @apply px-4 py-5 rounded-1;
   font-family: JetBrains Mono, monospace;
-  @apply rounded-1;
   background-color: var(--type-glass-color);
   margin: 0;
-  padding: 16px 32px;
-}
-
-aside {
-  float: right;
-  width: 20ch;
-  border-left: 1px solid #262626;
-  margin-left: 0;
-  margin-right: 0;
-  padding-left: 8px;
-  padding-right: 8px;
 }
 
 hr {
   margin: var(--margin-before) 0;
-  border-top: 2px solid var(--type-glass-color);
+  border-top: 1px solid var(--type-color);
 }
 
 /* List Nodes */
 
 ul {
+  list-style-type: disc;
   padding-left: 32px;
   padding-right: 32px;
 }
 
 ol {
+  list-style-type: decimal;
   padding-left: 32px;
   padding-right: 32px;
 }
 
-ul[data-type="checklist"] {
+ul[data-type="checklist"] { /* Checklist */
   list-style-type: none;
 }
 
@@ -116,8 +111,8 @@ s {
 
 code {
   @apply px-2 rounded-1;
-  background-color: var(--type-glass-color);
   font-family: JetBrains Mono, monospace;
+  background-color: var(--type-glass-color);
 }
 
 a {
@@ -127,7 +122,6 @@ a {
 
 /* Header */
 header {
-  padding-top: var(--title);
   padding-bottom: calc(var(--title) / 2);
 }
 
@@ -246,9 +240,23 @@ li p:first-child {
 }
 
 /* Layout Styles */
-#document {
+#document-wrapper {
+  @apply px-5 py-4;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  background-color: var(--off-color);
+  flex-flow: column nowrap;
+  align-items: center;
+}
+
+main {
+  @apply rounded-3;
+  flex-grow: 1;
+  background-color: var(--paper-color);
   font-size: var(--body);
   width: var(--document-width);
-  margin: auto;
-  flex-flow: column nowrap;
+  position: relative;
+  padding: var(--title) 2ch calc(var(--title) / 2);
 }

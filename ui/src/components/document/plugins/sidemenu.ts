@@ -18,12 +18,14 @@ export default (renderMenu: (loc: BlockLocation | null) => void) => {
                 if(!rendered && pos.pos < nodePos) {
                   rendered = true;
                   const top = (view.domAtPos(lastPos + 1).node as any).getBoundingClientRect().top;
-                  const loc = {
-                    node: lastNode,
-                    pos: lastPos,
-                    top: top,
+                  if(lastNode.type.name !== "header") {
+                    const loc = {
+                      node: lastNode,
+                      pos: lastPos,
+                      top: top,
+                    }
+                    renderMenu(loc);
                   }
-                  renderMenu(loc);
                 }
                 lastPos = nodePos;
                 lastNode = node;
