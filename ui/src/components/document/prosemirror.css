@@ -53,6 +53,12 @@ header p.Prosemirror-placeholder:before {
   background-color: var(--type-glass-color);
 }
 
+dl.Prosemirror-config-terms {
+  position: absolute;
+  width: var(--document-width);
+  top: calc(1em + 12px);
+}
+
 #Prosemirror-config-toggle:checked ~ dl.Prosemirror-config-terms {
   display: block;
 }

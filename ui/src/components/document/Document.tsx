@@ -7,7 +7,7 @@ import { EditorView } from "prosemirror-view";
 import schema from "./build/schema.ts";
 import { baseKeymap, buildKeymap } from "./build/keymap.ts";
 import dispatchTransaction from "./build/dispatchTransaction.ts";
-import { config } from "./build/config.ts"
+import { config } from "./plugins/config/plugin.ts"
 
 //Plugins
 import { collab } from "prosemirror-collab";
@@ -17,14 +17,15 @@ import shortcuts from "./plugins/shortcuts.ts";
 
 
 // Menus
-import sidemenu from "./plugins/sidemenu.ts";
-import SideMenu from "./plugins/SideMenu.tsx";
-import highlightmenu from "./plugins/highlightmenu.ts";
-import HighlightMenu from "./plugins/HighlightMenu.tsx";
-import slashmenu from "./plugins/slashmenu.ts"
-import NodeMenu from "./plugins/NodeMenu.tsx"
-import srcmenu from "./plugins/srcmenu.ts"
-import SrcMenu from "./plugins/SrcMenu.tsx"
+import sidemenu from "./plugins/menus/sidemenu.ts";
+import SideMenu from "./plugins/menus/SideMenu.tsx";
+import highlightmenu from "./plugins/menus/highlightmenu.ts";
+import HighlightMenu from "./plugins/menus/HighlightMenu.tsx";
+import slashmenu from "./plugins/menus/slashmenu.ts"
+import NodeMenu from "./plugins/menus/NodeMenu.tsx"
+import ConfigMenu from "./plugins/config/ConfigMenu.tsx"
+import srcmenu from "./plugins/menus/srcmenu.ts"
+import SrcMenu from "./plugins/menus/SrcMenu.tsx"
 
 
 function Document() {
@@ -38,15 +39,17 @@ function Document() {
   const [nodeMenu, setNodeMenu] = useState(null);
   const [nodeMenuSearch, setNodeMenuSearch] = useState("");
   function updateNodeMenu(search: string | null) {
+    console.log("updating search", search, nodeMenuSearch)
     if(search == null) setNodeMenuSearch("")
     else setNodeMenuSearch(`${nodeMenuSearch}${search}`)
   }
+  const [configMenu, setConfigMenu] = useState(null);
 
   function toggleConfig() {
     setConfig(!showConfig);
   }
   function hideSideMenu(event) {
-    //setSideMenu(null);
+    setSideMenu(null);
   }
   function initDrag(event) {
     console.log(event);
@@ -61,7 +64,7 @@ function Document() {
         buildKeymap(schema),
         baseKeymap,
         shortcuts(schema),
-        config("#document"),
+        config(setConfigMenu),
         placeholders,
         sidemenu(setSideMenu),
         highlightmenu(setHighlightMenu),
@@ -80,16 +83,11 @@ function Document() {
   }, []);
 
   return (
-    <div>
-      <section
-        style={{
-          position: "absolute",
-          left: "calc(50% + 30ch)",
-          width: "50ch",
-        }}
-      >
-      </section>
-      <main id="document" style={{ position: "relative" }}>
+    <div id="document-wrapper">
+
+      {/* Document --------------------------------------------------------- */}
+      <main id="document">
+      <section>
         {sideMenu ? (
           <SideMenu
             menu={sideMenu}
@@ -125,11 +123,17 @@ function Document() {
         ) :(
           ""
         )}
-        <div className="text-center my-3">
-          <div className="inline-block px-3 py-2 border rounded-2 border-type">
-            connected
-          </div>
-        </div>
+        {configMenu ? (
+          <ConfigMenu
+            menu={configMenu}
+            hide={() => {setConfigMenu(null);}}
+            view={view}
+            />
+        ) :(
+          ""
+        )}
+      </section>
+
       </main>
     </div>
   );

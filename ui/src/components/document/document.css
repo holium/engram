@@ -1,4 +1,4 @@
-
+/* Styles for strictly within the document */
 
 /* Element Styles */
 p,
@@ -12,73 +12,68 @@ img {
   margin-bottom: var(--margin-after);
 }
 
+li {
+  margin-bottom: var(--margin-after);
+}
+
 /* Nodes */
 p {
+  font-family: var(--body-font-family);
   line-height: var(--leading-body);
+}
+
+h1,h2,h3 {
+  font-family: var(--heading-font-family);
+  font-weight: var(--heading-weight);
+  line-height: var(--leading-heading);
 }
 
 h1 {
   font-size: var(--h1);
-  line-height: var(--leading-heading);
-}
-h2 {
-  font-size: var(--h2);
-  line-height: var(--leading-heading);
-}
-h3 {
-  font-size: var(--h3);
-  line-height: var(--leading-heading);
 }
 
-small {
-  font-size: var(--small);
-  line-height: var(--leading-body);
+h2 {
+  font-size: var(--h2);
+}
+
+h3 {
+  font-size: var(--h3);
 }
 
 blockquote {
-  border-left: 1px solid #262626;
+  @apply px-5;
+  border-left: 1px solid var(--type-color);
   margin-left: 0;
   margin-right: 0;
-  padding-left: 32px;
-  padding-right: 32px;
 }
 
 pre {
+  @apply px-4 py-5 rounded-1;
   font-family: JetBrains Mono, monospace;
-  @apply rounded-1;
   background-color: var(--type-glass-color);
   margin: 0;
-  padding: 16px 32px;
-}
-
-aside {
-  float: right;
-  width: 20ch;
-  border-left: 1px solid #262626;
-  margin-left: 0;
-  margin-right: 0;
-  padding-left: 8px;
-  padding-right: 8px;
 }
 
 hr {
   margin: var(--margin-before) 0;
-  border-top: 2px solid var(--type-glass-color);
+  border-top: 1px solid var(--type-color);
 }
 
 /* List Nodes */
 
 ul {
+  list-style-type: disc;
   padding-left: 32px;
   padding-right: 32px;
 }
 
 ol {
+  list-style-type: decimal;
   padding-left: 32px;
   padding-right: 32px;
 }
 
-ul[data-type="checklist"] {
+ul[data-type="checklist"] { /* Checklist */
   list-style-type: none;
 }
 
@@ -116,8 +111,8 @@ s {
 
 code {
   @apply px-2 rounded-1;
-  background-color: var(--type-glass-color);
   font-family: JetBrains Mono, monospace;
+  background-color: var(--type-glass-color);
 }
 
 a {
@@ -127,8 +122,8 @@ a {
 
 /* Header */
 header {
-  padding-top: var(--title);
-  padding-bottom: calc(var(--title) / 2);
+  margin-top: calc(var(--title));
+  margin-bottom: calc(var(--title) / 2);
 }
 
 header * {
@@ -150,10 +145,8 @@ header p {
   @apply gap-2 px-2;
   position: absolute;
   display: flex;
-  left: calc(-32px - 8px - 12px);
-  width: calc(32px + 8px + 12px);
+  right: 100%;
   margin: 0;
-  padding: 0;
 }
 
 .sidemenu > li {
@@ -170,40 +163,25 @@ header p {
 }
 
 .highlightmenu {
-  @apply rounded-2;
-  overflow: hidden;
-  background: var(--paper-color);
   position: absolute;
   display: flex;
   flex-flow: column nowrap;
-  box-shadow: 0 0 4px 2px var(--type-glass-color);
 }
 
 .highlightmenu li {
-  display: flex;
+  @apply py-3;
   justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  width: 24px;
-  height: 24px;
-}
-.highlightmenu li:hover {
-  background-color: var(--type-glass-color);
 }
 
 .slashmenu {
-  @apply rounded-2;
   overflow: hidden;
-  background: var(--paper-color);
   position: absolute;
   display: flex-col;
-  box-shadow: 0 0 4px 2px var(--type-glass-color);
+  width: 180px;
 }
-.slashmenu > div {
-  cursor: pointer;
-}
-.slashmenu > div:hover {
-  background-color: var(--type-glass-color);
+
+.configmenu {
+  position: absolute;
 }
 
 /* Config */
@@ -214,7 +192,7 @@ dl li {
 }
 
 dt {
-  width: calc(var(--document-width) / 2);
+  width: calc(var(--document-width) / 2 - 1ch);
   font-family: "IBM Plex Mono", monospace;
   display: inline-block;
   cursor: pointer;
@@ -227,8 +205,8 @@ dd {
   display: inline-block;
 }
 
-dd input {
-  width: calc(var(--document-width) / 2);
+dd input, dd select {
+  width: calc(var(--document-width) / 2 - 1ch);
   height: 1.3em;
   font-family: "IBM Plex Mono", monospace;
   background: #ffffff00;
@@ -245,10 +223,39 @@ li p:first-child {
   line-height: var(--h3);
 }
 
+/* UX */
+main ::selection {
+  background-color: var(--type-color);
+  color: var(--paper-color);
+}
+
 /* Layout Styles */
-#document {
+#document-wrapper {
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+#document-wrapper section {
+  @apply my-4;
+  position: relative;
+}
+
+main {
+  background-color: var(--paper-color);
   font-size: var(--body);
   width: var(--document-width);
-  margin: auto;
-  flex-flow: column nowrap;
+  position: relative;
+  margin: 0 auto var(--title);
+}
+
+#document-wrapper::-webkit-scrollbar {
+  width:8px;
+}
+#document-wrapper::-webkit-scrollbar-track {
+  @apply rounded-3;
+  background: var(--paper-color);
+}
+#document-wrapper::-webkit-scrollbar-thumb {
+  @apply rounded-3;
+  background: var(--type-color);
 }

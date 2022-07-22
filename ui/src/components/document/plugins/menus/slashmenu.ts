@@ -12,14 +12,14 @@ export default (renderMenu: (loc: SelectionLocation | null) => void, updateMenu:
         if(event.key === "/") {
           const start = view.coordsAtPos(sel.from);
           const end = view.coordsAtPos(sel.to);
-          const parentLeft = document
-            .querySelector("#document")
-            .getBoundingClientRect().left;
+          const parent = document
+            .querySelector("main")
+            .getBoundingClientRect();
           const left =
-            Math.max((start.left + end.left) / 2, start.left + 3) - parentLeft;
-          renderMenu({node: null, to: sel.to, from: sel.from, left: left, top: start.top})
+            Math.max((start.left + end.left) / 2, start.left + 3) - parent.left;
+          renderMenu({node: null, to: sel.to, from: sel.from, left: left, top: start.bottom - parent.top})
         } else if(event.key.match(/^\w$/)) {
-          updateMenu(search)
+          updateMenu(event.key)
         } else {
           renderMenu(null);
           updateMenu(null);

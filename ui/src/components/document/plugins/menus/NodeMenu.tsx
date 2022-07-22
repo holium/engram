@@ -7,6 +7,7 @@ function NodeMenu(props) {
   const [results, setResults] = useState(Object.keys(suggestions))
 
   useEffect(() => {
+    console.log("search changed", props.search)
     setResults(Object.keys(suggestions).filter((suggestion) => suggestion.match(props.search)));
   }, [props.search])
 
@@ -17,21 +18,21 @@ function NodeMenu(props) {
   }
 
   return (
-    <div
-      className="slashmenu"
+    <menu
+      className="slashmenu context-menu"
       style={{
         left: `${props.menu.left}px`,
-        top: `calc(${props.menu.top}px - 2em)`,
+        top: `${props.menu.top}px`,
       }}
     >
       {results.map((suggestion) => {
         return (
-          <div key={suggestion} onClick={() => {runCommand(suggestion)}}>
+          <li key={suggestion} onClick={() => {runCommand(suggestion)}}>
             { suggestions[suggestion].display }
-          </div>
+          </li>
         )
       })}
-    </div>
+    </menu>
   )
 }
 

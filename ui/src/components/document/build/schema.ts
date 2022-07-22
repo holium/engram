@@ -5,7 +5,7 @@ import {
   MarkSpec,
   DOMOutputSpec,
 } from "prosemirror-model";
-import { ConfigSpec, ConfigTermSpec } from "./config.ts"
+import { ConfigSpec, ConfigTermSpec } from "../plugins/config/plugin.ts"
 
 const schema = new Schema({
   nodes: {
