@@ -6,7 +6,7 @@ export interface ConfigTerm {
   type: string;
   options?: { [display: string]: any },
   value: any;
-  styles: { [key: string]: (value: any) => string;}
+  styles: { [key: string]: (value: any, config?: DocumentConfig, ) => string;}
 }
 
 export class DocumentConfig {
@@ -27,7 +27,6 @@ export class DocumentConfig {
 
     "docment-width"?: number,
   }) {
-    console.log("constructing config with:", config)
     Object.keys(config).forEach((style) => {
       if(this.config[style]) this.config[style].value = config[style];
     })
@@ -45,7 +44,7 @@ export class DocumentConfig {
     Object.keys(this.config[key].styles).forEach((style: string) => {
       document.documentElement.style.setProperty(
         style,
-        this.config[key].styles[style](this.config[key].value)
+        this.config[key].styles[style](this.config[key].value, this)
       )
     })
   }
@@ -90,7 +89,7 @@ export class DocumentConfig {
         type: "number",
         value: 2,
         styles: {
-          "--title": (value: number) => { return `${value ** (4/3)}rem`},
+          "--title": (value, config) => { return `${value ** config.config["title-octave"].value}rem`},
           "--h1": (value: number) => { return `${value}rem`},
           "--h2": (value: number) => { return `${value ** (2/3)}rem`},
           "--h3": (value: number) => { return `${value ** (1/3)}rem`},
@@ -103,59 +102,70 @@ export class DocumentConfig {
           "--leading-heading": (value: number) => { return `${value ** (2/3)}em`},
         }
       },
-    "heading-weight": {
-      key: "heading-weight",
-      display: "Heading Weight",
-      type: "number",
-      value: 700,
-      styles: {
-        "--heading-weight": (value: number) => { return `${value}`}
-      }
-    },
-    "heading-font-family": {
-      key: "heading-font-family",
-      display: "Heading Font Family",
-      type: "select",
-      options: {
-        "sans": 0,
-        "serif": 1,
-        "mono": 2
+      "title-octave": {
+         key: 'title-octave',
+         display: "Title Octave",
+         type: "number",
+         value: 1,
+         styles: {
+           "--title": (value, config) => {
+             return `${config.config["ratio"].value ** (parseInt(value) + 1)}rem`
+           },
+         }
+       },
+      "heading-weight": {
+        key: "heading-weight",
+        display: "Heading Weight",
+        type: "number",
+        value: 700,
+        styles: {
+          "--heading-weight": (value: number) => { return `${value}`}
+        }
       },
-      value: 0,
-      styles: {
-        "--heading-font-family": (value: number) => {
-          if(value == 0) {
-            return "Inter, sans-serif"
-          } else if(value == 1) {
-            return "serif"
-          } else {
-            return "IBM Plex Mono, monospace"
+      "heading-font-family": {
+        key: "heading-font-family",
+        display: "Heading Font Family",
+        type: "select",
+        options: {
+          "sans": 0,
+          "serif": 1,
+          "mono": 2
+        },
+        value: 0,
+        styles: {
+          "--heading-font-family": (value: number) => {
+            if(value == 0) {
+              return "Inter, sans-serif"
+            } else if(value == 1) {
+              return "serif"
+            } else {
+              return "IBM Plex Mono, monospace"
+            }
           }
         }
-      }
-    },
-    "body-font-family": {
-      key: "body-font-family",
-      display: "Body Font Family",
-      type: "select",
-      options: {
-        "sans": 0,
-        "serif": 1,
-        "mono": 2
       },
-      value: 0,
-      styles: {
-        "--body-font-family": (value: number) => {
-          if(value == 0) {
-            return "Inter, sans-serif"
-          } else if(value == 1) {
-            return "serif"
-          } else {
-            return "IBM Plex Mono, monospace"
+      "body-font-family": {
+        key: "body-font-family",
+        display: "Body Font Family",
+        type: "select",
+        options: {
+          "sans": 0,
+          "serif": 1,
+          "mono": 2
+        },
+        value: 0,
+        styles: {
+          "--body-font-family": (value: number) => {
+            if(value == 0) {
+              return "Inter, sans-serif"
+            } else if(value == 1) {
+              return "serif"
+            } else {
+              return "IBM Plex Mono, monospace"
+            }
           }
         }
-      }
-    },
+      },
 
     // Colours ---------------------------------------------------------------
     "paper-color": {

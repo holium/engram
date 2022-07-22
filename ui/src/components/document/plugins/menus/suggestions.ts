@@ -1,8 +1,8 @@
 import { EditorView } from "prosemirror-view"
 import { TextSelection } from "prosemirror-state"
 import { Command, setBlockType, wrapIn,  } from "prosemirror-commands"
-import { insertAtNextPossible } from "./shortcuts.ts"
-import schema from "../build/schema.ts"
+import { insertAtNextPossible } from "../shortcuts.ts"
+import schema from "../../build/schema.ts"
 
 export interface SuggestionItem {
   key: string,

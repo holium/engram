@@ -19,10 +19,11 @@ export default (renderMenu: (loc: BlockLocation | null) => void) => {
                   rendered = true;
                   const top = (view.domAtPos(lastPos + 1).node as any).getBoundingClientRect().top;
                   if(lastNode.type.name !== "header") {
+                    const parent = document.querySelector("main").getBoundingClientRect().top;
                     const loc = {
                       node: lastNode,
                       pos: lastPos,
-                      top: top,
+                      top: top - parent,
                     }
                     renderMenu(loc);
                   }
@@ -33,10 +34,11 @@ export default (renderMenu: (loc: BlockLocation | null) => void) => {
               })
               if(!rendered) {
                 const top = (view.domAtPos(lastPos + 1).node as any).getBoundingClientRect().top;
+                const parent = document.querySelector("main").getBoundingClientRect().top;
                 const loc = {
                   node: lastNode,
                   pos: lastPos,
-                  top: top,
+                  top: top - parent,
                 }
                 renderMenu(loc);
               }
@@ -46,13 +48,12 @@ export default (renderMenu: (loc: BlockLocation | null) => void) => {
           }
         },
         mouseleave: (view, event) => {
-          if (
-            event.relatedTarget &&
-            (event.relatedTarget as any).className != "sidemenu"
-          ) {
+          if(event.relatedTarget && (event.relatedTarget as any).classList.contains("sidemenu")) {
+
+          } else {
             renderMenu(null);
           }
-        },
+        }
       },
     },
   });

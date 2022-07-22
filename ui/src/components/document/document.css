@@ -122,7 +122,8 @@ a {
 
 /* Header */
 header {
-  padding-bottom: calc(var(--title) / 2);
+  margin-top: calc(var(--title));
+  margin-bottom: calc(var(--title) / 2);
 }
 
 header * {
@@ -144,10 +145,8 @@ header p {
   @apply gap-2 px-2;
   position: absolute;
   display: flex;
-  left: calc(-32px - 8px - 12px);
-  width: calc(32px + 8px + 12px);
+  right: 100%;
   margin: 0;
-  padding: 0;
 }
 
 .sidemenu > li {
@@ -164,40 +163,25 @@ header p {
 }
 
 .highlightmenu {
-  @apply rounded-2;
-  overflow: hidden;
-  background: var(--paper-color);
   position: absolute;
   display: flex;
   flex-flow: column nowrap;
-  box-shadow: 0 0 4px 2px var(--type-glass-color);
 }
 
 .highlightmenu li {
-  display: flex;
+  @apply py-3;
   justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  width: 24px;
-  height: 24px;
-}
-.highlightmenu li:hover {
-  background-color: var(--type-glass-color);
 }
 
 .slashmenu {
-  @apply rounded-2;
   overflow: hidden;
-  background: var(--paper-color);
   position: absolute;
   display: flex-col;
-  box-shadow: 0 0 4px 2px var(--type-glass-color);
+  width: 180px;
 }
-.slashmenu > div {
-  cursor: pointer;
-}
-.slashmenu > div:hover {
-  background-color: var(--type-glass-color);
+
+.configmenu {
+  position: absolute;
 }
 
 /* Config */
@@ -221,7 +205,7 @@ dd {
   display: inline-block;
 }
 
-dd input {
+dd input, dd select {
   width: calc(var(--document-width) / 2 - 1ch);
   height: 1.3em;
   font-family: "IBM Plex Mono", monospace;
@@ -239,24 +223,39 @@ li p:first-child {
   line-height: var(--h3);
 }
 
+/* UX */
+main ::selection {
+  background-color: var(--type-color);
+  color: var(--paper-color);
+}
+
 /* Layout Styles */
 #document-wrapper {
-  @apply px-5 py-4;
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  background-color: var(--off-color);
-  flex-flow: column nowrap;
-  align-items: center;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+#document-wrapper section {
+  @apply my-4;
+  position: relative;
 }
 
 main {
-  @apply rounded-3;
-  flex-grow: 1;
   background-color: var(--paper-color);
   font-size: var(--body);
   width: var(--document-width);
   position: relative;
-  padding: var(--title) 2ch calc(var(--title) / 2);
+  margin: 0 auto var(--title);
+}
+
+#document-wrapper::-webkit-scrollbar {
+  width:8px;
+}
+#document-wrapper::-webkit-scrollbar-track {
+  @apply rounded-3;
+  background: var(--paper-color);
+}
+#document-wrapper::-webkit-scrollbar-thumb {
+  @apply rounded-3;
+  background: var(--type-color);
 }

@@ -2,6 +2,7 @@ import { Plugin, PluginKey } from "prosemirror-state"
 import { EditorView } from "prosemirror-view"
 import { DocumentConfig } from "./config.ts"
 import { assembleConfigNodeView, assembleConfigTermNodeView } from "./helpers.ts"
+import { ConfigTerm } from "./config.ts"
 
 export const ConfigSpec = {
   content: "configfield*",
@@ -27,7 +28,7 @@ export const ConfigTermSpec = {
 
 export const ConfigPluginKey = new PluginKey("config");
 
-export const config = (target?: string) => new Plugin({
+export const config = (renderMenu: (options: Array<ConfigTerm>) => void) => new Plugin({
   key: ConfigPluginKey,
   state: {
     init: (_, state) => {
@@ -43,15 +44,13 @@ export const config = (target?: string) => new Plugin({
       return new DocumentConfig(config)
     },
     apply: (tr, value, state) => {
-      console.log(tr)
-      console.log(state)
       return value;
     }
   },
   props: {
     nodeViews: {
       "config": (node,view, getPos) => {
-        const { dom, contentDOM } =  assembleConfigNodeView(view);
+        const { dom, contentDOM } =  assembleConfigNodeView(view, renderMenu);
 
         return { dom: dom, contentDOM: contentDOM };
       },
@@ -64,9 +63,7 @@ export const config = (target?: string) => new Plugin({
         return {
           dom: dom,
           update: (newNode) => {
-            console.log(newNode)
             const configState = view.state["config$"];
-            console.log(configState)
             if(newNode.attrs["term-value"] != configState.config[newNode.attrs["term-key"]].value) {
               configState.setField(newNode.attrs["term-key"], newNode.attrs["term-value"]);
             }

@@ -2,7 +2,7 @@ import { EditorView } from "prosemirror-view"
 import { DocumentConfig, ConfigTerm } from "./config.ts"
 import schema from "../../build/schema.ts"
 
-export function assembleConfigNodeView(view: EditorView) {
+export function assembleConfigNodeView(view: EditorView, renderMenu: (options: any) => void) {
   const dom = document.createElement("div");
   dom.classList.add("Prosemirror-config")
   const panel = document.createElement("div");
@@ -40,7 +40,7 @@ export function assembleConfigNodeView(view: EditorView) {
     >
       <path d="M432 256C432 269.3 421.3 280 408 280h-160v160c0 13.25-10.75 24.01-24 24.01S200 453.3 200 440v-160h-160c-13.25 0-24-10.74-24-23.99C16 242.8 26.75 232 40 232h160v-160c0-13.25 10.75-23.99 24-23.99S248 58.75 248 72v160h160C421.3 232 432 242.8 432 256z"/>
     </svg> add config`
-  add.addEventListener("click", () => {
+  add.addEventListener("click", (event) => {
     const exclude = []
     view.state.doc.descendants((term, pos, parent, index) => {
       if(term.type.name === "header") return true;
@@ -51,16 +51,22 @@ export function assembleConfigNodeView(view: EditorView) {
       return false;
     })
     const configState = view.state["config$"].config;
-    const term = Object.keys(configState).filter((key) => !exclude.includes(key))[0]
-    if(term) {
-      addConfigTerm(term, view, configState);
-    }
+
+    const terms = Object.values(configState).filter((key) => !exclude.includes(key))
+    const parent = document.querySelector("main").getBoundingClientRect();
+    renderMenu({
+      options: terms,
+      left: event.clientX - parent.left,
+      top: event.clientY - parent.top,
+      state: configState,
+    })
   })
   panel.appendChild(add)
   dom.appendChild(panel)
 
   const contentDOM = document.createElement("dl")
   contentDOM.classList.add("Prosemirror-config-terms")
+  contentDOM.classList.add("context-menu")
   dom.appendChild(contentDOM)
 
   return { dom, contentDOM }
@@ -89,8 +95,6 @@ export function assembleConfigTermNodeView(view: EditorView, term: ConfigTerm, g
 
   input.setAttribute("value", term.value);
   input.addEventListener("change", (event) => {
-    console.log(event)
-    console.log((event.target as any).value)
     input.setAttribute("value", (event.target as any).value);
     const tr = view.state.tr.setNodeMarkup(getPos(), null, { "term-key": term.key, "term-value": (event.target as any).value })
     view.dispatch(tr)

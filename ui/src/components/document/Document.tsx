@@ -17,14 +17,15 @@ import shortcuts from "./plugins/shortcuts.ts";
 
 
 // Menus
-import sidemenu from "./plugins/sidemenu.ts";
-import SideMenu from "./plugins/SideMenu.tsx";
-import highlightmenu from "./plugins/highlightmenu.ts";
-import HighlightMenu from "./plugins/HighlightMenu.tsx";
-import slashmenu from "./plugins/slashmenu.ts"
-import NodeMenu from "./plugins/NodeMenu.tsx"
-import srcmenu from "./plugins/srcmenu.ts"
-import SrcMenu from "./plugins/SrcMenu.tsx"
+import sidemenu from "./plugins/menus/sidemenu.ts";
+import SideMenu from "./plugins/menus/SideMenu.tsx";
+import highlightmenu from "./plugins/menus/highlightmenu.ts";
+import HighlightMenu from "./plugins/menus/HighlightMenu.tsx";
+import slashmenu from "./plugins/menus/slashmenu.ts"
+import NodeMenu from "./plugins/menus/NodeMenu.tsx"
+import ConfigMenu from "./plugins/config/ConfigMenu.tsx"
+import srcmenu from "./plugins/menus/srcmenu.ts"
+import SrcMenu from "./plugins/menus/SrcMenu.tsx"
 
 
 function Document() {
@@ -38,15 +39,17 @@ function Document() {
   const [nodeMenu, setNodeMenu] = useState(null);
   const [nodeMenuSearch, setNodeMenuSearch] = useState("");
   function updateNodeMenu(search: string | null) {
+    console.log("updating search", search, nodeMenuSearch)
     if(search == null) setNodeMenuSearch("")
     else setNodeMenuSearch(`${nodeMenuSearch}${search}`)
   }
+  const [configMenu, setConfigMenu] = useState(null);
 
   function toggleConfig() {
     setConfig(!showConfig);
   }
   function hideSideMenu(event) {
-    //setSideMenu(null);
+    setSideMenu(null);
   }
   function initDrag(event) {
     console.log(event);
@@ -61,7 +64,7 @@ function Document() {
         buildKeymap(schema),
         baseKeymap,
         shortcuts(schema),
-        config("#document"),
+        config(setConfigMenu),
         placeholders,
         sidemenu(setSideMenu),
         highlightmenu(setHighlightMenu),
@@ -84,6 +87,7 @@ function Document() {
 
       {/* Document --------------------------------------------------------- */}
       <main id="document">
+      <section>
         {sideMenu ? (
           <SideMenu
             menu={sideMenu}
@@ -119,6 +123,16 @@ function Document() {
         ) :(
           ""
         )}
+        {configMenu ? (
+          <ConfigMenu
+            menu={configMenu}
+            hide={() => {setConfigMenu(null);}}
+            view={view}
+            />
+        ) :(
+          ""
+        )}
+      </section>
 
       </main>
     </div>

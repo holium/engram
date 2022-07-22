@@ -3,6 +3,43 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap');
 
 
-html {
-  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, Inter, sans-serif;
+#app {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  flex-flow: column;
+}
+
+.context-menu {
+  @apply rounded-2;
+  overflow: hidden;
+  z-index: 2;
+  box-shadow: 0 5px 17px #26262620;
+  background-color: var(--paper-color);
+}
+
+.context-menu li {
+  @apply px-3 py-2;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.context-menu li:hover {
+  background-color: var(--type-glass-color);
+  cursor: pointer;
+}
+
+.context-menu input {
+  @apply p-3;
+  background-color: #ffffff00;
+  outline: none;
+}
+
+.context-menu input:hover {
+  background-color: var(--type-glass-color);
+  outline: none;
 }

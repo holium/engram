@@ -2,8 +2,8 @@ import { useState, useRef, useEffect } from "react"
 import NodeMenu from "./NodeMenu.tsx"
 import { TextSelection } from "prosemirror-state"
 import { toggleMark } from "prosemirror-commands"
-import schema from "../build/schema.ts"
-import { insertAtNextPossible } from "./shortcuts.ts"
+import schema from "../../build/schema.ts"
+import { insertAtNextPossible } from "../shortcuts.ts"
 
 function SideMenu(props) {
 
@@ -16,31 +16,19 @@ function SideMenu(props) {
   }, [props.menu.pos])
 
   function openNodeMenu(event) {
-    const box = event.target.getBoundingClientRect()
+    const parent = document.querySelector(".sidemenu").getBoundingClientRect();
+    console.log(event)
     setNodeMenu({
       node: props.menu.node,
       to: props.menu.pos,
       from: props.menu.pos,
-      left: box.left,
-      top: box.top
+      left: event.clientX - parent.left,
+      top: event.clientY - parent.top
     })
   }
 
-  function handleDrag(event) {
-    /*
-    const cursor = props.view.posAtCoords({left: event.clientX, top: event.clientY});
-    if(cursor && cursor.pos != pos) {
-      const move = insertAtNextPossible(props.view, cursor.pos, props.menu.node);
-      if(move != null) {
-        const prev = move.tr.mapping.map(pos);
-        //const cleanup = props.view.state.tr.setSelection(new TextSelection(props.view.state.doc.resolve(prev + 1), props.view.state.doc.resolve(prev + props.menu.node.nodeSize - 1)))
-        const cleanup = props.view.state.tr.deleteRange(prev, prev + props.menu.node.nodeSize)
-        props.view.dispatch(cleanup)
-        //toggleMark(schema.marks["strong"])(props.view.state, props.view.dispatch, props.view)
-        setPos(move.pos)
-      }
-    }
-    */
+  function handleDrag() {
+    // drag
   }
 
   function handleDragEnd(event) {
@@ -61,7 +49,8 @@ function SideMenu(props) {
 
   return (
     <menu className="sidemenu" style={{
-      top: `${props.menu.top - 8}px`,
+      top: `${props.menu.top}px`,
+      position: "absolute"
     }} onMouseLeave={props.hide}>
       {/* Plus */}
       <li onClick={openNodeMenu}>
@@ -90,7 +79,6 @@ function SideMenu(props) {
           fill="#636261"
           width="16"
           height="16"
-          onDrag={handleDrag}
         >
           <path d="M0 96C0 69.49 21.49 48 48 48C74.51 48 96 69.49 96 96C96 122.5 74.51 144 48 144C21.49 144 0 122.5 0 96zM0 256C0 229.5 21.49 208 48 208C74.51 208 96 229.5 96 256C96 282.5 74.51 304 48 304C21.49 304 0 282.5 0 256zM96 416C96 442.5 74.51 464 48 464C21.49 464 0 442.5 0 416C0 389.5 21.49 368 48 368C74.51 368 96 389.5 96 416zM160 96C160 69.49 181.5 48 208 48C234.5 48 256 69.49 256 96C256 122.5 234.5 144 208 144C181.5 144 160 122.5 160 96zM256 256C256 282.5 234.5 304 208 304C181.5 304 160 282.5 160 256C160 229.5 181.5 208 208 208C234.5 208 256 229.5 256 256zM160 416C160 389.5 181.5 368 208 368C234.5 368 256 389.5 256 416C256 442.5 234.5 464 208 464C181.5 464 160 442.5 160 416z" />
         </svg>
