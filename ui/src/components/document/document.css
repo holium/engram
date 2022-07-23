@@ -254,7 +254,7 @@ main .ProseMirror {
   min-height: 100%;
   border-radius: var(--root-frequency) var(--root-frequency) 0 0;
   background-color: var(--paper-color);
-  padding: var(--title) 4ch var(--title);
+  padding: var(--h2) 4ch var(--title);
 }
 
 #document-wrapper::-webkit-scrollbar {
