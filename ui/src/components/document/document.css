@@ -22,7 +22,9 @@ p {
   line-height: var(--leading-body);
 }
 
-h1,h2,h3 {
+h1,
+h2,
+h3 {
   font-family: var(--heading-font-family);
   font-weight: var(--heading-weight);
   line-height: var(--leading-heading);
@@ -73,7 +75,8 @@ ol {
   padding-right: 32px;
 }
 
-ul[data-type="checklist"] { /* Checklist */
+ul[data-type="checklist"] {
+  /* Checklist */
   list-style-type: none;
 }
 
@@ -122,7 +125,6 @@ a {
 
 /* Header */
 header {
-  margin-top: calc(var(--title));
   margin-bottom: calc(var(--title) / 2);
 }
 
@@ -150,7 +152,7 @@ header p {
 }
 
 .sidemenu > li {
-  @apply p-1 rounded-2;
+  @apply p-1 rounded-1;
   vertical-align: center;
   text-align: center;
   cursor: pointer;
@@ -198,14 +200,15 @@ dt {
   cursor: pointer;
 }
 dt:after {
-  content: ":"
+  content: ":";
 }
 
 dd {
   display: inline-block;
 }
 
-dd input, dd select {
+dd input,
+dd select {
   width: calc(var(--document-width) / 2 - 1ch);
   height: 1.3em;
   font-family: "IBM Plex Mono", monospace;
@@ -231,29 +234,35 @@ main ::selection {
 
 /* Layout Styles */
 #document-wrapper {
+  position: relative;
+  display: flex;
   overflow-y: auto;
   flex-grow: 1;
 }
 
 #document-wrapper section {
-  @apply my-4;
   position: relative;
 }
 
 main {
-  background-color: var(--paper-color);
-  font-size: var(--body);
-  width: var(--document-width);
+  width: calc(var(--document-width) + 8ch);
   position: relative;
-  margin: 0 auto var(--title);
+  margin: 0 auto;
+}
+
+main .ProseMirror {
+  min-height: 100%;
+  border-radius: var(--root-frequency) var(--root-frequency) 0 0;
+  background-color: var(--paper-color);
+  padding: var(--h2) 4ch var(--title);
 }
 
 #document-wrapper::-webkit-scrollbar {
-  width:8px;
+  width: 8px;
 }
 #document-wrapper::-webkit-scrollbar-track {
   @apply rounded-3;
-  background: var(--paper-color);
+  background: var(--off-color);
 }
 #document-wrapper::-webkit-scrollbar-thumb {
   @apply rounded-3;

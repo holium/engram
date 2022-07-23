@@ -1,19 +1,23 @@
-import suggestions from "./suggestions.ts"
-import { SuggestionItem } from "./suggestions.ts"
-import { useState, useEffect } from "react"
+import suggestions from "./suggestions.ts";
+import { SuggestionItem } from "./suggestions.ts";
+import { useState, useEffect } from "react";
 
 function NodeMenu(props) {
-
-  const [results, setResults] = useState(Object.keys(suggestions))
+  const [results, setResults] = useState(Object.keys(suggestions));
 
   useEffect(() => {
-    console.log("search changed", props.search)
-    setResults(Object.keys(suggestions).filter((suggestion) => suggestion.match(props.search)));
-  }, [props.search])
+    console.log("search changed", props.search);
+    setResults(
+      Object.keys(suggestions).filter((suggestion) =>
+        suggestion.match(props.search)
+      )
+    );
+  }, [props.search]);
 
   function runCommand(suggestion: string) {
-    if(props.pos) suggestions[suggestion].command(props.view, props.pos);
+    if (props.pos) suggestions[suggestion].command(props.view, props.pos + 1);
     else suggestions[suggestion].command(props.view);
+    props.view.focus();
     props.hide();
   }
 
@@ -27,13 +31,18 @@ function NodeMenu(props) {
     >
       {results.map((suggestion) => {
         return (
-          <li key={suggestion} onClick={() => {runCommand(suggestion)}}>
-            { suggestions[suggestion].display }
+          <li
+            key={suggestion}
+            onClick={() => {
+              runCommand(suggestion);
+            }}
+          >
+            {suggestions[suggestion].display}
           </li>
-        )
+        );
       })}
     </menu>
-  )
+  );
 }
 
-export default NodeMenu
+export default NodeMenu;

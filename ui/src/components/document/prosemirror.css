@@ -1,6 +1,11 @@
 .ProseMirror {
+  background-color: var(--paper-color);
   outline-style: none;
   white-space: pre-wrap;
+}
+
+main {
+  background-color: var(--off-color);
 }
 
 p.Prosemirror-placeholder:before {
@@ -26,9 +31,11 @@ header p.Prosemirror-placeholder:before {
 
 .ProseMirror-selectednode {
   outline: 2px solid var(--status-primary-color);
+  background-color: var(--status-primary-glass-color);
 }
 
-.Prosemirror-config dl, .Prosemirror-config label {
+.Prosemirror-config dl,
+.Prosemirror-config label {
   display: none;
 }
 
@@ -56,7 +63,7 @@ header p.Prosemirror-placeholder:before {
 dl.Prosemirror-config-terms {
   position: absolute;
   width: var(--document-width);
-  top: calc(1em + 12px);
+  top: calc(1em + 12px + var(--h2));
 }
 
 #Prosemirror-config-toggle:checked ~ dl.Prosemirror-config-terms {
@@ -67,7 +74,9 @@ dl.Prosemirror-config-terms {
   display: flex;
 }
 
-#Prosemirror-config-toggle:checked ~ .Prosemirror-config-panel #Prosemirror-config-toggler {
+#Prosemirror-config-toggle:checked
+  ~ .Prosemirror-config-panel
+  #Prosemirror-config-toggler {
   background-color: var(--type-glass-color);
 }
 
