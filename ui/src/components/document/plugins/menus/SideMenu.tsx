@@ -1,30 +1,28 @@
-import { useState, useRef, useEffect } from "react"
-import NodeMenu from "./NodeMenu.tsx"
-import { TextSelection } from "prosemirror-state"
-import { toggleMark } from "prosemirror-commands"
-import schema from "../../build/schema.ts"
-import { insertAtNextPossible } from "../shortcuts.ts"
+import { useState, useRef, useEffect } from "react";
+import NodeMenu from "./NodeMenu.tsx";
+import { TextSelection } from "prosemirror-state";
+import { toggleMark } from "prosemirror-commands";
+import schema from "../../build/schema.ts";
+import { insertAtNextPossible } from "../shortcuts.ts";
 
 function SideMenu(props) {
-
-  const menuButton = useRef()
+  const menuButton = useRef();
   const [nodeMenu, setNodeMenu] = useState(null);
-  const [pos, setPos] = useState(props.menu.pos)
+  const [pos, setPos] = useState(props.menu.pos);
 
   useEffect(() => {
-    setPos(props.menu.pos)
-  }, [props.menu.pos])
+    setPos(props.menu.pos);
+  }, [props.menu.pos]);
 
   function openNodeMenu(event) {
     const parent = document.querySelector(".sidemenu").getBoundingClientRect();
-    console.log(event)
     setNodeMenu({
       node: props.menu.node,
       to: props.menu.pos,
       from: props.menu.pos,
       left: event.clientX - parent.left,
-      top: event.clientY - parent.top
-    })
+      top: event.clientY - parent.top,
+    });
   }
 
   function handleDrag() {
@@ -32,26 +30,39 @@ function SideMenu(props) {
   }
 
   function handleDragEnd(event) {
-    const cursor = props.view.posAtCoords({left: event.clientX, top: event.clientY});
-    if(cursor && cursor.pos != pos) {
-      const move = insertAtNextPossible(props.view, cursor.pos, props.menu.node);
-      if(move != null) {
+    const cursor = props.view.posAtCoords({
+      left: event.clientX,
+      top: event.clientY,
+    });
+    if (cursor && cursor.pos != pos) {
+      const move = insertAtNextPossible(
+        props.view,
+        cursor.pos,
+        props.menu.node
+      );
+      if (move != null) {
         const prev = move.tr.mapping.map(pos);
         //const cleanup = props.view.state.tr.setSelection(new TextSelection(props.view.state.doc.resolve(prev + 1), props.view.state.doc.resolve(prev + props.menu.node.nodeSize - 1)))
-        const cleanup = props.view.state.tr.deleteRange(prev, prev + props.menu.node.nodeSize)
-        props.view.dispatch(cleanup)
+        const cleanup = props.view.state.tr.deleteRange(
+          prev,
+          prev + props.menu.node.nodeSize
+        );
+        props.view.dispatch(cleanup);
         //toggleMark(schema.marks["strong"])(props.view.state, props.view.dispatch, props.view)
-        setPos(move.pos)
+        setPos(move.pos);
       }
     }
   }
 
-
   return (
-    <menu className="sidemenu" style={{
-      top: `${props.menu.top}px`,
-      position: "absolute"
-    }} onMouseLeave={props.hide}>
+    <menu
+      className="sidemenu"
+      style={{
+        top: `${props.menu.top}px`,
+        position: "absolute",
+      }}
+      onMouseLeave={props.hide}
+    >
       {/* Plus */}
       <li onClick={openNodeMenu}>
         <svg
@@ -67,7 +78,14 @@ function SideMenu(props) {
         </svg>
       </li>
       {nodeMenu ? (
-        <NodeMenu menu={nodeMenu} view={props.view} pos={props.menu.pos} hide={() => {setNodeMenu(null)}} />
+        <NodeMenu
+          menu={nodeMenu}
+          view={props.view}
+          pos={props.menu.pos}
+          hide={() => {
+            setNodeMenu(null);
+          }}
+        />
       ) : (
         ""
       )}
