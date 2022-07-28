@@ -8,6 +8,7 @@
   height: 100vh;
   flex-flow: row;
   background-color: var(--off-color);
+  @apply dark:bg-slate-700;
 }
 
 #body {
@@ -22,6 +23,7 @@ nav {
 
 #toolbar {
   @apply p-3;
+
 }
 
 .context-menu {
