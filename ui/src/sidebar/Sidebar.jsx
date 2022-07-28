@@ -1,16 +1,15 @@
-import { useState } from "react"
-import { GiHamburgerMenu } from 'react-icons/gi'
-import DarkToggle from "../background/ThemeToggle";
+import { useContext, useState } from "react"
+import { SlideContext } from '../navbar/SlideContext'
+import {GiHamburgerMenu} from "react-icons/gi"
+
 
 function Sidebar() {
 
-    const [sidebar, setSideBar] = useState(true);
+    const { slide, setSlide } = useContext(SlideContext);
 
     return(
-        <div className=" bg-black dark:bg-slate-400  text-black duration-1000 relative flex">
-            <div className= {`${sidebar ? " w-8" : " w-5"} duration-300`}>
-                <GiHamburgerMenu className = " cursor-pointer rounded-3 absolute top-2 right-3" onClick={() => setSideBar(!sidebar)} />
-        </div>
+            <div className= {`${slide ? " w-8" : " w-5"} duration-300 relative`}>
+                <p className="absolute top-2 right-3"> hello</p>
         </div>
         
     )

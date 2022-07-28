@@ -1,9 +1,10 @@
-import React from 'react';
+import { createContext, useState, useEffect } from "react";
 
-export const ThemeContext = React.createContext();
+export const ThemeContext = createContext();
 
-export const ThemeProvider = ({ initialTheme, children }) => {
-    const [theme, setTheme] = React.useState("light");
+export const ThemeProvider = ({ children }) => {
+    const [theme, setTheme] = useState("light");
+
 
     const rawSetTheme = (rawTheme) => {
         const root = window.document.documentElement;
@@ -13,12 +14,12 @@ export const ThemeProvider = ({ initialTheme, children }) => {
         root.classList.add(rawTheme);
     };
 
-    React.useEffect(() => {
+    useEffect(() => {
         rawSetTheme(theme);
     }, [theme]);
 
     return (
-        <ThemeContext.Provider value={{ theme, setTheme }}>
+        <ThemeContext.Provider value={{ theme, setTheme}}>
             {children}
         </ThemeContext.Provider>
     );

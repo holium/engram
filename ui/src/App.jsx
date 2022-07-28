@@ -4,6 +4,7 @@ import Navbar from "./navbar/Navbar";
 import Sidebar from "./sidebar/Sidebar";
 import { ThemeProvider } from "./background/ThemeContext";
 import Background from "./background/Background";
+import SlideProvider  from "./navbar/SlideContext";
 
 function App() {
   return (
@@ -11,10 +12,12 @@ function App() {
       <nav></nav>
       <div id="body">
         <ThemeProvider>
+        <SlideProvider>
         <Navbar/>
         <div className= " flex" id="toolbar">
           <Sidebar/>
         </div>
+        </SlideProvider>
         </ThemeProvider>
         <Document />
       </div>

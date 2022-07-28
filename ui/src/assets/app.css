@@ -8,7 +8,8 @@
   height: 100vh;
   flex-flow: row;
   background-color: var(--off-color);
-  @apply dark:bg-slate-700;
+  @apply dark:bg-slate-700 duration-1000;
+  
 }
 
 #body {
