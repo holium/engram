@@ -4,7 +4,7 @@
 +$  versioned-state
   $%  state-0
   ==
-+$  state-0  [%0 val=docs:engram]
++$  state-0  [%0 hist=docs:engram]
 +$  card  card:agent:gall
 --
 %-  agent:dbug
@@ -17,7 +17,7 @@
 ::
 ++  on-init
   ^-  (quip card _this)
-  `this(val ~)
+  `this(hist ~)
 ::
 ++  on-save
   ^-  vase
@@ -39,17 +39,24 @@
     =/  action  !<(?(action:engram) vase)
     ?-    -.action
     ::
+    :: initialize a new document with a nil document history
+    ::
       %make
-    ?<  (~(has by val) +.action)
-    `this(val (~(put by val) +.action ~))
+    ?<  (~(has by hist) +.action)
+    `this(hist (~(put by hist) +.action ~))
+    ::
+    :: modify a document by prepending a new change in its history
+    :: note: try to serve the data in reverse order to have newer data at the end of the array
     ::
       %modify
-    ?>  (~(has by val) +<.action)
-    `this(val (~(add ja val) +<.action +>.action))
+    ?>  (~(has by hist) +<.action)
+    `this(hist (~(add ja hist) +<.action +>.action))
+    ::
+    :: remove a document from your document history
     ::
       %delete
-    ?>  (~(has by val) +.action)
-    `this(val (~(del by val) +.action))
+    ?>  (~(has by hist) +.action)
+    `this(hist (~(del by hist) +.action))
     ==
   ==
 ::
