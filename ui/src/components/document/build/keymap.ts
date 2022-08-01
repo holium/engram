@@ -1,7 +1,7 @@
 import { keymap } from "prosemirror-keymap";
 import { Command } from "prosemirror-state";
 import { Schema } from "prosemirror-model";
-import schema from "./schema.ts";
+import schema from "./schema";
 import {
   chainCommands,
   newlineInCode,

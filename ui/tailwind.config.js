@@ -29,6 +29,10 @@ module.exports = {
       7: `${unit ** 7}px`,
       8: `${unit ** 8}px`,
     },
+    boxShadow: {
+      menu: "0 5px 17px #26262620",
+      sunk: "inset 0 0 3px -2px #26262620",
+    },
     extend: {},
   },
   plugins: [],

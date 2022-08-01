@@ -5,7 +5,7 @@ import {
   MarkSpec,
   DOMOutputSpec,
 } from "prosemirror-model";
-import { ConfigSpec, ConfigTermSpec } from "../plugins/config/plugin.ts"
+import { ConfigSpec, ConfigTermSpec } from "../plugins/config/plugin.ts";
 
 const schema = new Schema({
   nodes: {
@@ -102,23 +102,12 @@ const schema = new Schema({
       },
     } as NodeSpec,
 
-    // Aside
-    aside: {
-      content: "inline*",
-      group: "block",
-      parseDOM: [{ tag: "aside" }],
-      toDOM() {
-        return ["aside", 0];
-      },
-      defining: true,
-    } as NodeSpec,
-
     // Caption
-    "caption": {
+    caption: {
       content: "text*",
       parseDOM: [{ tag: "figcaption" }],
-      toDOM(){
-        return ["figcaption", 0]
+      toDOM() {
+        return ["figcaption", 0];
       },
       atom: false,
     },
@@ -237,11 +226,11 @@ const schema = new Schema({
     // Image
     image: {
       group: "block",
-      attrs: { src: { default: "" }},
+      attrs: { src: { default: "" } },
       parseDOM: [{ tag: "img" }],
       toDOM(node) {
-        return ["img", { src: node.attrs.src }]
-      }
+        return ["img", { src: node.attrs.src }];
+      },
     },
 
     // Figure =============================================================== */
@@ -249,14 +238,11 @@ const schema = new Schema({
     figure: {
       group: "block",
       content: "(block caption)+",
-      parseDOM: [{ tag: "figure"}],
+      parseDOM: [{ tag: "figure" }],
       atom: true,
       toDOM(node) {
-        return [
-          "figure",
-          0
-        ]
-      }
+        return ["figure", 0];
+      },
     } as NodeSpec,
   },
   marks: {
@@ -294,10 +280,11 @@ const schema = new Schema({
       parseDOM: [
         { tag: "u" },
         {
-        style: 'text-decoration',
-        consuming: false,
-        getAttrs: style => ((style as string).includes('underline') ? {} : false),
-      },
+          style: "text-decoration",
+          consuming: false,
+          getAttrs: (style) =>
+            (style as string).includes("underline") ? {} : false,
+        },
       ],
       toDOM() {
         return ["u", 0];
@@ -308,19 +295,20 @@ const schema = new Schema({
     strike: {
       parseDOM: [
         {
-        tag: 's',
-      },
-      {
-        tag: 'del',
-      },
-      {
-        tag: 'strike',
-      },
-      {
-        style: 'text-decoration',
-        consuming: false,
-        getAttrs: style => ((style as string).includes('line-through') ? {} : false),
-      },
+          tag: "s",
+        },
+        {
+          tag: "del",
+        },
+        {
+          tag: "strike",
+        },
+        {
+          style: "text-decoration",
+          consuming: false,
+          getAttrs: (style) =>
+            (style as string).includes("line-through") ? {} : false,
+        },
       ],
       toDOM() {
         return ["s", 0];
@@ -329,10 +317,11 @@ const schema = new Schema({
 
     // Code
     code: {
+      inclusive: false,
       parseDOM: [
         {
-        tag: 'code',
-      },
+          tag: "code",
+        },
       ],
       toDOM() {
         return ["code", 0];
@@ -342,38 +331,41 @@ const schema = new Schema({
     /* links ================================================================ */
     // Web2 Hyperlink
     hyperlink: {
-      attrs: { href: { default: "" }, target: { default: "_blank"}},
+      inclusive: false,
+      attrs: { href: { default: "" }, target: { default: "_blank" } },
       parseDOM: [{ tag: 'a[href]:not([href *= "javascript:" i])' }],
       toDOM(node) {
-        return ["a", { href: node.attrs.href, target: node.attrs.target }, 0]
-      }
-    } as MarkSpec,
-
-    // Engram Concept Link
-    concept: {
-      attrs: { title: { default: "" }},
-      parseDOM: [{ tag: "abbr"}],
-      toDOM(node) {
-        return ["abbr", { title: node.attrs.concept }, 0]
-      }
+        return ["a", { href: node.attrs.href, target: node.attrs.target }, 0];
+      },
     } as MarkSpec,
 
     // Comment Link
     comment: {
-      attrs: { comment: { default: "" }},
-      parseDOM: [{ tag: "mark"}],
-      toDOM(node) {
-        return ["mark", { concept: node.attrs.concept, title: node.attrs.concept }, 0]
-      }
+      attrs: { comment: { default: "{}" } },
+      inclusive: false,
+      excludes: "",
+      parseDOM: [{ tag: "mark" }],
+      toDOM() {
+        return ["mark", 0];
+      },
     } as MarkSpec,
+
+    // Engram Concept Link
+    concept: {
+      attrs: { concept: { default: "" } },
+      parseDOM: [{ tag: "abbr" }],
+      toDOM(node) {
+        return ["abbr", { title: node.attrs.concept }];
+      },
+    } as NodeSpec,
 
     // Azimuth
     azimuth: {
-      attrs: { aref: { default: "" }},
+      attrs: { aref: { default: "" } },
       parseDOM: [{ tag: 'a[aref]:not([aref *= "javascript:" i])' }],
       toDOM(node) {
-        return ["a", { aref: node.attrs.src }, 0]
-      }
+        return ["a", { aref: node.attrs.src }, 0];
+      },
     } as MarkSpec,
   },
 });

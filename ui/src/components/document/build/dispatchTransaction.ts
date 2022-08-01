@@ -6,12 +6,15 @@ function dispatchTransaction(this: EditorView, transaction: Transaction) {
   const newState = this.state.apply(transaction);
   this.updateState(newState);
   const sendable = sendableSteps(newState);
+  console.log(this);
+  /*
   if (sendable)
     console.log({
       version: sendable.version,
       steps: sendable.steps,
       author: sendable.clientID,
     });
+  */
 }
 
 export default dispatchTransaction;
