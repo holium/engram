@@ -14,6 +14,7 @@ import { collab } from "prosemirror-collab";
 import { history } from "prosemirror-history";
 import placeholders from "./plugins/placeholders.ts";
 import shortcuts from "./plugins/shortcuts.ts";
+import { comments } from "./plugins/comments.ts";
 
 // Menus
 import sidemenu from "./plugins/menus/sidemenu.ts";
@@ -64,6 +65,7 @@ function Document() {
         srcmenu(setSrcMenu),
         collab(),
         history({}),
+        comments,
       ],
     });
     setView(

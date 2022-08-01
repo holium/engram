@@ -25,10 +25,9 @@ nav {
 }
 
 .context-menu {
-  @apply rounded-2;
+  @apply rounded-2 shadow-menu;
   overflow: hidden;
   z-index: 2;
-  box-shadow: 0 5px 17px #26262620;
   background-color: var(--paper-color);
 }
 
@@ -40,6 +39,17 @@ nav {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.context-menu .icon {
+  @apply flex items-center justify-center rounded-2;
+  width: var(--leading-body);
+  height: var(--leading-body);
+}
+
+.context-menu .icon:hover {
+  background-color: var(--type-glass-color);
+  cursor: pointer;
 }
 
 .context-menu li:hover {

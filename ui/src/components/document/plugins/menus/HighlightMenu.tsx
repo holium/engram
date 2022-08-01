@@ -1,19 +1,12 @@
-import { toggleMark } from "prosemirror-commands";
-import { MarkType } from "prosemirror-model";
+import { toggleMark, wrapIn } from "prosemirror-commands";
+import { MarkType, NodeRange } from "prosemirror-model";
+import { findWrapping } from "prosemirror-transform";
 import schema from "../../build/schema.ts";
 import { extendMark } from "../shortcuts.ts";
 import { useState, useEffect } from "react";
 
 function HighlightMenu(props) {
-  useEffect(() => {
-    const hyperlink = props.view.state.selection.$head
-      .marks()
-      .find((mark) => mark.type.name == "hyperlink");
-    if (hyperlink) {
-      setLink(hyperlink.attrs.href);
-    }
-  }, [props.menu.to, props.menu.from]);
-
+  // toggle basic marks
   function toggleBold() {
     toggleMark(schema.marks["strong"])(
       props.view.state,
@@ -55,6 +48,16 @@ function HighlightMenu(props) {
     props.view.focus();
   }
 
+  // manage links
+  useEffect(() => {
+    const hyperlink = props.view.state.selection.$head
+      .marks()
+      .find((mark) => mark.type.name == "hyperlink");
+    if (hyperlink) {
+      setLink(hyperlink.attrs.href);
+    }
+  }, [props.menu.to, props.menu.from]);
+
   function toggleLink() {
     toggleMark(schema.marks["hyperlink"])(
       props.view.state,
@@ -64,9 +67,11 @@ function HighlightMenu(props) {
     props.view.focus();
   }
   const [link, setLink] = useState("");
+
   function handleLinkChange(event) {
     setLink(event.target.value);
   }
+
   function implementLinkChange() {
     const res = extendMark(
       props.view.state,
@@ -75,20 +80,41 @@ function HighlightMenu(props) {
       schema.marks["hyperlink"]
     );
     if (res == null) return;
-    const remove = props.view.state.tr.removeMark(
+    const tr = props.view.state.tr.removeMark(
       res.from,
       res.to,
       schema.marks["hyperlink"]
     );
-    props.view.dispatch(remove);
-    const add = props.view.state.tr.addMark(
+    tr.addMark(
       res.from,
       res.to,
       schema.marks["hyperlink"].create({ href: link })
     );
-    props.view.dispatch(add);
+    props.view.dispatch(tr);
     console.log(res);
   }
+
+  // manage comments
+  function addComment() {
+    const sel = props.view.state.selection;
+    const range = new NodeRange(sel.$anchor, sel.$head, 1);
+    console.log(schema.nodes["paragraph"]);
+    console.log(schema.nodes["comment"]);
+    console.log(findWrapping(range, schema.nodes["comment"]));
+    const tr = props.view.state.tr.addMark(
+      sel.from,
+      sel.to,
+      schema.marks["comment"].create({
+        conversation: "[]",
+      })
+    );
+
+    console.log(tr);
+    props.view.dispatch(tr);
+    props.view.focus();
+  }
+
+  // helpers
 
   function hasMark(mark: string): boolean {
     const sel = props.view.state.selection;
@@ -242,7 +268,7 @@ function HighlightMenu(props) {
             viewBox="0 0 513 224"
             width="16"
             height="16"
-            style={{ fill: "var(--off-color)" }}
+            style={{ fill: "var(--type-glass-color)" }}
           >
             <path d="M361.77 223.848C453.641 223.848 493.899 127.848 512.48 25.6542L449.512 11.2026C434.028 74.1704 418.545 154.686 362.803 154.686C327.706 154.686 298.803 108.235 268.867 73.1381C237.899 35.9768 203.835 0.880005 151.19 0.880005C58.2864 0.880005 19.0606 96.88 0.47998 199.074L63.4477 213.525C78.9316 150.557 94.4155 70.0413 150.157 70.0413C185.254 70.0413 214.157 116.493 244.093 151.59C275.061 188.751 309.125 223.848 361.77 223.848Z" />
           </svg>
@@ -254,19 +280,19 @@ function HighlightMenu(props) {
             viewBox="0 0 448 512"
             width="16"
             height="16"
-            style={{ fill: "var(--off-color)" }}
+            style={{ fill: "var(--type-glass-color)" }}
           >
             <path d="M417.1 368c-4.437 7.688-12.5 12-20.81 12c-4.062 0-8.188-1.031-11.97-3.219L248 297.6V456c0 13.25-10.75 24-23.1 24S200 469.3 200 456V297.6l-137.2 79.22C59 378.1 54.88 380 50.81 380c-8.312 0-16.37-4.312-20.81-12c-6.625-11.47-2.687-26.16 8.781-32.78L176 256l-137.2-79.22C27.31 170.2 23.38 155.5 29.1 144C36.59 132.6 51.28 128.5 62.78 135.2L200 214.4V56C200 42.75 210.8 32 224 32S248 42.75 248 56v158.4l137.2-79.22C396.8 128.5 411.4 132.6 417.1 144c6.625 11.47 2.688 26.16-8.781 32.78L271.1 256l137.2 79.22C420.7 341.8 424.6 356.5 417.1 368z" />
           </svg>
         </li>
-        <li>
+        <li onClick={addComment}>
           {/* Comment */}
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 512 512"
             width="16"
             height="16"
-            style={{ fill: "var(--off-color)" }}
+            style={{ fill: "var(--type-color)" }}
           >
             <path d="M264 272h-112C138.8 272 128 282.8 128 296S138.8 320 152 320h112C277.3 320 288 309.3 288 296S277.3 272 264 272zM360 176h-208C138.8 176 128 186.8 128 200S138.8 224 152 224h208C373.3 224 384 213.3 384 200S373.3 176 360 176zM256 31.1c-141.4 0-255.1 93.13-255.1 208c0 47.62 19.91 91.25 52.91 126.3c-14.87 39.5-45.87 72.88-46.37 73.25c-6.623 7-8.373 17.25-4.623 26C5.816 474.3 14.38 480 24 480c61.49 0 109.1-25.75 139.1-46.25c28.87 9 60.16 14.25 92.9 14.25c141.4 0 255.1-93.13 255.1-207.1S397.4 31.1 256 31.1zM256 400c-26.75 0-53.12-4.125-78.36-12.12l-22.75-7.125L135.4 394.5c-14.25 10.12-33.87 21.38-57.49 29c7.373-12.12 14.37-25.75 19.87-40.25l10.62-28l-20.62-21.88C69.81 314.1 48.06 282.3 48.06 240c0-88.25 93.24-160 207.1-160c114.7 0 207.1 71.75 207.1 160S370.8 400 256 400z" />
           </svg>
