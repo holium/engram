@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { EditorState } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
 // Build
+import * as Y from "yjs";
 import schema from "./build/schema.ts";
 import { baseKeymap, buildKeymap } from "./build/keymap.ts";
 import dispatchTransaction from "./build/dispatchTransaction.ts";
@@ -15,6 +16,8 @@ import { history } from "prosemirror-history";
 import placeholders from "./plugins/placeholders.ts";
 import shortcuts from "./plugins/shortcuts.ts";
 import { comments } from "./plugins/comments.ts";
+import { sync } from "./plugins/crdt/sync.ts";
+import { localundo } from "./plugins/crdt/undo.ts";
 
 // Menus
 import sidemenu from "./plugins/menus/sidemenu.ts";
@@ -38,19 +41,16 @@ function Document() {
   const [nodeMenuSearch, setNodeMenuSearch] = useState("");
   const [configMenu, setConfigMenu] = useState(null);
 
-  function toggleConfig() {
-    setConfig(!showConfig);
-  }
   function hideSideMenu(event) {
     setSideMenu(null);
   }
-  function initDrag(event) {
-    console.log(event);
-    const dom = view.domAtPos(sidemenu.pos);
-    console.log(dom);
-  }
 
   useEffect(() => {
+    const doc = new Y.Doc();
+    doc.clientID = 0; // the ship
+    doc.gc = false;
+    const type = doc.getXmlFragment("prosemirror");
+
     const state = EditorState.create({
       schema: schema,
       plugins: [
@@ -63,8 +63,8 @@ function Document() {
         highlightmenu(setHighlightMenu),
         slashmenu(setNodeMenu, setNodeMenuSearch),
         srcmenu(setSrcMenu),
-        collab(),
-        history({}),
+        sync(type),
+        localundo(),
         comments,
       ],
     });
@@ -80,43 +80,41 @@ function Document() {
     <div id="document-wrapper">
       {/* Document --------------------------------------------------------- */}
       <main id="document">
-        <section>
-          {sideMenu ? (
-            <SideMenu menu={sideMenu} hide={hideSideMenu} view={view} />
-          ) : (
-            ""
-          )}
-          {highlightMenu ? (
-            <HighlightMenu menu={highlightMenu} view={view} />
-          ) : (
-            ""
-          )}
-          {srcMenu ? <SrcMenu menu={srcMenu} view={view} /> : ""}
-          {nodeMenu ? (
-            <NodeMenu
-              menu={nodeMenu}
-              search={nodeMenuSearch}
-              hide={() => {
-                setNodeMenu(null);
-                setNodeMenuSearch("");
-              }}
-              view={view}
-            />
-          ) : (
-            ""
-          )}
-          {configMenu ? (
-            <ConfigMenu
-              menu={configMenu}
-              hide={() => {
-                setConfigMenu(null);
-              }}
-              view={view}
-            />
-          ) : (
-            ""
-          )}
-        </section>
+        {sideMenu ? (
+          <SideMenu menu={sideMenu} hide={hideSideMenu} view={view} />
+        ) : (
+          ""
+        )}
+        {highlightMenu ? (
+          <HighlightMenu menu={highlightMenu} view={view} />
+        ) : (
+          ""
+        )}
+        {srcMenu ? <SrcMenu menu={srcMenu} view={view} /> : ""}
+        {nodeMenu ? (
+          <NodeMenu
+            menu={nodeMenu}
+            search={nodeMenuSearch}
+            hide={() => {
+              setNodeMenu(null);
+              setNodeMenuSearch("");
+            }}
+            view={view}
+          />
+        ) : (
+          ""
+        )}
+        {configMenu ? (
+          <ConfigMenu
+            menu={configMenu}
+            hide={() => {
+              setConfigMenu(null);
+            }}
+            view={view}
+          />
+        ) : (
+          ""
+        )}
       </main>
     </div>
   );
