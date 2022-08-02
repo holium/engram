@@ -1,13 +1,13 @@
-import { useRef, useEffect } from "react"
-import { addConfigTerm } from "./helpers.ts"
+import { useRef, useEffect } from "react";
+import { addConfigTerm } from "./helpers.ts";
 
 function ConfigMenu(props) {
-  console.log(props)
+  console.log(props);
 
-  const menuRef = useRef()
+  const menuRef = useRef();
 
   function addTerm(term) {
-    addConfigTerm(term.key, props.view, props.menu.state)
+    addConfigTerm(term.key, props.view, props.menu.state);
     props.hide();
   }
 
@@ -16,31 +16,36 @@ function ConfigMenu(props) {
   }
 
   useEffect(() => {
-    console.log(menuRef)
+    console.log(menuRef);
     menuRef.current.focus();
-  }, [])
+  }, []);
 
   return (
     <menu
       tabIndex="0"
       ref={menuRef}
-      className="configmenu context-menu"
+      className="configmenu context-menu select"
       style={{
         left: `${props.menu.left}px`,
         top: `${props.menu.top}px`,
-        "zIndex": '3'
+        zIndex: "3",
       }}
       onBlur={handleBlur}
     >
       {props.menu.options.map((term) => {
         return (
-          <li key={term.key} onClick={() => {addTerm(term)}}>
-            { term.display }
+          <li
+            key={term.key}
+            onClick={() => {
+              addTerm(term);
+            }}
+          >
+            {term.display}
           </li>
-        )
+        );
       })}
     </menu>
-  )
+  );
 }
 
 export default ConfigMenu;

@@ -162,7 +162,7 @@ export class DocumentConfig {
       styles: {
         "--heading-font-family": (value: number) => {
           if (value == 0) {
-            return "Inter, sans-serif";
+            return "Rubik, sans-serif";
           } else if (value == 1) {
             return "serif";
           } else {
@@ -184,7 +184,7 @@ export class DocumentConfig {
       styles: {
         "--body-font-family": (value: number) => {
           if (value == 0) {
-            return "Inter, sans-serif";
+            return "Rubik, sans-serif";
           } else if (value == 1) {
             return "serif";
           } else {

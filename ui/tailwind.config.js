@@ -3,6 +3,12 @@ const unit = 2;
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
+    fontSize: {
+      body: "16px",
+    },
+    fontFamily: {
+      app: "Rubik, sans-serif",
+    },
     spacing: {
       before: "1em",
       after: `${unit ** -1}em`,
