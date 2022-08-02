@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from "react";
-import NodeMenu from "./NodeMenu.tsx";
+import NodeMenu from "./NodeMenuNode";
 import { TextSelection } from "prosemirror-state";
 import { toggleMark } from "prosemirror-commands";
-import schema from "../../build/schema.ts";
-import { insertAtNextPossible } from "../shortcuts.ts";
+import schema from "../../build/schema";
+import { insertAtNextPossible } from "../shortcuts";
 
 function SideMenu(props) {
   const menuButton = useRef();

@@ -5,33 +5,34 @@ import { EditorState } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
 // Build
 import * as Y from "yjs";
-import schema from "./build/schema.ts";
-import { baseKeymap, buildKeymap } from "./build/keymap.ts";
-import dispatchTransaction from "./build/dispatchTransaction.ts";
-import { config } from "./plugins/config/plugin.ts";
+import schema from "./build/schema";
+import { baseKeymap, buildKeymap } from "./build/keymap";
+import { config } from "./plugins/config/plugin";
 
 //Plugins
 import { collab } from "prosemirror-collab";
 import { history } from "prosemirror-history";
-import placeholders from "./plugins/placeholders.ts";
-import shortcuts from "./plugins/shortcuts.ts";
-import { comments } from "./plugins/comments.ts";
-import { sync } from "./plugins/crdt/sync.ts";
-import { localundo } from "./plugins/crdt/undo.ts";
+import placeholders from "./plugins/placeholders";
+import shortcuts from "./plugins/shortcuts";
+import { comments } from "./plugins/comments";
+import { sync } from "./plugins/crdt/sync";
+import { localundo } from "./plugins/crdt/undo";
 
 // Menus
-import sidemenu from "./plugins/menus/sidemenu.ts";
-import SideMenu from "./plugins/menus/SideMenu.tsx";
-import highlightmenu from "./plugins/menus/highlightmenu.ts";
-import HighlightMenu from "./plugins/menus/HighlightMenu.tsx";
-import slashmenu from "./plugins/menus/slashmenu.ts";
-import NodeMenu from "./plugins/menus/NodeMenu.tsx";
-import ConfigMenu from "./plugins/config/ConfigMenu.tsx";
-import srcmenu from "./plugins/menus/srcmenu.ts";
-import SrcMenu from "./plugins/menus/SrcMenu.tsx";
+import sidemenu from "./plugins/menus/sidemenu";
+import SideMenu from "./plugins/menus/SideMenuNode";
+import highlightmenu from "./plugins/menus/highlightmenu";
+import HighlightMenu from "./plugins/menus/HighlightMenuNode";
+import slashmenu from "./plugins/menus/slashmenu";
+import NodeMenu from "./plugins/menus/NodeMenuNode";
+import ConfigMenu from "./plugins/config/ConfigMenu";
+import srcmenu from "./plugins/menus/srcmenu";
+import SrcMenu from "./plugins/menus/SrcMenuNode";
 
 function Document() {
   const [view, setView] = useState(null);
+  const [doc, setDoc] = useState(null);
+
   const [showConfig, setConfig] = useState(false);
 
   const [sideMenu, setSideMenu] = useState(null);
@@ -41,15 +42,27 @@ function Document() {
   const [nodeMenuSearch, setNodeMenuSearch] = useState("");
   const [configMenu, setConfigMenu] = useState(null);
 
-  function hideSideMenu(event) {
-    setSideMenu(null);
+  function pull(update) {
+    // to be called from a wrapper w/ an encoded update from urbit
+    Y.applyUpdate(doc, update);
+  }
+
+  function stage() {
+    const state = Y.encodeStateAsUpdateV2(doc);
+    const version = Y.encodeStateVector(doc);
+    // send them to urbit
   }
 
   useEffect(() => {
-    const doc = new Y.Doc();
+    setDoc(new Y.Doc());
     doc.clientID = 0; // the ship
     doc.gc = false;
     const type = doc.getXmlFragment("prosemirror");
+
+    /**
+     * Get encoded state
+     * Y.applyUpdate(doc, state)
+     **/
 
     const state = EditorState.create({
       schema: schema,
@@ -71,7 +84,6 @@ function Document() {
     setView(
       new EditorView(document.querySelector("#document"), {
         state: state,
-        dispatchTransaction: dispatchTransaction,
       })
     );
   }, []);
@@ -81,7 +93,11 @@ function Document() {
       {/* Document --------------------------------------------------------- */}
       <main id="document">
         {sideMenu ? (
-          <SideMenu menu={sideMenu} hide={hideSideMenu} view={view} />
+          <SideMenu
+            menu={sideMenu}
+            hide={() => setSideMenu(null)}
+            view={view}
+          />
         ) : (
           ""
         )}

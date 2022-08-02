@@ -24,21 +24,26 @@ export const redo = (state: EditorState) => {
   return false;
 };
 
-export const localundo = ({
-  protectedNodes = new Set(["paragraph"]),
-  trackedOrigins = [],
-  undoManager = null,
-}) => {
+export const localundo = (
+  config = {
+    protectedNodes: new Set(["paragraph"]),
+    trackedOrigins: [],
+    undoManager: null,
+  }
+) => {
   return new Plugin({
     key: LocalUndoPluginKey,
     state: {
       init: (_, state) => {
         const syncState = SyncPluginKey.getState(state);
         const _undoManager =
-          undoManager ||
+          config.undoManager ||
           new UndoManager(syncState.type, {
-            trackedOrigins: new Set([SyncPluginKey].concat(trackedOrigins)),
-            deleteFilter: (item) => defaultDeleteFilter(item, protectedNodes),
+            trackedOrigins: new Set(
+              [SyncPluginKey].concat(config.trackedOrigins)
+            ),
+            deleteFilter: (item) =>
+              defaultDeleteFilter(item, config.protectedNodes),
             captureTransaction: (tr) => tr.meta.get("addToHistory") !== false,
           });
         console.log(_undoManager);

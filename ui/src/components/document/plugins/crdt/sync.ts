@@ -27,11 +27,11 @@ export interface UserColor {
 
 export const sync = (
   fragment: Y.XmlFragment,
-  {
-    colors = [{ light: "#26262620", dark: "#262626" }],
-    colorMapping = new Map(),
-    permanentUserData = null,
-    onFirstRender = () => {
+  config = {
+    colors: [{ light: "#26262620", dark: "#262626" }],
+    colorMapping: new Map(),
+    permanentUserData: null,
+    onFirstRender: () => {
       //
     },
   }
@@ -50,9 +50,9 @@ export const sync = (
           prevSnapshot: null,
           isChangeOrigin: false,
           addToHistory: true,
-          colors,
-          colorMapping,
-          permanentUserData,
+          colors: config.colors,
+          colorMapping: config.colorMapping,
+          permanentUserData: config.permanentUserData,
         } as SyncState;
       },
       apply: (tr, state) => {
