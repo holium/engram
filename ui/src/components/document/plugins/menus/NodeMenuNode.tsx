@@ -23,7 +23,7 @@ function NodeMenu(props) {
 
   return (
     <menu
-      className="slashmenu context-menu"
+      className="slashmenu context-menu select"
       style={{
         left: `${props.menu.left}px`,
         top: `${props.menu.top}px`,

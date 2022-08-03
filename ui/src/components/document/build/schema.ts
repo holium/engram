@@ -5,7 +5,7 @@ import {
   MarkSpec,
   DOMOutputSpec,
 } from "prosemirror-model";
-import { ConfigSpec, ConfigTermSpec } from "../plugins/config/plugin.ts";
+import { ConfigSpec, ConfigTermSpec } from "../plugins/config/plugin";
 
 const schema = new Schema({
   nodes: {
@@ -24,8 +24,8 @@ const schema = new Schema({
       selectable: false,
     } as NodeSpec,
 
-    config: ConfigSpec as NodeSpec,
-    configfield: ConfigTermSpec as NodeSpec,
+    config: (ConfigSpec as any) as NodeSpec,
+    configfield: (ConfigTermSpec as any) as NodeSpec,
 
     // Title
     title: {
@@ -226,10 +226,10 @@ const schema = new Schema({
     // Image
     image: {
       group: "block",
-      attrs: { src: { default: "" } },
+      attrs: { src: { default: "" }, height: { default: "" } },
       parseDOM: [{ tag: "img" }],
       toDOM(node) {
-        return ["img", { src: node.attrs.src }];
+        return ["img", { src: node.attrs.src, height: node.attrs.height }];
       },
     },
 
@@ -357,7 +357,7 @@ const schema = new Schema({
       toDOM(node) {
         return ["abbr", { title: node.attrs.concept }];
       },
-    } as NodeSpec,
+    } as MarkSpec,
 
     // Azimuth
     azimuth: {

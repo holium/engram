@@ -6,8 +6,7 @@ h1,
 h2,
 h3,
 ul,
-ol,
-img {
+ol {
   margin-top: var(--margin-before);
   margin-bottom: var(--margin-after);
 }
@@ -90,6 +89,10 @@ li[data-type="checklist"] label {
 }
 
 /* Figures */
+img {
+  resize: horizontal;
+}
+
 figcaption {
   font-size: var(--footer);
   text-align: center;
