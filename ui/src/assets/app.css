@@ -1,12 +1,11 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800;900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap");
 @import '~react-complex-tree/lib/style.css';
 #app {
-  display: flex;
+  @apply flex text-body font-app;
   width: 100vw;
   height: 100vh;
-  flex-flow: row;
   background-color: var(--off-color);
   @apply dark:bg-slate-700 duration-1000;
   
@@ -28,10 +27,9 @@ nav {
 }
 
 .context-menu {
-  @apply rounded-2;
+  @apply rounded-2 shadow-menu;
   overflow: hidden;
   z-index: 2;
-  box-shadow: 0 5px 17px #26262620;
   background-color: var(--paper-color);
 }
 
@@ -45,7 +43,18 @@ nav {
   text-overflow: ellipsis;
 }
 
-.context-menu li:hover {
+.context-menu .icon {
+  @apply flex items-center justify-center rounded-2;
+  width: var(--leading-body);
+  height: var(--leading-body);
+}
+
+.context-menu.select .icon:hover {
+  background-color: var(--type-glass-color);
+  cursor: pointer;
+}
+
+.context-menu.select li:hover {
   background-color: var(--type-glass-color);
   cursor: pointer;
 }

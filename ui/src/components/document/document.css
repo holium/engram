@@ -43,7 +43,7 @@ h3 {
 }
 
 blockquote {
-  @apply px-5;
+  @apply pl-5;
   border-left: 1px solid var(--type-color);
   margin-left: 0;
   margin-right: 0;
@@ -140,6 +140,56 @@ header h1 {
 
 header p {
   opacity: 0.6;
+}
+
+address {
+  @apply px-2 rounded-2;
+  font-style: normal;
+  font-weight: 500;
+  font-size: var(--footer);
+  color: var(--paper-color);
+  background-color: var(--type-color);
+  font-family: "IBM Plex Mono", monospace;
+}
+
+/* Comments */
+mark {
+  background-color: var(--type-glass-color);
+  text-decoration: underline;
+}
+
+aside {
+  @apply inline-flex rounded-2 shadow-menu relative flex-col items-stretch mb-3;
+  float: right;
+  left: calc(280px + 6ch);
+  background: var(--paper-color);
+  width: 280px;
+}
+
+aside li {
+  @apply px-3 py-2 gap-2 flex;
+  list-style-type: none;
+  margin: 0;
+}
+
+aside.context-menu li:hover {
+  background-color: var(--paper-color);
+  cursor: default;
+}
+
+aside blockquote {
+  @apply pl-3;
+}
+
+aside time {
+  opacity: 0.6;
+}
+
+aside li textarea {
+  @apply px-3 py-2 flex-grow rounded-2;
+  outline: none;
+  background-color: var(--type-glass-color);
+  min-width: 0;
 }
 
 /* Menus */
