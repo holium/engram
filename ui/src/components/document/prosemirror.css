@@ -6,6 +6,7 @@
 
 main {
   background-color: var(--off-color);
+  @apply dark:bg-slate-700 duration-1000;
 }
 
 p.Prosemirror-placeholder:before {
