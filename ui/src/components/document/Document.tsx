@@ -17,6 +17,7 @@ import shortcuts from "./plugins/shortcuts";
 import { comments } from "./plugins/comments";
 import { sync } from "./plugins/crdt/sync";
 import { localundo } from "./plugins/crdt/undo";
+import { handleImage } from "./plugins/handleImage";
 
 // Menus
 import sidemenu from "./plugins/menus/sidemenu";
@@ -31,7 +32,7 @@ import SrcMenu from "./plugins/menus/SrcMenuNode";
 
 function Document() {
   const [view, setView] = useState(null);
-  const [doc, setDoc] = useState(null);
+  const [docState, setDocState] = useState(null);
 
   const [showConfig, setConfig] = useState(false);
 
@@ -44,7 +45,7 @@ function Document() {
 
   function pull(update) {
     // to be called from a wrapper w/ an encoded update from urbit
-    Y.applyUpdate(doc, update);
+    Y.applyUpdate(docState, update);
   }
 
   function stage() {
@@ -54,7 +55,7 @@ function Document() {
   }
 
   useEffect(() => {
-    setDoc(new Y.Doc());
+    const doc = new Y.Doc();
     doc.clientID = 0; // the ship
     doc.gc = false;
     const type = doc.getXmlFragment("prosemirror");
@@ -75,12 +76,14 @@ function Document() {
         sidemenu(setSideMenu),
         highlightmenu(setHighlightMenu),
         slashmenu(setNodeMenu, setNodeMenuSearch),
-        srcmenu(setSrcMenu),
+        //srcmenu(setSrcMenu),
         sync(type),
         localundo(),
         comments,
+        handleImage,
       ],
     });
+    setDocState(doc);
     setView(
       new EditorView(document.querySelector("#document"), {
         state: state,

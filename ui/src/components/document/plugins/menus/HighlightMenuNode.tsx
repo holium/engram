@@ -127,7 +127,7 @@ function HighlightMenu(props) {
 
   return (
     <menu
-      className="highlightmenu context-menu"
+      className="highlightmenu context-menu select"
       style={{
         left: `${props.menu.left}px`,
         top: `calc(${props.menu.top}px - ${
