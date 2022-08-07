@@ -19,10 +19,14 @@ export interface FolderMeta {
 
 export type Folder = Array<DocumentMeta | FolderMeta>;
 
-function checkUrbitWindow(reject) {
-  if (!(window as any).urbit) {
+export function checkUrbitWindow(reject?) {
+  if (
+    typeof (window as any).ship != "undefined" &&
+    typeof (window as any).urbit != "undefined"
+  ) {
     throw "couldn't find urbit on the window";
-    reject("couldn't find urbit on the window");
+    if (typeof reject != "undefined")
+      reject("couldn't find urbit on the window");
   }
 }
 

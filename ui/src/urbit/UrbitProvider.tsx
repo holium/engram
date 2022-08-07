@@ -1,5 +1,11 @@
 import { createContext, useState } from "react";
 import { Urbit } from "@urbit/http-api";
+import {
+  checkUrbitWindow,
+  DocumentMeta,
+  createDocument,
+  subscribeUpdateStream,
+} from "./index";
 
 export enum ConnectionStatus {
   Closed,
@@ -9,9 +15,17 @@ export enum ConnectionStatus {
   Errored,
 }
 
+export enum NotifStatus {
+  None,
+  Stage,
+  Update,
+  Both,
+}
+
 const UrbitContext = createContext({
   urbit: null,
-  status: ConnectionStatus.Closed,
+  connection: ConnectionStatus.Closed,
+  notifs: false,
 });
 
 function UrbitProvider(props) {
@@ -20,26 +34,61 @@ function UrbitProvider(props) {
   win.urbit.ship = win.ship;
 
   // connection status
-  const [status, setStatus] = useState(ConnectionStatus.Closed);
+  const [connection, setConnectionStatus] = useState(ConnectionStatus.Closed);
   win.urbit.onOpen = () => {
     console.log("urbit connection opened");
-    setStatus(ConnectionStatus.Connected);
+    setConnectionStatus(ConnectionStatus.Connected);
   };
   win.urbit.onRetry = () => {
     console.log("urbit connection retrying");
-    setStatus(ConnectionStatus.Retrying);
+    setConnectionStatus(ConnectionStatus.Retrying);
   };
   win.urbit.onError = () => {
     console.log("urbit connection errored");
-    setStatus(ConnectionStatus.Errored);
+    setConnectionStatus(ConnectionStatus.Errored);
   };
+
+  // notification status
+  const [notifs, setNotifStatus] = useState(NotifStatus.None);
+  subscribeUpdateStream(
+    (event) => {
+      console.log("received update: ", event);
+    },
+    (event) => {
+      console.log("quit update subscription", event);
+    },
+    (e) => {
+      console.log("update subscription errored: ", e);
+    }
+  );
+
+  /* TESTING ---------------------------------------------------------------- */
+  function createDocument() {
+    checkUrbitWindow();
+    const meta: DocumentMeta = {
+      owner: (window as any).ship,
+      id: Date.now().toString(12),
+      name: "new document",
+    };
+  }
+
+  function listDocuments() {
+    checkUrbitWindow();
+    const res = listDocuments();
+    console.log("Listed documents:", res);
+  }
 
   return (
     <UrbitContext.Provider
       value={{
-        status: status,
+        status: connection,
+        notifs: notifs,
       }}
     >
+      <div>
+        <button onClick={createDocument}>create document</button>
+        <button onCLick={listDocuments}>list documents</button>
+      </div>
       {props.children}
     </UrbitContext.Provider>
   );
