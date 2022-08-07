@@ -4,7 +4,7 @@
 +$  versioned-state
   $%  state-0
   ==
-+$  state-0  [%0 hist=docs:engram]
++$  state-0  [%0 d=docs:engram f=fldrs:engram u=updts:engram s=dstgs:engram]
 +$  card  card:agent:gall
 --
 %-  agent:dbug
@@ -17,7 +17,7 @@
 ::
 ++  on-init
   ^-  (quip card _this)
-  `this(hist ~)
+  `this
 ::
 ++  on-save
   ^-  vase
@@ -39,37 +39,68 @@
     =/  action  !<(?(action:engram) vase)
     ?-    -.action
     ::
-    :: initialize a new document with a nil document history
+    :: initialize a new document with a blank document as passed by the frontend
     ::
       %make
-    ?<  (~(has by hist) +.action)
-    `this(hist (~(put by hist) +.action ~))
+    ?<  (~(has by d) dmeta.action)
+    `this(d (~(put by d) dmeta.action doc.action))
     ::
-    :: modify a document by prepending a new change in its history
-    :: note: try to serve the data in reverse order to have newer data at the end of the array
+    :: modify a document by changing the stored document state
     ::
-      %modify
-    ?>  (~(has by hist) +<.action)
-    `this(hist (~(add ja hist) +<.action +>.action))
+      %update
+    ?>  (~(has by d) dmeta.action)
+    `this(d (~(put by d) dmeta.action doc.action))
     ::
     :: remove a document from your document history
     ::
       %delete
-    ?>  (~(has by hist) +.action)
-    `this(hist (~(del by hist) +.action))
+    ?>  (~(has by d) dmeta.action)
+    `this(d (~(del by d) dmeta.action))
+    ::
+    :: modify document settings
+    ::
+      %settings
+    `this(s (~(put by s) dmeta.action stg.action))
+    ::
+    :: create a new folder
+    ::
+      %mfolder
+    ?<  (~(has by f) fmeta.action)
+    `this(f (~(put by f) fmeta.action ~))
+    ::
+    :: delete an existing folder
+    ::
+      %dfolder
+    ?>  (~(has by f) fmeta.action)
+    `this(f (~(del by f) fmeta.action))
+    ::
+    :: add a document or folder to another folder
+    ::
+      %foldoc
+    ?>  (~(has by f) fmeta.action)
+    `this(f (~(put ju f) fmeta.action fldr.action))
+    ::
+    :: remove a document or folder from a folder
+    ::
+      %remfoldoc
+    ?>  (~(has by f) fmeta.action)
+    =/  a  (~(get ju f) fmeta.action)
+    ?:  =(~(wyt in a) 1)
+        `this(f (~(put by f) fmeta.action ~))
+    `this(f (~(del ju f) fmeta.action fldr.action))
+    ::
+    :: remove the merged update from the update list (as updates aren't implemented this will just log)
+    ::
+     %merge
+    ~|  "merge"
+    !!
     ==
   ==
 ::
 ++  on-watch  on-watch:def
-::
 ++  on-leave  on-leave:def
-::
 ++  on-peek   on-peek:def
-::
 ++  on-agent  on-agent:def
-::
 ++  on-arvo   on-arvo:def
-::
 ++  on-fail   on-fail:def
-::
 --
