@@ -145,16 +145,6 @@ header p {
   opacity: 0.6;
 }
 
-address {
-  @apply px-2 rounded-2;
-  font-style: normal;
-  font-weight: 500;
-  font-size: var(--footer);
-  color: var(--paper-color);
-  background-color: var(--type-color);
-  font-family: "IBM Plex Mono", monospace;
-}
-
 /* Comments */
 mark {
   background-color: var(--type-glass-color);
