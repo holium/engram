@@ -22,20 +22,25 @@ export default (renderMenu: (loc: SelectionLocation | null) => void) => {
             return;
           }
 
+          if ((state.selection as any).node) {
+            renderMenu(null);
+            return;
+          }
+
           const { from, to } = state.selection;
           const start = view.coordsAtPos(from);
           const end = view.coordsAtPos(to);
-          const parentLeft = document
-            .querySelector("#document")
-            .getBoundingClientRect().left;
+          const parent = document
+            .querySelector("main")
+            .getBoundingClientRect();
           const left =
-            Math.max((start.left + end.left) / 2, start.left + 3) - parentLeft;
+            Math.min(start.left, end.left) - parent.left;
           renderMenu({
             node: view.state.doc.nodeAt(from),
             to: to,
             from: from,
             left: left,
-            top: start.top,
+            top: start.top - parent.top,
           });
         },
       };

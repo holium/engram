@@ -1,7 +1,7 @@
 import { keymap } from "prosemirror-keymap";
 import { Command } from "prosemirror-state";
 import { Schema } from "prosemirror-model";
-import schema from "./schema.ts";
+import schema from "./schema";
 import {
   chainCommands,
   newlineInCode,
@@ -89,6 +89,10 @@ export function buildKeymap(
   if ((type = schema.marks["em"])) {
     bind("Mod-i", toggleMark(type));
     bind("Mod-I", toggleMark(type));
+  }
+  if ((type = schema.marks["underline"])) {
+    bind("Mod-u", toggleMark(type));
+    bind("Mod-u", toggleMark(type));
   }
   if ((type = schema.marks.code)) bind("Mod-`", toggleMark(type));
 
