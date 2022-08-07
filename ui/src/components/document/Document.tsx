@@ -48,7 +48,7 @@ function Document() {
     Y.applyUpdate(docState, update);
   }
 
-  function stage() {
+  function stage(doc: any) {
     const state = Y.encodeStateAsUpdateV2(doc);
     const version = Y.encodeStateVector(doc);
     // send them to urbit

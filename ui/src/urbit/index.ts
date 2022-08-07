@@ -21,8 +21,8 @@ export type Folder = Array<DocumentMeta | FolderMeta>;
 
 export function checkUrbitWindow(reject?) {
   if (
-    typeof (window as any).ship != "undefined" &&
-    typeof (window as any).urbit != "undefined"
+    typeof (window as any).ship == "undefined" ||
+    typeof (window as any).urbit == "undefined"
   ) {
     throw "couldn't find urbit on the window";
     if (typeof reject != "undefined")
@@ -84,7 +84,7 @@ export function getAvailibleUpdates(meta: any): Promise<Array<DocumentUpdate>> {
 
 export function createDocument(
   meta: DocumentMeta,
-  doc: Array<number>
+  doc: Uint8Array
 ): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     checkUrbitWindow(reject);

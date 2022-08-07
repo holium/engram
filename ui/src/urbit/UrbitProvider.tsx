@@ -1,10 +1,12 @@
 import { createContext, useState } from "react";
 import { Urbit } from "@urbit/http-api";
+import * as Y from "yjs";
 import {
   checkUrbitWindow,
   DocumentMeta,
   createDocument,
   subscribeUpdateStream,
+  listDocuments,
 } from "./index";
 
 export enum ConnectionStatus {
@@ -63,19 +65,29 @@ function UrbitProvider(props) {
   );
 
   /* TESTING ---------------------------------------------------------------- */
-  function createDocument() {
+  function createDoc() {
     checkUrbitWindow();
     const meta: DocumentMeta = {
       owner: (window as any).ship,
       id: Date.now().toString(12),
       name: "new document",
     };
+
+    const doc = new Y.Doc();
+    doc.clientID = (window as any).ship; // the ship
+    doc.gc = false;
+    const type = doc.getXmlFragment("prosemirror");
+    const encoding = Y.encodeStateAsUpdateV2(doc);
+    createDocument(meta, encoding).then((res) => {
+      console.log("create document result", res);
+    });
   }
 
-  function listDocuments() {
+  function listDocs() {
     checkUrbitWindow();
-    const res = listDocuments();
-    console.log("Listed documents:", res);
+    listDocuments().then((res) => {
+      console.log("list documents result: ", res);
+    });
   }
 
   return (
@@ -86,8 +98,12 @@ function UrbitProvider(props) {
       }}
     >
       <div>
-        <button onClick={createDocument}>create document</button>
-        <button onCLick={listDocuments}>list documents</button>
+        <button className="mx-4 my-3 px-3 py-2 border" onClick={createDoc}>
+          create document
+        </button>
+        <button className="mx-4 my-3 px-3 py-2 border" onClick={listDocs}>
+          list documents
+        </button>
       </div>
       {props.children}
     </UrbitContext.Provider>
