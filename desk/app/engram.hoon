@@ -99,7 +99,25 @@
 ::
 ++  on-watch  on-watch:def
 ++  on-leave  on-leave:def
-++  on-peek   on-peek:def
+++  on-peek
+  |=  =path
+  ^-  (unit (unit cage))
+  ?+    path  (on-peek:def path)
+      [%x %docinfo ~]
+    =/  k=(set [owner=@p id=@ name=@t])  ~(key by d)
+    ``noun+!>(k)
+  ::
+      [%x %gdoc @ @ @ ~]
+    =/  owner=@p  (slav %p i.t.t.path)
+    =/  id=@  (slav %ud i.t.t.t.path)
+    =/  name=@t  (crip (trip i.t.t.t.t.path))
+    =/  meta  [owner=owner id=id name=name]
+    =/  doc=[version=(list @ud) cont=(list @ud)]  (need (~(get by d) meta))
+    :: ~&  (need doc)
+    :: =/  who=@p  (slav %p i.t.t.path)
+    ``noun+!>(doc)
+  ==
+::
 ++  on-agent  on-agent:def
 ++  on-arvo   on-arvo:def
 ++  on-fail   on-fail:def
