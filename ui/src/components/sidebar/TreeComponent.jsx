@@ -1,6 +1,7 @@
-import { BsFolder } from 'react-icons/bs'
+
 import { useState } from "react";
-import { BsFileText } from 'react-icons/bs'
+import { light } from '@fortawesome/fontawesome-svg-core/import.macro'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 function TreeComponent({ data }) {
 
     const [expand, setExpand] = useState(false);
@@ -10,7 +11,7 @@ function TreeComponent({ data }) {
          <div className='flex'
          onClick={()=>setExpand(!expand)}>
             <div className='pr-2'>
-            {data.isFolder ? <BsFolder/> : <BsFileText/>}
+            {data.isFolder ? <FontAwesomeIcon icon={light('folder')} /> : <FontAwesomeIcon icon = {light('file')} />}
             </div>
             {data.label}
          </div>

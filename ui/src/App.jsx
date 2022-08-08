@@ -1,8 +1,8 @@
 import { createContext, useState, useEffect } from "react";
 import Document from "./components/document/Document.tsx";
-import Navbar from "./navbar/Navbar";
-import Sidebar from "./sidebar/Sidebar";
-import SlideProvider from "./navbar/SlideContext";
+import Navbar from "./components/navbar/Navbar";
+import Sidebar from "./components/sidebar/Sidebar";
+import SlideProvider from "./components/navbar/SlideContext";
 import UrbitProvider from "./urbit/UrbitProvider";
 
 function App() {
