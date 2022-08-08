@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.topbar {
+    display: flex;
+    flex-direction: row-reverse;
+  }
+
+  .topbar .icon {
+    margin: 8px;
+  }
