@@ -34,7 +34,7 @@ const UrbitContext = createContext({
   notifs: false,
 });
 
-function UrbitProvider(props) {
+function UrbitProvider(props: any) {
   const win: Window & { urbit: Urbit; ship: any } = window as any;
   win.urbit = new Urbit("");
   win.urbit.ship = win.ship;
@@ -144,6 +144,8 @@ function UrbitProvider(props) {
       }}
     >
       <div>
+        <div>connection: {ConnectionStatus[status]}</div>
+        <div>updates: {NotifStatus[notifs]}</div>
         <button className="mx-4 my-3 px-3 py-2 border" onClick={createDoc}>
           create document
         </button>
