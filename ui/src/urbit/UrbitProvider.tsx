@@ -7,6 +7,10 @@ import {
   createDocument,
   subscribeUpdateStream,
   listDocuments,
+  getDocument,
+  getDocumentSettings,
+  getAvailibleUpdates,
+  deleteDocument,
 } from "./index";
 
 export enum ConnectionStatus {
@@ -30,7 +34,7 @@ const UrbitContext = createContext({
   notifs: false,
 });
 
-function UrbitProvider(props) {
+function UrbitProvider(props: any) {
   const win: Window & { urbit: Urbit; ship: any } = window as any;
   win.urbit = new Urbit("");
   win.urbit.ship = win.ship;
@@ -83,10 +87,52 @@ function UrbitProvider(props) {
     });
   }
 
+  const [docs, setDocs] = useState([]);
   function listDocs() {
     checkUrbitWindow();
     listDocuments().then((res) => {
       console.log("list documents result: ", res);
+      setDocs([]);
+    });
+  }
+
+  function getDoc(doc: any) {
+    getDocument(doc).then((res) => {
+      console.log("get doc result: ", res);
+    });
+  }
+  function getDocSettings(doc: any) {
+    getDocumentSettings(doc).then((res) => {
+      console.log("get doc settings: ", res);
+    });
+  }
+  function getDocUpdates(doc: any) {
+    getAvailibleUpdates(doc).then((res) => {
+      console.log("get doc updates: ", res);
+    });
+  }
+  function deleteDoc(doc: any) {
+    deleteDocument(doc).then((res) => {
+      console.log("deleted document:", res);
+      console.log("so this should fail:");
+      getDocument(doc).then((res) => {
+        console.log("this should have failed:", res);
+      });
+    });
+  }
+  function subscribeToUpdates(doc: any) {
+    subscribeUpdateStream(
+      (event) => {
+        console.log("recieived update: ", event, " for document ", doc);
+      },
+      (event) => {
+        console.log("quitting update subscription to: ", doc);
+      },
+      (e) => {
+        console.warn("error with update subscription to: ", doc);
+      }
+    ).then((res) => {
+      console.log("subscrition result: ", res);
     });
   }
 
@@ -98,12 +144,30 @@ function UrbitProvider(props) {
       }}
     >
       <div>
+        <div>connection: {ConnectionStatus[status]}</div>
+        <div>updates: {NotifStatus[notifs]}</div>
         <button className="mx-4 my-3 px-3 py-2 border" onClick={createDoc}>
           create document
         </button>
         <button className="mx-4 my-3 px-3 py-2 border" onClick={listDocs}>
           list documents
         </button>
+        <ul>
+          {docs.map((doc) => {
+            return (
+              <li>
+                {doc}
+                <button onClick={getDoc(doc)}>get doc</button>
+                <button onClick={getDocSettings(doc)}>get doc settings</button>
+                <button onClock={getDocUpdates(doc)}>get doc updates</button>
+                <button onClick={subscribeToUpdates(doc)}>
+                  subscribe to updates
+                </button>
+                <button onClick={deleteDoc(doc)}>delete document</button>
+              </li>
+            );
+          })}
+        </ul>
       </div>
       {props.children}
     </UrbitContext.Provider>
