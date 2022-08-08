@@ -139,12 +139,12 @@ function UrbitProvider(props: any) {
   return (
     <UrbitContext.Provider
       value={{
-        status: connection,
+        connection: connection,
         notifs: notifs,
       }}
     >
       <div>
-        <div>connection: {ConnectionStatus[status]}</div>
+        <div>connection: {ConnectionStatus[connection]}</div>
         <div>updates: {NotifStatus[notifs]}</div>
         <button className="mx-4 my-3 px-3 py-2 border" onClick={createDoc}>
           create document
