@@ -113,9 +113,19 @@
     =/  name=@t  (crip (trip i.t.t.t.t.path))
     =/  meta  [owner=owner id=id name=name]
     =/  doc=[version=(list @ud) cont=(list @ud)]  (need (~(get by d) meta))
-    :: ~&  (need doc)
-    :: =/  who=@p  (slav %p i.t.t.path)
     ``noun+!>(doc)
+  ::
+      [%x %gsetting @ @ @ ~]
+    =/  owner=@p  (slav %p i.t.t.path)
+    =/  id=@  (slav %ud i.t.t.t.path)
+    =/  name=@t  (crip (trip i.t.t.t.t.path))
+    =/  meta  [owner=owner id=id name=name]
+    =/  stg=[perms=(list @p)]  (need (~(get by s) meta))
+    ``noun+!>(stg)
+  ::
+      [%x %gfolders @ @ @ ~]  ``noun+!>(f)
+      :: (jug [id=@ name=@t] $%([%doc [owner=@p id=@ name=@t]] [%folder [id=@ name=@t]]))
+    :: =/  t=(jug [id=@ name=@t] $%([%doc [owner=@p id=@ name=@t]] [%folder [id=@ name=@t]]))  f
   ==
 ::
 ++  on-agent  on-agent:def

@@ -34,7 +34,7 @@
 :: docs: a key-list storage for the viewable documents 
 :: dfldrs: all folders for a specific document
 ::
-+$  updts  (jar dmeta updt)
++$  updts  (jug dmeta updt)
 +$  docs  (map dmeta doc)
 +$  fldrs  (jug fmeta fldr)
 +$  dstgs  (map dmeta stg)
