@@ -11,14 +11,12 @@ function App() {
     <div id="app">
       <nav></nav>
       <div id="body">
-        <ThemeProvider>
         <SlideProvider>
         <Navbar/>
-        <div className= " flex" id="toolbar">
+        <div id="toolbar">
           <Sidebar/>
         </div>
         </SlideProvider>
-        </ThemeProvider>
         <Document />
       </div>
     </div>
