@@ -1,10 +1,10 @@
-/-  entype
+/-  engram
 /+  default-agent, dbug
 |%
 +$  versioned-state
   $%  state-0
   ==
-+$  state-0  [%0 d=docs:entype f=fldrs:entype u=updts:entype s=dstgs:entype]
++$  state-0  [%0 d=docs:engram f=fldrs:engram u=updts:engram s=dstgs:engram]
 +$  card  card:agent:gall
 --
 %-  agent:dbug
@@ -36,7 +36,7 @@
   ^-  (quip card _this)
   ?+    mark  (on-poke:def mark vase)
       %noun
-    =/  action  !<(?(action:entype) vase)
+    =/  action  !<(?(action:engram) vase)
     ?-    -.action
     ::
     :: initialize a new document with a blank document as passed by the frontend
