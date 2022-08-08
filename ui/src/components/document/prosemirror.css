@@ -32,6 +32,7 @@ header p.Prosemirror-placeholder:before {
 
 .ProseMirror-selectednode {
   outline: 2px solid var(--status-primary-color);
+  outline-offset: -2px;
   background-color: var(--status-primary-glass-color);
 }
 
