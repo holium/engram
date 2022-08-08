@@ -46,7 +46,6 @@ export const localundo = (
               defaultDeleteFilter(item, config.protectedNodes),
             captureTransaction: (tr) => tr.meta.get("addToHistory") !== false,
           });
-        console.log(_undoManager);
         return {
           undoManager: _undoManager,
           prevSel: null,
