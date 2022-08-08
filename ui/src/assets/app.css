@@ -8,7 +8,6 @@
   height: 100vh;
   background-color: var(--off-color);
   @apply dark:bg-slate-700 duration-1000;
-  
 }
 
 #body {
@@ -23,8 +22,20 @@ nav {
 
 #toolbar {
   @apply p-3;
-
 }
+
+/* Components */
+address {
+  @apply px-2 rounded-1;
+  font-style: normal;
+  font-weight: 500;
+  font-size: var(--footer);
+  background-color: var(--type-glass-color);
+  font-family: "IBM Plex Mono", monospace;
+  box-shadow: inset 0px 0px 4px 2px var(--type-glass-color);
+}
+
+/* Menu */
 
 .context-menu {
   @apply rounded-2 shadow-menu;
