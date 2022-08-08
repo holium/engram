@@ -1,10 +1,10 @@
-/-  engram
+/-  entype
 /+  default-agent, dbug
 |%
 +$  versioned-state
   $%  state-0
   ==
-+$  state-0  [%0 d=docs:engram f=fldrs:engram u=updts:engram s=dstgs:engram]
++$  state-0  [%0 d=docs:entype f=fldrs:entype u=updts:entype s=dstgs:entype]
 +$  card  card:agent:gall
 --
 %-  agent:dbug
@@ -36,7 +36,7 @@
   ^-  (quip card _this)
   ?+    mark  (on-poke:def mark vase)
       %noun
-    =/  action  !<(?(action:engram) vase)
+    =/  action  !<(?(action:entype) vase)
     ?-    -.action
     ::
     :: initialize a new document with a blank document as passed by the frontend
@@ -113,9 +113,15 @@
     =/  name=@t  (crip (trip i.t.t.t.t.path))
     =/  meta  [owner=owner id=id name=name]
     =/  doc=[version=(list @ud) cont=(list @ud)]  (need (~(get by d) meta))
-    :: ~&  (need doc)
-    :: =/  who=@p  (slav %p i.t.t.path)
     ``noun+!>(doc)
+  ::
+      [%x %gsetting @ @ @ ~]
+    =/  owner=@p  (slav %p i.t.t.path)
+    =/  id=@  (slav %ud i.t.t.t.path)
+    =/  name=@t  (crip (trip i.t.t.t.t.path))
+    =/  meta  [owner=owner id=id name=name]
+    =/  stg=[perms=(list @p)]  (need (~(get by s) meta))
+    ``noun+!>(stg)
   ==
 ::
 ++  on-agent  on-agent:def
