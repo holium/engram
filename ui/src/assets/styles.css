@@ -2,12 +2,79 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Components --------------------------------------------------------------- */
 
-.topbar {
-    display: flex;
-    flex-direction: row-reverse;
-  }
+/* Atoms */
+.azimuth {
+  @apply font-azimuth px-2 shadow-sunk inline-block hover:underline cursor-pointer rounded-2;
+  font-size: var(--body);
+  background-color: var(--type-glass-color);
+}
 
-  .topbar .icon {
-    margin: 8px;
-  }
+.icon {
+  @apply p-1 rounded-2;
+  width: var(--leading-body);
+  height: var(--leading-body);
+}
+
+.clickable:hover {
+  @apply cursor-pointer;
+  background-color: var(--type-glass-color);
+}
+
+/* Menus */
+.context-menu {
+  @apply rounded-2 shadow-menu;
+  overflow: hidden;
+  z-index: 2;
+  background-color: var(--paper-color);
+}
+
+.context-menu li {
+  @apply px-3 py-2;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.context-menu .icon {
+  @apply flex items-center justify-center rounded-2;
+  width: var(--leading-body);
+  height: var(--leading-body);
+}
+
+.context-menu.select .icon:hover {
+  background-color: var(--type-glass-color);
+  cursor: pointer;
+}
+
+.context-menu.select li:hover {
+  background-color: var(--type-glass-color);
+  cursor: pointer;
+}
+
+.context-menu input {
+  @apply rounded-1 p-3;
+  background-color: #ffffff00;
+  outline: none;
+}
+
+.context-menu input[type="color"] {
+  padding: 0;
+}
+
+.context-menu input:hover {
+  background-color: var(--type-glass-color);
+  outline: none;
+}
+
+/* Panels */
+.panel {
+  @apply absolute p-3;
+  right: 16px;
+  top: 40px;
+  background-color: var(--paper-color);
+}

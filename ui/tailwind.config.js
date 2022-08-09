@@ -8,6 +8,7 @@ module.exports = {
     },
     fontFamily: {
       app: "Rubik, sans-serif",
+      azimuth: "IBM Plex Mono, monospace",
     },
     spacing: {
       before: "1em",
@@ -37,7 +38,7 @@ module.exports = {
     },
     boxShadow: {
       menu: "0 5px 17px #26262620",
-      sunk: "inset 0 0 3px -2px #26262620",
+      sunk: "inset 0 0 4px -2px #262626",
     },
     extend: {},
   },
