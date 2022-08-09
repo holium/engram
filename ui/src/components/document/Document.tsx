@@ -30,7 +30,7 @@ import ConfigMenu from "./plugins/config/ConfigMenu";
 import srcmenu from "./plugins/menus/srcmenu";
 import SrcMenu from "./plugins/menus/SrcMenuNode";
 
-function Document() {
+function Document(props) {
   const [view, setView] = useState(null);
   const [docState, setDocState] = useState(null);
 
@@ -55,13 +55,14 @@ function Document() {
   }
 
   useEffect(() => {
+    console.log("doc changed to: ", props.doc);
     const doc = new Y.Doc();
     doc.clientID = 0; // the ship
     doc.gc = false;
     const type = doc.getXmlFragment("prosemirror");
 
     /**
-     * Get encoded state
+     * Get encoded state from urbit
      * Y.applyUpdate(doc, state)
      **/
 
@@ -89,7 +90,7 @@ function Document() {
         state: state,
       })
     );
-  }, []);
+  }, [props.doc]);
 
   return (
     <div id="document-wrapper">
