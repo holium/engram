@@ -3,7 +3,6 @@ import { Urbit } from "@urbit/http-api";
 import * as Y from "yjs";
 import {
   checkUrbitWindow,
-  DocumentMeta,
   createDocument,
   subscribeUpdateStream,
   listDocuments,
@@ -12,6 +11,7 @@ import {
   getAvailibleUpdates,
   deleteDocument,
 } from "./index";
+import { DocumentMeta, OpenDocumentEvent } from "../components/workspace/types";
 import { regular } from "@fortawesome/fontawesome-svg-core/import.macro";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -139,6 +139,9 @@ function UrbitProvider(props: any) {
       console.log("subscrition result: ", res);
     });
   }
+  function openDoc(doc: any) {
+    document.dispatchEvent(OpenDocumentEvent(doc));
+  }
 
   return (
     <UrbitContext.Provider
@@ -175,6 +178,7 @@ function UrbitProvider(props: any) {
             return (
               <li>
                 {doc}
+                <button onClick={openDoc}>open doc</button>
                 <button onClick={getDoc(doc)}>get doc</button>
                 <button onClick={getDocSettings(doc)}>get doc settings</button>
                 <button onClock={getDocUpdates(doc)}>get doc updates</button>

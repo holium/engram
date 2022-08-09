@@ -10,6 +10,7 @@ function App() {
   useEffect(() => {
     document.addEventListener("open-document", (event) => {
       console.log("open document: ", event);
+      openDoc(event.details);
     });
   }, []);
 

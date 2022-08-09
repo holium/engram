@@ -6,14 +6,20 @@ export function OpenDocumentEvent(meta: DocumentMeta): Event {
 }
 
 /* State -------------------------------------------------------------------- */
+export interface Update {
+  author: string;
+  content: Uint8Array;
+  time: Date;
+}
+
 export interface DocumentMeta {
-  owner: number;
+  owner: string;
   id: string;
   name: string;
 }
 
 export interface DocumentUpdate {
-  author: number;
+  author: string;
   content: Array<number>;
   time: Date;
 }

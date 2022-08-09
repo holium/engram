@@ -13,6 +13,7 @@ const pathParser = new RegExp("(?<owner>[^/]+)/(?<id>[^/]+)/(?<name>[^/]+)");
 
 function Navbar(props: {
   doc: null | string;
+  panel: string;
   openPanel: (panel: any) => void;
 }) {
   const parsed = props.doc == null ? null : props.doc.match(pathParser);
@@ -40,15 +41,29 @@ function Navbar(props: {
       </div>
       <div className="flex-grow mx-2">{name}</div>
       <FontAwesomeIcon
+        style={
+          props.panel == "publish"
+            ? { backgroundColor: "var(--type-glass-color)" }
+            : {}
+        }
         onClick={() => {
-          props.openPanel(PublishPanel);
+          props.panel == "publish"
+            ? props.openPanel(null)
+            : props.openPanel("publish");
         }}
         icon={regular("user-group")}
         className="icon clickable mx-2"
       />
       <FontAwesomeIcon
+        style={
+          props.panel == "update"
+            ? { backgroundColor: "var(--type-glass-color)" }
+            : {}
+        }
         onClick={() => {
-          props.openPanel(UpdatePanel);
+          props.panel == "update"
+            ? props.openPanel(null)
+            : props.openPanel("update");
         }}
         icon={
           stage
@@ -62,8 +77,15 @@ function Navbar(props: {
         className="icon clickable mx-2"
       />
       <FontAwesomeIcon
+        style={
+          props.panel == "version"
+            ? { backgroundColor: "var(--type-glass-color)" }
+            : {}
+        }
         onClick={() => {
-          props.openPanel(VersionPanel);
+          props.panel == "version"
+            ? props.openPanel(null)
+            : props.openPanel("version");
         }}
         icon={regular("code-branch")}
         className="icon clickable mx-2"

@@ -1,15 +1,15 @@
 import { useState } from "react";
 import Document from "../document/Document";
-import Toolbar from "../navbar/Toolbar";
+import Toolbar from "../toolbar/Toolbar";
+import PublishPanel from "../panels/PublishPanel";
+import UpdatePanel from "../panels/UpdatePanel";
+import VersionPanel from "../panels/VersionPanel";
 import { DocumentMeta } from "./types";
 
 function Workspace(props: { doc: null | string }) {
   console.log(props);
 
   const [panel, setPanel] = useState(null);
-  function openPanel(panel: any) {
-    setPanel(panel({ openPanel: openPanel }));
-  }
 
   return props.doc == null ? (
     <div id="workspace">
@@ -19,8 +19,10 @@ function Workspace(props: { doc: null | string }) {
     </div>
   ) : (
     <div id="workspace">
-      <Toolbar doc={props.doc} openPanel={openPanel} />
-      {panel == null ? "" : panel}
+      <Toolbar doc={props.doc} openPanel={setPanel} panel={panel} />
+      {panel == "publish" && <PublishPanel />}
+      {panel == "update" && <UpdatePanel />}
+      {panel == "version" && <VersionPanel />}
       <Document doc={props.doc} />
     </div>
   );
