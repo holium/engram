@@ -2,9 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Components --------------------------------------------------------------- */
+/**
+ * Where styles for reusable design elements live
+ * - Atoms: styles for singular elements that are seen across the app
+ * - Components: groups of styles for specific patterns;
+ *   also implicit patterns for how to implement styles
+**/
 
-/* Atoms */
+/* Atoms -------------------------------------------------------------------- */
 .azimuth {
   @apply font-azimuth px-2 shadow-sunk inline-block hover:underline cursor-pointer rounded-2;
   font-size: var(--body);
@@ -22,7 +27,15 @@
   background-color: var(--type-glass-color);
 }
 
+/* Components --------------------------------------------------------------- */
+
 /* Menus */
+
+/**
+ * Context menus can be any components, though they should typically be menu or aside.
+ * Context menu items are li elements
+**/
+
 .context-menu {
   @apply rounded-2 shadow-menu;
   overflow: hidden;
@@ -38,17 +51,6 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.context-menu .icon {
-  @apply flex items-center justify-center rounded-2;
-  width: var(--leading-body);
-  height: var(--leading-body);
-}
-
-.context-menu.select .icon:hover {
-  background-color: var(--type-glass-color);
-  cursor: pointer;
 }
 
 .context-menu.select li:hover {
@@ -72,9 +74,22 @@
 }
 
 /* Panels */
+
+/**
+ * Panels are used to display more comprehensive information.
+ * Styles here are to restrict them to some visual consistency
+**/
+
 .panel {
-  @apply absolute p-3;
-  right: 16px;
+  @apply absolute p-3 px-4 right-0 flex flex-col overflow-y-auto;
+  height: calc(100vh - 40px);
+  width: 420px;
   top: 40px;
+  list-style-type: none;
+  z-index: 1;
+}
+
+.panel > * {
+  @apply rounded-3 px-4 py-3 shadow-menu;
   background-color: var(--paper-color);
 }
