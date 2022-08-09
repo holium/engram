@@ -7,7 +7,6 @@
   width: 100vw;
   height: 100vh;
   background-color: var(--off-color);
-  @apply dark:bg-slate-700 duration-1000;
 }
 
 #workspace {

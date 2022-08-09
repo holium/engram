@@ -16,17 +16,18 @@ function Navbar(props: {
   panel: string;
   openPanel: (panel: any) => void;
 }) {
-  const parsed = props.doc == null ? null : props.doc.match(pathParser);
-
-  const [owner, setOwner] = useState(parsed == null ? "" : parsed.groups.owner);
-  const [name, setName] = useState(parsed == null ? "" : parsed.groups.name);
+  const [owner, setOwner] = useState("");
+  const [name, setName] = useState("");
 
   // Notifications
   const [stage, setStage] = useState(false);
   const [updates, setUpdates] = useState([]);
 
   useEffect(() => {
+    const parsed = props.doc == null ? null : props.doc.match(pathParser);
     console.log("doc updated:", props.doc);
+    setOwner(parsed.groups.owner);
+    setName(parsed.groups.name);
     getAvailibleUpdates(props.doc);
   }, [props.doc]);
 
