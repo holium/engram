@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Document from "../document/Document";
 import Toolbar from "../toolbar/Toolbar";
 import PublishPanel from "../panels/PublishPanel";
@@ -10,6 +10,10 @@ function Workspace(props: { doc: null | string }) {
   console.log(props);
 
   const [panel, setPanel] = useState(null);
+
+  useEffect(() => {
+    console.log(props.doc);
+  }, [props.doc]);
 
   return props.doc == null ? (
     <div id="workspace">

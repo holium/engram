@@ -41,7 +41,13 @@ function UrbitProvider(props: any) {
 
   const win: Window & { urbit: Urbit; ship: any } = window as any;
   win.urbit = new Urbit("");
-  win.urbit.ship = win.ship;
+  if (win.ship) {
+    win.urbit.ship = win.ship;
+  } else {
+    win.ship = "~dalsyr-diglyn";
+  }
+
+  const [docs, setDocs] = useState([]);
 
   // connection status
   const [connection, setConnectionStatus] = useState(ConnectionStatus.Closed);
@@ -74,7 +80,7 @@ function UrbitProvider(props: any) {
 
   /* TESTING ---------------------------------------------------------------- */
   function createDoc() {
-    checkUrbitWindow();
+    //checkUrbitWindow();
     const meta: DocumentMeta = {
       owner: (window as any).ship,
       id: Date.now().toString(12),
@@ -86,12 +92,26 @@ function UrbitProvider(props: any) {
     doc.gc = false;
     const type = doc.getXmlFragment("prosemirror");
     const encoding = Y.encodeStateAsUpdateV2(doc);
+    /*
     createDocument(meta, encoding).then((res) => {
       console.log("create document result", res);
     });
+    */
+    setDocs([
+      ...docs,
+      {
+        owner: (window as any).ship,
+        id: Date.now(),
+        name: "New Document",
+      },
+    ]);
+    openDocument({
+      owner: (window as any).ship,
+      id: Date.now(),
+      name: "New Document",
+    });
   }
 
-  const [docs, setDocs] = useState([]);
   function listDocs() {
     checkUrbitWindow();
     listDocuments().then((res) => {
@@ -139,7 +159,8 @@ function UrbitProvider(props: any) {
       console.log("subscrition result: ", res);
     });
   }
-  function openDoc(doc: any) {
+  function openDocument(doc: any) {
+    console.log("opening doc:", doc);
     document.dispatchEvent(OpenDocumentEvent(doc));
   }
 
@@ -174,18 +195,33 @@ function UrbitProvider(props: any) {
           list documents
         </button>
         <ul>
+          {console.log(docs)}
           {docs.map((doc) => {
             return (
-              <li>
-                {doc}
-                <button onClick={openDoc}>open doc</button>
-                <button onClick={getDoc(doc)}>get doc</button>
-                <button onClick={getDocSettings(doc)}>get doc settings</button>
-                <button onClock={getDocUpdates(doc)}>get doc updates</button>
-                <button onClick={subscribeToUpdates(doc)}>
+              <li key={doc.id} className="flex gap-3">
+                <span
+                  className="font-bold cursor-pointer"
+                  onClick={() => {
+                    openDocument(doc);
+                  }}
+                >
+                  {doc.name}
+                </span>
+                <button className="underline" onClick={getDoc(doc)}>
+                  get doc
+                </button>
+                <button className="underline" onClick={getDocSettings(doc)}>
+                  get doc settings
+                </button>
+                <button className="underline" onClick={getDocUpdates(doc)}>
+                  get doc updates
+                </button>
+                <button className="underline" onClick={subscribeToUpdates(doc)}>
                   subscribe to updates
                 </button>
-                <button onClick={deleteDoc(doc)}>delete document</button>
+                <button className="underline" onClick={deleteDoc(doc)}>
+                  delete document
+                </button>
               </li>
             );
           })}
