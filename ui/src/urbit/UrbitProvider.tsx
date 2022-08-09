@@ -12,6 +12,8 @@ import {
   getAvailibleUpdates,
   deleteDocument,
 } from "./index";
+import { regular } from "@fortawesome/fontawesome-svg-core/import.macro";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export enum ConnectionStatus {
   Closed,
@@ -35,6 +37,8 @@ const UrbitContext = createContext({
 });
 
 function UrbitProvider(props: any) {
+  const [showTesting, setShowTesting] = useState(true);
+
   const win: Window & { urbit: Urbit; ship: any } = window as any;
   win.urbit = new Urbit("");
   win.urbit.ship = win.ship;
@@ -143,7 +147,21 @@ function UrbitProvider(props: any) {
         notifs: notifs,
       }}
     >
-      <div>
+      <div
+        className="absolute bottom-0 right-0 z-10 p-4"
+        onClick={() => {
+          setShowTesting(!showTesting);
+        }}
+      >
+        <FontAwesomeIcon
+          icon={regular("screwdriver-wrench")}
+          className="icon"
+        />
+      </div>
+      <div
+        className={showTesting ? "absolute" : "hidden"}
+        style={{ backgroundColor: "var(--paper-color)", zIndex: "3" }}
+      >
         <div>connection: {ConnectionStatus[connection]}</div>
         <div>updates: {NotifStatus[notifs]}</div>
         <button className="mx-4 my-3 px-3 py-2 border" onClick={createDoc}>
