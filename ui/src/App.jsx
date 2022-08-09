@@ -1,7 +1,7 @@
 import { createContext, useState, useEffect } from "react";
 import Workspace from "./components/workspace/Workspace";
 import Sidebar from "./components/sidebar/Sidebar";
-import SlideProvider from "./components/navbar/SlideContext";
+import SlideProvider from "./components/toolbar/SlideContext";
 import UrbitProvider from "./urbit/UrbitProvider";
 
 function App() {
@@ -10,7 +10,7 @@ function App() {
   useEffect(() => {
     document.addEventListener("open-document", (event) => {
       console.log("open document: ", event);
-      openDoc(event.details);
+      openDoc(event.detail);
     });
   }, []);
 
@@ -18,9 +18,7 @@ function App() {
     <UrbitProvider>
       <div id="app">
         <SlideProvider>
-          <div id="toolbar">
-            <Sidebar openDoc={openDoc} />
-          </div>
+          <Sidebar openDoc={openDoc} />
           <Workspace doc={doc} />
         </SlideProvider>
       </div>
