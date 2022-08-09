@@ -1,21 +1,5 @@
 import {} from "@urbit/http-api";
-
-export interface DocumentMeta {
-  owner: number;
-  id: string;
-  name: string;
-}
-
-export interface DocumentUpdate {
-  author: number;
-  content: Array<number>;
-  time: Date;
-}
-
-export interface FolderMeta {
-  id: any;
-  name: string;
-}
+import { DocumentMeta, FolderMeta, DocumentUpdate } from "../workspace/types";
 
 export type Folder = Array<DocumentMeta | FolderMeta>;
 
@@ -36,7 +20,7 @@ export function listDocuments(): Promise<Array<DocumentMeta>> {
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit
-      .scry({ app: "engram", path: "/docinfo" })
+      .scry({ app: "engram", path: "/docinfo/noun" })
       .then((response: any) => {
         console.log(response);
         resolve(response);
@@ -44,11 +28,11 @@ export function listDocuments(): Promise<Array<DocumentMeta>> {
   });
 }
 
-export function getDocument(meta: any): Promise<Document> {
+export function getDocument(meta: string): Promise<Document> {
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit
-      .scry({ app: "engram", path: "/gdoc", body: meta })
+      .scry({ app: "engram", path: `/gdoc/${meta}/noun` })
       .then((response: any) => {
         console.log(response);
         resolve(response);
@@ -68,11 +52,13 @@ export function getDocumentSettings(meta: any): Promise<Document> {
   });
 }
 
-export function getAvailibleUpdates(meta: any): Promise<Array<DocumentUpdate>> {
+export function getAvailibleUpdates(
+  meta: string
+): Promise<Array<DocumentUpdate>> {
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit
-      .scry({ app: "engram", path: "/pull", body: meta })
+      .scry({ app: "engram", path: `/pull/${meta}/noun`, body: meta })
       .then((response: any) => {
         console.log(response);
         resolve(response);
