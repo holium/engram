@@ -1,24 +1,26 @@
 import { createContext, useState, useEffect } from "react";
-import Document from "./components/document/Document.tsx";
-import Navbar from "./components/navbar/Navbar";
+import Workspace from "./components/workspace/Workspace";
 import Sidebar from "./components/sidebar/Sidebar";
-import SlideProvider from "./components/navbar/SlideContext";
+import SlideProvider from "./components/toolbar/SlideContext";
 import UrbitProvider from "./urbit/UrbitProvider";
 
 function App() {
+  const [doc, openDoc] = useState("~nut/00/document name");
+
+  useEffect(() => {
+    document.addEventListener("open-document", (event) => {
+      console.log("open document: ", event);
+      openDoc(event.detail);
+    });
+  }, []);
+
   return (
     <UrbitProvider>
       <div id="app">
-        <nav></nav>
-        <div id="body">
-            <SlideProvider>
-              <Navbar />
-              <div id="toolbar">
-                <Sidebar />
-              </div>
-            </SlideProvider>
-          <Document />
-        </div>
+        <SlideProvider>
+          <Sidebar openDoc={openDoc} />
+          <Workspace doc={doc} />
+        </SlideProvider>
       </div>
     </UrbitProvider>
   );

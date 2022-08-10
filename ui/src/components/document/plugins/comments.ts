@@ -1,8 +1,8 @@
 import { Plugin, PluginKey } from "prosemirror-state";
 import { Mark } from "prosemirror-model";
 import { EditorView } from "prosemirror-view";
-import schema from "../build/schema.ts";
-import { extendMark } from "./shortcuts.ts";
+import schema from "../build/schema";
+import { extendMark } from "./shortcuts";
 
 export const CommentsPluginKey = new PluginKey("comment");
 
@@ -69,7 +69,8 @@ export const comments = new Plugin({
         // render existing comments
         const renderComment = (data: Comment) => {
           const commentHeading = document.createElement("li");
-          const author = document.createElement("address");
+          const author = document.createElement("div");
+          author.className = "azimuth";
           author.innerHTML = data.author;
           const timestamp = document.createElement("time");
           timestamp.innerHTML = prettifyTimestamp(data.timestamp);
@@ -89,7 +90,8 @@ export const comments = new Plugin({
           toolbar.removeChild(toolbar.childNodes[0]);
 
           const newCommentHeading = document.createElement("li");
-          const author = document.createElement("address");
+          const author = document.createElement("div");
+          author.className = "azimuth";
           author.innerHTML = "~dalsyr-diglyn";
           const timestamp = document.createElement("time");
           timestamp.innerHTML = "editing...";

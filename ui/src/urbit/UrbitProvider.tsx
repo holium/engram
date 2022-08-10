@@ -3,11 +3,17 @@ import { Urbit } from "@urbit/http-api";
 import * as Y from "yjs";
 import {
   checkUrbitWindow,
-  DocumentMeta,
   createDocument,
   subscribeUpdateStream,
   listDocuments,
+  getDocument,
+  getDocumentSettings,
+  getAvailibleUpdates,
+  deleteDocument,
 } from "./index";
+import { DocumentMeta, OpenDocumentEvent } from "../components/workspace/types";
+import { regular } from "@fortawesome/fontawesome-svg-core/import.macro";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export enum ConnectionStatus {
   Closed,
@@ -30,10 +36,18 @@ const UrbitContext = createContext({
   notifs: false,
 });
 
-function UrbitProvider(props) {
+function UrbitProvider(props: any) {
+  const [showTesting, setShowTesting] = useState(true);
+
   const win: Window & { urbit: Urbit; ship: any } = window as any;
   win.urbit = new Urbit("");
-  win.urbit.ship = win.ship;
+  if (win.ship) {
+    win.urbit.ship = win.ship;
+  } else {
+    win.ship = "~dalsyr-diglyn";
+  }
+
+  const [docs, setDocs] = useState([]);
 
   // connection status
   const [connection, setConnectionStatus] = useState(ConnectionStatus.Closed);
@@ -66,7 +80,7 @@ function UrbitProvider(props) {
 
   /* TESTING ---------------------------------------------------------------- */
   function createDoc() {
-    checkUrbitWindow();
+    //checkUrbitWindow();
     const meta: DocumentMeta = {
       owner: (window as any).ship,
       id: Date.now().toString(12),
@@ -78,8 +92,23 @@ function UrbitProvider(props) {
     doc.gc = false;
     const type = doc.getXmlFragment("prosemirror");
     const encoding = Y.encodeStateAsUpdateV2(doc);
+    /*
     createDocument(meta, encoding).then((res) => {
       console.log("create document result", res);
+    });
+    */
+    setDocs([
+      ...docs,
+      {
+        owner: (window as any).ship,
+        id: Date.now(),
+        name: "New Document",
+      },
+    ]);
+    openDocument({
+      owner: (window as any).ship,
+      id: Date.now(),
+      name: "New Document",
     });
   }
 
@@ -87,23 +116,116 @@ function UrbitProvider(props) {
     checkUrbitWindow();
     listDocuments().then((res) => {
       console.log("list documents result: ", res);
+      setDocs([]);
     });
+  }
+
+  function getDoc(doc: any) {
+    getDocument(doc).then((res) => {
+      console.log("get doc result: ", res);
+    });
+  }
+  function getDocSettings(doc: any) {
+    getDocumentSettings(doc).then((res) => {
+      console.log("get doc settings: ", res);
+    });
+  }
+  function getDocUpdates(doc: any) {
+    getAvailibleUpdates(doc).then((res) => {
+      console.log("get doc updates: ", res);
+    });
+  }
+  function deleteDoc(doc: any) {
+    deleteDocument(doc).then((res) => {
+      console.log("deleted document:", res);
+      console.log("so this should fail:");
+      getDocument(doc).then((res) => {
+        console.log("this should have failed:", res);
+      });
+    });
+  }
+  function subscribeToUpdates(doc: any) {
+    subscribeUpdateStream(
+      (event) => {
+        console.log("recieived update: ", event, " for document ", doc);
+      },
+      (event) => {
+        console.log("quitting update subscription to: ", doc);
+      },
+      (e) => {
+        console.warn("error with update subscription to: ", doc);
+      }
+    ).then((res) => {
+      console.log("subscrition result: ", res);
+    });
+  }
+  function openDocument(doc: any) {
+    console.log("opening doc:", doc);
+    document.dispatchEvent(OpenDocumentEvent(doc));
   }
 
   return (
     <UrbitContext.Provider
       value={{
-        status: connection,
+        connection: connection,
         notifs: notifs,
       }}
     >
-      <div>
+      <div
+        className="absolute bottom-0 right-0 z-10 p-4"
+        onClick={() => {
+          setShowTesting(!showTesting);
+        }}
+      >
+        <FontAwesomeIcon
+          icon={regular("screwdriver-wrench")}
+          className="icon"
+        />
+      </div>
+      <div
+        className={showTesting ? "absolute" : "hidden"}
+        style={{ backgroundColor: "var(--paper-color)", zIndex: "3" }}
+      >
+        <div>connection: {ConnectionStatus[connection]}</div>
+        <div>updates: {NotifStatus[notifs]}</div>
         <button className="mx-4 my-3 px-3 py-2 border" onClick={createDoc}>
           create document
         </button>
         <button className="mx-4 my-3 px-3 py-2 border" onClick={listDocs}>
           list documents
         </button>
+        <ul>
+          {console.log(docs)}
+          {docs.map((doc) => {
+            return (
+              <li key={doc.id} className="flex gap-3">
+                <span
+                  className="font-bold cursor-pointer"
+                  onClick={() => {
+                    openDocument(doc);
+                  }}
+                >
+                  {doc.name}
+                </span>
+                <button className="underline" onClick={getDoc(doc)}>
+                  get doc
+                </button>
+                <button className="underline" onClick={getDocSettings(doc)}>
+                  get doc settings
+                </button>
+                <button className="underline" onClick={getDocUpdates(doc)}>
+                  get doc updates
+                </button>
+                <button className="underline" onClick={subscribeToUpdates(doc)}>
+                  subscribe to updates
+                </button>
+                <button className="underline" onClick={deleteDoc(doc)}>
+                  delete document
+                </button>
+              </li>
+            );
+          })}
+        </ul>
       </div>
       {props.children}
     </UrbitContext.Provider>

@@ -1,11 +1,23 @@
-
 import { useEffect, useState} from "react";
 import { light } from '@fortawesome/fontawesome-svg-core/import.macro'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import FolderMenu from "./FolderMenu";
-function TreeComponent({ data }) {
 
-    const [expand, setExpand] = useState(false);
+function TreeComponent({ data }) {
+  const [expand, setExpand] = useState(false);
+
+  return (
+    <div>
+      <div className="flex" onClick={() => setExpand(!expand)}>
+        <div className="pr-2">
+          {data.isFolder ? (
+            <FontAwesomeIcon icon={light("folder")} />
+          ) : (
+            <FontAwesomeIcon icon={light("file")} />
+          )}
+        </div>
+        {data.label}
+      </div>
 
     const [appear, setAppear] = useState(false);
 

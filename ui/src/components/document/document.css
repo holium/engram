@@ -187,24 +187,11 @@ aside li textarea {
 
 /* Menus */
 .sidemenu {
-  @apply gap-2 px-2;
+  @apply gap-2 px-3;
   position: absolute;
   display: flex;
   right: 100%;
   margin: 0;
-}
-
-.sidemenu > li {
-  @apply p-1 rounded-1;
-  vertical-align: center;
-  text-align: center;
-  cursor: pointer;
-  width: 20px;
-  height: 20px;
-}
-
-.sidemenu li:hover {
-  background-color: var(--type-glass-color);
 }
 
 .highlightmenu {
