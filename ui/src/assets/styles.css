@@ -16,6 +16,31 @@
   background-color: var(--type-glass-color);
 }
 
+  .folder-menu{
+    display: none;
+  }
+
+  .icon-container:hover .folder-menu{
+    display: block;
+    z-index: 1;
+  }
+
+  .icon-container{
+    display: flex;
+  }
+  .icon-container:hover .icon {
+    display:block;
+    left: 50px;
+    position: relative;
+
+  }
+
+  .no-bullets{
+    list-style-type: none; /* Remove bullets */
+    padding: 0; /* Remove padding */
+    margin: 0;
+  }
+
 .icon {
   @apply p-1 rounded-1;
   width: var(--leading-body);
