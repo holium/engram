@@ -1,11 +1,14 @@
 import {} from "@urbit/http-api";
-import { DocumentMeta, FolderMeta, DocumentUpdate } from "../workspace/types";
+import {
+  DocumentMeta,
+  FolderMeta,
+  DocumentUpdate,
+} from "../components/workspace/types";
 
 const logScryResults = true;
 const logScryErrors = true;
 const logPokeResults = true;
 const logPokeErrors = true;
-
 
 export type Folder = Array<DocumentMeta | FolderMeta>;
 
@@ -14,9 +17,9 @@ export function checkUrbitWindow(reject?) {
     typeof (window as any).ship == "undefined" ||
     typeof (window as any).urbit == "undefined"
   ) {
-    throw "couldn't find urbit on the window";
     if (typeof reject != "undefined")
       reject("couldn't find urbit on the window");
+    throw "couldn't find urbit on the window";
   }
 }
 
@@ -27,17 +30,16 @@ export function listDocuments(): Promise<Array<DocumentMeta>> {
     console.log("checking urbit window before listing");
     checkUrbitWindow(reject);
     console.log("listing documents");
-    (window as any).urbit
-      .scry({ app: "engram", path: "/docinfo" })
-      .then(
-	(result: any) => {
-          logScryResults && console.log("listDocuments result: ", result);
-          resolve(result);
-      	},
-	(err: any) => {
-	  logScryErrors && console.error("listDocuments error: ", err);
-	  reject(err);
-      );
+    (window as any).urbit.scry({ app: "engram", path: "/docinfo" }).then(
+      (result: any) => {
+        logScryResults && console.log("listDocuments result: ", result);
+        resolve(result);
+      },
+      (err: any) => {
+        logScryErrors && console.error("listDocuments error: ", err);
+        reject(err);
+      }
+    );
   });
 }
 
@@ -47,14 +49,14 @@ export function getDocument(meta: string): Promise<Document> {
     (window as any).urbit
       .scry({ app: "engram", path: `/gdoc/${meta}/noun` })
       .then(
-	(result: any) => {
+        (result: any) => {
           logScryResults && console.log("getDocument result: ", result);
           resolve(result);
         },
-	(err: any) => {
-	  logScryErrors && console.error("getDocument error: ", err);
-	  reject(err);
-	}
+        (err: any) => {
+          logScryErrors && console.error("getDocument error: ", err);
+          reject(err);
+        }
       );
   });
 }
@@ -65,14 +67,14 @@ export function getDocumentSettings(meta: any): Promise<Document> {
     (window as any).urbit
       .scry({ app: "engram", path: "/gsettings", body: meta })
       .then(
-	(result: any) => {
+        (result: any) => {
           logScryResults && console.log("getDocumentSettings result: ", result);
           resolve(result);
         },
-	(err: any) => {
+        (err: any) => {
           logScryErrors && console.error("getDocumentSettings error: ", err);
-	  reject(err);
-	} 
+          reject(err);
+        }
       );
   });
 }
@@ -85,14 +87,14 @@ export function getAvailibleUpdates(
     (window as any).urbit
       .scry({ app: "engram", path: `/pull/${meta}/noun`, body: meta })
       .then(
-	(result: any) => {
+        (result: any) => {
           logScryResults && console.log("getAvailibleUpdates result: ", result);
           resolve(result);
         },
-	(err: any) => {
-	  logScryErrors && console.error("getAvailibleUpdates error: ", err);
-	  reject(err);
-	}
+        (err: any) => {
+          logScryErrors && console.error("getAvailibleUpdates error: ", err);
+          reject(err);
+        }
       );
   });
 }
