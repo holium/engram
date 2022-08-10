@@ -6,19 +6,6 @@ import FolderMenu from "./FolderMenu";
 function TreeComponent({ data }) {
   const [expand, setExpand] = useState(false);
 
-  return (
-    <div>
-      <div className="flex" onClick={() => setExpand(!expand)}>
-        <div className="pr-2">
-          {data.isFolder ? (
-            <FontAwesomeIcon icon={light("folder")} />
-          ) : (
-            <FontAwesomeIcon icon={light("file")} />
-          )}
-        </div>
-        {data.label}
-      </div>
-
     const [appear, setAppear] = useState(false);
 
     const [renameState, setrenameState] = useState(false);
@@ -102,7 +89,7 @@ useEffect(()=>{
             </div>
             :
             <div> {info.label} </div>}
-            <div className="icon" onClick={(e)=>ToggleFolderMenu(e)}>
+            <div className="icons" onClick={(e)=>ToggleFolderMenu(e)}>
             <FontAwesomeIcon icon={light('plus')} />
             </div>
             </div>
@@ -121,4 +108,4 @@ useEffect(()=>{
     
     }
     
-    export default TreeComponent
+    export default TreeComponent;
