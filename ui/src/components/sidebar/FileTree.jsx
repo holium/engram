@@ -1,28 +1,28 @@
 import { createContext, useState, useEffect } from "react";
 import TreeComponent from "./TreeComponent";
 
+
 function FileTree() {
 
     const [input, setInput] = useState({
-        username:"",
-        size: 0,
-        users: []
+        label:"root",
+        isFolder: false,
+        children: []
     }
 );
 
 
 const data = {
   label: "root",
-  isFolder: true,
+  isFolder: "folder",
   children: [
     {
      label: "hello",
-     isFolder: false,
+     isFolder: "folder",
      children: [    
       {
       label: "hello2",
-      isFolder: false,
-      children: []
+      isFolder: "file", 
      },]
     },
   ],
@@ -30,22 +30,6 @@ const data = {
 
 }
 
-    function addFile() {
-
-
-    }
-
-    function deleteFile() {
-
-    }
-
-    function addFolder() {
-
-    }
-
-    function deleteFolder() {
-
-    }
 
 
 return(

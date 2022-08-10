@@ -11,3 +11,39 @@
   .topbar .icon {
     margin: 8px;
   }
+
+  .icon {
+    display: none;
+  }
+
+  .folder-menu{
+    display: none;
+  }
+
+  .icon-container:hover .folder-menu{
+    display: block;
+    z-index: 1;
+  }
+
+  .icon-container{
+    display: flex;
+  }
+  .icon-container:hover .icon {
+    display:block;
+    left: 50px;
+    position: relative;
+
+  }
+
+   .icon:hover{
+    background-color: lightgray;
+  }
+
+  .no-bullets{
+    list-style-type: none; /* Remove bullets */
+    padding: 0; /* Remove padding */
+    margin: 0;
+  }
+
+  
+
