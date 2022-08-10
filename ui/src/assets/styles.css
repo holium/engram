@@ -28,11 +28,15 @@
   .icon-container{
     display: flex;
   }
-  .icon-container:hover .icon {
+  .icon-container:hover .icons {
     display:block;
     left: 50px;
     position: relative;
 
+  }
+
+  .icons {
+    display: none;
   }
 
   .no-bullets{
