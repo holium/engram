@@ -1,6 +1,12 @@
 import {} from "@urbit/http-api";
 import { DocumentMeta, FolderMeta, DocumentUpdate } from "../workspace/types";
 
+const logScryResults = true;
+const logScryErrors = true;
+const logPokeResults = true;
+const logPokeErrors = true;
+
+
 export type Folder = Array<DocumentMeta | FolderMeta>;
 
 export function checkUrbitWindow(reject?) {
@@ -18,13 +24,20 @@ export function checkUrbitWindow(reject?) {
 
 export function listDocuments(): Promise<Array<DocumentMeta>> {
   return new Promise((resolve, reject) => {
+    console.log("checking urbit window before listing");
     checkUrbitWindow(reject);
+    console.log("listing documents");
     (window as any).urbit
-      .scry({ app: "engram", path: "/docinfo/noun" })
-      .then((response: any) => {
-        console.log(response);
-        resolve(response);
-      });
+      .scry({ app: "engram", path: "/docinfo" })
+      .then(
+	(result: any) => {
+          logScryResults && console.log("listDocuments result: ", result);
+          resolve(result);
+      	},
+	(err: any) => {
+	  logScryErrors && console.error("listDocuments error: ", err);
+	  reject(err);
+      );
   });
 }
 
@@ -33,10 +46,16 @@ export function getDocument(meta: string): Promise<Document> {
     checkUrbitWindow(reject);
     (window as any).urbit
       .scry({ app: "engram", path: `/gdoc/${meta}/noun` })
-      .then((response: any) => {
-        console.log(response);
-        resolve(response);
-      });
+      .then(
+	(result: any) => {
+          logScryResults && console.log("getDocument result: ", result);
+          resolve(result);
+        },
+	(err: any) => {
+	  logScryErrors && console.error("getDocument error: ", err);
+	  reject(err);
+	}
+      );
   });
 }
 
@@ -45,10 +64,16 @@ export function getDocumentSettings(meta: any): Promise<Document> {
     checkUrbitWindow(reject);
     (window as any).urbit
       .scry({ app: "engram", path: "/gsettings", body: meta })
-      .then((response: any) => {
-        console.log(response);
-        resolve(response);
-      });
+      .then(
+	(result: any) => {
+          logScryResults && console.log("getDocumentSettings result: ", result);
+          resolve(result);
+        },
+	(err: any) => {
+          logScryErrors && console.error("getDocumentSettings error: ", err);
+	  reject(err);
+	} 
+      );
   });
 }
 
@@ -59,10 +84,16 @@ export function getAvailibleUpdates(
     checkUrbitWindow(reject);
     (window as any).urbit
       .scry({ app: "engram", path: `/pull/${meta}/noun`, body: meta })
-      .then((response: any) => {
-        console.log(response);
-        resolve(response);
-      });
+      .then(
+	(result: any) => {
+          logScryResults && console.log("getAvailibleUpdates result: ", result);
+          resolve(result);
+        },
+	(err: any) => {
+	  logScryErrors && console.error("getAvailibleUpdates error: ", err);
+	  reject(err);
+	}
+      );
   });
 }
 
@@ -76,7 +107,7 @@ export function createDocument(
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
       app: "engram",
-      mark: "engram-do",
+      mark: "engram-action",
       json: { make: { dmeta: meta, doc: doc } },
       onSuccess: () => {
         resolve();
@@ -98,7 +129,7 @@ export function updateDocument(
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
       app: "engram",
-      mark: "engram-do",
+      mark: "engram-action",
       json: { update: { dmeta: meta, doc: doc, updt: update } },
       onSuccess: () => {
         resolve();
@@ -122,7 +153,7 @@ export function deleteDocument(meta: DocumentMeta) {
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
       app: "engram",
-      mark: "engram-do",
+      mark: "engram-action",
       json: { delete: { dmeta: meta } },
       onSuccess: () => {
         resolve();
@@ -140,7 +171,7 @@ export function setDocumentSettings(doc: any, settings: any) {
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
       app: "engram",
-      mark: "engram-do",
+      mark: "engram-action",
       json: { settings: { doc: doc, stg: settings } },
       onSuccess: () => {
         resolve();
@@ -164,7 +195,7 @@ export function createFolder(meta: FolderMeta) {
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
       app: "engram",
-      mark: "engram-do",
+      mark: "engram-action",
       json: { mfolder: { fmeta: meta } },
       onSuccess: () => {
         resolve();
@@ -182,7 +213,7 @@ export function deleteFolder(meta: FolderMeta) {
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
       app: "engram",
-      mark: "engram-do",
+      mark: "engram-action",
       json: { dfolder: { fmeta: meta } },
       onSuccess: () => {
         resolve();
@@ -200,7 +231,7 @@ export function addToFolder(meta: FolderMeta, doc: FolderMeta | DocumentMeta) {
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
       app: "engram",
-      mark: "engram-do",
+      mark: "engram-action",
       json: { foldoc: { fmeta: meta, fldr: doc } },
       onSuccess: () => {
         resolve();
@@ -221,7 +252,7 @@ export function removeFromFolder(
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
       app: "engram",
-      mark: "engram-do",
+      mark: "engram-action",
       json: { remfoldoc: { fmeta: meta, fldr: doc } },
       onSuccess: () => {
         resolve();
@@ -239,7 +270,7 @@ export function acknowledgeUpdate(meta: DocumentMeta, update: number) {
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
       app: "engram",
-      mark: "engram-do",
+      mark: "engram-action",
       json: { merge: { demta: meta, update: update } },
       onSuccess: () => {
         resolve();

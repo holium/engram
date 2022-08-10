@@ -47,6 +47,7 @@ function UrbitProvider(props: any) {
     win.ship = "~dalsyr-diglyn";
   }
 
+  const [ship, setShip] = useState(win.ship);
   const [docs, setDocs] = useState([]);
 
   // connection status
@@ -92,23 +93,8 @@ function UrbitProvider(props: any) {
     doc.gc = false;
     const type = doc.getXmlFragment("prosemirror");
     const encoding = Y.encodeStateAsUpdateV2(doc);
-    /*
     createDocument(meta, encoding).then((res) => {
       console.log("create document result", res);
-    });
-    */
-    setDocs([
-      ...docs,
-      {
-        owner: (window as any).ship,
-        id: Date.now(),
-        name: "New Document",
-      },
-    ]);
-    openDocument({
-      owner: (window as any).ship,
-      id: Date.now(),
-      name: "New Document",
     });
   }
 
