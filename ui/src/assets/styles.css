@@ -127,3 +127,20 @@
   @apply rounded-3 px-4 py-3 shadow-menu;
   background-color: var(--paper-color);
 }
+
+
+.tree-menu {
+  overflow: hidden;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  width: 180px;
+}
+
+.check-mark{
+  @apply rounded-1;
+  width: var(--leading-body);
+  height: var(--leading-body);
+  margin-left: 10px;
+
+}
