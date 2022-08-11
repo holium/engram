@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 function UpdatePanel(props: {
   show: boolean;
-  doc: string;
+  path: string;
   getStage: () => number;
   applyStage: () => void;
   setNotifStatus: (status: NotifStatus) => void;
@@ -20,8 +20,19 @@ function UpdatePanel(props: {
   // Staging
   const [changes, setChanges] = useState({ size: 0 });
   useEffect(() => {
-    setChanges({ size: props.getStage() });
+    setChanges(getMag(props.getStage()));
   }, [props.show]);
+
+  function getMag(bytes: number): { size: number; mag: string } {
+    const exp = Math.log10(bytes);
+    const mag =
+      exp < 3 ? "b" : exp < 6 ? "kb" : exp < 9 ? "mb" : exp < 12 ? "gb" : "tb";
+    return {
+      size: Math.floor(bytes / 10 ** (3 * Math.floor(exp / 3))),
+      mag: mag,
+    };
+  }
+
   function executeStage() {
     console.log("executing stage: ", changes);
 
@@ -56,7 +67,9 @@ function UpdatePanel(props: {
       {changes.size > 0 ? (
         <div className="flex gap-3 items-center">
           <div className="flex-grow">Stage</div>
-          <div>{changes.size} bytes</div>
+          <div>
+            {changes.size} {changes.mag}
+          </div>
           <FontAwesomeIcon
             onClick={() => {
               executeStage();
@@ -81,7 +94,10 @@ function UpdatePanel(props: {
               <span className="azimuth">{update.author}</span>
             </div>
 
-            <div>{update.content.byteLength} bytes</div>
+            <div>
+              {getMag(update.content.byteLength).size}{" "}
+              {getMag(update.content.byteLength).mag}
+            </div>
             <FontAwesomeIcon
               onClick={() => {
                 executeUpdate(i);

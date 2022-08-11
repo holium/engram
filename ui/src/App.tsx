@@ -19,7 +19,7 @@ function App() {
       <div id="app">
         <SlideProvider>
           <Sidebar openDoc={openDoc} />
-          <Workspace doc={doc} />
+          <Workspace path={doc} />
         </SlideProvider>
       </div>
     </UrbitProvider>

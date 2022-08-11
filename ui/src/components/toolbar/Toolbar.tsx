@@ -1,15 +1,11 @@
 import { useState, useEffect } from "react";
 import { regular, solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  pathParser,
-  subscribeUpdateStream,
-  getAvailibleUpdates,
-} from "../urbit/index";
+import { pathParser } from "../urbit/index";
 import { NotifStatus } from "../workspace/types";
 
 function Navbar(props: {
-  doc: string;
+  path: string;
   panel: string;
   openPanel: (panel: any) => void;
   notifStatus: NotifStatus;
@@ -18,10 +14,16 @@ function Navbar(props: {
   const [name, setName] = useState("");
 
   useEffect(() => {
-    const parsed = props.doc.match(pathParser);
+    const parsed = props.path.match(pathParser);
     setOwner(parsed.groups.owner);
     setName(parsed.groups.name);
-  }, [props.doc]);
+  }, [props.path]);
+
+  function updateDocumentName(event) {
+    console.log("update document name to:", event.target.value);
+    // urbit call
+    setName(event.target.value);
+  }
 
   return (
     <div id="toolbar">
@@ -32,7 +34,11 @@ function Navbar(props: {
       >
         /
       </div>
-      <div className="flex-grow mx-2">{name}</div>
+      <input
+        className="flex-grow px-3 py-1 bg-none focus:outline rounded-1"
+        value={name}
+        style={{ "outline-color": "var(--type-color)" }}
+      />
       <FontAwesomeIcon
         style={
           props.panel == "publish"
