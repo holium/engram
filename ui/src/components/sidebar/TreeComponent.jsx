@@ -2,13 +2,17 @@ import { useEffect, useState} from "react";
 import { light } from '@fortawesome/fontawesome-svg-core/import.macro'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import FolderMenu from "./FolderMenu";
-
+import FileMenu from "./FileMenu";
 function TreeComponent({ data }) {
   const [expand, setExpand] = useState(false);
 
     const [appear, setAppear] = useState(false);
 
     const [renameState, setrenameState] = useState(false);
+
+    const [pos, setPos] = useState({top: 0,
+        left: 0
+    });
 
     const [info, setInfo] = useState({
         label: data.label,
@@ -24,6 +28,11 @@ useEffect(()=>{
     }
 },[])
 
+
+    function hideMenu(event){
+        event.stopPropagation()
+        setAppear(false)
+    }
 
     function ToggleFolderMenu(event) {
         event.stopPropagation();
@@ -82,20 +91,26 @@ useEffect(()=>{
             </div>
             {renameState ? 
             <div> 
-            <input value = {info.label} onClick = {(e) =>(e.stopPropagation())} onChange ={(e)=>{
+            <input className = "rounded-1" value = {info.label} onClick = {(e) =>(e.stopPropagation())} onChange ={(e)=>{
                 setInfo(previousInputs => ({ ...previousInputs, label: e.target.value}))
             }} autoFocus/> 
-            <FontAwesomeIcon icon = {light('check')} onClick ={(e)=>renameFolder(e)}/>
+            <FontAwesomeIcon className = "check-mark clickable" icon = {light('check')} onClick ={(e)=>renameFolder(e)}/>
             </div>
             :
             <div> {info.label} </div>}
-            <div className="icons" onClick={(e)=>ToggleFolderMenu(e)}>
+            <menu onMouseLeave={hideMenu}>
+            { !renameState &&
+            <div className="icons icon clickable" onClick={(e)=>{ToggleFolderMenu(e); setPos({top: e.clientY, left: e.clientX})}}>
             <FontAwesomeIcon icon={light('plus')} />
             </div>
-            </div>
-            {appear &&
-            <FolderMenu ToggleFolderMenu = {ToggleFolderMenu} renameFolder = {setrenameState} deleteFolder = {deleteFolder} addFile = {addFile} addFolder = {addFolder} />
             }
+            {appear && (info.isFolder === "folder" ?
+            <FolderMenu ToggleFolderMenu = {ToggleFolderMenu} renameFolder = {setrenameState} deleteFolder = {deleteFolder} addFile = {addFile} addFolder = {addFolder} position = {pos} /> 
+            : info.isFolder ==="file" ? <FileMenu ToggleFolderMenu = {ToggleFolderMenu} renameFolder = {setrenameState} deleteFolder = {deleteFolder} position = {pos}/> :
+            ""
+        ) }
+            </menu>
+        </div>
 
          <div className = {`${expand ? "block" : " hidden"} pl-3`}>
             {info.isFolder === "folder" && info.children.map((childData) => (
