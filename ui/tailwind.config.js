@@ -40,7 +40,11 @@ module.exports = {
       menu: "0 5px 17px #26262620",
       sunk: "inset 0 0 4px -2px #262626",
     },
-    extend: {},
+    extend: {
+      colors: {
+        none: "#00000000",
+      },
+    },
   },
   plugins: [],
   darkMode: "class",

@@ -1,5 +1,5 @@
-import { createContext, useState } from "react";
-import { Urbit } from "@urbit/http-api";
+import { createContext, useState, useEffect } from "react";
+import { Urbit, Patp } from "@urbit/http-api";
 import * as Y from "yjs";
 import {
   checkUrbitWindow,
@@ -11,41 +11,39 @@ import {
   getAvailibleUpdates,
   deleteDocument,
 } from "./index";
-import { DocumentMeta, OpenDocumentEvent } from "../components/workspace/types";
+import {
+  DocumentMeta,
+  OpenDocumentEvent,
+  ConnectionStatus,
+  NotifStatus,
+} from "../workspace/types";
 import { regular } from "@fortawesome/fontawesome-svg-core/import.macro";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-export enum ConnectionStatus {
-  Closed,
-  Connecting,
-  Connected,
-  Retrying,
-  Errored,
-}
+/**
+ * urbit: Urbit -- the Urbit object; used for sending pokes and scries, holds additional urbit information
+ * connection: ConnectionStatus -- defaults to Closed, Connected means we're all good, Retrying and Errored may be useful for keeping the user informed
+ **/
 
-export enum NotifStatus {
-  None,
-  Stage,
-  Update,
-  Both,
-}
-
-const UrbitContext = createContext({
+export const UrbitContext = createContext({
   urbit: null,
   connection: ConnectionStatus.Closed,
-  notifs: false,
+  ship: "",
 });
 
 function UrbitProvider(props: any) {
   const [showTesting, setShowTesting] = useState(true);
 
-  const win: Window & { urbit: Urbit; ship: any } = window as any;
+  // ship setup
+
+  const win: Window & { urbit: Urbit; ship: Patp } = window as any;
   win.urbit = new Urbit("");
   if (win.ship) {
     win.urbit.ship = win.ship;
   } else {
     win.ship = "~dalsyr-diglyn";
   }
+  const [ship, _] = useState(win.ship);
 
   const [docs, setDocs] = useState([]);
 
@@ -64,19 +62,59 @@ function UrbitProvider(props: any) {
     setConnectionStatus(ConnectionStatus.Errored);
   };
 
-  // notification status
-  const [notifs, setNotifStatus] = useState(NotifStatus.None);
-  subscribeUpdateStream(
-    (event) => {
-      console.log("received update: ", event);
-    },
-    (event) => {
-      console.log("quit update subscription", event);
-    },
-    (e) => {
-      console.log("update subscription errored: ", e);
-    }
-  );
+  // Document Status
+  /*
+  useEffect(() => {
+    // notification status
+    subscribeUpdateStream(
+      props.doc,
+      (event) => {
+        console.log("received update: ", event);
+      },
+      (event) => {
+        console.log("quit update subscription", event);
+      },
+      (e) => {
+        console.log("update subscription errored: ", e);
+      }
+    );
+    console.log("doc updated:", props.doc);
+    const availibleUpdates = getAvailibleUpdates(props.doc);
+    console.log(availibleUpdates);
+    setUpdates([]);
+  }, [props.doc]);
+
+
+  // Notification status
+  const [stage, setStage] = useState(false);
+  const [updates, setUpdates] = useState([]);
+  const [notifs, setNotifs] = useState(NotifStatus.None);
+
+  // keep the notif status updated
+  useEffect(() => {
+    if (stage && updates.length > 0) setNotifs(NotifStatus.Both);
+    else if (stage) setNotifs(NotifStatus.Stage);
+    else if (updates.length > 0) setNotifs(NotifStatus.Update);
+    else setNotifs(NotifStatus.None);
+  }, [stage, updates]);
+
+  // register an update has been pulled
+  function mergeUpdate(index: number) {
+    const updt = updates[index];
+    console.log("merging update: ", updt);
+    const newUpdates = updates.splice(index, 1);
+    setUpdates(newUpdates);
+  }
+
+  // stage an update
+  function stageUpdate() {
+    setStage(false);
+  }
+
+  function makeUpdate() {
+    setStage(true);
+  }
+  */
 
   /* TESTING ---------------------------------------------------------------- */
   function createDoc() {
@@ -144,21 +182,6 @@ function UrbitProvider(props: any) {
       });
     });
   }
-  function subscribeToUpdates(doc: any) {
-    subscribeUpdateStream(
-      (event) => {
-        console.log("recieived update: ", event, " for document ", doc);
-      },
-      (event) => {
-        console.log("quitting update subscription to: ", doc);
-      },
-      (e) => {
-        console.warn("error with update subscription to: ", doc);
-      }
-    ).then((res) => {
-      console.log("subscrition result: ", res);
-    });
-  }
   function openDocument(doc: any) {
     console.log("opening doc:", doc);
     document.dispatchEvent(OpenDocumentEvent(doc));
@@ -167,8 +190,9 @@ function UrbitProvider(props: any) {
   return (
     <UrbitContext.Provider
       value={{
+        // Status
         connection: connection,
-        notifs: notifs,
+        ship: ship,
       }}
     >
       <div
@@ -187,7 +211,7 @@ function UrbitProvider(props: any) {
         style={{ backgroundColor: "var(--paper-color)", zIndex: "3" }}
       >
         <div>connection: {ConnectionStatus[connection]}</div>
-        <div>updates: {NotifStatus[notifs]}</div>
+
         <button className="mx-4 my-3 px-3 py-2 border" onClick={createDoc}>
           create document
         </button>
@@ -216,9 +240,7 @@ function UrbitProvider(props: any) {
                 <button className="underline" onClick={getDocUpdates(doc)}>
                   get doc updates
                 </button>
-                <button className="underline" onClick={subscribeToUpdates(doc)}>
-                  subscribe to updates
-                </button>
+
                 <button className="underline" onClick={deleteDoc(doc)}>
                   delete document
                 </button>

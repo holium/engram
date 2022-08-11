@@ -3,14 +3,18 @@ import { DocumentMeta, FolderMeta, DocumentUpdate } from "../workspace/types";
 
 export type Folder = Array<DocumentMeta | FolderMeta>;
 
-export function checkUrbitWindow(reject?) {
+export const pathParser = new RegExp(
+  "(?<owner>[^/]+)/(?<id>[^/]+)/(?<name>[^/]+)"
+);
+
+export function checkUrbitWindow(reject?: (message?: any) => void) {
   if (
     typeof (window as any).ship == "undefined" ||
     typeof (window as any).urbit == "undefined"
   ) {
-    throw "couldn't find urbit on the window";
     if (typeof reject != "undefined")
       reject("couldn't find urbit on the window");
+    throw "couldn't find urbit on the window";
   }
 }
 
@@ -89,10 +93,10 @@ export function createDocument(
   });
 }
 
-export function updateDocument(
+export function stageUpdate(
   meta: DocumentMeta,
-  doc: Array<number>,
-  update: Array<number>
+  doc: { version: Uint8Array; cont: Uint8Array },
+  update: { author: string; cont: Uint8Array; time: Date }
 ) {
   return new Promise<void>((resolve, reject) => {
     checkUrbitWindow(reject);
@@ -259,7 +263,9 @@ export function acknowledgeUpdate(meta: DocumentMeta, update: number) {
 }
 
 /* Subscriptions */
+// WIP
 export function subscribeUpdateStream(
+  documentPath: string,
   handler: (event: any) => void,
   quit: (event: any) => void,
   err: (e: any) => void
@@ -269,7 +275,7 @@ export function subscribeUpdateStream(
     (window as any).urbit
       .subscribe({
         app: "engram",
-        path: "/updateupt",
+        path: `/streamupt/${documentPath}`,
         event: handler,
         quit: quit,
         err: err,
