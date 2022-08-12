@@ -36,8 +36,8 @@ module.exports = {
       8: `${unit ** 8}px`,
     },
     boxShadow: {
-      menu: "0 5px 17px var(--trim-color)",
-      sunk: "inset 0 0 4px -2px var(--type-color)",
+      menu: "0 0px 16px -4px var(--trim-color)",
+      sunk: "inset 0 0 4px -2px var(--trim-color)",
     },
     extend: {
       colors: {

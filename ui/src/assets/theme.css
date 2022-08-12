@@ -43,7 +43,7 @@
   --off-glass-color: #e2dcc920;
 
   /* Root Styles */
-  font-family: var(--rlm-font, sans-serif);
+  font-family: var(--rlm-font, Rubik, sans-serif);
   font-size: var(--root-frequency);
   line-height: var(--leading-body);
   color: var(--type-color);
