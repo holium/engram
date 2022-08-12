@@ -41,7 +41,7 @@
 ::
 :: Poke Actions
 :: [%make =dmeta] - Create a new document within the state
-:: [%update =dmeta =doc =updt] - update a document in your state and propogate out the update request to other ships
+:: [%update =dmeta =doc] - update a document in your state
 :: [%delete =dmeta] - remove a document from your state and the other ships
 :: [%settings =dmeta =stg] - update the document settings
 :: [%mfolder =fmeta] - create a folder
@@ -52,7 +52,7 @@
 ::
 +$  action
   $%  [%make =dmeta =doc]
-      [%update =dmeta =doc =updt]
+      [%update =dmeta =doc]
       [%delete =dmeta]
       [%settings =dmeta =stg]
       [%mfolder =fmeta]
