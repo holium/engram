@@ -1,5 +1,3 @@
-import schema from "../../build/schema.ts";
-
 export interface ConfigTerm {
   key: string;
   display: string;
@@ -41,10 +39,12 @@ export class DocumentConfig {
   // implement a config field into a css variable
   implement(key: string) {
     Object.keys(this.config[key].styles).forEach((style: string) => {
-      document.documentElement.style.setProperty(
-        style,
-        this.config[key].styles[style](this.config[key].value, this)
-      );
+      if (this.config[key].value) {
+        (document.querySelector(":root") as any).style.setProperty(
+          style,
+          this.config[key].styles[style](this.config[key].value, this)
+        );
+      }
     });
   }
 
@@ -180,7 +180,7 @@ export class DocumentConfig {
         serif: 1,
         mono: 2,
       },
-      value: 0,
+      value: null,
       styles: {
         "--body-font-family": (value: number) => {
           if (value == 0) {
@@ -199,7 +199,7 @@ export class DocumentConfig {
       key: "paper-color",
       display: "Paper Color",
       type: "color",
-      value: "#FBFBFB",
+      value: null,
       styles: {
         "--paper-color": (value: string) => {
           return value;
@@ -213,7 +213,7 @@ export class DocumentConfig {
       key: "type-color",
       display: "Type Color",
       type: "color",
-      value: "#262626",
+      value: null,
       styles: {
         "--type-color": (value: string) => {
           return value;
@@ -227,7 +227,7 @@ export class DocumentConfig {
       key: "off-color",
       display: "Off Color",
       type: "color",
-      value: "#F2F2F2",
+      value: null,
       styles: {
         "--off-color": (value: string) => {
           return value;
@@ -238,7 +238,7 @@ export class DocumentConfig {
       key: "primary-color",
       display: "Primary Color",
       type: "color",
-      value: "#38BDF8",
+      value: "null",
       styles: {
         "--primary-color": (value: string) => {
           return value;
@@ -248,6 +248,7 @@ export class DocumentConfig {
         },
       },
     },
+    /*
     "success-color": {
       key: "success-color",
       display: "Success Color",
@@ -290,6 +291,7 @@ export class DocumentConfig {
         },
       },
     },
+    */
 
     // Spacing & Sizing -----------------------------------------------------
     "document-width": {

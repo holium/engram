@@ -6,7 +6,6 @@
 
 main {
   background-color: var(--off-color);
-  @apply dark:bg-slate-700 duration-1000;
 }
 
 p.Prosemirror-placeholder:before {
@@ -59,7 +58,7 @@ header p.Prosemirror-placeholder:before {
 }
 
 .Prosemirror-config-panel label:hover {
-  background-color: var(--type-glass-color);
+  background-color: var(--glass-color);
 }
 
 dl.Prosemirror-config-terms {
@@ -79,7 +78,7 @@ dl.Prosemirror-config-terms {
 #Prosemirror-config-toggle:checked
   ~ .Prosemirror-config-panel
   #Prosemirror-config-toggler {
-  background-color: var(--type-glass-color);
+  background-color: var(--glass-color);
 }
 
 #Prosemirror-config-toggler {

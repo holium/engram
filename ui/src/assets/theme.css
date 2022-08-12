@@ -6,16 +6,17 @@
 */
 
 /* Variables */
-html {
+:root {
   /* Theme Variables */
   --root-frequency: 1em;
   --ratio: 2;
-  --paper-color: #fbfbfb; /* From Realm */
-  --type-color: #262626; /* From Realm */
-  --off-color: #e2dcc9; /* From Realm */
+  --paper-color: var(--rlm-card-color, #fafbfb); /* From Realm */
+  --type-color: var(--rlm-text-color, #261f1f); /* From Realm */
+  --trim-color: var(--rlm-base-color, #b4bdc2); /* From Realm */
+  --glass-color: var(--rlm-border-color, #d0d7da); /* From Realm */
+  --off-color: var(--rlm-window-color, #eceff0); /* From Realm */
   --document-width: 60ch;
-  --status-primary-color: #38bdf8;
-  --status-primary-glass-color: #38bdf866;
+  --status-primary-color: var(--rlm-accent-color, #38bdf8);
   --status-success-color: #10a30d;
   --status-success-glass-color: #10a30d66;
   --status-warning-color: #faca1f;
@@ -42,6 +43,7 @@ html {
   --off-glass-color: #e2dcc920;
 
   /* Root Styles */
+  font-family: var(--rlm-font, Rubik, sans-serif);
   font-size: var(--root-frequency);
   line-height: var(--leading-body);
   color: var(--type-color);
