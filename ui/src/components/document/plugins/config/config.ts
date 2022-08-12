@@ -40,7 +40,7 @@ export class DocumentConfig {
   implement(key: string) {
     Object.keys(this.config[key].styles).forEach((style: string) => {
       if (this.config[key].value) {
-        document.documentElement.style.setProperty(
+        (document.querySelector(":root") as any).style.setProperty(
           style,
           this.config[key].styles[style](this.config[key].value, this)
         );
