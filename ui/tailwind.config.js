@@ -7,7 +7,6 @@ module.exports = {
       body: "16px",
     },
     fontFamily: {
-      app: "Rubik, sans-serif",
       azimuth: "IBM Plex Mono, monospace",
     },
     spacing: {
@@ -37,8 +36,8 @@ module.exports = {
       8: `${unit ** 8}px`,
     },
     boxShadow: {
-      menu: "0 5px 17px #26262620",
-      sunk: "inset 0 0 4px -2px #262626",
+      menu: "0 5px 17px var(--trim-color)",
+      sunk: "inset 0 0 4px -2px var(--type-color)",
     },
     extend: {
       colors: {
