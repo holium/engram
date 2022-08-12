@@ -19,7 +19,7 @@ function Navbar(props: {
     setName(parsed.groups.name);
   }, [props.path]);
 
-  function updateDocumentName(event) {
+  function updateDocumentName(event: any) {
     console.log("update document name to:", event.target.value);
     // urbit call
     setName(event.target.value);
@@ -37,7 +37,11 @@ function Navbar(props: {
       <input
         className="flex-grow px-3 py-1 bg-none focus:outline rounded-1"
         value={name}
-        style={{ "outline-color": "var(--type-color)" }}
+        onChange={(event) => {
+          setName(event.target.value);
+        }}
+        style={{ outlineColor: "var(--type-color)" }}
+        onBlur={updateDocumentName}
       />
       <FontAwesomeIcon
         style={
