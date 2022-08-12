@@ -47,7 +47,7 @@
     ::
     :: modify a document by changing the stored document state
     ::
-      %update
+      %save
     ?>  (~(has by d) dmeta.action)
     `this(d (~(put by d) dmeta.action doc.action))
     ::
