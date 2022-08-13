@@ -4,6 +4,7 @@ import {
   listDocuments,
   createDocument,
   checkUrbitWindow,
+  deleteDocument,
 } from "../urbit/index";
 import { OpenDocumentEvent } from "../workspace/types";
 import { regular } from "@fortawesome/fontawesome-svg-core/import.macro";
@@ -55,7 +56,7 @@ function Sidebar() {
     const meta: DocumentMeta = {
       owner: `~${window.ship}`,
       id: `~${window.ship}-${crypto.randomUUID()}`,
-      name: newDocName,
+      name: newDocName.replace(' ', '-')
     };
 
     const doc = new Y.Doc();
@@ -77,6 +78,14 @@ function Sidebar() {
   function closeCreateDoc() {
     setNewDoc(false);
     setNewDocName("");
+  }
+
+  function deleteDoc(doc, index) {
+    console.log("deleting document:", doc);
+    setList([...list.splice(index, 1)])
+    deleteDocument(doc).then((res) => {
+      console.log("delete document result:", res);
+    });
   }
 
   /*
@@ -128,15 +137,25 @@ function Sidebar() {
           />
         </div>
       )}
-      {list.map((doc) => {
+      {list.map((doc, i) => {
         return (
           <div
-            className="px-4 py-2 clickable"
+            className="px-4 py-2 clickable flex"
             onClick={() => {
               openDocument(doc);
             }}
           >
-            {doc.name}
+	    <div className="py-1 flex-grow">
+              {doc.name}
+	    </div>
+	    <FontAwesomeIcon
+	      onClick={(event) => {
+	        event.stopPropagation();
+	        deleteDoc(doc, i)
+	      }}
+	      icon={regular("trash-alt")}
+	      className="icon clickable"
+	    />
           </div>
         );
       })}
