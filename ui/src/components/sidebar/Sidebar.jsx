@@ -26,7 +26,7 @@ function Sidebar() {
         console.log("list documents result: ", res);
 
         setList(
-          ...Object.keys(res).map((key) => {
+          Object.keys(res).map((key) => {
             return {
               id: key,
               owner: "~" + res[key].owner,
@@ -39,8 +39,7 @@ function Sidebar() {
         console.log("no urbit :(");
         setList([{ owner: "~zod", id: "123", name: "doc" }]);
       });
-    console.log(list);
-  });
+  }, []);
 
   function openDocument(doc: any) {
     console.log("opening doc:", doc);

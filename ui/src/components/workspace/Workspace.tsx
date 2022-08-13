@@ -5,47 +5,65 @@ import PublishPanel from "../panels/PublishPanel";
 import UpdatePanel from "../panels/UpdatePanel";
 import VersionPanel from "../panels/VersionPanel";
 import { DocumentMeta, NotifStatus } from "./types";
-import { pathParser, acknowledgeUpdate, saveDocument } from "../urbit/index";
+import { pathParser, acknowledgeUpdate, saveDocument, getDocument } from "../urbit/index";
 import { UrbitContext } from "../urbit/UrbitProvider";
 import * as Y from "yjs";
 
 function Workspace(props: { path: null | string }) {
   const urbitContext = useContext(UrbitContext);
 
+  const [ready, setReady] = useState(false);
   const [documentMeta, setDocumentMeta] = useState(null);
   const [doc, setDoc] = useState(null);
   const [docType, setDocType] = useState(null);
 
   // Document State
   useMemo(() => {
-    if (documentMeta && documentMeta != null) saveDoc();
+    //if (documentMeta && documentMeta != null) saveDoc();
     if (props.path == null) return;
+    setReady(false);
     const parsed = props.path.match(pathParser);
-    setDocumentMeta({
+    console.log("parsed path:", parsed);
+    const meta = {
       owner: parsed.groups.owner,
       id: parsed.groups.id,
       name: parsed.groups.name,
-    });
-
-    console.log("doc changed to: ", props.path);
-    const doc = new Y.Doc();
-    if ((window as any).ship)
-      doc.clientID = [...(window as any).ship].reduce(
-        (acc: number, char: any) => {
-          return parseInt(`${char.charCodeAt(0)}${acc}`);
-        },
-        0
-      );
-    else doc.clientID = 0;
-    doc.gc = false;
-    setDocType(doc.getXmlFragment("prosemirror"));
+    };
+    setDocumentMeta(meta);
+    console.log("document meta:", meta);
+      console.log("doc changed to: ", props.path);
+      const doc = new Y.Doc();
+      doc.clientID = (window as any).ship
+      doc.gc = false;
+    const type = doc.getXmlFragment("prosemirror");
+    setDocType(type);
     setDoc(doc);
+    getDocument(meta).then((res) => {
+      const version = new Uint8Array(Object.keys(res.version).map((index: any) => {
+        return res.version[index]
+      }));
+      const content = new Uint8Array(Object.keys(res.content).map((index: any) => {
+        return res.content[index]
+      }));
+      console.log(content);
+      //const type = doc.getXmlFragment("prosemirror");
+      setTimeout(() => {
+        Y.applyUpdateV2(doc, content);
+        console.log("after injected update", Y.encodeStateAsUpdateV2(doc));
+      }, 2000);
+      //setDocType(type);
+      //setDoc(doc);
+      console.log(doc);
+      console.log(type);
+      console.log("initial load", Y.encodeStateAsUpdateV2(doc));
+      setReady(true);
+    });
   }, [props.path]);
 
   function applyUpdate(index: number, update: Uint8Array) {
     console.log("applying update: ", update);
     // apply it to the doc
-    Y.applyUpdate(doc, update);
+    Y.applyUpdateV2(doc, update);
 
     // acknowledge it in urbit
     acknowledgeUpdate(documentMeta, index);
@@ -56,6 +74,8 @@ function Workspace(props: { path: null | string }) {
     // update the local document version
     const version = Y.encodeStateVector(doc);
     const content = Y.encodeStateAsUpdateV2(doc);
+    
+    console.log(content);
 
     // send the update to urbit
     saveDocument(
@@ -98,7 +118,7 @@ function Workspace(props: { path: null | string }) {
         setNotifStatus={setNotifStatus}
       />
       <VersionPanel show={panel == "version"} />
-      <Document type={docType} save={saveDoc} />
+      <Document path={props.path} />
     </div>
   );
 }

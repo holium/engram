@@ -6,7 +6,10 @@ export default (save: () => void) =>
   new Plugin({
     props: {
       handleKeyDown: (view, event) => {
-        if (event.ctrlKey && event.key == "s") save();
+        if (event.ctrlKey && event.key == "s") {
+	  event.preventDefault();
+	  save();
+	}
       },
     },
   });

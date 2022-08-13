@@ -27,6 +27,7 @@ import NodeMenu from "./plugins/menus/NodeMenuNode";
 import ConfigMenu from "./plugins/config/ConfigMenu";
 
 function Document(props: { type: Y.XmlFragment; save: () => void }) {
+  console.log(props.type);
   const [view, setView] = useState(null);
 
   const [sideMenu, setSideMenu] = useState(null);
@@ -36,25 +37,19 @@ function Document(props: { type: Y.XmlFragment; save: () => void }) {
   const [configMenu, setConfigMenu] = useState(null);
 
   useEffect(() => {
-    return () => {
-      props.save();
-    };
-  });
-
-  useEffect(() => {
     /**
      * Get encoded state from urbit
      * Y.applyUpdate(doc, state)
      **/
-
+    if(view != null) view.destroy();
     const state = EditorState.create({
       schema: schema,
       plugins: [
         buildKeymap(schema),
         baseKeymap,
         shortcuts(schema),
-        config(setConfigMenu),
-        placeholders,
+        //config(setConfigMenu),
+        //placeholders,
         sidemenu(setSideMenu),
         highlightmenu(setHighlightMenu),
         slashmenu(setNodeMenu, setNodeMenuSearch),

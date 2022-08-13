@@ -11,7 +11,8 @@ const schema = new Schema({
   nodes: {
     // Document
     doc: {
-      content: "header block+",
+      //content: "header block+",
+      content: "block+"
     } as NodeSpec,
 
     header: {
