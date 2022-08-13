@@ -5,7 +5,7 @@ import PublishPanel from "../panels/PublishPanel";
 import UpdatePanel from "../panels/UpdatePanel";
 import VersionPanel from "../panels/VersionPanel";
 import { DocumentMeta, NotifStatus } from "./types";
-import { pathParser, acknowledgeUpdate, stageUpdate } from "../urbit/index";
+import { pathParser, acknowledgeUpdate, saveDocument } from "../urbit/index";
 import { UrbitContext } from "../urbit/UrbitProvider";
 import * as Y from "yjs";
 
@@ -18,7 +18,8 @@ function Workspace(props: { path: null | string }) {
 
   // Document State
   useMemo(() => {
-    console.log(props.path);
+    if (documentMeta && documentMeta != null) saveDoc();
+    if (props.path == null) return;
     const parsed = props.path.match(pathParser);
     setDocumentMeta({
       owner: parsed.groups.owner,
@@ -50,15 +51,16 @@ function Workspace(props: { path: null | string }) {
     acknowledgeUpdate(documentMeta, index);
   }
 
-  function applyStage() {
+  function saveDoc() {
     console.log("applying stage: ");
     // update the local document version
+    const version = Y.encodeStateVector(doc);
+    const content = Y.encodeStateAsUpdateV2(doc);
 
     // send the update to urbit
-    stageUpdate(
+    saveDocument(
       documentMeta,
-      { version: new Uint8Array([]), cont: new Uint8Array([]) }, // WIP need to be the encoded doc & the encoded update
-      { author: urbitContext.ship, cont: new Uint8Array([]), time: new Date() }
+      { version: Array.from(version), content: Array.from(content) } // WIP need to be the encoded doc & the encoded update
     );
   }
 
@@ -90,13 +92,13 @@ function Workspace(props: { path: null | string }) {
       <UpdatePanel
         path={props.path}
         show={panel == "update"}
-        applyStage={applyStage}
+        save={saveDoc}
         getStage={getStage}
         applyUpdate={applyUpdate}
         setNotifStatus={setNotifStatus}
       />
       <VersionPanel show={panel == "version"} />
-      <Document type={docType} />
+      <Document type={docType} save={saveDoc} />
     </div>
   );
 }

@@ -1,4 +1,3 @@
-import React from "react";
 import { useEffect, useState } from "react";
 
 import { EditorState } from "prosemirror-state";
@@ -16,6 +15,7 @@ import { comments } from "./plugins/comments";
 import { sync } from "./plugins/crdt/sync";
 import { localundo } from "./plugins/crdt/undo";
 import { handleImage } from "./plugins/handleImage";
+import save from "./plugins/save";
 
 // Menus
 import sidemenu from "./plugins/menus/sidemenu";
@@ -26,7 +26,7 @@ import slashmenu from "./plugins/menus/slashmenu";
 import NodeMenu from "./plugins/menus/NodeMenuNode";
 import ConfigMenu from "./plugins/config/ConfigMenu";
 
-function Document(props: { type: Y.XmlFragment }) {
+function Document(props: { type: Y.XmlFragment; save: () => void }) {
   const [view, setView] = useState(null);
 
   const [sideMenu, setSideMenu] = useState(null);
@@ -34,6 +34,12 @@ function Document(props: { type: Y.XmlFragment }) {
   const [nodeMenu, setNodeMenu] = useState(null);
   const [nodeMenuSearch, setNodeMenuSearch] = useState("");
   const [configMenu, setConfigMenu] = useState(null);
+
+  useEffect(() => {
+    return () => {
+      props.save();
+    };
+  });
 
   useEffect(() => {
     /**
@@ -57,6 +63,7 @@ function Document(props: { type: Y.XmlFragment }) {
         localundo(),
         comments,
         handleImage,
+        save(props.save),
       ],
     });
     setView(

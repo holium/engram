@@ -32,7 +32,7 @@ export const UrbitContext = createContext({
 });
 
 function UrbitProvider(props: any) {
-  const [showTesting, setShowTesting] = useState(true);
+  const [showTesting, setShowTesting] = useState(false);
 
   // ship setup
 
@@ -41,7 +41,7 @@ function UrbitProvider(props: any) {
   if (win.ship) {
     win.urbit.ship = win.ship;
   } else {
-    win.ship = "~dalsyr-diglyn";
+    win.ship = "dalsyr-diglyn";
   }
   const [ship, _] = useState(win.ship);
 
