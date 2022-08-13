@@ -100,22 +100,21 @@ export function createDocument(
 
 export function updateDocument(
   meta: DocumentMeta,
-  doc: Array<number>,
-  update: Array<number>
+  doc: { version: Array<number>, cont: Array<number> },
 ) {
   return new Promise<void>((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
       app: "engram",
-      mark: "engram-do",
-      json: { update: { dmeta: meta, doc: doc, updt: update } },
+      mark: "post",
+      json: { save: { dmeta: meta, doc: doc } },
       onSuccess: () => {
         resolve();
       },
       onError: (e: any) => {
         console.error(
           "Error sending update:",
-          update,
+          doc,
           " to document: ",
           meta,
           e

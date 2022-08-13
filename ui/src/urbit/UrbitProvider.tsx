@@ -10,6 +10,7 @@ import {
   getDocumentSettings,
   getAvailibleUpdates,
   deleteDocument,
+  updateDocument
 } from "./index";
 import { DocumentMeta, OpenDocumentEvent } from "../components/workspace/types";
 import { regular } from "@fortawesome/fontawesome-svg-core/import.macro";
@@ -103,6 +104,11 @@ function UrbitProvider(props: any) {
       console.log("get doc result: ", res);
     });
   }
+  function updateDoc(doc: DocumentMeta) {
+    updateDocument(doc, { version: [0, 0], content: [0, 1, 0] }).then((res) => {
+      console.log("update document result:", res);
+    });
+  }
   /*
   function getDocSettings(doc: any) {
     getDocumentSettings(doc).then((res) => {
@@ -191,10 +197,9 @@ function UrbitProvider(props: any) {
                 
                 <button className="underline" onClick={() => {getDoc(doc)}}>
                   get doc
-                </button>
-		
-                <button className="underline" onClick={() => {getDocSettings(doc)}}>
-                  get doc settings
+                </button>	
+                <button className="underline" onClick={() => {updateDoc(doc)}}>
+                  update doc
                 </button>
                 <button className="underline" onClick={() => {getDocUpdates(doc)}}>
                   get doc updates
