@@ -7,7 +7,7 @@ import {
   deleteDocument,
 } from "../urbit/index";
 import { OpenDocumentEvent } from "../workspace/types";
-import { regular } from "@fortawesome/fontawesome-svg-core/import.macro";
+import { regular, solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as Y from "yjs";
 import FileTree from "./FileTree";
@@ -98,17 +98,18 @@ function Sidebar() {
   */
   return (
     <div className="flex flex-col" style={{ width: "18vw", minWidth: "280px" }}>
-      <div className="px-4 py-3 flex">
+      <div className="px-4 py-3 flex items-center">
         <div className="azimuth">~{urbitStatus.ship}</div>
         <div className="flex-grow"> </div>
-        <div className="icon">{urbitStatus.connection}</div>
+        <FontAwesomeIcon icon={solid('circle')} className="icon" style={urbitStatus.connection < 2 ? {color: "var(--status-success-color)"} : { color: "var(--status-failure-color)"} }/>
       </div>
-      <div className="mt-4 px-4 py-2 flex">
+      <div className="flex flex-col overflow-auto">
+      <div className="mt-4 tree-item">
         <div className="font-bold flex-grow py-1">Your Ship</div>
         <FontAwesomeIcon
           onClick={() => setNewDoc(true)}
           icon={regular("plus-square")}
-          className="icon clickable"
+          className="icon clickable tree-item-hidden"
         />
       </div>
       {newDoc && (
@@ -125,6 +126,11 @@ function Sidebar() {
             onChange={(event) => {
               setNewDocName(event.target.value);
             }}
+	    onKeyPress={(event) => {
+	      console.log(event);
+	      if(event.key == "Enter") createDoc();
+	      if(event.key == "Esc") closeCreateDoc();
+	    }}
           />
           <FontAwesomeIcon
             onClick={createDoc}
@@ -141,12 +147,12 @@ function Sidebar() {
       {list.map((doc, i) => {
         return (
           <div
-            className="px-4 py-2 clickable flex"
+            className="tree-item clickable"
             onClick={() => {
               openDocument(doc);
             }}
           >
-	    <div className="py-1 flex-grow">
+	    <div className="py-1 flex-grow overflow-hidden overflow-ellipsis whitespace-nowrap">
               {doc.name}
 	    </div>
 	    <FontAwesomeIcon
@@ -155,11 +161,12 @@ function Sidebar() {
 	        deleteDoc(doc, i)
 	      }}
 	      icon={regular("trash-alt")}
-	      className="icon clickable"
+	      className="icon clickable tree-item-hidden"
 	    />
           </div>
         );
       })}
+      </div>
     </div>
   );
 }

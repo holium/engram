@@ -39,6 +39,7 @@ function Navbar(props: {
         value={name}
         style={{ outlineColor: "var(--type-color)" }}
       />
+      {/*
       <FontAwesomeIcon
         style={
           props.panel == "publish"
@@ -90,6 +91,7 @@ function Navbar(props: {
         className="icon clickable mx-2"
       />
       <FontAwesomeIcon icon={regular("gear")} className="icon clickable mx-2" />
+      */}
     </div>
   );
 }
