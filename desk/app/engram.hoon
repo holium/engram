@@ -117,6 +117,7 @@
       counter  (add counter 1)
       results  (snoc results [id:curr meta])
     ==
+    ``noun+!>((pairs:enjs:format assembled))
   ::
       [%x %gdoc @ @ @ ~]
     =/  owner=@p  (slav %p i.t.t.path)
