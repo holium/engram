@@ -35,7 +35,7 @@
   |=  [=mark =vase]
   ^-  (quip card _this)
   ?+    mark  (on-poke:def mark vase)
-      %noun
+      %post
     =/  action  !<(?(action:engram) vase)
     ?-    -.action
     ::
@@ -104,8 +104,19 @@
   ^-  (unit (unit cage))
   ?+    path  (on-peek:def path)
       [%x %docinfo ~]
-    =/  k=(set [owner=@p id=@ name=@t])  ~(key by d)
-    ``noun+!>(k)
+    =/  out  ~(tap in ~(key by d))
+    =/  results  *(list [@t json])
+    =/  counter  0
+    =/  assembled
+    |-
+    ?:  =(counter (lent out))
+      results
+    =/  curr  (snag counter out)
+    =/  meta  (pairs:enjs:format ~[['owner' (ship:enjs:format owner:curr)] ['name' (tape:enjs:format (trip name:curr))]])
+    %=  $
+      counter  (add counter 1)
+      results  (snoc results [id:curr meta])
+    ==
   ::
       [%x %gdoc @ @ @ ~]
     =/  owner=@p  (slav %p i.t.t.path)
