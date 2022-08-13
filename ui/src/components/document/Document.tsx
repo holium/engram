@@ -37,6 +37,15 @@ function Document(props: { path: string }) {
   const [nodeMenuSearch, setNodeMenuSearch] = useState("");
   const [configMenu, setConfigMenu] = useState(null);
 
+  //Save
+  const [saveFunc, setSaveFunc] = useState(null);
+  useEffect(() => {
+    return () => {
+      console.log("save");
+      if (saveFunc) saveFunc();
+    };
+  }, []);
+
   useEffect(() => {
     /**
      * Get encoded state from urbit
@@ -69,52 +78,44 @@ function Document(props: { path: string }) {
         })
       );
       console.log(content);
-      //Y.applyUpdateV2(doc, content);
       const type = doc.getXmlFragment("prosemirror");
-      //console.log("after injected update", Y.encodeStateAsUpdateV2(doc));
-      //console.log("initial load", Y.encodeStateAsUpdateV2(doc));
-      console.log("type: ", type);
-      console.log("doc: ", doc);
-    const state = EditorState.create({
-      schema: schema,
-      plugins: [
-        buildKeymap(schema),
-        baseKeymap,
-        shortcuts(schema),
-        //config(setConfigMenu),
-        //placeholders,
-        sidemenu(setSideMenu),
-        highlightmenu(setHighlightMenu),
-        slashmenu(setNodeMenu, setNodeMenuSearch),
-        //srcmenu(setSrcMenu),
-        //sync(type),
-        //localundo(),
-        ySyncPlugin(type),
-        yUndoPlugin(),
-        comments,
-        handleImage,
-        save(() => {
-          console.log("applying stage: ");
-          // update the local document version
-          const version = Y.encodeStateVector(doc);
-          const content = Y.encodeStateAsUpdate(doc);
+      const saveDoc = () => {
+        const version = Y.encodeStateVector(doc);
+        const content = Y.encodeStateAsUpdate(doc);
 
-          console.log(content);
-
-          // send the update to urbit
-          saveDocument(
-            meta,
-            { version: Array.from(version), content: Array.from(content) } // WIP need to be the encoded doc & the encoded update
-          );
-        }),
-      ],
-    });
-    const view = new EditorView(document.querySelector("#document"), {
+        saveDocument(meta, {
+          version: Array.from(version),
+          content: Array.from(content),
+        });
+      };
+      setSaveFunc(saveDoc);
+      const state = EditorState.create({
+        schema: schema,
+        plugins: [
+          buildKeymap(schema),
+          baseKeymap,
+          shortcuts(schema),
+          //config(setConfigMenu),
+          //placeholders,
+          sidemenu(setSideMenu),
+          highlightmenu(setHighlightMenu),
+          slashmenu(setNodeMenu, setNodeMenuSearch),
+          //srcmenu(setSrcMenu),
+          //sync(type),
+          //localundo(),
+          ySyncPlugin(type),
+          yUndoPlugin(),
+          comments,
+          handleImage,
+          save(saveDoc),
+        ],
+      });
+      const view = new EditorView(document.querySelector("#document"), {
         state: state,
-      })
-    console.log(view);
-    Y.applyUpdate(doc, content);
-    setView(view);
+      });
+      console.log(view);
+      Y.applyUpdate(doc, content);
+      setView(view);
     });
   }, [props.path]);
 
