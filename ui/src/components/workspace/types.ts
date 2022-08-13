@@ -5,7 +5,21 @@ export function OpenDocumentEvent(meta: DocumentMeta): Event {
   });
 }
 
-/* State -------------------------------------------------------------------- */
+/* Urbit State -------------------------------------------------------------- */
+export enum ConnectionStatus {
+  Closed,
+  Connected,
+  Retrying,
+  Errored,
+}
+
+export enum NotifStatus {
+  None,
+  Stage,
+  Update,
+  Both,
+}
+
 export interface Update {
   author: string;
   content: Uint8Array;

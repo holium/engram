@@ -1,11 +1,6 @@
 import { Plugin, PluginKey } from "prosemirror-state";
-import { EditorView } from "prosemirror-view";
-import { DocumentConfig } from "./config.ts";
-import {
-  assembleConfigNodeView,
-  assembleConfigTermNodeView,
-} from "./helpers.ts";
-import { ConfigTerm } from "./config.ts";
+import { DocumentConfig, ConfigTerm } from "./config";
+import { assembleConfigNodeView, assembleConfigTermNodeView } from "./helpers";
 
 export const ConfigSpec = {
   content: "configfield*",

@@ -1,35 +1,29 @@
 import { useState, useEffect } from "react";
-
-import { SlideContext } from "./SlideContext";
-import UpdatePanel from "../panels/UpdatePanel";
-import VersionPanel from "../panels/VersionPanel";
-import PublishPanel from "../panels/PublishPanel";
-
 import { regular, solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { getAvailibleUpdates } from "../../urbit/index";
-
-const pathParser = new RegExp("(?<owner>[^/]+)/(?<id>[^/]+)/(?<name>[^/]+)");
+import { pathParser } from "../urbit/index";
+import { NotifStatus } from "../workspace/types";
 
 function Navbar(props: {
-  doc: null | string;
+  path: string;
   panel: string;
   openPanel: (panel: any) => void;
+  notifStatus: NotifStatus;
 }) {
   const [owner, setOwner] = useState("");
   const [name, setName] = useState("");
 
-  // Notifications
-  const [stage, setStage] = useState(false);
-  const [updates, setUpdates] = useState([]);
-
   useEffect(() => {
-    const parsed = props.doc == null ? null : props.doc.match(pathParser);
-    console.log("doc updated:", props.doc);
+    const parsed = props.path.match(pathParser);
     setOwner(parsed.groups.owner);
     setName(parsed.groups.name);
-    getAvailibleUpdates(props.doc);
-  }, [props.doc]);
+  }, [props.path]);
+
+  function updateDocumentName(event) {
+    console.log("update document name to:", event.target.value);
+    // urbit call
+    setName(event.target.value);
+  }
 
   return (
     <div id="toolbar">
@@ -40,7 +34,11 @@ function Navbar(props: {
       >
         /
       </div>
-      <div className="flex-grow mx-2">{name}</div>
+      <input
+        className="flex-grow px-3 py-1 bg-none focus:outline rounded-1"
+        value={name}
+        style={{ "outline-color": "var(--type-color)" }}
+      />
       <FontAwesomeIcon
         style={
           props.panel == "publish"
@@ -67,12 +65,12 @@ function Navbar(props: {
             : props.openPanel("update");
         }}
         icon={
-          stage
-            ? updates.length > 0
-              ? solid("bell-on")
-              : regular("bell-on")
-            : updates.length > 0
+          props.notifStatus == NotifStatus.Both
+            ? solid("bell-on")
+            : props.notifStatus == NotifStatus.Stage
             ? solid("bell")
+            : props.notifStatus == NotifStatus.Update
+            ? regular("bell-on")
             : regular("bell")
         }
         className="icon clickable mx-2"

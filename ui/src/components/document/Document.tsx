@@ -10,8 +10,6 @@ import { baseKeymap, buildKeymap } from "./build/keymap";
 import { config } from "./plugins/config/plugin";
 
 //Plugins
-import { collab } from "prosemirror-collab";
-import { history } from "prosemirror-history";
 import placeholders from "./plugins/placeholders";
 import shortcuts from "./plugins/shortcuts";
 import { comments } from "./plugins/comments";
@@ -27,40 +25,17 @@ import HighlightMenu from "./plugins/menus/HighlightMenuNode";
 import slashmenu from "./plugins/menus/slashmenu";
 import NodeMenu from "./plugins/menus/NodeMenuNode";
 import ConfigMenu from "./plugins/config/ConfigMenu";
-import srcmenu from "./plugins/menus/srcmenu";
-import SrcMenu from "./plugins/menus/SrcMenuNode";
 
-function Document(props) {
+function Document(props: { type: Y.XmlFragment }) {
   const [view, setView] = useState(null);
-  const [docState, setDocState] = useState(null);
-
-  const [showConfig, setConfig] = useState(false);
 
   const [sideMenu, setSideMenu] = useState(null);
   const [highlightMenu, setHighlightMenu] = useState(null);
-  const [srcMenu, setSrcMenu] = useState(null);
   const [nodeMenu, setNodeMenu] = useState(null);
   const [nodeMenuSearch, setNodeMenuSearch] = useState("");
   const [configMenu, setConfigMenu] = useState(null);
 
-  function pull(update) {
-    // to be called from a wrapper w/ an encoded update from urbit
-    Y.applyUpdate(docState, update);
-  }
-
-  function stage(doc: any) {
-    const state = Y.encodeStateAsUpdateV2(doc);
-    const version = Y.encodeStateVector(doc);
-    // send them to urbit
-  }
-
   useEffect(() => {
-    console.log("doc changed to: ", props.doc);
-    const doc = new Y.Doc();
-    doc.clientID = 0; // the ship
-    doc.gc = false;
-    const type = doc.getXmlFragment("prosemirror");
-
     /**
      * Get encoded state from urbit
      * Y.applyUpdate(doc, state)
@@ -78,19 +53,18 @@ function Document(props) {
         highlightmenu(setHighlightMenu),
         slashmenu(setNodeMenu, setNodeMenuSearch),
         //srcmenu(setSrcMenu),
-        sync(type),
+        sync(props.type),
         localundo(),
         comments,
         handleImage,
       ],
     });
-    setDocState(doc);
     setView(
       new EditorView(document.querySelector("#document"), {
         state: state,
       })
     );
-  }, [props.doc]);
+  }, [props.type]);
 
   return (
     <div id="document-wrapper">
@@ -110,7 +84,6 @@ function Document(props) {
         ) : (
           ""
         )}
-        {srcMenu ? <SrcMenu menu={srcMenu} view={view} /> : ""}
         {nodeMenu ? (
           <NodeMenu
             menu={nodeMenu}
