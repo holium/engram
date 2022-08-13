@@ -5,7 +5,7 @@ import SlideProvider from "./components/toolbar/SlideContext";
 import UrbitProvider from "./components/urbit/UrbitProvider";
 
 function App() {
-  const [doc, openDoc] = useState("~nut/00/document name");
+  const [doc, openDoc] = useState(null);
 
   useEffect(() => {
     document.addEventListener("open-document", (event) => {
