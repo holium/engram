@@ -93,13 +93,10 @@ export function createDocument(
 ): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     checkUrbitWindow(reject);
-    console.log(meta);
-    console.log(meta.name);
-    console.log(meta.name.replace(" ", "-"));
     const dmeta = {
       owner: meta.owner,
       id: meta.id,
-      name: meta.name.replace(" ", "-"),
+      name: meta.name.replaceAll(" ", "-"),
     };
     (window as any).urbit.poke({
       app: "engram",

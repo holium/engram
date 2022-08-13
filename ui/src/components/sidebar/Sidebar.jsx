@@ -56,7 +56,7 @@ function Sidebar() {
     const meta: DocumentMeta = {
       owner: `~${window.ship}`,
       id: `~${window.ship}-${crypto.randomUUID()}`,
-      name: newDocName.replace(' ', '-')
+      name: newDocName.replaceAll(' ', '-')
     };
 
     const doc = new Y.Doc();
@@ -82,7 +82,8 @@ function Sidebar() {
 
   function deleteDoc(doc, index) {
     console.log("deleting document:", doc);
-    setList([...list.splice(index, 1)])
+    list.splice(index, 1)
+    setList([...list])
     deleteDocument(doc).then((res) => {
       console.log("delete document result:", res);
     });

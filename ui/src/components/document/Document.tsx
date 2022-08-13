@@ -51,6 +51,7 @@ function Document(props: { path: string }) {
      * Get encoded state from urbit
      * Y.applyUpdate(doc, state)
      **/
+    if(saveFunc) saveFunc();
     if (props.path == null) return;
     if (view != null) view.destroy();
     const parsed = props.path.match(pathParser);
@@ -60,12 +61,9 @@ function Document(props: { path: string }) {
       id: parsed.groups.id,
       name: parsed.groups.name,
     };
-    console.log("document meta:", meta);
-    console.log("doc changed to: ", props.path);
     const doc = new Y.Doc();
     doc.clientID = 0; //(window as any).ship;
     doc.gc = false;
-    //const type = doc.getXmlFragment("prosemirror");
     getDocument(meta).then((res: any) => {
       const version = new Uint8Array(
         Object.keys(res.version).map((index: any) => {
@@ -77,7 +75,6 @@ function Document(props: { path: string }) {
           return res.content[index];
         })
       );
-      console.log(content);
       const type = doc.getXmlFragment("prosemirror");
       const saveDoc = () => {
         const version = Y.encodeStateVector(doc);
@@ -88,7 +85,6 @@ function Document(props: { path: string }) {
           content: Array.from(content),
         });
       };
-      setSaveFunc(saveDoc);
       const state = EditorState.create({
         schema: schema,
         plugins: [
@@ -107,7 +103,15 @@ function Document(props: { path: string }) {
           yUndoPlugin(),
           comments,
           handleImage,
-          save(saveDoc),
+          save(() => {
+            const version = Y.encodeStateVector(doc);
+            const content = Y.encodeStateAsUpdate(doc);
+
+            saveDocument(meta, {
+              version: Array.from(version),
+              content: Array.from(content),
+            });
+          }),
         ],
       });
       const view = new EditorView(document.querySelector("#document"), {
