@@ -257,8 +257,10 @@ export class ProsemirrorBinding {
     transaction.changedParentTypes.forEach(delType);
     const fragmentContent = this.type
       .toArray()
-      .map((t: any) =>
-        createNodeIfNotExists(t, this.view.state.schema, this.mapping)
+      .map((t: any) => {
+	console.log("trying to create node: ", t);
+        return createNodeIfNotExists(t, this.view.state.schema, this.mapping)
+      }
       )
       .filter((n: any) => n !== null);
 
