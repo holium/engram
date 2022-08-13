@@ -96,7 +96,8 @@ function Workspace(props: { path: null | string }) {
   }
 
   function getStage(): number {
-    return Y.encodeStateAsUpdate(doc).byteLength;
+    //return Y.encodeStateAsUpdate(doc).byteLength;
+    return 0;
   }
 
   // Open Panel

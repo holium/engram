@@ -13,8 +13,9 @@ import { config } from "./plugins/config/plugin";
 import placeholders from "./plugins/placeholders";
 import shortcuts from "./plugins/shortcuts";
 import { comments } from "./plugins/comments";
-import { sync } from "./plugins/crdt/sync";
-import { localundo } from "./plugins/crdt/undo";
+//import { sync } from "./plugins/crdt/sync";
+//import { localundo } from "./plugins/crdt/undo";
+import { ySyncPlugin, yUndoPlugin, undo, redo } from "y-prosemirror";
 import { handleImage } from "./plugins/handleImage";
 import save from "./plugins/save";
 
@@ -53,9 +54,9 @@ function Document(props: { path: string }) {
     console.log("document meta:", meta);
     console.log("doc changed to: ", props.path);
     const doc = new Y.Doc();
-    doc.clientID = (window as any).ship;
+    doc.clientID = 0; //(window as any).ship;
     doc.gc = false;
-    const type = doc.getXmlFragment("prosemirror");
+    //const type = doc.getXmlFragment("prosemirror");
     getDocument(meta).then((res: any) => {
       const version = new Uint8Array(
         Object.keys(res.version).map((index: any) => {
@@ -68,11 +69,12 @@ function Document(props: { path: string }) {
         })
       );
       console.log(content);
-      Y.applyUpdateV2(doc, content);
-      console.log("after injected update", Y.encodeStateAsUpdateV2(doc));
-      console.log("initial load", Y.encodeStateAsUpdateV2(doc));
-    });
-
+      //Y.applyUpdateV2(doc, content);
+      const type = doc.getXmlFragment("prosemirror");
+      //console.log("after injected update", Y.encodeStateAsUpdateV2(doc));
+      //console.log("initial load", Y.encodeStateAsUpdateV2(doc));
+      console.log("type: ", type);
+      console.log("doc: ", doc);
     const state = EditorState.create({
       schema: schema,
       plugins: [
@@ -85,15 +87,17 @@ function Document(props: { path: string }) {
         highlightmenu(setHighlightMenu),
         slashmenu(setNodeMenu, setNodeMenuSearch),
         //srcmenu(setSrcMenu),
-        sync(type),
-        localundo(),
+        //sync(type),
+        //localundo(),
+        ySyncPlugin(type),
+        yUndoPlugin(),
         comments,
         handleImage,
         save(() => {
           console.log("applying stage: ");
           // update the local document version
           const version = Y.encodeStateVector(doc);
-          const content = Y.encodeStateAsUpdateV2(doc);
+          const content = Y.encodeStateAsUpdate(doc);
 
           console.log(content);
 
@@ -105,11 +109,13 @@ function Document(props: { path: string }) {
         }),
       ],
     });
-    setView(
-      new EditorView(document.querySelector("#document"), {
+    const view = new EditorView(document.querySelector("#document"), {
         state: state,
       })
-    );
+    console.log(view);
+    Y.applyUpdate(doc, content);
+    setView(view);
+    });
   }, [props.path]);
 
   return (
