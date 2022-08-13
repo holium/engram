@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import { EditorState } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
+import { getDocument, saveDocument, pathParser } from "../urbit/index";
 // Build
 import * as Y from "yjs";
 import schema from "./build/schema";
@@ -26,8 +27,7 @@ import slashmenu from "./plugins/menus/slashmenu";
 import NodeMenu from "./plugins/menus/NodeMenuNode";
 import ConfigMenu from "./plugins/config/ConfigMenu";
 
-function Document(props: { type: Y.XmlFragment; save: () => void }) {
-  console.log(props.type);
+function Document(props: { path: string }) {
   const [view, setView] = useState(null);
 
   const [sideMenu, setSideMenu] = useState(null);
@@ -41,7 +41,38 @@ function Document(props: { type: Y.XmlFragment; save: () => void }) {
      * Get encoded state from urbit
      * Y.applyUpdate(doc, state)
      **/
-    if(view != null) view.destroy();
+    if (props.path == null) return;
+    if (view != null) view.destroy();
+    const parsed = props.path.match(pathParser);
+    console.log("parsed path:", parsed);
+    const meta = {
+      owner: parsed.groups.owner,
+      id: parsed.groups.id,
+      name: parsed.groups.name,
+    };
+    console.log("document meta:", meta);
+    console.log("doc changed to: ", props.path);
+    const doc = new Y.Doc();
+    doc.clientID = (window as any).ship;
+    doc.gc = false;
+    const type = doc.getXmlFragment("prosemirror");
+    getDocument(meta).then((res: any) => {
+      const version = new Uint8Array(
+        Object.keys(res.version).map((index: any) => {
+          return res.version[index];
+        })
+      );
+      const content = new Uint8Array(
+        Object.keys(res.content).map((index: any) => {
+          return res.content[index];
+        })
+      );
+      console.log(content);
+      Y.applyUpdateV2(doc, content);
+      console.log("after injected update", Y.encodeStateAsUpdateV2(doc));
+      console.log("initial load", Y.encodeStateAsUpdateV2(doc));
+    });
+
     const state = EditorState.create({
       schema: schema,
       plugins: [
@@ -54,11 +85,24 @@ function Document(props: { type: Y.XmlFragment; save: () => void }) {
         highlightmenu(setHighlightMenu),
         slashmenu(setNodeMenu, setNodeMenuSearch),
         //srcmenu(setSrcMenu),
-        sync(props.type),
+        sync(type),
         localundo(),
         comments,
         handleImage,
-        save(props.save),
+        save(() => {
+          console.log("applying stage: ");
+          // update the local document version
+          const version = Y.encodeStateVector(doc);
+          const content = Y.encodeStateAsUpdateV2(doc);
+
+          console.log(content);
+
+          // send the update to urbit
+          saveDocument(
+            meta,
+            { version: Array.from(version), content: Array.from(content) } // WIP need to be the encoded doc & the encoded update
+          );
+        }),
       ],
     });
     setView(
@@ -66,7 +110,7 @@ function Document(props: { type: Y.XmlFragment; save: () => void }) {
         state: state,
       })
     );
-  }, [props.type]);
+  }, [props.path]);
 
   return (
     <div id="document-wrapper">

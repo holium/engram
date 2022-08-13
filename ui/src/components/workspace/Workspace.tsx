@@ -5,7 +5,12 @@ import PublishPanel from "../panels/PublishPanel";
 import UpdatePanel from "../panels/UpdatePanel";
 import VersionPanel from "../panels/VersionPanel";
 import { DocumentMeta, NotifStatus } from "./types";
-import { pathParser, acknowledgeUpdate, saveDocument, getDocument } from "../urbit/index";
+import {
+  pathParser,
+  acknowledgeUpdate,
+  saveDocument,
+  getDocument,
+} from "../urbit/index";
 import { UrbitContext } from "../urbit/UrbitProvider";
 import * as Y from "yjs";
 
@@ -18,6 +23,7 @@ function Workspace(props: { path: null | string }) {
   const [docType, setDocType] = useState(null);
 
   // Document State
+  /*
   useMemo(() => {
     //if (documentMeta && documentMeta != null) saveDoc();
     if (props.path == null) return;
@@ -31,20 +37,24 @@ function Workspace(props: { path: null | string }) {
     };
     setDocumentMeta(meta);
     console.log("document meta:", meta);
-      console.log("doc changed to: ", props.path);
-      const doc = new Y.Doc();
-      doc.clientID = (window as any).ship
-      doc.gc = false;
+    console.log("doc changed to: ", props.path);
+    const doc = new Y.Doc();
+    doc.clientID = (window as any).ship;
+    doc.gc = false;
     const type = doc.getXmlFragment("prosemirror");
     setDocType(type);
     setDoc(doc);
-    getDocument(meta).then((res) => {
-      const version = new Uint8Array(Object.keys(res.version).map((index: any) => {
-        return res.version[index]
-      }));
-      const content = new Uint8Array(Object.keys(res.content).map((index: any) => {
-        return res.content[index]
-      }));
+    getDocument(meta).then((res: any) => {
+      const version = new Uint8Array(
+        Object.keys(res.version).map((index: any) => {
+          return res.version[index];
+        })
+      );
+      const content = new Uint8Array(
+        Object.keys(res.content).map((index: any) => {
+          return res.content[index];
+        })
+      );
       console.log(content);
       //const type = doc.getXmlFragment("prosemirror");
       setTimeout(() => {
@@ -59,6 +69,7 @@ function Workspace(props: { path: null | string }) {
       setReady(true);
     });
   }, [props.path]);
+  */
 
   function applyUpdate(index: number, update: Uint8Array) {
     console.log("applying update: ", update);
@@ -74,7 +85,7 @@ function Workspace(props: { path: null | string }) {
     // update the local document version
     const version = Y.encodeStateVector(doc);
     const content = Y.encodeStateAsUpdateV2(doc);
-    
+
     console.log(content);
 
     // send the update to urbit
