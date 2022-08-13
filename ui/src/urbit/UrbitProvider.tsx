@@ -66,17 +66,6 @@ function UrbitProvider(props: any) {
 
   // notification status
   const [notifs, setNotifStatus] = useState(NotifStatus.None);
-  subscribeUpdateStream(
-    (event) => {
-      console.log("received update: ", event);
-    },
-    (event) => {
-      console.log("quit update subscription", event);
-    },
-    (e) => {
-      console.log("update subscription errored: ", e);
-    }
-  );
 
   /* TESTING ---------------------------------------------------------------- */
   function createDoc() {
@@ -97,37 +86,24 @@ function UrbitProvider(props: any) {
     createDocument(meta,  { version: Array.from(version), content: Array.from(encoding) }).then((res) => {
       console.log("create document result", res);
     });
-    
-    /*
-    setDocs([
-      ...docs,
-      {
-        owner: (window as any).ship,
-        id: Date.now(),
-        name: "New Document",
-      },
-    ]);
-    openDocument({
-      owner: (window as any).ship,
-      id: Date.now(),
-      name: "New Document",
-    });
-    */
   }
 
   function listDocs() {
-    //checkUrbitWindow();
+    checkUrbitWindow();
     listDocuments().then((res) => {
       console.log("list documents result: ", res);
-      setDocs([]);
+      setDocs(Object.keys(res).map((key) => {
+        return { id: key, owner: "~" + res[key].owner, name: res[key].name }
+      }));
     });
   }
 
-  function getDoc(doc: any) {
+  function getDoc(doc: DocumentMeta) {
     getDocument(doc).then((res) => {
       console.log("get doc result: ", res);
     });
   }
+  /*
   function getDocSettings(doc: any) {
     getDocumentSettings(doc).then((res) => {
       console.log("get doc settings: ", res);
@@ -138,6 +114,7 @@ function UrbitProvider(props: any) {
       console.log("get doc updates: ", res);
     });
   }
+  */
   function deleteDoc(doc: any) {
     deleteDocument(doc).then((res) => {
       console.log("deleted document:", res);
@@ -147,6 +124,7 @@ function UrbitProvider(props: any) {
       });
     });
   }
+  /*
   function subscribeToUpdates(doc: any) {
     subscribeUpdateStream(
       (event) => {
@@ -166,6 +144,7 @@ function UrbitProvider(props: any) {
     console.log("opening doc:", doc);
     document.dispatchEvent(OpenDocumentEvent(doc));
   }
+  */
 
   return (
     <UrbitContext.Provider
@@ -198,7 +177,6 @@ function UrbitProvider(props: any) {
           list documents
         </button>
         <ul>
-          {console.log(docs)}
           {docs.map((doc) => {
             return (
               <li key={doc.id} className="flex gap-3">
@@ -208,23 +186,27 @@ function UrbitProvider(props: any) {
                     openDocument(doc);
                   }}
                 >
-                  {doc.name}
+                  {doc.name} {doc.owner} {doc.id}
                 </span>
-                <button className="underline" onClick={getDoc(doc)}>
+                
+                <button className="underline" onClick={() => {getDoc(doc)}}>
                   get doc
                 </button>
-                <button className="underline" onClick={getDocSettings(doc)}>
+		
+                <button className="underline" onClick={() => {getDocSettings(doc)}}>
                   get doc settings
                 </button>
-                <button className="underline" onClick={getDocUpdates(doc)}>
+                <button className="underline" onClick={() => {getDocUpdates(doc)}}>
                   get doc updates
                 </button>
-                <button className="underline" onClick={subscribeToUpdates(doc)}>
+                <button className="underline" onClick={() => {subscribeToUpdates(doc)}}>
                   subscribe to updates
                 </button>
-                <button className="underline" onClick={deleteDoc(doc)}>
+		
+                <button className="underline" onClick={() => {deleteDoc(doc)}}>
                   delete document
                 </button>
+                
               </li>
             );
           })}

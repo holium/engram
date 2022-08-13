@@ -101,6 +101,7 @@
 ++  on-leave  on-leave:def
 ++  on-peek
   |=  =path
+  ~&  path
   ^-  (unit (unit cage))
   ?+    path  (on-peek:def path)
       [%x %docinfo ~]
@@ -120,19 +121,46 @@
     ``noun+!>((pairs:enjs:format assembled))
   ::
       [%x %gdoc @ @ @ ~]
+    ~&  "get document"
     =/  owner=@p  (slav %p i.t.t.path)
-    =/  id=@  (slav %ud i.t.t.t.path)
+    =/  id=@  (crip (trip i.t.t.t.path))
     =/  name=@t  (crip (trip i.t.t.t.t.path))
     =/  meta  [owner=owner id=id name=name]
     =/  doc=[version=(list @ud) cont=(list @ud)]  (need (~(get by d) meta))
-    ``noun+!>(doc)
+    ~&  doc
+    =/  version-result  *(list [@t json])
+    =/  version-counter  0
+    =/  assembled-version
+    |-
+    ?:  =(version-counter (lent version:doc))
+      version-result
+    %=  $
+      version-counter  (add version-counter 1)
+      version-result  (snoc version-result [(crip "{<version-counter>}") (numb:enjs:format (snag version-counter version:doc))])
+    ==
+    =/  content-result  *(list [@t json])
+    =/  content-counter  0
+    =/  assembled-content
+    |-
+    ?:  =(content-counter (lent cont:doc))
+      content-result
+    ~&  (snag content-counter cont:doc)
+    %=  $
+      content-counter  (add content-counter 1)
+      content-result  (snoc content-result [(crip "{<content-counter>}") (numb:enjs:format (snag content-counter cont:doc))])
+    ==
+    ~&  assembled-content
+    ``noun+!>((pairs:enjs:format ~[['version' (pairs:enjs:format assembled-version)] ['content' (pairs:enjs:format assembled-content)]]))
   ::
       [%x %gsetting @ @ @ ~]
+    ~&  "get document settings"
     =/  owner=@p  (slav %p i.t.t.path)
     =/  id=@  (slav %ud i.t.t.t.path)
     =/  name=@t  (crip (trip i.t.t.t.t.path))
     =/  meta  [owner=owner id=id name=name]
+    ~&  meta
     =/  stg=[perms=(list @p)]  (need (~(get by s) meta))
+    ~&  stg
     ``noun+!>(stg)
   ::
       [%x %gfolders @ @ @ ~]  ``noun+!>(f)

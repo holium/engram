@@ -31,11 +31,13 @@ export function listDocuments(): Promise<Array<DocumentMeta>> {
   });
 }
 
-export function getDocument(meta: string): Promise<Document> {
+export function getDocument(meta: DocumentMeta): Promise<Document> {
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
+    console.log("calling get document", meta);
     (window as any).urbit
-      .scry({ app: "engram", path: `/gdoc/${meta}/noun` })
+      //.scry({ app: "engram", path: `/gdoc/${meta.owner}/${meta.id}/${meta.name}` })
+      .scry({ app: "engram", path: `/gdoc/${meta.owner}/${meta.id}/${meta.name}` })
       .then((response: any) => {
         console.log(response);
         resolve(response);
@@ -43,11 +45,11 @@ export function getDocument(meta: string): Promise<Document> {
   });
 }
 
-export function getDocumentSettings(meta: any): Promise<Document> {
+export function getDocumentSettings(meta: DocumentMeta): Promise<Document> {
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit
-      .scry({ app: "engram", path: "/gsettings", body: meta })
+      .scry({ app: "engram", path: `/gsettings/${meta.owner}/${meta.id}/${meta.name}` })
       .then((response: any) => {
         console.log(response);
         resolve(response);
@@ -56,12 +58,12 @@ export function getDocumentSettings(meta: any): Promise<Document> {
 }
 
 export function getAvailibleUpdates(
-  meta: string
+  meta: DocumentMeta
 ): Promise<Array<DocumentUpdate>> {
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit
-      .scry({ app: "engram", path: `/pull/${meta}/noun`, body: meta })
+      .scry({ app: "engram", path: `/pull/${meta.owner}/${meta.id}/${meta.name}`, body: meta })
       .then((response: any) => {
         console.log(response);
         resolve(response);
@@ -77,10 +79,14 @@ export function createDocument(
 ): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     checkUrbitWindow(reject);
+    console.log(meta)
+    console.log(meta.name)
+    console.log(meta.name.replace(' ', '-'));
+    const dmeta = { owner: meta.owner, id: meta.id, name: meta.name.replace(' ', '-') };
     (window as any).urbit.poke({
       app: "engram",
       mark: "post",
-      json: { make: { dmeta: meta, doc: doc } },
+      json: { make: { dmeta: dmeta, doc: doc } },
       onSuccess: () => {
         resolve();
       },
@@ -125,7 +131,7 @@ export function deleteDocument(meta: DocumentMeta) {
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
       app: "engram",
-      mark: "engram-do",
+      mark: "post",
       json: { delete: { dmeta: meta } },
       onSuccess: () => {
         resolve();
