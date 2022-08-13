@@ -82,8 +82,8 @@ function UrbitProvider(props: any) {
   function createDoc() {
     //checkUrbitWindow();
     const meta: DocumentMeta = {
-      owner: (window as any).ship,
-      id: Date.now().toString(12),
+      owner: `~${(window as any).ship}`,
+      id: `~${(window as any).ship}-${crypto.randomUUID()}`,
       name: "new document",
     };
 
@@ -91,12 +91,14 @@ function UrbitProvider(props: any) {
     doc.clientID = (window as any).ship; // the ship
     doc.gc = false;
     const type = doc.getXmlFragment("prosemirror");
+    const version = Y.encodeStateVector(doc)
     const encoding = Y.encodeStateAsUpdateV2(doc);
-    /*
-    createDocument(meta, encoding).then((res) => {
+    
+    createDocument(meta,  { version: Array.from(version), content: Array.from(encoding) }).then((res) => {
       console.log("create document result", res);
     });
-    */
+    
+    /*
     setDocs([
       ...docs,
       {
@@ -110,10 +112,11 @@ function UrbitProvider(props: any) {
       id: Date.now(),
       name: "New Document",
     });
+    */
   }
 
   function listDocs() {
-    checkUrbitWindow();
+    //checkUrbitWindow();
     listDocuments().then((res) => {
       console.log("list documents result: ", res);
       setDocs([]);

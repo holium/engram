@@ -20,10 +20,13 @@ export function listDocuments(): Promise<Array<DocumentMeta>> {
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit
-      .scry({ app: "engram", path: "/docinfo/noun" })
+      .scry({ app: "engram", path: "/docinfo" })
       .then((response: any) => {
         console.log(response);
         resolve(response);
+      },
+      (err: any) => {
+        console.log("list documents error: ", err);
       });
   });
 }
@@ -76,7 +79,7 @@ export function createDocument(
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
       app: "engram",
-      mark: "engram-do",
+      mark: "post",
       json: { make: { dmeta: meta, doc: doc } },
       onSuccess: () => {
         resolve();
