@@ -1,5 +1,5 @@
-import { createContext, useState } from "react";
-import { Urbit } from "@urbit/http-api";
+import { createContext, useState, useEffect } from "react";
+import { Urbit, Patp } from "@urbit/http-api";
 import * as Y from "yjs";
 import {
   checkUrbitWindow,
@@ -10,43 +10,40 @@ import {
   getDocumentSettings,
   getAvailibleUpdates,
   deleteDocument,
-  updateDocument
+  saveDocument,
 } from "./index";
-import { DocumentMeta, OpenDocumentEvent } from "../components/workspace/types";
+import {
+  DocumentMeta,
+  OpenDocumentEvent,
+  ConnectionStatus,
+  NotifStatus,
+} from "../workspace/types";
 import { regular } from "@fortawesome/fontawesome-svg-core/import.macro";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-export enum ConnectionStatus {
-  Closed,
-  Connecting,
-  Connected,
-  Retrying,
-  Errored,
-}
+/**
+ * urbit: Urbit -- the Urbit object; used for sending pokes and scries, holds additional urbit information
+ * connection: ConnectionStatus -- defaults to Closed, Connected means we're all good, Retrying and Errored may be useful for keeping the user informed
+ **/
 
-export enum NotifStatus {
-  None,
-  Stage,
-  Update,
-  Both,
-}
-
-const UrbitContext = createContext({
-  urbit: null,
+export const UrbitContext = createContext({
   connection: ConnectionStatus.Closed,
-  notifs: false,
+  ship: "",
 });
 
 function UrbitProvider(props: any) {
   const [showTesting, setShowTesting] = useState(true);
 
-  const win: Window & { urbit: Urbit; ship: any } = window as any;
+  // ship setup
+
+  const win: Window & { urbit: Urbit; ship: Patp } = window as any;
   win.urbit = new Urbit("");
   if (win.ship) {
     win.urbit.ship = win.ship;
   } else {
     win.ship = "~dalsyr-diglyn";
   }
+  const [ship, _] = useState(win.ship);
 
   const [docs, setDocs] = useState([]);
 
@@ -73,7 +70,7 @@ function UrbitProvider(props: any) {
     //checkUrbitWindow();
     const meta: DocumentMeta = {
       owner: `~${(window as any).ship}`,
-      id: `~${(window as any).ship}-${crypto.randomUUID()}`,
+      id: `~${(window as any).ship}-${(crypto as any).randomUUID()}`,
       name: "new document",
     };
 
@@ -81,10 +78,13 @@ function UrbitProvider(props: any) {
     doc.clientID = (window as any).ship; // the ship
     doc.gc = false;
     const type = doc.getXmlFragment("prosemirror");
-    const version = Y.encodeStateVector(doc)
+    const version = Y.encodeStateVector(doc);
     const encoding = Y.encodeStateAsUpdateV2(doc);
-    
-    createDocument(meta,  { version: Array.from(version), content: Array.from(encoding) }).then((res) => {
+
+    createDocument(meta, {
+      version: Array.from(version),
+      content: Array.from(encoding),
+    }).then((res) => {
       console.log("create document result", res);
     });
   }
@@ -93,9 +93,11 @@ function UrbitProvider(props: any) {
     checkUrbitWindow();
     listDocuments().then((res) => {
       console.log("list documents result: ", res);
-      setDocs(Object.keys(res).map((key) => {
-        return { id: key, owner: "~" + res[key].owner, name: res[key].name }
-      }));
+      setDocs(
+        Object.keys(res).map((key) => {
+          return { id: key, owner: "~" + res[key].owner, name: res[key].name };
+        })
+      );
     });
   }
 
@@ -105,22 +107,10 @@ function UrbitProvider(props: any) {
     });
   }
   function updateDoc(doc: DocumentMeta) {
-    updateDocument(doc, { version: [0, 0], content: [0, 1, 0] }).then((res) => {
+    saveDocument(doc, { version: [0, 0], content: [0, 1, 0] }).then((res) => {
       console.log("update document result:", res);
     });
   }
-  /*
-  function getDocSettings(doc: any) {
-    getDocumentSettings(doc).then((res) => {
-      console.log("get doc settings: ", res);
-    });
-  }
-  function getDocUpdates(doc: any) {
-    getAvailibleUpdates(doc).then((res) => {
-      console.log("get doc updates: ", res);
-    });
-  }
-  */
   function deleteDoc(doc: any) {
     deleteDocument(doc).then((res) => {
       console.log("deleted document:", res);
@@ -130,33 +120,17 @@ function UrbitProvider(props: any) {
       });
     });
   }
-  /*
-  function subscribeToUpdates(doc: any) {
-    subscribeUpdateStream(
-      (event) => {
-        console.log("recieived update: ", event, " for document ", doc);
-      },
-      (event) => {
-        console.log("quitting update subscription to: ", doc);
-      },
-      (e) => {
-        console.warn("error with update subscription to: ", doc);
-      }
-    ).then((res) => {
-      console.log("subscrition result: ", res);
-    });
-  }
   function openDocument(doc: any) {
     console.log("opening doc:", doc);
     document.dispatchEvent(OpenDocumentEvent(doc));
   }
-  */
 
   return (
     <UrbitContext.Provider
       value={{
+        // Status
         connection: connection,
-        notifs: notifs,
+        ship: ship,
       }}
     >
       <div
@@ -175,7 +149,7 @@ function UrbitProvider(props: any) {
         style={{ backgroundColor: "var(--paper-color)", zIndex: "3" }}
       >
         <div>connection: {ConnectionStatus[connection]}</div>
-        <div>updates: {NotifStatus[notifs]}</div>
+
         <button className="mx-4 my-3 px-3 py-2 border" onClick={createDoc}>
           create document
         </button>
@@ -194,24 +168,32 @@ function UrbitProvider(props: any) {
                 >
                   {doc.name} {doc.owner} {doc.id}
                 </span>
-                
-                <button className="underline" onClick={() => {getDoc(doc)}}>
+
+                <button
+                  className="underline"
+                  onClick={() => {
+                    getDoc(doc);
+                  }}
+                >
                   get doc
-                </button>	
-                <button className="underline" onClick={() => {updateDoc(doc)}}>
+                </button>
+                <button
+                  className="underline"
+                  onClick={() => {
+                    updateDoc(doc);
+                  }}
+                >
                   update doc
                 </button>
-                <button className="underline" onClick={() => {getDocUpdates(doc)}}>
-                  get doc updates
-                </button>
-                <button className="underline" onClick={() => {subscribeToUpdates(doc)}}>
-                  subscribe to updates
-                </button>
-		
-                <button className="underline" onClick={() => {deleteDoc(doc)}}>
+
+                <button
+                  className="underline"
+                  onClick={() => {
+                    deleteDoc(doc);
+                  }}
+                >
                   delete document
                 </button>
-                
               </li>
             );
           })}

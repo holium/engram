@@ -3,14 +3,18 @@ import { DocumentMeta, FolderMeta, DocumentUpdate } from "../workspace/types";
 
 export type Folder = Array<DocumentMeta | FolderMeta>;
 
-export function checkUrbitWindow(reject?) {
+export const pathParser = new RegExp(
+  "(?<owner>[^/]+)/(?<id>[^/]+)/(?<name>[^/]+)"
+);
+
+export function checkUrbitWindow(reject?: (message?: any) => void) {
   if (
     typeof (window as any).ship == "undefined" ||
     typeof (window as any).urbit == "undefined"
   ) {
-    throw "couldn't find urbit on the window";
     if (typeof reject != "undefined")
       reject("couldn't find urbit on the window");
+    throw "couldn't find urbit on the window";
   }
 }
 
@@ -19,15 +23,15 @@ export function checkUrbitWindow(reject?) {
 export function listDocuments(): Promise<Array<DocumentMeta>> {
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
-    (window as any).urbit
-      .scry({ app: "engram", path: "/docinfo" })
-      .then((response: any) => {
+    (window as any).urbit.scry({ app: "engram", path: "/docinfo" }).then(
+      (response: any) => {
         console.log(response);
         resolve(response);
       },
       (err: any) => {
         console.log("list documents error: ", err);
-      });
+      }
+    );
   });
 }
 
@@ -37,7 +41,10 @@ export function getDocument(meta: DocumentMeta): Promise<Document> {
     console.log("calling get document", meta);
     (window as any).urbit
       //.scry({ app: "engram", path: `/gdoc/${meta.owner}/${meta.id}/${meta.name}` })
-      .scry({ app: "engram", path: `/gdoc/${meta.owner}/${meta.id}/${meta.name}` })
+      .scry({
+        app: "engram",
+        path: `/gdoc/${meta.owner}/${meta.id}/${meta.name}`,
+      })
       .then((response: any) => {
         console.log(response);
         resolve(response);
@@ -49,7 +56,10 @@ export function getDocumentSettings(meta: DocumentMeta): Promise<Document> {
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit
-      .scry({ app: "engram", path: `/gsettings/${meta.owner}/${meta.id}/${meta.name}` })
+      .scry({
+        app: "engram",
+        path: `/gsettings/${meta.owner}/${meta.id}/${meta.name}`,
+      })
       .then((response: any) => {
         console.log(response);
         resolve(response);
@@ -63,7 +73,11 @@ export function getAvailibleUpdates(
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit
-      .scry({ app: "engram", path: `/pull/${meta.owner}/${meta.id}/${meta.name}`, body: meta })
+      .scry({
+        app: "engram",
+        path: `/pull/${meta.owner}/${meta.id}/${meta.name}`,
+        body: meta,
+      })
       .then((response: any) => {
         console.log(response);
         resolve(response);
@@ -75,14 +89,18 @@ export function getAvailibleUpdates(
 
 export function createDocument(
   meta: DocumentMeta,
-  doc: Uint8Array
+  doc: { version: Array<number>; content: Array<number> }
 ): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     checkUrbitWindow(reject);
-    console.log(meta)
-    console.log(meta.name)
-    console.log(meta.name.replace(' ', '-'));
-    const dmeta = { owner: meta.owner, id: meta.id, name: meta.name.replace(' ', '-') };
+    console.log(meta);
+    console.log(meta.name);
+    console.log(meta.name.replace(" ", "-"));
+    const dmeta = {
+      owner: meta.owner,
+      id: meta.id,
+      name: meta.name.replace(" ", "-"),
+    };
     (window as any).urbit.poke({
       app: "engram",
       mark: "post",
@@ -98,9 +116,9 @@ export function createDocument(
   });
 }
 
-export function updateDocument(
+export function saveDocument(
   meta: DocumentMeta,
-  doc: { version: Array<number>, cont: Array<number> },
+  doc: { version: Array<number>; content: Array<number> }
 ) {
   return new Promise<void>((resolve, reject) => {
     checkUrbitWindow(reject);
@@ -112,13 +130,7 @@ export function updateDocument(
         resolve();
       },
       onError: (e: any) => {
-        console.error(
-          "Error sending update:",
-          doc,
-          " to document: ",
-          meta,
-          e
-        );
+        console.error("Error sending update:", doc, " to document: ", meta, e);
         reject("Error updating document");
       },
     });
@@ -267,7 +279,9 @@ export function acknowledgeUpdate(meta: DocumentMeta, update: number) {
 }
 
 /* Subscriptions */
+// WIP
 export function subscribeUpdateStream(
+  documentPath: string,
   handler: (event: any) => void,
   quit: (event: any) => void,
   err: (e: any) => void
@@ -277,7 +291,7 @@ export function subscribeUpdateStream(
     (window as any).urbit
       .subscribe({
         app: "engram",
-        path: "/updateupt",
+        path: `/streamupt/${documentPath}`,
         event: handler,
         quit: quit,
         err: err,
