@@ -13,12 +13,12 @@ function UpdatePanel(props: {
   show: boolean;
   path: string;
   getStage: () => number;
-  applyStage: () => void;
+  save: () => void;
   setNotifStatus: (status: NotifStatus) => void;
   applyUpdate: (index: number, update: Uint8Array) => void;
 }) {
   // Staging
-  const [changes, setChanges] = useState({ size: 0 });
+  const [changes, setChanges] = useState({ size: 0, mag: "b" });
   useEffect(() => {
     setChanges(getMag(props.getStage()));
   }, [props.show]);
@@ -37,19 +37,21 @@ function UpdatePanel(props: {
     console.log("executing stage: ", changes);
 
     //apply the update in workspace
-    props.applyStage();
+    props.save();
 
     // correct the local state
-    setChanges({ size: 0 });
+    setChanges({ size: 0, mag: "b" });
   }
 
   // Pulling
   const [updates, setUpdates] = useState([
+    /*
     {
       author: "~dalsyr-diglyn",
       content: new Uint8Array([1, 2, 3]),
       time: new Date(),
     },
+    */
   ]);
 
   function executeUpdate(index: number) {
@@ -89,7 +91,7 @@ function UpdatePanel(props: {
       )}
       {updates.map((update: Update, i: number) => {
         return (
-          <div className="flex gap-3 items-center" key={update.time}>
+          <div className="flex gap-3 items-center" key={update.time.toString()}>
             <div className="flex-grow">
               <span className="azimuth">{update.author}</span>
             </div>

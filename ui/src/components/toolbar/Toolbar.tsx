@@ -37,8 +37,9 @@ function Navbar(props: {
       <input
         className="flex-grow px-3 py-1 bg-none focus:outline rounded-1"
         value={name}
-        style={{ "outline-color": "var(--type-color)" }}
+        style={{ outlineColor: "var(--type-color)" }}
       />
+      {/*
       <FontAwesomeIcon
         style={
           props.panel == "publish"
@@ -90,6 +91,7 @@ function Navbar(props: {
         className="icon clickable mx-2"
       />
       <FontAwesomeIcon icon={regular("gear")} className="icon clickable mx-2" />
+      */}
     </div>
   );
 }
