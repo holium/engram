@@ -1,15 +1,9 @@
 import { useState, useRef, useEffect } from "react";
-import { solid, regular } from "@fortawesome/fontawesome-svg-core/import.macro";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import NodeMenu from "./NodeMenuNode";
 
-import { TextSelection } from "prosemirror-state";
-import { toggleMark } from "prosemirror-commands";
-import schema from "../../build/schema";
 import { insertAtNextPossible } from "../shortcuts";
 
 function SideMenu(props) {
-  const menuButton = useRef();
   const [nodeMenu, setNodeMenu] = useState(null);
   const [pos, setPos] = useState(props.menu.pos);
 
@@ -68,7 +62,16 @@ function SideMenu(props) {
     >
       {/* Plus */}
       <li onClick={openNodeMenu}>
-        <FontAwesomeIcon icon={regular("plus")} className="icon clickable" />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          stroke="var(--type-color)"
+          fill="var(--type-color)"
+          className="icon clickable"
+        >
+          <path fill="none" d="M0 0h24v24H0z" />
+          <path d="M4 3h16a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm1 2v14h14V5H5zm6 6V7h2v4h4v2h-4v4h-2v-4H7v-2h4z" />
+        </svg>
       </li>
       {nodeMenu ? (
         <NodeMenu
@@ -84,10 +87,14 @@ function SideMenu(props) {
       )}
       {/* Drag Handle */}
       <li draggable="true" onDrag={handleDrag} onDragEnd={handleDragEnd}>
-        <FontAwesomeIcon
-          icon={solid("grip-dots-vertical")}
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
           className="icon clickable"
-        />
+        >
+          <path fill="none" d="M0 0h24v24H0z" />
+          <path d="M11 11V5.828L9.172 7.657 7.757 6.243 12 2l4.243 4.243-1.415 1.414L13 5.828V11h5.172l-1.829-1.828 1.414-1.415L22 12l-4.243 4.243-1.414-1.415L18.172 13H13v5.172l1.828-1.829 1.415 1.414L12 22l-4.243-4.243 1.415-1.414L11 18.172V13H5.828l1.829 1.828-1.414 1.415L2 12l4.243-4.243 1.414 1.415L5.828 11z" />
+        </svg>
       </li>
     </menu>
   );
