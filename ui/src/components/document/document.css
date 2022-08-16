@@ -275,7 +275,7 @@ main ::selection {
 }
 
 main {
-  width: calc(var(--document-width) + 8ch);
+  max-width: calc(var(--document-width) + 8ch);
   position: relative;
   margin: 0 auto;
 }
