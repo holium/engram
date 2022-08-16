@@ -26,13 +26,8 @@ import {
   setBlockType,
 } from "prosemirror-commands";
 import { undoInputRule } from "prosemirror-inputrules";
-import { undo, redo } from "prosemirror-history";
-import {
-  wrapInList,
-  splitListItem,
-  liftListItem,
-  sinkListItem,
-} from "./lists.ts";
+import { wrapInList, splitListItem, liftListItem, sinkListItem } from "./lists";
+import { undo, redo } from "y-prosemirror";
 
 const backspace = chainCommands(
   deleteSelection,

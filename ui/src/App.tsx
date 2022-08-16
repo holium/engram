@@ -1,5 +1,5 @@
-import { createContext, useState, useEffect } from "react";
-import Workspace from "./components/workspace/Workspace";
+import { useState, useEffect } from "react";
+import Workspace from "./components/document/Workspace";
 import Sidebar from "./components/sidebar/Sidebar";
 import SlideProvider from "./components/toolbar/SlideContext";
 import UrbitProvider from "./components/urbit/UrbitProvider";
@@ -18,7 +18,7 @@ function App() {
     <UrbitProvider>
       <div id="app">
         <SlideProvider>
-          <Sidebar openDoc={openDoc} />
+          <Sidebar />
           <Workspace path={doc} />
         </SlideProvider>
       </div>

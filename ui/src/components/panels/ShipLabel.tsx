@@ -1,5 +1,5 @@
 import { Patp } from "@urbit/http-api";
-import { getShipPallet } from "../workspace/types";
+import { getShipPallet } from "../document/types";
 
 function ShipLabel(props: { ship: Patp; ships: Array<Patp> }) {
   return (
