@@ -45,7 +45,6 @@ function Navbar(props: {
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
-        stroke="var(--type-color)"
         fill="var(--type-color)"
         style={
           props.panel == "publish"
@@ -67,7 +66,6 @@ function Navbar(props: {
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
           className="icon clickable mx-2"
-          stroke="var(--type-color)"
           fill="var(--type-color)"
           onClick={() => {
             props.panel == "update"
@@ -106,7 +104,6 @@ function Navbar(props: {
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
-        stroke="var(--type-color)"
         fill="var(--type-color)"
         style={
           props.panel == "version"

@@ -97,7 +97,7 @@ function Document(props: { path: string }) {
           buildKeymap(schema),
           baseKeymap,
           shortcuts(schema),
-          //config(setConfigMenu),
+          config(setConfigMenu),
           placeholders,
           sidemenu(setSideMenu),
           highlightmenu(setHighlightMenu),
