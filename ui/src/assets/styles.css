@@ -13,40 +13,40 @@
 .azimuth {
   @apply font-azimuth px-2 shadow-sunk inline-block hover:underline cursor-pointer rounded-2;
   font-size: var(--body);
-  background-color: var(--type-glass-color);
+  background-color: var(--glass-color);
 }
 
-  .folder-menu{
-    display: none;
-  }
+.folder-menu {
+  display: none;
+}
 
-  .icon-container:hover .folder-menu{
-    display: block;
-    z-index: 1;
-  }
+.icon-container:hover .folder-menu {
+  display: block;
+  z-index: 1;
+}
 
-  .icon-container{
-    display: flex;
-  }
-  .icon-container:hover .icons {
-    display:block;
-    left: 50px;
-    position: relative;
+.icon-container {
+  display: flex;
+}
+.icon-container:hover .icons {
+  display: block;
+  left: 50px;
+  position: relative;
+}
 
-  }
+.icons {
+  display: none;
+}
 
-  .icons {
-    display: none;
-  }
-
-  .no-bullets{
-    list-style-type: none; /* Remove bullets */
-    padding: 0; /* Remove padding */
-    margin: 0;
-  }
+.no-bullets {
+  list-style-type: none; /* Remove bullets */
+  padding: 0; /* Remove padding */
+  margin: 0;
+}
 
 .icon {
   @apply p-1 rounded-1;
+  color: var(--rlm-icon-color, var(--type-color));
   width: var(--leading-body);
   height: var(--leading-body);
 }
@@ -58,10 +58,24 @@
 
 .clickable:hover {
   @apply cursor-pointer;
-  background-color: var(--type-glass-color);
+  background-color: var(--glass-color);
 }
 
 /* Components --------------------------------------------------------------- */
+
+/* File Tree Items */
+.tree-item {
+  @apply flex px-4 py-2;
+}
+
+.tree-item-hidden {
+  opacity: 0;
+  transition: opacity 80ms ease-out;
+}
+
+.tree-item:hover .tree-item-hidden {
+  opacity: 1;
+}
 
 /* Menus */
 
@@ -88,7 +102,7 @@
 }
 
 .context-menu.select li:hover {
-  background-color: var(--type-glass-color);
+  background-color: var(--glass-color);
   cursor: pointer;
 }
 
@@ -103,7 +117,7 @@
 }
 
 .context-menu input:hover {
-  background-color: var(--type-glass-color);
+  background-color: var(--glass-color);
   outline: none;
 }
 
@@ -128,7 +142,6 @@
   background-color: var(--paper-color);
 }
 
-
 .tree-menu {
   overflow: hidden;
   position: absolute;
@@ -137,10 +150,9 @@
   width: 180px;
 }
 
-.check-mark{
+.check-mark {
   @apply rounded-1;
   width: var(--leading-body);
   height: var(--leading-body);
   margin-left: 10px;
-
 }

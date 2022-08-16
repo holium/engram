@@ -23,8 +23,28 @@ export function checkUrbitWindow(reject?: (message?: any) => void) {
 export function listDocuments(): Promise<Array<DocumentMeta>> {
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
+    (window as any).urbit.scry({ app: "engram", path: "/docinfo" }).then(
+      (response: any) => {
+        console.log(response);
+        resolve(response);
+      },
+      (err: any) => {
+        console.log("list documents error: ", err);
+      }
+    );
+  });
+}
+
+export function getDocument(meta: DocumentMeta): Promise<Document> {
+  return new Promise((resolve, reject) => {
+    checkUrbitWindow(reject);
+    console.log("calling get document", meta);
     (window as any).urbit
-      .scry({ app: "engram", path: "/docinfo/noun" })
+      //.scry({ app: "engram", path: `/gdoc/${meta.owner}/${meta.id}/${meta.name}` })
+      .scry({
+        app: "engram",
+        path: `/gdoc/${meta.owner}/${meta.id}/${meta.name}`,
+      })
       .then((response: any) => {
         console.log(response);
         resolve(response);
@@ -32,23 +52,14 @@ export function listDocuments(): Promise<Array<DocumentMeta>> {
   });
 }
 
-export function getDocument(meta: string): Promise<Document> {
+export function getDocumentSettings(meta: DocumentMeta): Promise<Document> {
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit
-      .scry({ app: "engram", path: `/gdoc/${meta}/noun` })
-      .then((response: any) => {
-        console.log(response);
-        resolve(response);
-      });
-  });
-}
-
-export function getDocumentSettings(meta: any): Promise<Document> {
-  return new Promise((resolve, reject) => {
-    checkUrbitWindow(reject);
-    (window as any).urbit
-      .scry({ app: "engram", path: "/gsettings", body: meta })
+      .scry({
+        app: "engram",
+        path: `/gsettings/${meta.owner}/${meta.id}/${meta.name}`,
+      })
       .then((response: any) => {
         console.log(response);
         resolve(response);
@@ -57,12 +68,16 @@ export function getDocumentSettings(meta: any): Promise<Document> {
 }
 
 export function getAvailibleUpdates(
-  meta: string
+  meta: DocumentMeta
 ): Promise<Array<DocumentUpdate>> {
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit
-      .scry({ app: "engram", path: `/pull/${meta}/noun`, body: meta })
+      .scry({
+        app: "engram",
+        path: `/pull/${meta.owner}/${meta.id}/${meta.name}`,
+        body: meta,
+      })
       .then((response: any) => {
         console.log(response);
         resolve(response);
@@ -74,14 +89,19 @@ export function getAvailibleUpdates(
 
 export function createDocument(
   meta: DocumentMeta,
-  doc: Uint8Array
+  doc: { version: Array<number>; content: Array<number> }
 ): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     checkUrbitWindow(reject);
+    const dmeta = {
+      owner: meta.owner,
+      id: meta.id,
+      name: meta.name.replaceAll(" ", "-"),
+    };
     (window as any).urbit.poke({
       app: "engram",
-      mark: "engram-do",
-      json: { make: { dmeta: meta, doc: doc } },
+      mark: "post",
+      json: { make: { dmeta: dmeta, doc: doc } },
       onSuccess: () => {
         resolve();
       },
@@ -93,28 +113,21 @@ export function createDocument(
   });
 }
 
-export function stageUpdate(
+export function saveDocument(
   meta: DocumentMeta,
-  doc: { version: Uint8Array; cont: Uint8Array },
-  update: { author: string; cont: Uint8Array; time: Date }
+  doc: { version: Array<number>; content: Array<number> }
 ) {
   return new Promise<void>((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
       app: "engram",
-      mark: "engram-do",
-      json: { update: { dmeta: meta, doc: doc, updt: update } },
+      mark: "post",
+      json: { save: { dmeta: meta, doc: doc } },
       onSuccess: () => {
         resolve();
       },
       onError: (e: any) => {
-        console.error(
-          "Error sending update:",
-          update,
-          " to document: ",
-          meta,
-          e
-        );
+        console.error("Error sending update:", doc, " to document: ", meta, e);
         reject("Error updating document");
       },
     });
@@ -126,7 +139,7 @@ export function deleteDocument(meta: DocumentMeta) {
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
       app: "engram",
-      mark: "engram-do",
+      mark: "post",
       json: { delete: { dmeta: meta } },
       onSuccess: () => {
         resolve();

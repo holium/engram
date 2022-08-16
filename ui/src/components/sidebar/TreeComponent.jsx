@@ -93,7 +93,7 @@ useEffect(()=>{
             <div> 
             <input className = "rounded-1" value = {info.label} onClick = {(e) =>(e.stopPropagation())} onChange ={(e)=>{
                 setInfo(previousInputs => ({ ...previousInputs, label: e.target.value}))
-            }} autoFocus/> 
+            }} autoFocus  onBlur={(e)=>renameFolder(e)}/> 
             <FontAwesomeIcon className = "check-mark clickable" icon = {light('check')} onClick ={(e)=>renameFolder(e)}/>
             </div>
             :
