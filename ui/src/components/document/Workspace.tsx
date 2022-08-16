@@ -50,7 +50,7 @@ function Document(props: { path: string }) {
   const [panel, setPanel] = useState(null);
 
   // Notifications
-  const [notifStatus, setNotifStatus] = useState(NotifStatus.None);
+  const [notifStatus, setNotifStatus] = useState(false);
 
   /* Document --------------------------------------------------------------- */
 

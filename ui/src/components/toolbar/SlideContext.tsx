@@ -1,6 +1,6 @@
 import { createContext, useState } from "react";
 
-export const SlideContext = createContext();
+export const SlideContext = createContext(null);
 
 function SlideProvider(props: any) {
   const [slide, setSlide] = useState(true);

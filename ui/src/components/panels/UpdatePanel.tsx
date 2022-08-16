@@ -6,8 +6,6 @@ import {
   subscribeUpdateStream,
   acknowledgeUpdate,
 } from "../urbit/index";
-import { regular } from "@fortawesome/fontawesome-svg-core/import.macro";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 function UpdatePanel(props: {
   show: boolean;
@@ -72,21 +70,36 @@ function UpdatePanel(props: {
           <div>
             {changes.size} {changes.mag}
           </div>
-          <FontAwesomeIcon
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            stroke="var(--type-color)"
+            fill="var(--type-color)"
             onClick={() => {
               executeStage();
             }}
-            icon={regular("check-square")}
             className="icon clickable"
-          />
+          >
+            <path fill="none" d="M0 0h24v24H0z" />
+            <path d="M4 3h16a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm1 2v14h14V5H5zm6.003 11L6.76 11.757l1.414-1.414 2.829 2.829 5.656-5.657 1.415 1.414L11.003 16z" />
+          </svg>
         </div>
       ) : (
         <div
           className="flex gap-3 items-center cursor-default"
-          style={{ color: "var(--type-glass-color)" }}
+          style={{ color: "var(--trim-color)" }}
         >
           <div className="flex-grow">nothing to stage...</div>
-          <FontAwesomeIcon icon={regular("check-square")} className="icon" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            stroke="var(--trim-color)"
+            fill="var(--trim-color)"
+            className="icon"
+          >
+            <path fill="none" d="M0 0h24v24H0z" />
+            <path d="M4 3h16a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm1 2v14h14V5H5zm6.003 11L6.76 11.757l1.414-1.414 2.829 2.829 5.656-5.657 1.415 1.414L11.003 16z" />
+          </svg>
         </div>
       )}
       {updates.map((update: Update, i: number) => {
@@ -100,13 +113,19 @@ function UpdatePanel(props: {
               {getMag(update.content.byteLength).size}{" "}
               {getMag(update.content.byteLength).mag}
             </div>
-            <FontAwesomeIcon
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              stroke="var(--type-color)"
+              fill="var(--type-color)"
               onClick={() => {
                 executeUpdate(i);
               }}
-              icon={regular("check-square")}
               className="icon clickable"
-            />
+            >
+              <path fill="none" d="M0 0h24v24H0z" />
+              <path d="M4 3h16a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm1 2v14h14V5H5zm6.003 11L6.76 11.757l1.414-1.414 2.829 2.829 5.656-5.657 1.415 1.414L11.003 16z" />
+            </svg>
           </div>
         );
       })}

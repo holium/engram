@@ -1,12 +1,10 @@
 import { useRef, useEffect } from "react";
-import { addConfigTerm } from "./helpers.ts";
+import { addConfigTerm } from "./helpers";
 
-function ConfigMenu(props) {
-  console.log(props);
-
+function ConfigMenu(props: any) {
   const menuRef = useRef();
 
-  function addTerm(term) {
+  function addTerm(term: any) {
     addConfigTerm(term.key, props.view, props.menu.state);
     props.hide();
   }
@@ -17,12 +15,12 @@ function ConfigMenu(props) {
 
   useEffect(() => {
     console.log(menuRef);
-    menuRef.current.focus();
+    (menuRef as any).current.focus();
   }, []);
 
   return (
     <menu
-      tabIndex="0"
+      tabIndex={0}
       ref={menuRef}
       className="configmenu context-menu select"
       style={{
