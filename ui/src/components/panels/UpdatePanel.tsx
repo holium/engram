@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Update, NotifStatus } from "../workspace/types";
+import { Update, NotifStatus } from "../document/types";
 import {
   pathParser,
   getAvailibleUpdates,

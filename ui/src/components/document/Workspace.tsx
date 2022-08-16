@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import { EditorState } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
+import { keymap } from "prosemirror-keymap";
 import { getDocument, saveDocument, pathParser } from "../urbit/index";
 // Build
 import * as Y from "yjs";
@@ -28,30 +29,35 @@ import slashmenu from "./plugins/menus/slashmenu";
 import NodeMenu from "./plugins/menus/NodeMenuNode";
 import ConfigMenu from "./plugins/config/ConfigMenu";
 
-function Document(props: { path: string }) {
-  const [view, setView] = useState(null);
+//Toolbar
+import Toolbar from "../toolbar/Toolbar";
+import PublishPanel from "../panels/PublishPanel";
+import UpdatePanel from "../panels/UpdatePanel";
+import VersionPanel from "../panels/VersionPanel";
+import { NotifStatus } from "./types";
 
+function Document(props: { path: string }) {
+  /* Periphery -------------------------------------------------------------- */
+
+  // Menus
   const [sideMenu, setSideMenu] = useState(null);
   const [highlightMenu, setHighlightMenu] = useState(null);
   const [nodeMenu, setNodeMenu] = useState(null);
   const [nodeMenuSearch, setNodeMenuSearch] = useState("");
   const [configMenu, setConfigMenu] = useState(null);
 
-  //Save
-  const [saveFunc, setSaveFunc] = useState(null);
-  useEffect(() => {
-    return () => {
-      console.log("save");
-      if (saveFunc) saveFunc();
-    };
-  }, []);
+  // Panel
+  const [panel, setPanel] = useState(null);
 
+  // Notifications
+  const [notifStatus, setNotifStatus] = useState(NotifStatus.None);
+
+  /* Document --------------------------------------------------------------- */
+
+  const [view, setView] = useState(null);
+
+  // Setup
   useEffect(() => {
-    /**
-     * Get encoded state from urbit
-     * Y.applyUpdate(doc, state)
-     **/
-    if(saveFunc) saveFunc();
     if (props.path == null) return;
     if (view != null) view.destroy();
     const parsed = props.path.match(pathParser);
@@ -92,13 +98,10 @@ function Document(props: { path: string }) {
           baseKeymap,
           shortcuts(schema),
           //config(setConfigMenu),
-          //placeholders,
+          placeholders,
           sidemenu(setSideMenu),
           highlightmenu(setHighlightMenu),
           slashmenu(setNodeMenu, setNodeMenuSearch),
-          //srcmenu(setSrcMenu),
-          //sync(type),
-          //localundo(),
           ySyncPlugin(type),
           yUndoPlugin(),
           comments,
@@ -123,49 +126,83 @@ function Document(props: { path: string }) {
     });
   }, [props.path]);
 
+  /* Empty Page ------------------------------------------------------------- */
+  if (props.path == null) {
+    return (
+      <div id="workspace">
+        <div className="flex flex-grow items-center justify-center border rounded-3">
+          create a new document
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div id="document-wrapper">
-      {/* Document --------------------------------------------------------- */}
-      <main id="document">
-        {sideMenu ? (
-          <SideMenu
-            menu={sideMenu}
-            hide={() => setSideMenu(null)}
-            view={view}
-          />
-        ) : (
-          ""
-        )}
-        {highlightMenu ? (
-          <HighlightMenu menu={highlightMenu} view={view} />
-        ) : (
-          ""
-        )}
-        {nodeMenu ? (
-          <NodeMenu
-            menu={nodeMenu}
-            search={nodeMenuSearch}
-            hide={() => {
-              setNodeMenu(null);
-              setNodeMenuSearch("");
-            }}
-            view={view}
-          />
-        ) : (
-          ""
-        )}
-        {configMenu ? (
-          <ConfigMenu
-            menu={configMenu}
-            hide={() => {
-              setConfigMenu(null);
-            }}
-            view={view}
-          />
-        ) : (
-          ""
-        )}
-      </main>
+    <div id="workspace">
+      <Toolbar
+        path={props.path}
+        openPanel={setPanel}
+        panel={panel}
+        notifStatus={notifStatus}
+      />
+      <PublishPanel show={panel == "publish"} />
+      <UpdatePanel
+        path={props.path}
+        show={panel == "update"}
+        save={/*saveDoc*/ () => {}}
+        getStage={
+          /* getStage */ () => {
+            return 0;
+          }
+        }
+        applyUpdate={/* applyUpdate */ () => {}}
+        setNotifStatus={setNotifStatus}
+      />
+      <VersionPanel show={panel == "version"} />
+
+      <div id="document-wrapper">
+        {/* Document --------------------------------------------------------- */}
+        <main id="document">
+          {sideMenu ? (
+            <SideMenu
+              menu={sideMenu}
+              hide={() => setSideMenu(null)}
+              view={view}
+            />
+          ) : (
+            ""
+          )}
+          {highlightMenu ? (
+            <HighlightMenu menu={highlightMenu} view={view} />
+          ) : (
+            ""
+          )}
+          {nodeMenu ? (
+            <NodeMenu
+              menu={nodeMenu}
+              search={nodeMenuSearch}
+              hide={() => {
+                setNodeMenu(null);
+                setNodeMenuSearch("");
+              }}
+              view={view}
+            />
+          ) : (
+            ""
+          )}
+          {configMenu ? (
+            <ConfigMenu
+              menu={configMenu}
+              hide={() => {
+                setConfigMenu(null);
+              }}
+              view={view}
+            />
+          ) : (
+            ""
+          )}
+        </main>
+      </div>
     </div>
   );
 }

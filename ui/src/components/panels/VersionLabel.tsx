@@ -1,5 +1,5 @@
 import { Patp } from "@urbit/http-api";
-import { Version, getShipPallet } from "../workspace/types";
+import { Version, getShipPallet } from "../document/types";
 
 function VersionLabel(props: {
   ships: Array<Patp>;

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Patp } from "@urbit/http-api";
-import { Version } from "../workspace/types";
+import { Version } from "../document/types";
 import ShipLabel from "./ShipLabel";
 import VersionLabel from "./VersionLabel";
 

@@ -1,5 +1,5 @@
 import {} from "@urbit/http-api";
-import { DocumentMeta, FolderMeta, DocumentUpdate } from "../workspace/types";
+import { DocumentMeta, FolderMeta, DocumentUpdate } from "../document/types";
 
 export type Folder = Array<DocumentMeta | FolderMeta>;
 

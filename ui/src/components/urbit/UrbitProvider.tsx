@@ -17,7 +17,7 @@ import {
   OpenDocumentEvent,
   ConnectionStatus,
   NotifStatus,
-} from "../workspace/types";
+} from "../document/types";
 import { regular } from "@fortawesome/fontawesome-svg-core/import.macro";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
