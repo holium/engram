@@ -127,8 +127,7 @@
     ``noun+!>((enjs-gsetting:engram stg))
   ::
       [%x %gfolders @ @ @ ~]
-    =/  folders  ~(tap in ~(key by f))
-    ``noun+!>((enjs-gfolders:engram folders))
+    ``noun+!>((enjs-gfolders:engram f))
       :: (jug [id=@ name=@t] $%([%doc [owner=@p id=@ name=@t]] [%folder [id=@ name=@t]]))
     :: =/  t=(jug [id=@ name=@t] $%([%doc [owner=@p id=@ name=@t]] [%folder [id=@ name=@t]]))  f
   ==
