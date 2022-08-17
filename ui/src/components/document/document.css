@@ -161,8 +161,11 @@ aside {
 
 @media (max-width: 800px) {
   aside {
-    left: 0;
-    top: var(--leading-body);
+    position: absolute;
+    float: none;
+    left: 4ch;
+    top: auto;
+    margin-top: var(--leading-body);
   }
 }
 
