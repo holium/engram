@@ -122,12 +122,13 @@
     =/  id=@  (slav %ud i.t.t.t.path)
     =/  name=@t  (crip (trip i.t.t.t.t.path))
     =/  meta  [owner=owner id=id name=name]
-    ~&  meta
     =/  stg=[perms=(list @p)]  (need (~(get by s) meta))
     ~&  stg
-    ``noun+!>(stg)
+    ``noun+!>((enjs-gsetting:engram stg))
   ::
-      [%x %gfolders @ @ @ ~]  ``noun+!>(f)
+      [%x %gfolders @ @ @ ~]
+    =/  folders  ~(tap in ~(key by f))
+    ``noun+!>((enjs-gfolders:engram folders))
       :: (jug [id=@ name=@t] $%([%doc [owner=@p id=@ name=@t]] [%folder [id=@ name=@t]]))
     :: =/  t=(jug [id=@ name=@t] $%([%doc [owner=@p id=@ name=@t]] [%folder [id=@ name=@t]]))  f
   ==

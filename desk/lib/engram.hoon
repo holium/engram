@@ -57,4 +57,32 @@
     results  (snoc results [id:curr meta])
   ==
   (pairs assembled)
+++  enjs-gsetting
+  =,  enjs:format
+  |=  settings=stg
+  =/  results  *(list [@t json])
+  =/  counter  0
+  =/  assembled
+  |-
+  ?:  =(counter (lent perms:settings))
+    results
+  =/  curr  (snag counter perms:settings)
+  %=  $
+    results  (snoc results [(crip "{<counter>}") (ship curr)])
+  ==
+  (pairs assembled)
+++  enjs-gfolders
+  =,  enjs:format
+  |=  folders=(list fmeta) 
+  =/  results  *(list [@t json])
+  =/  counter  0
+  =/  assembled
+  |-
+  ?:  =(counter (lent folders))
+    results
+  =/  curr  (snag counter folders)
+  %=  $
+    results  (snoc results [(crip "{<counter>}") (pairs ~[['id' (tape (trip `cord`id:curr))] ['name' (tape (trip name:curr))]])])
+  ==
+  (pairs assembled)
 --
