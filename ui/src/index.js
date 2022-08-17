@@ -6,6 +6,7 @@ import "./assets/app.css";
 import "./assets/theme.css";
 import "./components/document/document.css";
 import "./components/document/prosemirror.css";
+import 'remixicon/fonts/remixicon.css'
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<App />);

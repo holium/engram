@@ -5,22 +5,42 @@ import {
   createDocument,
   checkUrbitWindow,
   deleteDocument,
+  createFolder,
+  deleteFolder,
+  addToFolder,
+  removeFromFolder
 } from "../urbit/index";
 import { OpenDocumentEvent } from "../document/types";
 import { regular, solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as Y from "yjs";
 import FileTree from "./FileTree";
+import TreeComponent from "./TreeComponent";
+import FolderMenu from "./FolderMenu";
 
 import { UrbitContext } from "../urbit/UrbitProvider";
+import RootMenu from "./RootMenu";
 
 function Sidebar() {
-  const { slide, setSlide } = useContext(SlideContext);
-  const urbitStatus = useContext(UrbitContext);
 
+  const [type, setType] = useState("");
+
+  const [info, setInfo] = useState({
+    children: [],
+  })
+
+  const [pos, setPos] = useState({top: 0,
+  left: 0
+  });
+  const [appear, setAppear] = useState(false);
+  const urbitStatus = useContext(UrbitContext);
   const [list, setList] = useState([]);
+  const [newDoc, setNewDoc] = useState(false);
+  const [newDocName, setNewDocName] = useState("");
+
 
   useEffect(() => {
+    console.log(info.children)
     checkUrbitWindow();
     listDocuments()
       .then((res) => {
@@ -42,13 +62,52 @@ function Sidebar() {
       });
   }, []);
 
+
+
+  function handleDelete(prop){
+    console.log(info)
+    const children = info.children.filter(child => child.name !== prop);
+    setInfo(previousInputs=>({...previousInputs, children: children}))
+  
+    /*
+    delete middleware for deleteFolder or deleteDocument
+    */
+  }
+  
+  function create(e){
+    e.stopPropagation()
+    if(type==="file") {
+      createDoc();
+  
+    } else if(type ==="folder"){
+      createFold();
+    }
+    closeCreateDoc()
+  }
+
   function openDocument(doc: any) {
     console.log("opening doc:", doc);
     document.dispatchEvent(OpenDocumentEvent(doc));
   }
 
-  const [newDoc, setNewDoc] = useState(false);
-  const [newDocName, setNewDocName] = useState("");
+
+  function createFold() {
+    console.log("create folder");
+    checkUrbitWindow();
+    const meta: FolderMeta = {
+      owner: `~${window.ship}`,
+      id: `~${window.ship}-${crypto.randomUUID()}`,
+      name: newDocName.replaceAll(" ", "-"),
+      children: [],
+      isFolder: "folder"
+    };
+
+    createFolder(meta).then((res) => {
+      console.log("create folder result", res);
+    });
+    setInfo(previousInputs=>({children: [meta, ...previousInputs.children]}))
+    closeCreateDoc();
+  }
 
   function createDoc() {
     console.log("create doc");
@@ -57,6 +116,8 @@ function Sidebar() {
       owner: `~${window.ship}`,
       id: `~${window.ship}-${crypto.randomUUID()}`,
       name: newDocName.replaceAll(" ", "-"),
+      children: null,
+      isFolder: "file"
     };
 
     const doc = new Y.Doc();
@@ -72,38 +133,30 @@ function Sidebar() {
     }).then((res) => {
       console.log("create document result", res);
     });
-    setList([meta, ...list]);
+    //setList([meta, ...list]);
+    setInfo(previousInputs=>({children: [meta, ...previousInputs.children]}))
     closeCreateDoc();
   }
   function closeCreateDoc() {
     setNewDoc(false);
     setNewDocName("");
+    setType("");
   }
 
-  function deleteDoc(doc, index) {
+  function deleteDoc(doc) {
     console.log("deleting document:", doc);
-    list.splice(index, 1);
-    setList([...list]);
     deleteDocument(doc).then((res) => {
       console.log("delete document result:", res);
     });
   }
 
-  /*
-  return (
-    <div className={`${slide ? " w-8" : " w-5"} duration-300 relative`}>
-      <FileTree />
-    </div>
-  );
-  */
+  
   return (
     <div className="flex flex-col" style={{ width: "18vw", minWidth: "280px" }}>
       <div className="px-4 py-3 flex items-center">
         <div className="azimuth">~{urbitStatus.ship}</div>
         <div className="flex-grow"> </div>
-        <FontAwesomeIcon
-          icon={solid("circle")}
-          className="icon"
+        <i className="ri-checkbox-blank-circle-fill icon"
           style={
             urbitStatus.connection < 2
               ? { color: "var(--status-success-color)" }
@@ -114,11 +167,12 @@ function Sidebar() {
       <div className="flex flex-col overflow-auto">
         <div className="mt-4 tree-item">
           <div className="font-bold flex-grow py-1">Your Ship</div>
-          <FontAwesomeIcon
-            onClick={() => setNewDoc(true)}
-            icon={regular("plus-square")}
-            className="icon clickable tree-item-hidden"
+          <menu onMouseLeave = {()=>(setAppear(false))}>
+          <i className="ri-add-box-line icon clickable tree-item-hidden"
+            onClick={(e) => {setAppear(true); setPos({top: e.clientY, left: e.clientX})}}
           />
+          {appear && <RootMenu position = {pos} setAppear = {setAppear} setDoc = {setNewDoc} setType = {setType}/>}
+          </menu>
         </div>
         {newDoc && (
           <div className="flex px-4 py-1 gap-3">
@@ -136,19 +190,17 @@ function Sidebar() {
               }}
               onKeyPress={(event) => {
                 console.log(event);
-                if (event.key == "Enter") createDoc();
+                if (event.key == "Enter") create(event);
                 if (event.key == "Esc") closeCreateDoc();
               }}
             />
-            <FontAwesomeIcon
-              onClick={createDoc}
-              icon={regular("check-square")}
-              className="icon clickable"
+            <i
+              onClick={(event)=>{create(event)}}
+              className="ri-checkbox-line icon clickable"
             />
-            <FontAwesomeIcon
+            <i
               onClick={closeCreateDoc}
-              icon={regular("square-xmark")}
-              className="icon clickable"
+              className=" ri-close-line icon clickable"
             />
           </div>
         )}
@@ -173,10 +225,23 @@ function Sidebar() {
               />
             </div>
           );
-        })}
+        })
+        }
+          {info.children.map((childData) => (
+                            <div
+                            className=" pl-3"
+                            onClick={() => { if(childData.isFolder === "file") {
+                              openDocument(childData);}
+                            }}
+                          >
+                <TreeComponent key = {Math.random()} data = {childData} onDelete = {handleDelete}/>
+                </div>
+            ))}
       </div>
     </div>
   );
+  
+
 }
 
 export default Sidebar;

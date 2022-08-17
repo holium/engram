@@ -1,32 +1,32 @@
 import { useEffect, useState} from "react";
-import { light } from '@fortawesome/fontawesome-svg-core/import.macro'
+import { regular } from '@fortawesome/fontawesome-svg-core/import.macro'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import FolderMenu from "./FolderMenu";
 import FileMenu from "./FileMenu";
-function TreeComponent({ data }) {
+
+function TreeComponent({ data , onDelete, newDoc}) {
   const [expand, setExpand] = useState(false);
 
     const [appear, setAppear] = useState(false);
 
     const [renameState, setrenameState] = useState(false);
 
+    const [createDoc, setCreateDoc] = useState(false);
+
     const [pos, setPos] = useState({top: 0,
         left: 0
     });
 
-    const [info, setInfo] = useState({
-        label: data.label,
-        isFolder: data.isFolder,
-        children: data.children,
-        editable: data.editable
-})
+    const [info, setInfo] = useState(
+        data)
 
 
 useEffect(()=>{
-    if(info.editable){
+    if(newDoc === true){
         setrenameState(true)
     }
 },[])
+
 
 
     function hideMenu(event){
@@ -41,9 +41,15 @@ useEffect(()=>{
 
     function deleteFolder(e) {
         e.stopPropagation()
-        setInfo({label: null, isFolder: null, children: null});
+        setInfo({name: null, isFolder: null, children: null});
+        onDelete(info.name);
     }
 
+    function handleDelete(prop){
+        console.log(info)
+        const children = info.children.filter(child => child.name !== prop);
+        setInfo(previousInputs=>({...previousInputs, children: children}))
+    }
     function renameFolder(event) {
         event.stopPropagation();
         setrenameState(false);
@@ -56,12 +62,13 @@ useEffect(()=>{
         e.stopPropagation()
         setInfo(previousInputs=>({...previousInputs, children: [...previousInputs.children,
             {     
-             label: "NewFile",
+             name: "",
              isFolder: "file", 
-             editable:true
+             children: null,
             },
         ]}))
         setExpand(true);
+        setCreateDoc(true);
         
         console.log("added file")
 
@@ -71,13 +78,13 @@ useEffect(()=>{
         e.stopPropagation()
         setInfo(previousInputs=>({...previousInputs, children: [...previousInputs.children,
             {     
-             label: "NewFolder",
+             name: "",
              isFolder: "folder", 
              children: [],
-             editable:true
             },
         ]}))
         setExpand(true);
+        setCreateDoc(true);
 
         console.log("added folder")
 
@@ -86,22 +93,41 @@ useEffect(()=>{
     return(
         <div>
             <div className="icon-container" onClick={()=>setExpand(!expand)}>
-            <div className='pr-2'>
-            {info.isFolder === "folder" ? <FontAwesomeIcon icon={light('folder')} /> : info.isFolder === "file" ? <FontAwesomeIcon icon = {light('file')} /> : null}
+                <div className="relative">
+                <div className="absolute">
+            {(info.isFolder === "file" || info.isFolder == null) ? "" : ((info.children.length === 0) ? "" : (!expand ? <i className="ri-arrow-right-s-line"></i> : <i className="ri-arrow-down-s-line"></i>))}
+            </div>
+            </div>
+            <div className='pr-3 pl-4'>
+            {info.isFolder === "folder" ? <i className="ri-folder-line"></i> : info.isFolder === "file" ? <i className="ri-file-line"></i> : null}
             </div>
             {renameState ? 
-            <div> 
-            <input className = "rounded-1" value = {info.label} onClick = {(e) =>(e.stopPropagation())} onChange ={(e)=>{
-                setInfo(previousInputs => ({ ...previousInputs, label: e.target.value}))
-            }} autoFocus  onBlur={(e)=>renameFolder(e)}/> 
-            <FontAwesomeIcon className = "check-mark clickable" icon = {light('check')} onClick ={(e)=>renameFolder(e)}/>
+            <div className="flex px-4 py-1 gap-3"> 
+            <input
+              className="outline-none bg-none flex-grow outline rounded-1 px-2 py-1"
+              style={{
+                outlineColor: "var(--type-color)",
+                outlineWidth: "1px",
+                outlineOffset: "0",
+                minWidth: "0",
+              }} 
+              value = {info.name} onClick = {(e) =>(e.stopPropagation())} onChange ={(e)=>{
+                setInfo(previousInputs => ({ ...previousInputs, name: e.target.value}))
+            }} autoFocus  onBlur={(e)=>{renameFolder(e)}}/> 
+            <i
+              className="ri-checkbox-line icon clickable"
+              onClick ={(e)=>renameFolder(e)}
+            />
+            <i
+              className=" ri-close-line icon clickable"
+            />
             </div>
             :
-            <div> {info.label} </div>}
+            <div> {info.name} </div>}
             <menu onMouseLeave={hideMenu}>
             { !renameState &&
-            <div className="icons icon clickable" onClick={(e)=>{ToggleFolderMenu(e); setPos({top: e.clientY, left: e.clientX})}}>
-            <FontAwesomeIcon icon={light('plus')} />
+            <div className="icons" onClick={(e)=>{ToggleFolderMenu(e); setPos({top: e.clientY, left: e.clientX})}}>
+            <i className="ri-add-box-line clickable" ></i>
             </div>
             }
             {appear && (info.isFolder === "folder" ?
@@ -114,7 +140,7 @@ useEffect(()=>{
 
          <div className = {`${expand ? "block" : " hidden"} pl-3`}>
             {info.isFolder === "folder" && info.children.map((childData) => (
-                <TreeComponent data = {childData} />
+                <TreeComponent key = {info.label} data = {childData} onDelete = {handleDelete} newDoc = {createDoc} setDoc = {setCreateDoc}/>
             ))}
          </div>
     

@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react'
-import { light } from '@fortawesome/fontawesome-svg-core/import.macro'
+import { regular } from '@fortawesome/fontawesome-svg-core/import.macro'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 function FolderMenu(props){
@@ -20,17 +20,25 @@ function FolderMenu(props){
         }}
         onMouseLeave={(e)=>props.ToggleFolderMenu(e)}
       >
-                <FontAwesomeIcon className = "clickable" icon = {light('folder-plus')} onClick = {(e)=>(
+        <li className = "justify-center" onClick = {(e)=>(
                     props.addFolder(e)
-                )}/>
-                <FontAwesomeIcon className = "clickable" icon = {light('file-circle-plus') } onClick = {(e)=>(props.addFile(e))}/>
-                <FontAwesomeIcon className = "clickable" icon = {light('input-text')} onClick={(e)=>{
+                )}>
+                <i className="ri-folder-add-line "/>
+                </li>
+                <li className = "justify-center" onClick = {(e)=>(props.addFile(e))}>
+                <i className="ri-file-add-line"/>
+                </li>
+                <li className = "justify-center" onClick={(e)=>{
                     props.renameFolder(true)
                     props.ToggleFolderMenu(e)
-                    }}/>
-                <FontAwesomeIcon className = "clickable" icon = {light('trash-can')} onClick = {(e)=>(
+                    }}>
+                <i className="ri-edit-2-line "/>
+                    </li>
+                    <li className = "justify-center" onClick = {(e)=>(
                     props.deleteFolder(e)
-                )}/>
+                )}>
+                <i className="ri-delete-bin-line"/>
+                </li>
         </menu>
 
     )
