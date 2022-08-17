@@ -1,10 +1,9 @@
 /-  engram
-/+  *engram
 |_  =action:engram
 ++  grab
   |%
   ++  noun  action:engram
-  ++  json  dejs-action  
+  ++  json  dejs-action:engram
   --
 ++  grow
   |%
