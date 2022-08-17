@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { pathParser } from "../urbit/index";
 import { NotifStatus } from "../document/types";
+import { SlideContext } from "./SlideContext";
 
 function Navbar(props: {
   path: string;
@@ -10,6 +11,7 @@ function Navbar(props: {
 }) {
   const [owner, setOwner] = useState("");
   const [name, setName] = useState("");
+  const { slide, setSlide } = useContext(SlideContext);
 
   useEffect(() => {
     const parsed = props.path.match(pathParser);
@@ -23,8 +25,13 @@ function Navbar(props: {
     setName(event.target.value);
   }
 
+  function toggleSidebar() {
+    setSlide(!slide);
+  }
+
   return (
     <div id="toolbar">
+      <div onClick={toggleSidebar}>toggle sidebar</div>
       <div className="azimuth mx-2">{owner}</div>
       <div
         className="mx-2 cursor-default"

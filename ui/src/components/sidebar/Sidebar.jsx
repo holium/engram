@@ -97,7 +97,7 @@ function Sidebar() {
   );
   */
   return (
-    <div className="flex flex-col" style={{ width: "18vw", minWidth: "280px" }}>
+    <div className="flex flex-col" style={{ width: "18vw", minWidth: "280px", display: slide ? "none" : "flex"  }}>
       <div className="px-4 py-3 flex items-center">
         <div className="azimuth">~{urbitStatus.ship}</div>
         <div className="flex-grow"> </div>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 
 import { EditorState } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
@@ -35,6 +35,7 @@ import PublishPanel from "../panels/PublishPanel";
 import UpdatePanel from "../panels/UpdatePanel";
 import VersionPanel from "../panels/VersionPanel";
 import { NotifStatus } from "./types";
+import { SlideContext } from "../toolbar/SlideContext";
 
 function Document(props: { path: string }) {
   /* Periphery -------------------------------------------------------------- */
@@ -126,11 +127,17 @@ function Document(props: { path: string }) {
     });
   }, [props.path]);
 
+  const { slide, setSlide } = useContext(SlideContext);
+  function toggleSlide() {
+    setSlide(!slide)
+  }
+
   /* Empty Page ------------------------------------------------------------- */
   if (props.path == null) {
     return (
       <div id="workspace">
-        <div className="flex flex-grow items-center justify-center border rounded-3">
+        <div id="toolbar"><div onClick={toggleSlide}>toggle sidebar</div></div>
+        <div className="flex flex-grow items-center justify-center" style={{color: "var(--glass-color)"}}>
           create a new document
         </div>
       </div>
