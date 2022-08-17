@@ -275,6 +275,7 @@ main ::selection {
 }
 
 main {
+  flex-grow: 1;
   max-width: calc(var(--document-width) + 8ch);
   position: relative;
   margin: 0 auto;
