@@ -1,6 +1,5 @@
 import { useState, useEffect, useContext } from "react";
 import { pathParser } from "../urbit/index";
-import { NotifStatus } from "../document/types";
 import { SlideContext } from "./SlideContext";
 
 function Navbar(props: {
@@ -11,7 +10,6 @@ function Navbar(props: {
 }) {
   const [owner, setOwner] = useState("");
   const [name, setName] = useState("");
-  const { slide, setSlide } = useContext(SlideContext);
 
   useEffect(() => {
     const parsed = props.path.match(pathParser);
@@ -25,13 +23,23 @@ function Navbar(props: {
     setName(event.target.value);
   }
 
+  const { slide, setSlide } = useContext(SlideContext);
   function toggleSidebar() {
     setSlide(!slide);
   }
 
   return (
     <div id="toolbar">
-      <div onClick={toggleSidebar}>toggle sidebar</div>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        className="icon clickable"
+        onClick={toggleSidebar}
+        fill="var(--type-color)"
+      >
+        <path fill="none" d="M0 0h24v24H0z" />
+        <path d="M3 4h18v2H3V4zm0 7h18v2H3v-2zm0 7h18v2H3v-2z" />
+      </svg>
       <div className="azimuth mx-2">{owner}</div>
       <div
         className="mx-2 cursor-default"

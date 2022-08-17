@@ -128,16 +128,30 @@ function Document(props: { path: string }) {
   }, [props.path]);
 
   const { slide, setSlide } = useContext(SlideContext);
-  function toggleSlide() {
-    setSlide(!slide)
+  function toggleSidebar() {
+    setSlide(!slide);
   }
 
   /* Empty Page ------------------------------------------------------------- */
   if (props.path == null) {
     return (
       <div id="workspace">
-        <div id="toolbar"><div onClick={toggleSlide}>toggle sidebar</div></div>
-        <div className="flex flex-grow items-center justify-center" style={{color: "var(--glass-color)"}}>
+        <div id="toolbar">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            className="icon clickable"
+            onClick={toggleSidebar}
+            fill="var(--type-color)"
+          >
+            <path fill="none" d="M0 0h24v24H0z" />
+            <path d="M3 4h18v2H3V4zm0 7h18v2H3v-2zm0 7h18v2H3v-2z" />
+          </svg>
+        </div>
+        <div
+          className="flex flex-grow items-center justify-center"
+          style={{ color: "var(--glass-color)" }}
+        >
           create a new document
         </div>
       </div>
@@ -150,7 +164,7 @@ function Document(props: { path: string }) {
         path={props.path}
         openPanel={setPanel}
         panel={panel}
-        notifStatus={notifStatus}
+        notifs={notifStatus}
       />
       <PublishPanel show={panel == "publish"} />
       <UpdatePanel
@@ -163,7 +177,7 @@ function Document(props: { path: string }) {
           }
         }
         applyUpdate={/* applyUpdate */ () => {}}
-        setNotifStatus={setNotifStatus}
+        setNotifStatus={/* setNotifStatus */ () => {}}
       />
       <VersionPanel show={panel == "version"} />
 
