@@ -159,6 +159,13 @@ aside {
   width: 280px;
 }
 
+@media (max-width: 800px) {
+  aside {
+    left: 0;
+    top: var(--leading-body);
+  }
+}
+
 aside li {
   @apply px-3 py-2 gap-2 flex;
   list-style-type: none;

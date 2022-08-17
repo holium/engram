@@ -15,7 +15,7 @@ import FileTree from "./FileTree";
 import { UrbitContext } from "../urbit/UrbitProvider";
 
 function Sidebar() {
-  const { slide, setSlide, small } = useContext(SlideContext);
+  const { slide, setSlide } = useContext(SlideContext);
   const urbitStatus = useContext(UrbitContext);
 
   const [list, setList] = useState([]);
@@ -97,7 +97,12 @@ function Sidebar() {
   );
   */
   return (
-    <div className="flex flex-col overflow-hidden" style={{ width: "18vw", minWidth: "280px", display: slide ? "none" : "flex", position: small ? "absolute" : "relative", top: small ? "calc(20px + var(--leading-body))" : "0", borderRadius: small ? "4px" : "0", boxShadow: small ? "0px 0px 16px -4px var(--trim-color)" : "none", maxHeight: small ? "calc(100vh - calc(20px + var(--leading-body)))" : "100vh" }}>
+    <div
+      id="sidebar"
+      style={{
+        display: slide ? "none" : "flex",
+      }}
+    >
       <div className="px-4 py-3 flex items-center">
         <div className="azimuth">~{urbitStatus.ship}</div>
         <div className="flex-grow"> </div>
@@ -106,8 +111,16 @@ function Sidebar() {
           className="icon"
           style={
             urbitStatus.connection < 2
-              ? { color: "var(--status-success-color)", width: "var(--leading-body", height: "var(--leading-body)" }
-              : { color: "var(--status-failure-color)", width: "var(--leading-body", height: "var(--leading-body)"}
+              ? {
+                  color: "var(--status-success-color)",
+                  width: "var(--leading-body",
+                  height: "var(--leading-body)",
+                }
+              : {
+                  color: "var(--status-failure-color)",
+                  width: "var(--leading-body",
+                  height: "var(--leading-body)",
+                }
           }
         />
       </div>
