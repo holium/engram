@@ -97,7 +97,12 @@ function Sidebar() {
   );
   */
   return (
-    <div className="flex flex-col" style={{ width: "18vw", minWidth: "280px" }}>
+    <div
+      id="sidebar"
+      style={{
+        display: slide ? "none" : "flex",
+      }}
+    >
       <div className="px-4 py-3 flex items-center">
         <div className="azimuth">~{urbitStatus.ship}</div>
         <div className="flex-grow"> </div>
@@ -106,8 +111,16 @@ function Sidebar() {
           className="icon"
           style={
             urbitStatus.connection < 2
-              ? { color: "var(--status-success-color)" }
-              : { color: "var(--status-failure-color)" }
+              ? {
+                  color: "var(--status-success-color)",
+                  width: "var(--leading-body",
+                  height: "var(--leading-body)",
+                }
+              : {
+                  color: "var(--status-failure-color)",
+                  width: "var(--leading-body",
+                  height: "var(--leading-body)",
+                }
           }
         />
       </div>
