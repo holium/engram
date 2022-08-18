@@ -14,8 +14,8 @@
     [%merge (ot ~[dmeta+(ot ~[owner+(se %p) id+so name+so]) index+ni])]
     [%mfolder (ot ~[fmeta+(ot ~[id+so name+so])])]
     [%dfolder (ot ~[fmeta+(ot ~[id+so name+so])])]
-    ::[%foldoc (ot ~[fmeta+(ot ~[id+so name+so]) doc+(ot ~[owner+(se %p) id+so name+so])])]
-    ::[%remfoldoc (ot ~[fmeta+(ot ~[id+so name+so]) doc+(ot ~[owner+(se %p) id+so name+so])])]
+    [%foldoc (ot ~[fmeta+(ot ~[id+so name+so]) fldr+(of ~[[[%doc] (ot ~[owner+(se %p) id+so name+so])] [[%folder] (ot ~[id+so name+so])]])])]
+    [%remfoldoc (ot ~[fmeta+(ot ~[id+so name+so]) fldr+(of ~[[[%doc] (ot ~[owner+(se %p) id+so name+so])] [[%folder] (ot ~[id+so name+so])]])])]
   ==
 ++  enjs-gdoc
   =,  enjs:format
