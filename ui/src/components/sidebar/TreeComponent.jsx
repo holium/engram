@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import FolderMenu from "./FolderMenu";
 import FileMenu from "./FileMenu";
 
-function TreeComponent({ data , onDelete, newDoc}) {
+function TreeComponent({ data , onDelete, newDoc, setParent}) {
   const [expand, setExpand] = useState(false);
 
     const [appear, setAppear] = useState(false);
@@ -22,12 +22,12 @@ function TreeComponent({ data , onDelete, newDoc}) {
 
 
 useEffect(()=>{
+    console.log("hey")
+    console.log(data);
     if(newDoc === true){
         setrenameState(true)
     }
 },[])
-
-
 
     function hideMenu(event){
         event.stopPropagation()
@@ -69,7 +69,6 @@ useEffect(()=>{
         ]}))
         setExpand(true);
         setCreateDoc(true);
-        
         console.log("added file")
 
     }

@@ -25,9 +25,7 @@ function Sidebar() {
 
   const [type, setType] = useState("");
 
-  const [info, setInfo] = useState({
-    children: [],
-  })
+  const [info, setInfo] = useState([])
 
   const [pos, setPos] = useState({top: 0,
   left: 0
@@ -39,8 +37,8 @@ function Sidebar() {
   const [newDocName, setNewDocName] = useState("");
 
 
-  useEffect(() => {
-    console.log(info.children)
+  /*useEffect(() => {
+    console.log(info)
     checkUrbitWindow();
     listDocuments()
       .then((res) => {
@@ -61,17 +59,23 @@ function Sidebar() {
         setList([{ owner: "~zod", id: "123", name: "doc" }]);
       });
   }, []);
-
+*/
 
 
   function handleDelete(prop){
     console.log(info)
-    const children = info.children.filter(child => child.name !== prop);
-    setInfo(previousInputs=>({...previousInputs, children: children}))
-  
+    const children = info.filter(child => child.name !== prop);
+    setInfo(children)
+    console.log("hey")
+    console.log(info)
     /*
     delete middleware for deleteFolder or deleteDocument
     */
+  }
+
+  function handleAdd(prop){
+    console.log(info)
+    
   }
   
   function create(e){
@@ -105,7 +109,7 @@ function Sidebar() {
     createFolder(meta).then((res) => {
       console.log("create folder result", res);
     });
-    setInfo(previousInputs=>({children: [meta, ...previousInputs.children]}))
+    setInfo(([meta, ...info]))
     closeCreateDoc();
   }
 
@@ -116,7 +120,6 @@ function Sidebar() {
       owner: `~${window.ship}`,
       id: `~${window.ship}-${crypto.randomUUID()}`,
       name: newDocName.replaceAll(" ", "-"),
-      children: null,
       isFolder: "file"
     };
 
@@ -134,7 +137,7 @@ function Sidebar() {
       console.log("create document result", res);
     });
     //setList([meta, ...list]);
-    setInfo(previousInputs=>({children: [meta, ...previousInputs.children]}))
+    setInfo(([meta, ...info]))
     closeCreateDoc();
   }
   function closeCreateDoc() {
@@ -169,7 +172,7 @@ function Sidebar() {
           <div className="font-bold flex-grow py-1">Your Ship</div>
           <menu onMouseLeave = {()=>(setAppear(false))}>
           <i className="ri-add-box-line icon clickable tree-item-hidden"
-            onClick={(e) => {setAppear(true); setPos({top: e.clientY, left: e.clientX})}}
+            onClick={(e) => {setAppear(true); setPos({top: e.clientY, left: e.clientX}); console.log(info)}}
           />
           {appear && <RootMenu position = {pos} setAppear = {setAppear} setDoc = {setNewDoc} setType = {setType}/>}
           </menu>
@@ -204,37 +207,15 @@ function Sidebar() {
             />
           </div>
         )}
-        {list.map((doc, i) => {
-          return (
-            <div
-              className="tree-item clickable"
-              onClick={() => {
-                openDocument(doc);
-              }}
-            >
-              <div className="py-1 flex-grow overflow-hidden overflow-ellipsis whitespace-nowrap">
-                {doc.name}
-              </div>
-              <FontAwesomeIcon
-                onClick={(event) => {
-                  event.stopPropagation();
-                  deleteDoc(doc, i);
-                }}
-                icon={regular("trash-alt")}
-                className="icon clickable tree-item-hidden"
-              />
-            </div>
-          );
-        })
-        }
-          {info.children.map((childData) => (
+
+          {info.map((childData) => (
                             <div
                             className=" pl-3"
                             onClick={() => { if(childData.isFolder === "file") {
                               openDocument(childData);}
                             }}
                           >
-                <TreeComponent key = {Math.random()} data = {childData} onDelete = {handleDelete}/>
+                <TreeComponent data = {childData} onDelete = {handleDelete} setParent = {setInfo}/>
                 </div>
             ))}
       </div>
