@@ -2,9 +2,12 @@ import { useContext, useState, useEffect } from "react";
 import { SlideContext } from "../toolbar/SlideContext";
 import {
   listDocuments,
+  listFolders,
   createDocument,
+  createFolder,
   checkUrbitWindow,
   deleteDocument,
+  deleteFolder,
 } from "../urbit/index";
 import { OpenDocumentEvent } from "../document/types";
 import { regular, solid } from "@fortawesome/fontawesome-svg-core/import.macro";
@@ -40,6 +43,11 @@ function Sidebar() {
         console.log("no urbit :(");
         setList([{ owner: "~zod", id: "123", name: "doc" }]);
       });
+    listFolders().then((res) => {
+      console.log("list folders result: ", res);
+    }).catch((err) => {
+      console.warn("error listing folders: ", err);
+    });
   }, []);
 
   function openDocument(doc: any) {
@@ -87,6 +95,19 @@ function Sidebar() {
     deleteDocument(doc).then((res) => {
       console.log("delete document result:", res);
     });
+  }
+
+  function createFol() {
+    const testFolder = { id: `~${window.ship}-${crypto.randomUUID()}`, name: "Test Folder" };
+    console.log("creating folder: ", testFolder);
+    createFolder(testFolder);
+    listFolders().then((res) => { console.log(res) });
+  }
+
+  function deleteFol(folder) {
+    console.log("deleting folder: ", folder);
+    deleteFolder(folder);
+    listFolders().then((res) => { console.log(res) });
   }
 
   /*
