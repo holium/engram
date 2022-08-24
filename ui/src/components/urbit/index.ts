@@ -206,7 +206,7 @@ export function setDocumentSettings(doc: any, settings: any) {
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
       app: "engram",
-      mark: "engram-do",
+      mark: "post",
       json: { settings: { doc: doc, stg: settings } },
       onSuccess: () => {
         resolve();
