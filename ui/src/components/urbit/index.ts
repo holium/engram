@@ -35,6 +35,21 @@ export function listDocuments(): Promise<Array<DocumentMeta>> {
   });
 }
 
+export function listFolders(): Promise<Array<FolderMeta>> {
+  return new Promise((resolve, reject) => {
+    checkUrbitWindow(reject);
+    (window as any).urbit.scry({ app: "engram", path: "/gfolders" }).then(
+      (response: any) => {
+        console.log(response);
+	resolve(response);
+      },
+      (err: any) => {
+        console.log("list folders error: ", err);
+      }
+    );
+  });
+}
+
 export function getDocument(meta: DocumentMeta): Promise<Document> {
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
@@ -152,12 +167,46 @@ export function deleteDocument(meta: DocumentMeta) {
   });
 }
 
+export function createFolder(folder: FolderMeta) {
+  return new Promise<void>((resolve, reject) => {
+    checkUrbitWindow(reject);
+    (window as any).urbit.poke({
+      app: "engram",
+      mark: "post",
+      json: { mfolder: { fmeta: folder } },
+      onSuccess: () => {
+        resolve();
+      },
+      onError: (e: any) => {
+        console.error("Error creating folder: ", folder);
+      }
+    });
+  });
+}
+
+export function deleteFolder(folder: FolderMeta) {
+  return new Promise<void>((resolve, reject) => {
+    checkUrbitWindow(reject);
+    (window as any).urbit.poke({
+      app: "engram",
+      mark: "post",
+      json: { dfolder: { fmeta: folder } },
+      onSuccess: () => {
+        resolve();
+      },
+      onError: (e: any) => {
+        console.error("Error deleting folder: ", folder);
+      }
+    });
+  });
+}
+
 export function setDocumentSettings(doc: any, settings: any) {
   return new Promise<void>((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
       app: "engram",
-      mark: "engram-do",
+      mark: "post",
       json: { settings: { doc: doc, stg: settings } },
       onSuccess: () => {
         resolve();
@@ -171,42 +220,6 @@ export function setDocumentSettings(doc: any, settings: any) {
           e
         );
         reject("Error setting settings");
-      },
-    });
-  });
-}
-
-export function createFolder(meta: FolderMeta) {
-  return new Promise<void>((resolve, reject) => {
-    checkUrbitWindow(reject);
-    (window as any).urbit.poke({
-      app: "engram",
-      mark: "engram-do",
-      json: { mfolder: { fmeta: meta } },
-      onSuccess: () => {
-        resolve();
-      },
-      onError: (e: any) => {
-        console.error("Error creating folder: ", meta, e);
-        reject("Error creating folder");
-      },
-    });
-  });
-}
-
-export function deleteFolder(meta: FolderMeta) {
-  return new Promise<void>((resolve, reject) => {
-    checkUrbitWindow(reject);
-    (window as any).urbit.poke({
-      app: "engram",
-      mark: "post",
-      json: { dfolder: { fmeta: meta } },
-      onSuccess: () => {
-        resolve();
-      },
-      onError: (e: any) => {
-        console.error("Error deleteing folder: ", meta, e);
-        reject("Error deleteing folder");
       },
     });
   });
