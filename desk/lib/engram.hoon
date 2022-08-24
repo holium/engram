@@ -75,6 +75,9 @@
   =,  enjs:format
   |=  folders=(jug fmeta fldr)
   =/  keys  ~(tap in ~(key by folders))
+  ~&  "keys"
+  ~&  (lent keys)
+  ~&  keys
   =/  results  *(list [@t json])
   =/  counter  0
   =/  assembled
@@ -85,6 +88,8 @@
   =/  curr  (~(get by folders) key)
   =/  meta  (pairs ~[['id' (tape (trip `cord`id:key))] ['name' (tape (trip name:key))]])
   =/  items  ~(tap in (~(get ju folders) key))
+  ~&  "items"
+  ~&  items
   =/  content-results  *(list [@t json])
   =/  content-counter  0
   =/  content
@@ -98,18 +103,18 @@
     =/  res  
       ?-  -.item
           [%doc]
-    ::    (tape "doc")
         (pairs ~[['owner' (ship owner:dmeta:item)] ['id' (tape (trip `cord`id:dmeta:item))] ['name' (tape (trip name:dmeta:item))]]) 
           [%folder]
         (tape "folder")
-    ::    (pairs ~[['id' (tape (trip `cord`id:fmeta:item))] ['name' (tape (trip name:fmeta:item))]])
       ==
     %=  $
+      content-counter  (add content-counter 1)
       content-results  (snoc content-results [(crip "<content-counter>}") res])
-  ::    content-results  (snoc content-results  [(crip "{<content-counter>}") (pairs ~[['owner' (ship owner:item)] ['id' (tape (trip `cord`id:item))] ['name' (tape (trip name:item))]])])
     ==
+  ~&  key
   %=  $
-    results  (snoc results [(crip "{<counter>}") (pairs ~[['meta' (tape "meta")] ['content' (tape "content")]])])
+    counter  (add counter 1)
+    results  (snoc results [(crip "{<counter>}") (pairs ~[['meta' (pairs ~[['id' (tape (trip `@t`id:key))] ['name' (tape (trip name:key))]])] ['content' content]])])
   ==
   (pairs assembled)
 --
