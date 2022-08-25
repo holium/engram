@@ -83,3 +83,8 @@ export interface FolderMeta {
   id: any;
   name: string;
 }
+
+export interface Folder {
+  meta: FolderMeta;
+  contents: Array<FolderMeta | DocumentMeta>;
+}
