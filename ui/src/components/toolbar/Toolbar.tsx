@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { pathParser } from "../urbit/index";
-import { NotifStatus } from "../document/types";
+import { SlideContext } from "./SlideContext";
 
 function Navbar(props: {
   path: string;
@@ -23,8 +23,23 @@ function Navbar(props: {
     setName(event.target.value);
   }
 
+  const { slide, setSlide } = useContext(SlideContext);
+  function toggleSidebar() {
+    setSlide(!slide);
+  }
+
   return (
     <div id="toolbar">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        className="icon clickable"
+        onClick={toggleSidebar}
+        fill="var(--type-color)"
+      >
+        <path fill="none" d="M0 0h24v24H0z" />
+        <path d="M3 4h18v2H3V4zm0 7h18v2H3v-2zm0 7h18v2H3v-2z" />
+      </svg>
       <div className="azimuth mx-2">{owner}</div>
       <div
         className="mx-2 cursor-default"
@@ -45,7 +60,6 @@ function Navbar(props: {
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
-        stroke="var(--type-color)"
         fill="var(--type-color)"
         style={
           props.panel == "publish"
@@ -67,7 +81,6 @@ function Navbar(props: {
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
           className="icon clickable mx-2"
-          stroke="var(--type-color)"
           fill="var(--type-color)"
           onClick={() => {
             props.panel == "update"
@@ -88,6 +101,7 @@ function Navbar(props: {
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
           className="icon clickable mx-2"
+          fill="var(--type-color)"
           onClick={() => {
             props.panel == "update"
               ? props.openPanel(null)
@@ -106,7 +120,6 @@ function Navbar(props: {
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
-        stroke="var(--type-color)"
         fill="var(--type-color)"
         style={
           props.panel == "version"

@@ -2,9 +2,12 @@ import { useContext, useState, useEffect } from "react";
 import { SlideContext } from "../toolbar/SlideContext";
 import {
   listDocuments,
+  listFolders,
   createDocument,
+  createFolder,
   checkUrbitWindow,
   deleteDocument,
+
   createFolder,
   deleteFolder,
   addToFolder,
@@ -62,6 +65,11 @@ children: ["hell", "gosh"]}, {name: "hell", children: ["yeah"]}, {name: "gosh", 
         console.log("no urbit :(");
         setInfo([{ owner: "~zod", id: "123", name: "doc" }]);
       });
+    listFolders().then((res) => {
+      console.log("list folders result: ", res);
+    }).catch((err) => {
+      console.warn("error listing folders: ", err);
+    });
   }, []);
 
 
@@ -162,16 +170,50 @@ children: ["hell", "gosh"]}, {name: "hell", children: ["yeah"]}, {name: "gosh", 
     });
   }
 
+
+  function createFol() {
+    const testFolder = { id: `~${window.ship}-${crypto.randomUUID()}`, name: "Test Folder" };
+    console.log("creating folder: ", testFolder);
+    createFolder(testFolder);
+    listFolders().then((res) => { console.log(res) });
+  }
+
+  function deleteFol(folder) {
+    console.log("deleting folder: ", folder);
+    deleteFolder(folder);
+    listFolders().then((res) => { console.log(res) });
+  }
+
+  /*
   return (
-    <div className="flex flex-col" style={{ width: "18vw", minWidth: "280px" }}>
+    <div className={`${slide ? " w-8" : " w-5"} duration-300 relative`}>
+      <FileTree />
+    </div>
+  );
+  */
+  return (
+    <div
+      id="sidebar"
+      style={{
+        display: slide ? "none" : "flex",
+      }}
+    >
       <div className="px-4 py-3 flex items-center">
         <div className="azimuth">~{urbitStatus.ship}</div>
         <div className="flex-grow"> </div>
         <i className="ri-checkbox-blank-circle-fill icon"
           style={
             urbitStatus.connection < 2
-              ? { color: "var(--status-success-color)" }
-              : { color: "var(--status-failure-color)" }
+              ? {
+                  color: "var(--status-success-color)",
+                  width: "var(--leading-body",
+                  height: "var(--leading-body)",
+                }
+              : {
+                  color: "var(--status-failure-color)",
+                  width: "var(--leading-body",
+                  height: "var(--leading-body)",
+                }
           }
         />
       </div>
