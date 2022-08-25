@@ -25,11 +25,15 @@ function Sidebar() {
 
   const [type, setType] = useState("");
 
-  const [info, setInfo] = useState([])
+  const [ids, setIds] = useState([])
+
+  const [info, setInfo] = useState([{name: "yea",
+children: ["hell", "gosh"]}, {name: "hell", children: ["yeah"]}, {name: "gosh", children: ["prop"]}])
 
   const [pos, setPos] = useState({top: 0,
   left: 0
   });
+  
   const [appear, setAppear] = useState(false);
   const urbitStatus = useContext(UrbitContext);
   const [list, setList] = useState([]);
@@ -37,13 +41,13 @@ function Sidebar() {
   const [newDocName, setNewDocName] = useState("");
 
 
-  /*useEffect(() => {
+  useEffect(() => {
     console.log(info)
     checkUrbitWindow();
+    sendData()
     listDocuments()
       .then((res) => {
         console.log("list documents result: ", res);
-
         setList(
           Object.keys(res).map((key) => {
             return {
@@ -56,17 +60,24 @@ function Sidebar() {
       })
       .catch((err) => {
         console.log("no urbit :(");
-        setList([{ owner: "~zod", id: "123", name: "doc" }]);
+        setInfo([{ owner: "~zod", id: "123", name: "doc" }]);
       });
   }, []);
-*/
+
+
+  const sendData  = () => {
+    const ids1 = info.map(childData => childData.children)
+    const ids2 = ids1.flat()
+    const set = new Set(ids2)
+    setIds(Array.from(set));
+    }
+
 
 
   function handleDelete(prop){
     console.log(info)
     const children = info.filter(child => child.name !== prop);
     setInfo(children)
-    console.log("hey")
     console.log(info)
     /*
     delete middleware for deleteFolder or deleteDocument
@@ -103,13 +114,12 @@ function Sidebar() {
       id: `~${window.ship}-${crypto.randomUUID()}`,
       name: newDocName.replaceAll(" ", "-"),
       children: [],
-      isFolder: "folder"
     };
 
     createFolder(meta).then((res) => {
       console.log("create folder result", res);
     });
-    setInfo(([meta, ...info]))
+    setInfo(([...info, meta]))
     closeCreateDoc();
   }
 
@@ -136,8 +146,7 @@ function Sidebar() {
     }).then((res) => {
       console.log("create document result", res);
     });
-    //setList([meta, ...list]);
-    setInfo(([meta, ...info]))
+    setInfo(([...info, meta]))
     closeCreateDoc();
   }
   function closeCreateDoc() {
@@ -153,7 +162,6 @@ function Sidebar() {
     });
   }
 
-  
   return (
     <div className="flex flex-col" style={{ width: "18vw", minWidth: "280px" }}>
       <div className="px-4 py-3 flex items-center">
@@ -172,7 +180,7 @@ function Sidebar() {
           <div className="font-bold flex-grow py-1">Your Ship</div>
           <menu onMouseLeave = {()=>(setAppear(false))}>
           <i className="ri-add-box-line icon clickable tree-item-hidden"
-            onClick={(e) => {setAppear(true); setPos({top: e.clientY, left: e.clientX}); console.log(info)}}
+            onClick={(e) => {setAppear(true); setPos({top: e.clientY, left: e.clientX}); sendData()}}
           />
           {appear && <RootMenu position = {pos} setAppear = {setAppear} setDoc = {setNewDoc} setType = {setType}/>}
           </menu>
@@ -208,14 +216,16 @@ function Sidebar() {
           </div>
         )}
 
-          {info.map((childData) => (
+          {info.filter((child => !(ids.includes(child.name)))).map((childData, index) => (
                             <div
                             className=" pl-3"
-                            onClick={() => { if(childData.isFolder === "file") {
+                            onClick={() => { if(childData.child) {
                               openDocument(childData);}
                             }}
                           >
-                <TreeComponent data = {childData} onDelete = {handleDelete} setParent = {setInfo}/>
+                            {index}:
+                            
+                <TreeComponent index = {index} data = {childData} onDelete = {handleDelete}/>
                 </div>
             ))}
       </div>

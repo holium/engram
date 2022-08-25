@@ -22,8 +22,6 @@ function TreeComponent({ data , onDelete, newDoc, setParent}) {
 
 
 useEffect(()=>{
-    console.log("hey")
-    console.log(data);
     if(newDoc === true){
         setrenameState(true)
     }
@@ -35,6 +33,7 @@ useEffect(()=>{
     }
 
     function ToggleFolderMenu(event) {
+        console.log(info)
         event.stopPropagation();
         setAppear(!appear)
     }
@@ -63,8 +62,6 @@ useEffect(()=>{
         setInfo(previousInputs=>({...previousInputs, children: [...previousInputs.children,
             {     
              name: "",
-             isFolder: "file", 
-             children: null,
             },
         ]}))
         setExpand(true);
@@ -78,7 +75,6 @@ useEffect(()=>{
         setInfo(previousInputs=>({...previousInputs, children: [...previousInputs.children,
             {     
              name: "",
-             isFolder: "folder", 
              children: [],
             },
         ]}))
@@ -92,13 +88,13 @@ useEffect(()=>{
     return(
         <div>
             <div className="icon-container" onClick={()=>setExpand(!expand)}>
-                <div className="relative">
-                <div className="absolute">
-            {(info.isFolder === "file" || info.isFolder == null) ? "" : ((info.children.length === 0) ? "" : (!expand ? <i className="ri-arrow-right-s-line"></i> : <i className="ri-arrow-down-s-line"></i>))}
+            <div className="relative">
+            <div className="absolute">
+            {/*(info.isFolder === "file" || info.isFolder == null) ? "" : ((info.children.length === 0) ? "" : (!expand ? <i className="ri-arrow-right-s-line"></i> : <i className="ri-arrow-down-s-line"></i>))*/}
             </div>
             </div>
             <div className='pr-3 pl-4'>
-            {info.isFolder === "folder" ? <i className="ri-folder-line"></i> : info.isFolder === "file" ? <i className="ri-file-line"></i> : null}
+            {info.children ? <i className="ri-folder-line"></i> : <i className="ri-file-line"></i>}
             </div>
             {renameState ? 
             <div className="flex px-4 py-1 gap-3"> 
@@ -129,17 +125,19 @@ useEffect(()=>{
             <i className="ri-add-box-line clickable" ></i>
             </div>
             }
-            {appear && (info.isFolder === "folder" ?
+            {appear && (info.children ?
             <FolderMenu ToggleFolderMenu = {ToggleFolderMenu} renameFolder = {setrenameState} deleteFolder = {deleteFolder} addFile = {addFile} addFolder = {addFolder} position = {pos} /> 
-            : info.isFolder ==="file" ? <FileMenu ToggleFolderMenu = {ToggleFolderMenu} renameFolder = {setrenameState} deleteFolder = {deleteFolder} position = {pos}/> :
-            ""
+            : <FileMenu ToggleFolderMenu = {ToggleFolderMenu} renameFolder = {setrenameState} deleteFolder = {deleteFolder} position = {pos}/> 
         ) }
             </menu>
         </div>
 
          <div className = {`${expand ? "block" : " hidden"} pl-3`}>
-            {info.isFolder === "folder" && info.children.map((childData) => (
-                <TreeComponent key = {info.label} data = {childData} onDelete = {handleDelete} newDoc = {createDoc} setDoc = {setCreateDoc}/>
+            {info.child && info.children.map((childData, index) => (
+                <div> 
+                    {index}:
+                <TreeComponent key = {crypto.randomUUID} data = {childData} onDelete = {handleDelete} newDoc = {createDoc} setDoc = {setCreateDoc}/>
+                </div>
             ))}
          </div>
     
