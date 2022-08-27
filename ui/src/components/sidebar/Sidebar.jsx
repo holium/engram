@@ -28,7 +28,7 @@ function Sidebar() {
   const [ids, setIds] = useState([])
 
   const [info, setInfo] = useState([{name: "yea",
-children: ["hell", "gosh"]}, {name: "hell", children: ["yeah"]}, {name: "gosh", children: ["prop"]}])
+children: ["hell", "gosh"]}, {name: "hell", children: ["yeah"]}, {name: "gosh", children: ["prop"]}, {name: "yeah", children: []}, {name: "prop", children: []}])
 
   const [pos, setPos] = useState({top: 0,
   left: 0
@@ -73,20 +73,44 @@ children: ["hell", "gosh"]}, {name: "hell", children: ["yeah"]}, {name: "gosh", 
     }
 
 
+    const getChildren = (identifier) => {
+      const content = info.filter(child => identifier.includes(child.name)).map(childData => childData);
+      console.log("Log in getChildren:")
+      console.log(content)
+      return content;
+    }
+
+
 
   function handleDelete(prop){
-    console.log(info)
-    const children = info.filter(child => child.name !== prop);
+    const child = info.filter(child => child.name === prop)
+    const children = info.filter(element => element.name !== prop && !child[0].children.includes(element.name));
+   children.map(element => {
+      if(element.children.includes(prop)){
+        element.children.splice(element.children.indexOf(prop), 1)
+      }
+    }); 
+    console.log(children)
     setInfo(children)
-    console.log(info)
+    sendData()
+    //
     /*
     delete middleware for deleteFolder or deleteDocument
     */
   }
 
-  function handleAdd(prop){
-    console.log(info)
-    
+
+  function handleAdd(prop, name){
+    const children = info;
+    children.push({name: name, children: []})
+    children.map(child => {
+      if(child.name === prop){
+        child.children.push(name)
+      }
+    })
+    setInfo(children)
+    console.log(children)
+    sendData()
   }
   
   function create(e){
@@ -110,7 +134,6 @@ children: ["hell", "gosh"]}, {name: "hell", children: ["yeah"]}, {name: "gosh", 
     console.log("create folder");
     checkUrbitWindow();
     const meta: FolderMeta = {
-      owner: `~${window.ship}`,
       id: `~${window.ship}-${crypto.randomUUID()}`,
       name: newDocName.replaceAll(" ", "-"),
       children: [],
@@ -130,7 +153,6 @@ children: ["hell", "gosh"]}, {name: "hell", children: ["yeah"]}, {name: "gosh", 
       owner: `~${window.ship}`,
       id: `~${window.ship}-${crypto.randomUUID()}`,
       name: newDocName.replaceAll(" ", "-"),
-      isFolder: "file"
     };
 
     const doc = new Y.Doc();
@@ -180,7 +202,7 @@ children: ["hell", "gosh"]}, {name: "hell", children: ["yeah"]}, {name: "gosh", 
           <div className="font-bold flex-grow py-1">Your Ship</div>
           <menu onMouseLeave = {()=>(setAppear(false))}>
           <i className="ri-add-box-line icon clickable tree-item-hidden"
-            onClick={(e) => {setAppear(true); setPos({top: e.clientY, left: e.clientX}); sendData()}}
+            onClick={(e) => {setAppear(true); setPos({top: e.clientY, left: e.clientX});}}
           />
           {appear && <RootMenu position = {pos} setAppear = {setAppear} setDoc = {setNewDoc} setType = {setType}/>}
           </menu>
@@ -222,10 +244,8 @@ children: ["hell", "gosh"]}, {name: "hell", children: ["yeah"]}, {name: "gosh", 
                             onClick={() => { if(childData.child) {
                               openDocument(childData);}
                             }}
-                          >
-                            {index}:
-                            
-                <TreeComponent index = {index} data = {childData} onDelete = {handleDelete}/>
+                          >    
+                <TreeComponent key = {Math.random()} data = {childData} onDelete = {handleDelete} getChildren = {getChildren} handleAdd = {handleAdd}/>
                 </div>
             ))}
       </div>

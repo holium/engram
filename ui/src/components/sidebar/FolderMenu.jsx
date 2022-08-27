@@ -21,7 +21,7 @@ function FolderMenu(props){
         onMouseLeave={(e)=>props.ToggleFolderMenu(e)}
       >
         <li className = "justify-center" onClick = {(e)=>(
-                    props.addFolder(e)
+                    props.handleAdd(props.name, "fuck")
                 )}>
                 <i className="ri-folder-add-line "/>
                 </li>
@@ -34,9 +34,11 @@ function FolderMenu(props){
                     }}>
                 <i className="ri-edit-2-line "/>
                     </li>
-                    <li className = "justify-center" onClick = {(e)=>(
-                    props.deleteFolder(e)
-                )}>
+                    <li className = "justify-center" onClick = {()=>{
+                    console.log(props)
+                    props.onDelete(props.name);
+                    }
+                }>
                 <i className="ri-delete-bin-line"/>
                 </li>
         </menu>
