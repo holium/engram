@@ -4,7 +4,6 @@ import {
   listDocuments,
   listFolders,
   createDocument,
-  createFolder,
   checkUrbitWindow,
   deleteDocument,
 
@@ -30,8 +29,8 @@ function Sidebar() {
 
   const [ids, setIds] = useState([])
 
-  const [info, setInfo] = useState([{name: "yea",
-children: ["hell", "gosh"]}, {name: "hell", children: ["yeah"]}, {name: "gosh", children: ["prop"]}, {name: "yeah", children: []}, {name: "prop", children: []}])
+  const [info, setInfo] = useState([{id: `${crypto.randomUUID()}`, name: "yea",
+children: ["hell", "gosh"]}, {id: `${crypto.randomUUID()}`, name: "hell", children: ["yeah"]}, {id: `${crypto.randomUUID()}`, name: "gosh", children: ["prop"]}, {id: `${crypto.randomUUID()}`, name: "yeah", children: []}, {id: `${crypto.randomUUID()}`, name: "prop", children: []}])
 
   const [pos, setPos] = useState({top: 0,
   left: 0
@@ -42,7 +41,7 @@ children: ["hell", "gosh"]}, {name: "hell", children: ["yeah"]}, {name: "gosh", 
   const [list, setList] = useState([]);
   const [newDoc, setNewDoc] = useState(false);
   const [newDocName, setNewDocName] = useState("");
-
+  const [slide, setSlide] = useState(false)
 
   useEffect(() => {
     console.log(info)
@@ -93,13 +92,14 @@ children: ["hell", "gosh"]}, {name: "hell", children: ["yeah"]}, {name: "gosh", 
   function handleDelete(prop){
     const child = info.filter(child => child.name === prop)
     const children = info.filter(element => element.name !== prop && !child[0].children.includes(element.name));
-   children.map(element => {
+    children.map(element => {
       if(element.children.includes(prop)){
         element.children.splice(element.children.indexOf(prop), 1)
       }
     }); 
     console.log(children)
     setInfo(children)
+    
     sendData()
     //
     /*
@@ -194,7 +194,7 @@ children: ["hell", "gosh"]}, {name: "hell", children: ["yeah"]}, {name: "gosh", 
 
 
   function createFol() {
-    const testFolder = { id: `~${window.ship}-${crypto.randomUUID()}`, name: "Test Folder" };
+    const testFolder = { id: `~${window.ship}-${crypto.randomUUID()}`, name: "Test Folder", content: [] };
     console.log("creating folder: ", testFolder);
     createFolder(testFolder);
     listFolders().then((res) => { console.log(res) });
@@ -287,7 +287,7 @@ children: ["hell", "gosh"]}, {name: "hell", children: ["yeah"]}, {name: "gosh", 
                               openDocument(childData);}
                             }}
                           >    
-                <TreeComponent key = {Math.random()} data = {childData} onDelete = {handleDelete} getChildren = {getChildren} handleAdd = {handleAdd}/>
+                <TreeComponent key = {childData.id} data = {childData} onDelete = {handleDelete} getChildren = {getChildren} handleAdd = {handleAdd}/>
                 </div>
             ))}
       </div>

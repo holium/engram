@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import FolderMenu from "./FolderMenu";
 import FileMenu from "./FileMenu";
 
-function TreeComponent({ data, onDelete, setId, newDoc, getChildren, addFolder, addFile, handleAdd}) {
+function TreeComponent({ data, onDelete, newDoc, getChildren, addFolder, handleAdd}) {
   const [expand, setExpand] = useState(false);
 
     const [appear, setAppear] = useState(false);
@@ -43,7 +43,9 @@ useEffect(()=>{
 
     const handleDelete = (prop) => {
         onDelete(prop);
-        setId(null);
+        setInfo({id: null, name: null, children: []})
+        setChildren([])
+        setAppear(false);
     }
 
     function ToggleFolderMenu(event) {
@@ -68,7 +70,7 @@ useEffect(()=>{
             </div>
             </div>
             <div className='pr-3 pl-4'>
-            {info.children ? <i className="ri-folder-line"></i> : <i className="ri-file-line"></i>}
+            {info.id === null ? "" :(info.children ? <i className="ri-folder-line"></i> : <i className="ri-file-line"></i>)}
             </div>
             {renameState ? 
             <div className="flex px-4 py-1 gap-3"> 
@@ -109,7 +111,7 @@ useEffect(()=>{
          <div className = {`${expand ? "block" : " hidden"} pl-3`}>
             {info.children && children.map((childData) => (
                 <div> 
-                    <TreeComponent key ={Math.random()} setId = {setIdentifier} onDelete = {onDelete} data = {childData} getChildren = {getChildren} handleAdd = {handleAdd}/>
+                    <TreeComponent key ={childData.id} setId = {setIdentifier} onDelete = {onDelete} data = {childData} getChildren = {getChildren} handleAdd = {handleAdd}/>
                 </div>
             ))}
          </div>
