@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 
 import { EditorState } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
@@ -35,6 +35,7 @@ import PublishPanel from "../panels/PublishPanel";
 import UpdatePanel from "../panels/UpdatePanel";
 import VersionPanel from "../panels/VersionPanel";
 import { NotifStatus } from "./types";
+import { SlideContext } from "../toolbar/SlideContext";
 
 function Document(props: { path: string }) {
   /* Periphery -------------------------------------------------------------- */
@@ -97,7 +98,7 @@ function Document(props: { path: string }) {
           buildKeymap(schema),
           baseKeymap,
           shortcuts(schema),
-          //config(setConfigMenu),
+          config(setConfigMenu),
           placeholders,
           sidemenu(setSideMenu),
           highlightmenu(setHighlightMenu),
@@ -126,11 +127,31 @@ function Document(props: { path: string }) {
     });
   }, [props.path]);
 
+  const { slide, setSlide } = useContext(SlideContext);
+  function toggleSidebar() {
+    setSlide(!slide);
+  }
+
   /* Empty Page ------------------------------------------------------------- */
   if (props.path == null) {
     return (
       <div id="workspace">
-        <div className="flex flex-grow items-center justify-center border rounded-3">
+        <div id="toolbar">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            className="icon clickable"
+            onClick={toggleSidebar}
+            fill="var(--type-color)"
+          >
+            <path fill="none" d="M0 0h24v24H0z" />
+            <path d="M3 4h18v2H3V4zm0 7h18v2H3v-2zm0 7h18v2H3v-2z" />
+          </svg>
+        </div>
+        <div
+          className="flex flex-grow items-center justify-center"
+          style={{ color: "var(--glass-color)" }}
+        >
           create a new document
         </div>
       </div>
@@ -143,7 +164,7 @@ function Document(props: { path: string }) {
         path={props.path}
         openPanel={setPanel}
         panel={panel}
-        notifStatus={notifStatus}
+        notifs={notifStatus}
       />
       <PublishPanel show={panel == "publish"} />
       <UpdatePanel
@@ -156,7 +177,7 @@ function Document(props: { path: string }) {
           }
         }
         applyUpdate={/* applyUpdate */ () => {}}
-        setNotifStatus={setNotifStatus}
+        setNotifStatus={/* setNotifStatus */ () => {}}
       />
       <VersionPanel show={panel == "version"} />
 

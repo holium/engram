@@ -33,9 +33,6 @@ function VersionPanel(props: { show: boolean }) {
     setShips(Array.from(addys));
   }, [versions]);
 
-  console.log(versions);
-  console.log(ships);
-
   return (
     <div className="panel" style={props.show ? {} : { display: "none" }}>
       <div>
