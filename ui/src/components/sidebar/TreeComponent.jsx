@@ -4,8 +4,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import FolderMenu from "./FolderMenu";
 import FileMenu from "./FileMenu";
 
-function TreeComponent({ data, onDelete, newDoc, getChildren, addFolder, handleAdd}) {
-  const [expand, setExpand] = useState(false);
+function TreeComponent({ data, onDelete, newDoc, getChildren, handleAdd}) {
+
+    const [expand, setExpand] = useState(false);
 
     const [appear, setAppear] = useState(false);
 
@@ -28,12 +29,17 @@ useEffect(()=>{
     if(newDoc === true){
         setrenameState(true)
     }
-
     if(!data.owner){
-    setChildren(getChildren(info.children))
+        setChildren(getChildren(info.children))
     } 
-
 },[])
+
+
+const toggleAdd = (name, type) => {
+    handleAdd(info.name, name, type)
+    setChildren(getChildren(info.children))
+    setExpand(true);
+}
 
     function hideMenu(event){
         event.stopPropagation()
@@ -41,8 +47,8 @@ useEffect(()=>{
         
     }
 
-    const handleDelete = (prop) => {
-        onDelete(prop);
+    const handleDelete = () => {
+        onDelete(info.name);
         setInfo({id: null, name: null, children: []})
         setChildren([])
         setAppear(false);
@@ -72,6 +78,7 @@ useEffect(()=>{
             <div className='pr-3 pl-4'>
             {info.id === null ? "" :(info.children ? <i className="ri-folder-line"></i> : <i className="ri-file-line"></i>)}
             </div>
+                
             {renameState ? 
             <div className="flex px-4 py-1 gap-3"> 
             <input
@@ -102,8 +109,8 @@ useEffect(()=>{
             </div>
             }
             {appear && (info.children ?
-            <FolderMenu ToggleFolderMenu = {ToggleFolderMenu} renameFolder = {setrenameState} onDelete = {handleDelete} name = {info.name} handleAdd = {handleAdd} addFolder = {addFolder} position = {pos} /> 
-            : <FileMenu ToggleFolderMenu = {ToggleFolderMenu} renameFolder = {setrenameState} deleteFolder = {onDelete} position = {pos}/> 
+            <FolderMenu ToggleFolderMenu = {ToggleFolderMenu} renameFolder = {setrenameState} onDelete = {handleDelete} name = {info.name} handleAdd = {toggleAdd} position = {pos} /> 
+            : <FileMenu ToggleFolderMenu = {ToggleFolderMenu} renameFolder = {setrenameState} onDelete = {handleDelete} position = {pos}/> 
         ) }
             </menu>
         </div>

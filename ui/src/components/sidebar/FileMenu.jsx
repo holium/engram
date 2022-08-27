@@ -21,7 +21,7 @@ function FileMenu(props){
                 <i className="ri-edit-2-line" />
                     </li>
                     <li className = "justify-center" onClick = {(e)=>(
-                    props.deleteFolder(e)
+                    props.onDelete()
                 )}>
                 <i className="ri-delete-bin-line"/>
                 </li>

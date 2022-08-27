@@ -108,9 +108,13 @@ children: ["hell", "gosh"]}, {id: `${crypto.randomUUID()}`, name: "hell", childr
   }
 
 
-  function handleAdd(prop, name){
+  function handleAdd(prop, name, type){
     const children = info;
-    children.push({name: name, children: []})
+    if (type === "folder"){
+    children.push({id: crypto.randomUUID(), name: name, children: []})
+    } else {
+      children.push({id: crypto.randomUUID(), name: name, owner: `~${window.ship}` })
+    }
     children.map(child => {
       if(child.name === prop){
         child.children.push(name)
