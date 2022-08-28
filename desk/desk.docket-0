@@ -1,0 +1,10 @@
+:~
+  title+'Engram'
+  info+'Fancy Text Editor'
+  color+0x7c.afc2
+  version+[0 1 0]
+  website+'https://urbit.org'
+  license+'MIT'
+  base+'engram'
+  glob-ames+[~zod 0v0]
+==

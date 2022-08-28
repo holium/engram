@@ -1,3 +1,158 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/**
+ * Where styles for reusable design elements live
+ * - Atoms: styles for singular elements that are seen across the app
+ * - Components: groups of styles for specific patterns;
+ *   also implicit patterns for how to implement styles
+**/
+
+/* Atoms -------------------------------------------------------------------- */
+.azimuth {
+  @apply font-azimuth px-2 shadow-sunk inline-block hover:underline cursor-pointer rounded-2;
+  font-size: var(--body);
+  background-color: var(--glass-color);
+}
+
+.folder-menu {
+  display: none;
+}
+
+.icon-container:hover .folder-menu {
+  display: block;
+  z-index: 1;
+}
+
+.icon-container {
+  display: flex;
+}
+.icon-container:hover .icons {
+  display: block;
+  left: 50px;
+  position: relative;
+}
+
+.icons {
+  display: none;
+}
+
+.no-bullets {
+  list-style-type: none; /* Remove bullets */
+  padding: 0; /* Remove padding */
+  margin: 0;
+}
+
+.icon {
+  @apply p-1 rounded-1;
+  color: var(--rlm-icon-color, var(--type-color));
+  width: var(--leading-body);
+  height: var(--leading-body);
+}
+
+.clickable {
+  background-color: #fbfbfb00;
+  transition: background-color 80ms ease-out;
+}
+
+.clickable:hover {
+  @apply cursor-pointer;
+  background-color: var(--glass-color);
+}
+
+/* Components --------------------------------------------------------------- */
+
+/* File Tree Items */
+.tree-item {
+  @apply flex px-4 py-2;
+}
+
+.tree-item-hidden {
+  opacity: 0;
+  transition: opacity 80ms ease-out;
+}
+
+.tree-item:hover .tree-item-hidden {
+  opacity: 1;
+}
+
+/* Menus */
+
+/**
+ * Context menus can be any components, though they should typically be menu or aside.
+ * Context menu items are li elements
+**/
+
+.context-menu {
+  @apply rounded-2 shadow-menu;
+  overflow: hidden;
+  z-index: 2;
+  background-color: var(--paper-color);
+}
+
+.context-menu li {
+  @apply px-3 py-2;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.context-menu.select li:hover {
+  background-color: var(--glass-color);
+  cursor: pointer;
+}
+
+.context-menu input {
+  @apply rounded-1 p-3;
+  background-color: #ffffff00;
+  outline: none;
+}
+
+.context-menu input[type="color"] {
+  padding: 0;
+}
+
+.context-menu input:hover {
+  background-color: var(--glass-color);
+  outline: none;
+}
+
+/* Panels */
+
+/**
+ * Panels are used to display more comprehensive information.
+ * Styles here are to restrict them to some visual consistency
+**/
+
+.panel {
+  @apply absolute p-3 px-4 right-0 flex flex-col overflow-y-auto;
+  height: calc(100vh - 40px);
+  width: 420px;
+  top: 40px;
+  list-style-type: none;
+  z-index: 1;
+}
+
+.panel > * {
+  @apply rounded-3 px-4 py-3 shadow-menu;
+  background-color: var(--paper-color);
+}
+
+.tree-menu {
+  overflow: hidden;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  width: 180px;
+}
+
+.check-mark {
+  @apply rounded-1;
+  width: var(--leading-body);
+  height: var(--leading-body);
+  margin-left: 10px;
+}

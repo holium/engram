@@ -1,0 +1,51 @@
+/*
+  f0 = 1em / 16px;
+  r = 2;
+  n = 3;
+  f(i) = f0 * r^(i/n)
+*/
+
+/* Variables */
+:root {
+  /* Theme Variables */
+  --root-frequency: 1em;
+  --ratio: 2;
+  --paper-color: var(--rlm-card-color, #fafbfb); /* From Realm */
+  --type-color: var(--rlm-text-color, #261f1f); /* From Realm */
+  --trim-color: var(--rlm-base-color, #b4bdc2); /* From Realm */
+  --glass-color: var(--rlm-border-color, #d0d7da); /* From Realm */
+  --off-color: var(--rlm-window-color, #eceff0); /* From Realm */
+  --document-width: 60ch;
+  --status-primary-color: var(--rlm-accent-color, #38bdf8);
+  --status-success-color: #10a30d;
+  --status-success-glass-color: #10a30d66;
+  --status-warning-color: #faca1f;
+  --status-warning-glass-color: #faca1f66;
+  --status-failure-color: #e71f1f;
+  --status-failure-glass-color: #e71f1f66;
+
+  /* Effects */
+  --body: 1em;
+  --title: 2.5198rem;
+  --h1: 2rem;
+  --h2: 1.5874rem;
+  --h3: 1.2599rem;
+  --footer: 0.7937rem;
+  --small: 0.5rem;
+  --margin-before: 1em;
+  --margin-after: 0.5em;
+  /* Leading */
+  --leading-body: 1.2599em;
+  --leading-heading: 1.5874em;
+  /* Colour */
+  --paper-glass-color: #fbfbfb20;
+  --type-glass-color: #26262620; /* From Realm */
+  --off-glass-color: #e2dcc920;
+
+  /* Root Styles */
+  font-family: var(--rlm-font, Rubik, sans-serif);
+  font-size: var(--root-frequency);
+  line-height: var(--leading-body);
+  color: var(--type-color);
+  background-color: var(--paper-color);
+}

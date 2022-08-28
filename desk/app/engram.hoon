@@ -1,4 +1,5 @@
 /-  engram
+/+  engram
 /+  default-agent, dbug
 |%
 +$  versioned-state
@@ -35,7 +36,7 @@
   |=  [=mark =vase]
   ^-  (quip card _this)
   ?+    mark  (on-poke:def mark vase)
-      %noun
+      %post
     =/  action  !<(?(action:engram) vase)
     ?-    -.action
     ::
@@ -113,19 +114,20 @@
 ++  on-leave  on-leave:def
 ++  on-peek
   |=  =path
+  ~&  path
   ^-  (unit (unit cage))
   ?+    path  (on-peek:def path)
       [%x %docinfo ~]
-    =/  k=(set [owner=@p id=@ name=@t])  ~(key by d)
-    ``noun+!>(k)
+    =/  docs  ~(tap in ~(key by d))
+    ``noun+!>((enjs-docinfo:engram docs))
   ::
       [%x %gdoc @ @ @ ~]
     =/  owner=@p  (slav %p i.t.t.path)
-    =/  id=@  (slav %ud i.t.t.t.path)
+    =/  id=@  (crip (trip i.t.t.t.path))
     =/  name=@t  (crip (trip i.t.t.t.t.path))
     =/  meta  [owner=owner id=id name=name]
     =/  doc=[version=(list @ud) cont=(list @ud)]  (need (~(get by d) meta))
-    ``noun+!>(doc)
+    ``noun+!>((enjs-gdoc:engram doc))
   ::
       [%x %gsetting @ @ @ ~]
     =/  owner=@p  (slav %p i.t.t.path)
@@ -133,9 +135,11 @@
     =/  name=@t  (crip (trip i.t.t.t.t.path))
     =/  meta  [owner=owner id=id name=name]
     =/  stg=[perms=(list @p)]  (need (~(get by s) meta))
-    ``noun+!>(stg)
+    ~&  stg
+    ``noun+!>((enjs-gsetting:engram stg))
   ::
-      [%x %gfolders @ @ @ ~]  ``noun+!>(f)
+      [%x %gfolders @ @ @ ~]
+    ``noun+!>((enjs-gfolders:engram f))
       :: (jug [id=@ name=@t] $%([%doc [owner=@p id=@ name=@t]] [%folder [id=@ name=@t]]))
     :: =/  t=(jug [id=@ name=@t] $%([%doc [owner=@p id=@ name=@t]] [%folder [id=@ name=@t]]))  f
   ==

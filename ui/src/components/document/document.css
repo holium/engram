@@ -1,0 +1,300 @@
+/* Styles for strictly within the document */
+
+/* Element Styles */
+p,
+h1,
+h2,
+h3,
+ul,
+ol {
+  margin-top: var(--margin-before);
+  margin-bottom: var(--margin-after);
+}
+
+li {
+  margin-bottom: var(--margin-after);
+}
+
+/* Nodes */
+p {
+  font-family: var(--body-font-family);
+  line-height: var(--leading-body);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--heading-font-family);
+  font-weight: var(--heading-weight);
+  line-height: var(--leading-heading);
+}
+
+h1 {
+  font-size: var(--h1);
+}
+
+h2 {
+  font-size: var(--h2);
+}
+
+h3 {
+  font-size: var(--h3);
+}
+
+blockquote {
+  @apply pl-5;
+  border-left: 1px solid var(--type-color);
+  margin-left: 0;
+  margin-right: 0;
+}
+
+pre {
+  @apply px-4 py-5 rounded-1;
+  font-family: JetBrains Mono, monospace;
+  background-color: var(--type-glass-color);
+  margin: 0;
+}
+
+hr {
+  margin: var(--margin-before) 0;
+  border-top: 1px solid var(--type-color);
+}
+
+/* List Nodes */
+
+ul {
+  list-style-type: disc;
+  padding-left: 32px;
+  padding-right: 32px;
+}
+
+ol {
+  list-style-type: decimal;
+  padding-left: 32px;
+  padding-right: 32px;
+}
+
+ul[data-type="checklist"] {
+  /* Checklist */
+  list-style-type: none;
+}
+
+li[data-type="checklist"] {
+  position: relative;
+}
+
+li[data-type="checklist"] label {
+  position: absolute;
+  left: -24px;
+}
+
+/* Figures */
+img {
+  resize: horizontal;
+}
+
+figcaption {
+  font-size: var(--footer);
+  text-align: center;
+}
+
+/* Marks */
+strong {
+  font-weight: bold;
+}
+
+em {
+  font-style: italic;
+}
+
+u {
+  text-decoration: underline;
+}
+
+s {
+  text-decoration: line-through;
+}
+
+code {
+  @apply px-2 rounded-1;
+  font-family: JetBrains Mono, monospace;
+  background-color: var(--type-glass-color);
+}
+
+a {
+  color: var(--status-primary-color);
+  text-decoration: underline;
+}
+
+/* Header */
+header {
+  margin-bottom: calc(var(--title) / 2);
+}
+
+header * {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+header h1 {
+  position: relative;
+  font-size: var(--title);
+}
+
+header p {
+  opacity: 0.6;
+}
+
+/* Comments */
+mark {
+  background-color: var(--type-glass-color);
+  text-decoration: underline;
+}
+
+aside {
+  @apply inline-flex rounded-2 shadow-menu relative flex-col items-stretch mb-3;
+  float: right;
+  left: calc(280px + 6ch);
+  background: var(--paper-color);
+  width: 280px;
+}
+
+aside li {
+  @apply px-3 py-2 gap-2 flex;
+  list-style-type: none;
+  margin: 0;
+}
+
+aside.context-menu li:hover {
+  background-color: var(--paper-color);
+  cursor: default;
+}
+
+aside blockquote {
+  @apply pl-3;
+}
+
+aside time {
+  opacity: 0.6;
+}
+
+aside li textarea {
+  @apply px-3 py-2 flex-grow rounded-2;
+  outline: none;
+  background-color: var(--type-glass-color);
+  min-width: 0;
+}
+
+/* Menus */
+.sidemenu {
+  @apply gap-2 px-3;
+  position: absolute;
+  display: flex;
+  right: 100%;
+  margin: 0;
+}
+
+.highlightmenu {
+  position: absolute;
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+.highlightmenu li {
+  @apply py-3;
+  justify-content: center;
+}
+
+.slashmenu {
+  overflow: hidden;
+  position: absolute;
+  display: flex-col;
+  width: 180px;
+}
+
+.configmenu {
+  position: absolute;
+}
+
+/* Config */
+
+dl li {
+  list-style-type: none;
+  padding: 0;
+}
+
+dt {
+  width: calc(var(--document-width) / 2 - 1ch);
+  font-family: "IBM Plex Mono", monospace;
+  display: inline-block;
+  cursor: pointer;
+}
+dt:after {
+  content: ":";
+}
+
+dd {
+  display: inline-block;
+}
+
+dd input,
+dd select {
+  width: calc(var(--document-width) / 2 - 1ch);
+  height: 1.3em;
+  font-family: "IBM Plex Mono", monospace;
+  background: #ffffff00;
+  outline-style: none;
+  border: none;
+  font-size: var(--body);
+}
+
+/* Exceptions */
+li p:first-child {
+  margin-top: 0;
+  margin-bottom: 0;
+  font-size: var(--body);
+  line-height: var(--h3);
+}
+
+/* UX */
+main ::selection {
+  background-color: var(--type-color);
+  color: var(--paper-color);
+}
+
+/* Layout Styles */
+#document-wrapper {
+  position: relative;
+  display: flex;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+#document-wrapper section {
+  position: relative;
+}
+
+main {
+  width: calc(var(--document-width) + 8ch);
+  position: relative;
+  margin: 0 auto;
+}
+
+main .ProseMirror {
+  min-height: 100%;
+  border-radius: var(--root-frequency) var(--root-frequency) 0 0;
+  background-color: var(--paper-color);
+  padding: var(--h2) 4ch var(--title);
+}
+
+#document-wrapper::-webkit-scrollbar {
+  width: 8px;
+}
+#document-wrapper::-webkit-scrollbar-track {
+  @apply rounded-3;
+  background: var(--off-color);
+}
+#document-wrapper::-webkit-scrollbar-thumb {
+  @apply rounded-3;
+  background: var(--type-color);
+}
