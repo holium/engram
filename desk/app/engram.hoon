@@ -97,7 +97,19 @@
     ==
   ==
 ::
-++  on-watch  on-watch:def
+++  on-watch
+  |=  =path
+  ^-  (quip card _this)
+  ?+    path  (on-watch:def path)
+      [%updates ~]
+     :: ~&  "log"
+    :: !!
+    =/  a  (~(get by s) dmeta.update)
+    ?>  (~(has in perms.a) src.bowl)
+    :_  this
+       :~  [%give %fact ~ %engram-update !>(`update:todo`initial+tasks)]
+    ==
+  ==
 ++  on-leave  on-leave:def
 ++  on-peek
   |=  =path
@@ -128,7 +140,31 @@
     :: =/  t=(jug [id=@ name=@t] $%([%doc [owner=@p id=@ name=@t]] [%folder [id=@ name=@t]]))  f
   ==
 ::
-++  on-agent  on-agent:def
+++  on-agent
+  |=  [=wire =sign:agent:gall]
+    ^-  (quip card _this)
+    ?+    wire  (on-agent:def wire sign)
+        [%subs ~]
+      ?+    -.sign  (on-agent:def wire sign)
+          %watch-ack
+        ?~  p.sign
+          ((slog '%engram: Subscribe succeeded!' ~) `this)
+        ((slog '%engram: Subscribe failed!' ~) `this)
+      ::
+          %kick
+        %-  (slog '%engram: Got kick, resubscribing...' ~)
+        :_  this
+        :~  [%pass /subs %agent [src.bowl %engram] %watch /updates]
+        ==
+      ::
+          %fact
+        ?+    p.cage.sign  (on-agent:def wire sign)
+            %engram-update
+          ~&  !<(update:engram q.cage.sign)
+          `this
+        ==
+      ==
+    ==
 ++  on-arvo   on-arvo:def
 ++  on-fail   on-fail:def
 --

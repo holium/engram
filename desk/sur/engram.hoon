@@ -60,5 +60,10 @@
       [%foldoc =fmeta =fldr]
       [%remfoldoc =fmeta =fldr]
       [%merge =dmeta =@ud]
+      [%sub =@p] 
+      [%unsub =@p]
+  ==
++$  update
+  $%  [%sub =dmeta]
   ==
 --
