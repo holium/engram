@@ -1,9 +1,11 @@
 import { Plugin, PluginKey } from "prosemirror-state";
+import { NodeSpec } from "prosemirror-model";
 import { DocumentConfig, ConfigTerm } from "./config";
 import { assembleConfigNodeView, assembleConfigTermNodeView } from "./helpers";
 
 export const ConfigSpec = {
-  content: "configfield*",
+  content:
+    "type-frequency type-ratio heading-typeface body-typeface document-width",
   group: "config",
   parseDOM: [{ tag: "dl" }],
   toDOM() {
@@ -13,16 +15,37 @@ export const ConfigSpec = {
   atom: true,
 };
 
-export const ConfigTermSpec = {
-  group: "configfield",
-  attrs: { "term-key": { default: "" }, "term-value": { default: "" } },
-  parseDOM: [{ tag: "li" }],
-  toDOM(node) {
-    return ["li", node.attrs];
-  },
-  selectable: true,
-  atom: false,
+export const ConfigTermSpec = (defaultValue: any): NodeSpec => {
+  return {
+    group: "configterm",
+    attrs: { value: { default: defaultValue } },
+    parseDOM: [{ tag: "li" }],
+    toDOM(node) {
+      return ["li", node.attrs];
+    },
+    selectable: false,
+    atom: false,
+  };
 };
+
+function configTermView(node, view, getPos) {
+  console.log(view.state["config$"]);
+  const config = view.state["config$"].config;
+  const term = config[node.name];
+
+  const dom = assembleConfigTermNodeView(term);
+
+  return {
+    dom: dom,
+    update: (newNode) => {
+      const configState = view.state["config$"];
+      if (newNode.attrs["value"] != configState.config[node.name].value) {
+        configState.setField(node.name, newNode.attrs["value"]);
+      }
+      return true;
+    },
+  };
+}
 
 export const ConfigPluginKey = new PluginKey("config");
 
@@ -35,53 +58,31 @@ export const config = (renderMenu: (options: Array<ConfigTerm>) => void) =>
         state.doc.descendants((node, pos, parent, index) => {
           if (node.type.name === "header") return true;
           if (node.type.name === "config") return true;
-          if (node.type.name === "config-field") {
-            config[node.attrs["term-key"]] = node.attrs["term-value"];
+          if (node.type.spec.group === "configterm") {
+            config[node.type.name] = node.attrs["value"];
           }
           return false;
         });
         return new DocumentConfig(config);
       },
       apply: (tr, value, state) => {
+        const meta = tr.getMeta(ConfigPluginKey);
+        if (meta) {
+          ConfigPluginKey.getState(state).setTerm(meta.term, meta.value);
+        }
         return value;
       },
     },
     props: {
       nodeViews: {
         config: (node, view, getPos) => {
-          const { dom, contentDOM } = assembleConfigNodeView(view, renderMenu);
-
-          return { dom: dom, contentDOM: contentDOM };
+          return { dom: assembleConfigNodeView() };
         },
-        configfield: (node, view, getPos) => {
-          console.log(view.state["config$"]);
-          const config = view.state["config$"].config;
-          const term = config[node.attrs["term-key"]];
-
-          const { dom, input } = assembleConfigTermNodeView(view, term, getPos);
-
-          return {
-            dom: dom,
-            update: (newNode) => {
-              const configState = view.state["config$"];
-              if (
-                newNode.attrs["term-value"] !=
-                configState.config[newNode.attrs["term-key"]].value
-              ) {
-                configState.setField(
-                  newNode.attrs["term-key"],
-                  newNode.attrs["term-value"]
-                );
-              }
-              return true;
-            },
-            stopEvent: (event) => {
-              if (event.target && (event.target as any).isEqualNode)
-                return (event.target as any).isEqualNode(input);
-              return false;
-            },
-          };
-        },
+        "type-frequency": configTermView,
+        "type-ratio": configTermView,
+        "heading-typeface": configTermView,
+        "body-typeface": configTermView,
+        "document-width": configTermView,
       },
     },
   });

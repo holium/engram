@@ -26,7 +26,11 @@ const schema = new Schema({
     } as NodeSpec,
 
     config: (ConfigSpec as any) as NodeSpec,
-    configfield: (ConfigTermSpec as any) as NodeSpec,
+    "type-frequency": ConfigTermSpec("16"),
+    "type-ratio": ConfigTermSpec("2"),
+    "heading-typeface": ConfigTermSpec("sans"),
+    "body-typeface": ConfigTermSpec("sans"),
+    "document-width": ConfigTermSpec("60"),
 
     // Title
     title: {

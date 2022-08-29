@@ -11,17 +11,10 @@ export class DocumentConfig {
   config = DocumentConfig.defaultConfig;
 
   constructor(config: {
-    frequency?: number;
-    ratio?: number;
-
-    "paper-color"?: string;
-    "type-color"?: string;
-    "off-color"?: string;
-    "primary-color"?: string;
-    "success-color"?: string;
-    "warning-color"?: string;
-    "failure-color"?: string;
-
+    "type-frequency"?: number;
+    "type-ratio"?: number;
+    "heading-typeface"?: string;
+    "body-typeface"?: string;
     "docment-width"?: number;
   }) {
     Object.keys(config).forEach((style) => {
@@ -31,7 +24,7 @@ export class DocumentConfig {
   }
 
   // set the value of a config field
-  setField(key: string, value: any) {
+  setTerm(key: string, value: any) {
     this.config[key].value = value;
     this.implement(key);
   }
@@ -54,29 +47,10 @@ export class DocumentConfig {
     });
   }
 
-  static createTerm(
-    key: string,
-    styles: { [key: string]: (value: any) => string },
-    display?: string,
-    type?: string,
-    defaultValue?: any,
-    options?: { [display: string]: any }
-  ): ConfigTerm {
-    if (type === "select" && typeof options == undefined)
-      throw "You must provide options for a config term with the type select";
-    return {
-      key: key,
-      display: typeof display == undefined ? key : display,
-      type: typeof type == undefined ? "text" : type,
-      value: typeof defaultValue == undefined ? "" : defaultValue,
-      styles: styles,
-    };
-  }
-
   static defaultConfig: { [key: string]: ConfigTerm } = {
     // Typescale ---------------------------------------------------------------
     // The root font size
-    frequency: {
+    "type-frequency": {
       key: "frequency",
       display: "Typescale Root",
       type: "number",
@@ -88,7 +62,7 @@ export class DocumentConfig {
       },
     },
     // The ratio between octaves in the typescale
-    ratio: {
+    "type-ratio": {
       key: "ratio",
       display: "Typescale Ratio",
       type: "number",
@@ -138,18 +112,7 @@ export class DocumentConfig {
         },
       },
     },
-    "heading-weight": {
-      key: "heading-weight",
-      display: "Heading Weight",
-      type: "number",
-      value: 700,
-      styles: {
-        "--heading-weight": (value: number) => {
-          return `${value}`;
-        },
-      },
-    },
-    "heading-font-family": {
+    "heading-typeface": {
       key: "heading-font-family",
       display: "Heading Font Family",
       type: "select",
@@ -171,7 +134,7 @@ export class DocumentConfig {
         },
       },
     },
-    "body-font-family": {
+    "body-typeface": {
       key: "body-font-family",
       display: "Body Font Family",
       type: "select",
@@ -193,105 +156,6 @@ export class DocumentConfig {
         },
       },
     },
-
-    // Colours ---------------------------------------------------------------
-    "paper-color": {
-      key: "paper-color",
-      display: "Paper Color",
-      type: "color",
-      value: null,
-      styles: {
-        "--paper-color": (value: string) => {
-          return value;
-        },
-        "--paper-glass-color": (value: string) => {
-          return `${value}20`;
-        },
-      },
-    },
-    "type-color": {
-      key: "type-color",
-      display: "Type Color",
-      type: "color",
-      value: null,
-      styles: {
-        "--type-color": (value: string) => {
-          return value;
-        },
-        "--type-glass-color": (value: string) => {
-          return `${value}20`;
-        },
-      },
-    },
-    "off-color": {
-      key: "off-color",
-      display: "Off Color",
-      type: "color",
-      value: null,
-      styles: {
-        "--off-color": (value: string) => {
-          return value;
-        },
-      },
-    },
-    "primary-color": {
-      key: "primary-color",
-      display: "Primary Color",
-      type: "color",
-      value: "null",
-      styles: {
-        "--primary-color": (value: string) => {
-          return value;
-        },
-        "--primary-glass-color": (value: string) => {
-          return `${value}20`;
-        },
-      },
-    },
-    /*
-    "success-color": {
-      key: "success-color",
-      display: "Success Color",
-      type: "color",
-      value: "#10A30D",
-      styles: {
-        "--success-color": (value: string) => {
-          return value;
-        },
-        "--success-glass-color": (value: string) => {
-          return `${value}20`;
-        },
-      },
-    },
-    "warning-color": {
-      key: "warning-color",
-      display: "Warning  Color",
-      type: "color",
-      value: "#FACA1F",
-      styles: {
-        "--warning-color": (value: string) => {
-          return value;
-        },
-        "--warning-glass-color": (value: string) => {
-          return `${value}20`;
-        },
-      },
-    },
-    "failure-color": {
-      key: "failure-color",
-      display: "Failure Color",
-      type: "color",
-      value: "#E71F1F",
-      styles: {
-        "--failure-color": (value: string) => {
-          return value;
-        },
-        "--failure-glass-color": (value: string) => {
-          return `${value}20`;
-        },
-      },
-    },
-    */
 
     // Spacing & Sizing -----------------------------------------------------
     "document-width": {
