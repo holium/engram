@@ -35,6 +35,7 @@ const data = {
 return(
 
   <div>
+    
 
     <TreeComponent data = {data}/>
 

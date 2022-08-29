@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react'
-import { light } from '@fortawesome/fontawesome-svg-core/import.macro'
+import { regular } from '@fortawesome/fontawesome-svg-core/import.macro'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 function FileMenu(props){
@@ -7,22 +7,24 @@ function FileMenu(props){
 
     return(
         <menu
-        className="tree-menu context-menu select"
+        className=" tree-menu context-menu select"
         style={{
           left: `${props.position.left}px`,
           top: `${props.position.top}px`,
         }}
         onMouseLeave={(e)=>props.ToggleFolderMenu(e)}
       >
-                <FontAwesomeIcon className = "clickable" icon = {light('input-text')} onClick={(e)=>{
+        <li className = " justify-center" onClick={(e)=>{
                     props.renameFolder(true)
                     props.ToggleFolderMenu(e)
-                    }}/>
-                <FontAwesomeIcon className = "clickable" icon = {light('trash-can')} onClick = {(e)=>(
-                    props.deleteFolder(e)
-                )}/>
-
-
+                    }}>
+                <i className="ri-edit-2-line" />
+                    </li>
+                    <li className = "justify-center" onClick = {(e)=>(
+                    props.onDelete()
+                )}>
+                <i className="ri-delete-bin-line"/>
+                </li>
         </menu>
     )
 
