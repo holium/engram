@@ -42,6 +42,7 @@ children: ["hell", "gosh"]}, {id: `${crypto.randomUUID()}`, name: "hell", childr
   const [newDoc, setNewDoc] = useState(false);
   const [newDocName, setNewDocName] = useState("");
   const [slide, setSlide] = useState(false)
+  const [createChild, setCreateChild] = useState({});
 
   useEffect(() => {
     console.log(info)
@@ -87,6 +88,15 @@ children: ["hell", "gosh"]}, {id: `${crypto.randomUUID()}`, name: "hell", childr
       return content;
     }
 
+    const handleRename = (id, newName) => {
+      info.find(child => {
+        if(child.id === id){
+          child.name = newName;
+        }
+      })
+      console.log(info)
+    }
+
 
 
   function handleDelete(prop){
@@ -101,22 +111,23 @@ children: ["hell", "gosh"]}, {id: `${crypto.randomUUID()}`, name: "hell", childr
     setInfo(children)
     
     sendData()
-    //
+
     /*
     delete middleware for deleteFolder or deleteDocument
     */
   }
 
 
-  function handleAdd(prop, name, type){
+  function handleAdd(ide, name, type){
     const children = info;
+    const id = crypto.randomUUID()
     if (type === "folder"){
-    children.push({id: crypto.randomUUID(), name: name, children: []})
+    children.push({id: id, name: name, children: []})
     } else {
-      children.push({id: crypto.randomUUID(), name: name, owner: `~${window.ship}` })
+      children.push({id: id, name: name, owner: `~${window.ship}` })
     }
     children.map(child => {
-      if(child.name === prop){
+      if(child.id === ide){
         child.children.push(name)
       }
     })
@@ -210,13 +221,6 @@ children: ["hell", "gosh"]}, {id: `${crypto.randomUUID()}`, name: "hell", childr
     listFolders().then((res) => { console.log(res) });
   }
 
-  /*
-  return (
-    <div className={`${slide ? " w-8" : " w-5"} duration-300 relative`}>
-      <FileTree />
-    </div>
-  );
-  */
   return (
     <div
       id="sidebar"
@@ -248,7 +252,7 @@ children: ["hell", "gosh"]}, {id: `${crypto.randomUUID()}`, name: "hell", childr
           <div className="font-bold flex-grow py-1">Your Ship</div>
           <menu onMouseLeave = {()=>(setAppear(false))}>
           <i className="ri-add-box-line icon clickable tree-item-hidden"
-            onClick={(e) => {setAppear(true); setPos({top: e.clientY, left: e.clientX});}}
+            onClick={(e) => {setAppear(true); setPos({top: e.clientY, left: e.clientX}); e.stopPropagation()}}
           />
           {appear && <RootMenu position = {pos} setAppear = {setAppear} setDoc = {setNewDoc} setType = {setType}/>}
           </menu>
@@ -291,7 +295,7 @@ children: ["hell", "gosh"]}, {id: `${crypto.randomUUID()}`, name: "hell", childr
                               openDocument(childData);}
                             }}
                           >    
-                <TreeComponent key = {childData.id} data = {childData} onDelete = {handleDelete} getChildren = {getChildren} handleAdd = {handleAdd}/>
+                <TreeComponent key = {childData.id} data = {childData} onDelete = {handleDelete} getChildren = {getChildren} handleAdd = {handleAdd} createChild = {createChild} handleRename ={handleRename} />
                 </div>
             ))}
       </div>
