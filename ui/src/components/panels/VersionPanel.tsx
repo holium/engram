@@ -85,7 +85,6 @@ function VersionPanel(props: {
               present={present.map((latest: number) =>
                 i < latest ? 1 : i == latest ? 0 : -1
               )}
-              viewing={viewing === i}
               view={() => {
                 renderVersion(version.snapshot);
               }}

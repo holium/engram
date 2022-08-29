@@ -83,3 +83,9 @@ export interface FolderMeta {
   id: any;
   name: string;
 }
+
+export interface Snap {
+  time: number;
+  ship: Patp;
+  data: Array<number>;
+}

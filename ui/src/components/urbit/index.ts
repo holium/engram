@@ -1,5 +1,10 @@
 import {} from "@urbit/http-api";
-import { DocumentMeta, FolderMeta, DocumentUpdate } from "../document/types";
+import {
+  DocumentMeta,
+  FolderMeta,
+  DocumentUpdate,
+  Snap,
+} from "../document/types";
 
 export type Folder = Array<DocumentMeta | FolderMeta>;
 
@@ -76,7 +81,21 @@ export function getAvailibleUpdates(
       .scry({
         app: "engram",
         path: `/pull/${meta.owner}/${meta.id}/${meta.name}`,
-        body: meta,
+      })
+      .then((response: any) => {
+        console.log(response);
+        resolve(response);
+      });
+  });
+}
+
+export function getSnapshots(meta: DocumentMeta) {
+  return new Promise((resolve, reject) => {
+    checkUrbitWindow(reject);
+    (window as any).urbit
+      .scry({
+        app: "engram",
+        path: `/gsnap/${meta.owner}/${meta.id}/${meta.name}`,
       })
       .then((response: any) => {
         console.log(response);
@@ -218,7 +237,9 @@ export function addToFolder(meta: FolderMeta, doc: FolderMeta | DocumentMeta) {
     (window as any).urbit.poke({
       app: "engram",
       mark: "post",
-      json: { foldoc: { fmeta: meta, fldr: { [doc.owner ? "doc" : "folder"]: doc } } },
+      json: {
+        foldoc: { fmeta: meta, fldr: { [doc.owner ? "doc" : "folder"]: doc } },
+      },
       onSuccess: () => {
         resolve();
       },
@@ -265,6 +286,30 @@ export function acknowledgeUpdate(meta: DocumentMeta, update: number) {
         console.error(
           "Error acknowleding update ",
           update,
+          " for document: ",
+          meta,
+          e
+        );
+        reject("Error acknowleding update");
+      },
+    });
+  });
+}
+
+export function recordSnapshot(meta: DocumentMeta, snap: Snap) {
+  return new Promise<void>((resolve, reject) => {
+    checkUrbitWindow(reject);
+    (window as any).urbit.poke({
+      app: "engram",
+      mark: "post",
+      json: { snap: { demta: meta, snap: snap } },
+      onSuccess: () => {
+        resolve();
+      },
+      onError: (e: any) => {
+        console.error(
+          "Error recording snapshot ",
+          snap,
           " for document: ",
           meta,
           e
