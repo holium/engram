@@ -5,7 +5,7 @@ import { assembleConfigNodeView, assembleConfigTermNodeView } from "./helpers";
 
 export const ConfigSpec = {
   content:
-    "type-frequency type-ratio heading-typeface body-typeface document-width",
+    "typefrequency typeratio headingtypeface bodytypeface documentwidth",
   group: "config",
   parseDOM: [{ tag: "dl" }],
   toDOM() {
@@ -49,7 +49,7 @@ function configTermView(node, view, getPos) {
 
 export const ConfigPluginKey = new PluginKey("config");
 
-export const config = (renderMenu: (options: Array<ConfigTerm>) => void) =>
+export const config =
   new Plugin({
     key: ConfigPluginKey,
     state: {
@@ -78,11 +78,11 @@ export const config = (renderMenu: (options: Array<ConfigTerm>) => void) =>
         config: (node, view, getPos) => {
           return { dom: assembleConfigNodeView() };
         },
-        "type-frequency": configTermView,
-        "type-ratio": configTermView,
-        "heading-typeface": configTermView,
-        "body-typeface": configTermView,
-        "document-width": configTermView,
+        "typefrequency": configTermView,
+        "typeratio": configTermView,
+        "headingtypeface": configTermView,
+        "bodytypeface": configTermView,
+        "documentwidth": configTermView,
       },
     },
-  });
+})

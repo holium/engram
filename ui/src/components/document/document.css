@@ -286,6 +286,7 @@ main ::selection {
 
 main {
   flex-grow: 1;
+  padding-left: calc(28px + var(--leading-body) + var(--leading-body));
   max-width: calc(var(--document-width) + 8ch);
   position: relative;
   margin: 0 auto;

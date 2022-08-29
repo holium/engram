@@ -8,6 +8,7 @@ export default (renderMenu: (loc: BlockLocation | null) => void) => {
       handleDOMEvents: {
         mouseover: (view, event) => {
           if (event.target) {
+
             const box = (event.target as any).getBoundingClientRect();
             const pos = view.posAtCoords(box);
             if(pos.inside > 0) {
@@ -47,13 +48,6 @@ export default (renderMenu: (loc: BlockLocation | null) => void) => {
             renderMenu(null);
           }
         },
-        mouseleave: (view, event) => {
-          if(event.relatedTarget && (event.relatedTarget as any).classList.contains("sidemenu")) {
-
-          } else {
-            renderMenu(null);
-          }
-        }
       },
     },
   });

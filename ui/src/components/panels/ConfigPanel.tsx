@@ -1,7 +1,7 @@
 import { EditorView } from "prosemirror-view";
 import { ConfigPluginKey } from "../document/plugins/config/plugin";
 
-function ConfigPanel(props: { getView: () => EditorView }) {
+function ConfigPanel(props: { show: boolean, getView: () => EditorView }) {
   function setTerm(term: string, value: any) {
     const view = props.getView();
     console.log(view);
@@ -21,7 +21,7 @@ function ConfigPanel(props: { getView: () => EditorView }) {
   }
 
   return (
-    <div className="panel">
+    <div className="panel" style={props.show ? {} : { display: "none" }}>
       <div>
         <div className="flex gap-3">Full Width</div>
         <div className="flex gap-3">Heading Typeface</div>
