@@ -23,6 +23,16 @@ function ConfigPanel(props: { show: boolean, getView: () => EditorView }) {
   return (
     <div className="panel" style={props.show ? {} : { display: "none" }}>
       <div>
+        <div className="flex gap-3">
+          <div>
+            <div>Type Scale: </div>
+            <div>Size: </div>
+            <div>Ratio: </div>
+          </div>
+          <div>
+            <span style={{fontSize: "var(--h1)"}}>H</span><span style={{fontSize: "var(--body)"}}>T</span>
+          </div>
+        </div>
         <div className="flex gap-3">Full Width</div>
         <div className="flex gap-3">Heading Typeface</div>
         <div className="flex gap-3">Body Typeface</div>
