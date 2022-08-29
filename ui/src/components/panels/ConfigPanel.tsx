@@ -1,7 +1,28 @@
+import { useState, useEffect } from "react"
 import { EditorView } from "prosemirror-view";
 import { ConfigPluginKey } from "../document/plugins/config/plugin";
 
-function ConfigPanel(props: { show: boolean, getView: () => EditorView }) {
+function ConfigPanel(props: { show: boolean, view: EditorView }) {
+
+  const [config, setConfig] = useState({});
+
+  useEffect(() => {
+    console.log(props.view)
+    const view = props.view;
+    if(view) {
+      const configState = ConfigPluginKey.getState(view.state)
+      console.log(configState);
+      setConfig(configState.config);
+    }
+  }, [props.show])
+
+  function handleChange(term: string) {
+    return (event) => {
+      setConfig({ [term]: event.target.value })
+      setTerm(term, event.target.value);
+    }
+  }
+
   function setTerm(term: string, value: any) {
     const view = props.getView();
     console.log(view);
@@ -26,8 +47,8 @@ function ConfigPanel(props: { show: boolean, getView: () => EditorView }) {
         <div className="flex gap-3">
           <div>
             <div>Type Scale: </div>
-            <div>Size: </div>
-            <div>Ratio: </div>
+            <div>Size: <input className="min-w-0 flex-1" type="number" value={config.typefrequency} onChange={handleChange("typefrequency")}/></div>
+            <div>Ratio: <input className="min-w-0 flex-1" type="number" value={config.typeratio} onChange={handleChange("typeratio")}/></div>
           </div>
           <div>
             <span style={{fontSize: "var(--h1)"}}>H</span><span style={{fontSize: "var(--body)"}}>T</span>

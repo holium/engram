@@ -179,7 +179,7 @@ function Document(props: { path: string }) {
         setNotifStatus={/* setNotifStatus */ () => {}}
       />
       <VersionPanel show={panel == "version"} />
-      <ConfigPanel show={panel == "config"} getView={() => { return view }} />
+      <ConfigPanel show={panel == "config"} view={view} />
 
       <div id="document-wrapper">
         {/* Document --------------------------------------------------------- */}
