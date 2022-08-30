@@ -47,7 +47,7 @@ const toggleAdd = (name) => {
     }
 
     const handleDelete = () => {
-        onDelete(info.name);
+        onDelete(info.id);
         setInfo({id: null, name: null, children: []})
         setChildren([])
         setAppear(false);
@@ -110,7 +110,7 @@ const toggleAdd = (name) => {
             </div>
             }
             {appear && (info.children ?
-            <FolderMenu ToggleFolderMenu = {ToggleFolderMenu} renameFolder = {setrenameState} onDelete = {handleDelete} name = {info.name} handleAdd = {toggleAdd} position = {pos} setCreateChild = {setCreateChild} setType = {setType}/> 
+            <FolderMenu ToggleFolderMenu = {ToggleFolderMenu} renameFolder = {setrenameState} onDelete = {handleDelete} id = {info.id} handleAdd = {toggleAdd} position = {pos} setCreateChild = {setCreateChild} setType = {setType}/> 
             : <FileMenu ToggleFolderMenu = {ToggleFolderMenu} renameFolder = {setrenameState} onDelete = {handleDelete} position = {pos}/> 
         ) }
             </menu>

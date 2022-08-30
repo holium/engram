@@ -29,8 +29,7 @@ function Sidebar() {
 
   const [ids, setIds] = useState([])
 
-  const [info, setInfo] = useState([{id: `${crypto.randomUUID()}`, name: "yea",
-children: ["hell", "gosh"]}, {id: `${crypto.randomUUID()}`, name: "hell", children: ["yeah"]}, {id: `${crypto.randomUUID()}`, name: "gosh", children: ["prop"]}, {id: `${crypto.randomUUID()}`, name: "yeah", children: []}, {id: `${crypto.randomUUID()}`, name: "prop", children: []}])
+  const [info, setInfo] = useState([])
 
   const [pos, setPos] = useState({top: 0,
   left: 0
@@ -82,7 +81,7 @@ children: ["hell", "gosh"]}, {id: `${crypto.randomUUID()}`, name: "hell", childr
 
 
     const getChildren = (identifier) => {
-      const content = info.filter(child => identifier.includes(child.name)).map(childData => childData);
+      const content = info.filter(child => identifier.includes(child.id)).map(childData => childData);
       console.log("Log in getChildren:")
       console.log(content)
       return content;
@@ -100,8 +99,8 @@ children: ["hell", "gosh"]}, {id: `${crypto.randomUUID()}`, name: "hell", childr
 
 
   function handleDelete(prop){
-    const child = info.filter(child => child.name === prop)
-    const children = info.filter(element => element.name !== prop && !child[0].children.includes(element.name));
+    const child = info.filter(child => child.id === prop)
+    const children = info.filter(element => element.id !== prop && !child[0].children.includes(element.id));
     children.map(element => {
       if(element.children.includes(prop)){
         element.children.splice(element.children.indexOf(prop), 1)
@@ -118,17 +117,17 @@ children: ["hell", "gosh"]}, {id: `${crypto.randomUUID()}`, name: "hell", childr
   }
 
 
-  function handleAdd(ide, name, type){
+  function handleAdd(id, name, type){
     const children = info;
-    const id = crypto.randomUUID()
+    const new_id = crypto.randomUUID()
     if (type === "folder"){
-    children.push({id: id, name: name, children: []})
+    children.push({id: new_id, name: name, children: []})
     } else {
-      children.push({id: id, name: name, owner: `~${window.ship}` })
+      children.push({id: new_id, name: name, owner: `~${window.ship}` })
     }
     children.map(child => {
-      if(child.id === ide){
-        child.children.push(name)
+      if(child.id === id){
+        child.children.push(new_id)
       }
     })
     setInfo(children)
@@ -288,7 +287,7 @@ children: ["hell", "gosh"]}, {id: `${crypto.randomUUID()}`, name: "hell", childr
           </div>
         )}
 
-          {info.filter((child => !(ids.includes(child.name)))).map((childData, index) => (
+          {info.filter((child => !(ids.includes(child.id)))).map((childData, index) => (
                             <div
                             className=" pl-3"
                             onClick={() => { if(childData.child) {
