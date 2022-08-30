@@ -44,7 +44,6 @@ function Sidebar() {
   const [createChild, setCreateChild] = useState({});
 
   useEffect(() => {
-    console.log(info)
     checkUrbitWindow();
     sendData()
     listDocuments()
@@ -75,6 +74,7 @@ function Sidebar() {
 
 
   const sendData  = () => {
+    console.log("converting ids...")
     const ids1 = info.map(childData => childData.children)
     const ids2 = ids1.flat()
     const set = new Set(ids2)
@@ -84,23 +84,23 @@ function Sidebar() {
 
     const getChildren = (identifier) => {
       const content = info.filter(child => identifier.includes(child.id)).map(childData => childData);
-      console.log("Log in getChildren:")
-      console.log(content)
+      console.log("getChildren")
       return content;
     }
 
     const handleRename = (id, newName) => {
+      console.log("handle rename")
       info.find(child => {
         if(child.id === id){
           child.name = newName;
         }
       })
-      console.log(info)
     }
 
 
 
   function handleDelete(prop){
+    console.log("handle delete")
     const child = info.filter(child => child.id === prop)
     const children = info.filter(element => element.id !== prop && !child[0].children.includes(element.id));
     children.map(element => {
@@ -108,7 +108,6 @@ function Sidebar() {
         element.children.splice(element.children.indexOf(prop), 1)
       }
     }); 
-    console.log(children)
     setInfo(children)
     
     sendData()
@@ -120,6 +119,7 @@ function Sidebar() {
 
 
   function handleAdd(id, name, type){
+    console.log("handle add")
     const children = info;
     const new_id = crypto.randomUUID()
     if (type === "folder"){
@@ -133,7 +133,6 @@ function Sidebar() {
       }
     })
     setInfo(children)
-    console.log(children)
     sendData()
   }
   
@@ -277,7 +276,6 @@ function Sidebar() {
                 setNewDocName(event.target.value);
               }}
               onKeyPress={(event) => {
-                console.log(event);
                 if (event.key == "Enter") create(event);
                 if (event.key == "Esc") closeCreateDoc();
               }}

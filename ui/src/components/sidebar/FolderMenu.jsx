@@ -29,13 +29,13 @@ function FolderMenu(props){
                 <i className="ri-file-add-line"/>
                 </li>
                 <li className = "justify-center" onClick={(e)=>{
-                    props.renameFolder(true)
+                    e.stopPropagation()
+                    props.onRename(true)
                     props.ToggleFolderMenu(e)
                     }}>
                 <i className="ri-edit-2-line "/>
                     </li>
-                    <li className = "justify-center" onClick = {()=>{
-                    console.log(props)
+                    <li className = "justify-center" onClick = {(e)=>{
                     props.onDelete();
                     }
                 }>

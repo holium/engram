@@ -15,8 +15,9 @@ function FileMenu(props){
         onMouseLeave={(e)=>props.ToggleFolderMenu(e)}
       >
         <li className = " justify-center" onClick={(e)=>{
-                    props.renameFolder(true)
-                    props.ToggleFolderMenu(e)
+                e.stopPropagation()
+                props.onRename(true)
+                props.ToggleFolderMenu(e)
                     }}>
                 <i className="ri-edit-2-line" />
                     </li>
