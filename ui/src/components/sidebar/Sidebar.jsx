@@ -4,31 +4,53 @@ import {
   listDocuments,
   listFolders,
   createDocument,
-  createFolder,
   checkUrbitWindow,
   deleteDocument,
+
+  createFolder,
   deleteFolder,
+  addToFolder,
+  removeFromFolder
 } from "../urbit/index";
 import { OpenDocumentEvent } from "../document/types";
 import { regular, solid } from "@fortawesome/fontawesome-svg-core/import.macro";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as Y from "yjs";
 import FileTree from "./FileTree";
+import TreeComponent from "./TreeComponent";
+import FolderMenu from "./FolderMenu";
 
 import { UrbitContext } from "../urbit/UrbitProvider";
+import RootMenu from "./RootMenu";
 
 function Sidebar() {
-  const { slide, setSlide } = useContext(SlideContext);
-  const urbitStatus = useContext(UrbitContext);
 
+  const [type, setType] = useState("");
+
+  const [ids, setIds] = useState([])
+
+  const [info, setInfo] = useState([{id: `${crypto.randomUUID()}`, name: "yea",
+children: ["hell", "gosh"]}, {id: `${crypto.randomUUID()}`, name: "hell", children: ["yeah"]}, {id: `${crypto.randomUUID()}`, name: "gosh", children: ["prop"]}, {id: `${crypto.randomUUID()}`, name: "yeah", children: []}, {id: `${crypto.randomUUID()}`, name: "prop", children: []}])
+
+  const [pos, setPos] = useState({top: 0,
+  left: 0
+  });
+  
+  const [appear, setAppear] = useState(false);
+  const urbitStatus = useContext(UrbitContext);
   const [list, setList] = useState([]);
+  const [newDoc, setNewDoc] = useState(false);
+  const [newDocName, setNewDocName] = useState("");
+  const [slide, setSlide] = useState(false)
+  const [createChild, setCreateChild] = useState({});
 
   useEffect(() => {
+    console.log(info)
     checkUrbitWindow();
+    sendData()
     listDocuments()
       .then((res) => {
         console.log("list documents result: ", res);
-
         setList(
           Object.keys(res).map((key) => {
             return {
@@ -41,7 +63,7 @@ function Sidebar() {
       })
       .catch((err) => {
         console.log("no urbit :(");
-        setList([{ owner: "~zod", id: "123", name: "doc" }]);
+        setInfo([{ owner: "~zod", id: "123", name: "doc" }]);
       });
     listFolders()
       .then((res) => {
@@ -52,13 +74,102 @@ function Sidebar() {
       });
   }, []);
 
+
+  const sendData  = () => {
+    const ids1 = info.map(childData => childData.children)
+    const ids2 = ids1.flat()
+    const set = new Set(ids2)
+    setIds(Array.from(set));
+    }
+
+
+    const getChildren = (identifier) => {
+      const content = info.filter(child => identifier.includes(child.name)).map(childData => childData);
+      console.log("Log in getChildren:")
+      console.log(content)
+      return content;
+    }
+
+    const handleRename = (id, newName) => {
+      info.find(child => {
+        if(child.id === id){
+          child.name = newName;
+        }
+      })
+      console.log(info)
+    }
+
+
+
+  function handleDelete(prop){
+    const child = info.filter(child => child.name === prop)
+    const children = info.filter(element => element.name !== prop && !child[0].children.includes(element.name));
+    children.map(element => {
+      if(element.children.includes(prop)){
+        element.children.splice(element.children.indexOf(prop), 1)
+      }
+    }); 
+    console.log(children)
+    setInfo(children)
+    
+    sendData()
+
+    /*
+    delete middleware for deleteFolder or deleteDocument
+    */
+  }
+
+
+  function handleAdd(ide, name, type){
+    const children = info;
+    const id = crypto.randomUUID()
+    if (type === "folder"){
+    children.push({id: id, name: name, children: []})
+    } else {
+      children.push({id: id, name: name, owner: `~${window.ship}` })
+    }
+    children.map(child => {
+      if(child.id === ide){
+        child.children.push(name)
+      }
+    })
+    setInfo(children)
+    console.log(children)
+    sendData()
+  }
+  
+  function create(e){
+    e.stopPropagation()
+    if(type==="file") {
+      createDoc();
+  
+    } else if(type ==="folder"){
+      createFold();
+    }
+    closeCreateDoc()
+  }
+
   function openDocument(doc: any) {
     console.log("opening doc:", doc);
     document.dispatchEvent(OpenDocumentEvent(doc));
   }
 
-  const [newDoc, setNewDoc] = useState(false);
-  const [newDocName, setNewDocName] = useState("");
+
+  function createFold() {
+    console.log("create folder");
+    checkUrbitWindow();
+    const meta: FolderMeta = {
+      id: `~${window.ship}-${crypto.randomUUID()}`,
+      name: newDocName.replaceAll(" ", "-"),
+      children: [],
+    };
+
+    createFolder(meta).then((res) => {
+      console.log("create folder result", res);
+    });
+    setInfo(([...info, meta]))
+    closeCreateDoc();
+  }
 
   function createDoc() {
     console.log("create doc");
@@ -82,28 +193,25 @@ function Sidebar() {
     }).then((res) => {
       console.log("create document result", res);
     });
-    setList([meta, ...list]);
+    setInfo(([...info, meta]))
     closeCreateDoc();
   }
   function closeCreateDoc() {
     setNewDoc(false);
     setNewDocName("");
+    setType("");
   }
 
-  function deleteDoc(doc, index) {
+  function deleteDoc(doc) {
     console.log("deleting document:", doc);
-    list.splice(index, 1);
-    setList([...list]);
     deleteDocument(doc).then((res) => {
       console.log("delete document result:", res);
     });
   }
 
+
   function createFol() {
-    const testFolder = {
-      id: `~${window.ship}-${crypto.randomUUID()}`,
-      name: "Test Folder",
-    };
+    const testFolder = { id: `~${window.ship}-${crypto.randomUUID()}`, name: "Test Folder", content: [] };
     console.log("creating folder: ", testFolder);
     createFolder(testFolder);
     listFolders().then((res) => {
@@ -119,13 +227,6 @@ function Sidebar() {
     });
   }
 
-  /*
-  return (
-    <div className={`${slide ? " w-8" : " w-5"} duration-300 relative`}>
-      <FileTree />
-    </div>
-  );
-  */
   return (
     <div
       id="sidebar"
@@ -136,9 +237,7 @@ function Sidebar() {
       <div className="px-4 py-3 flex items-center">
         <div className="azimuth">~{urbitStatus.ship}</div>
         <div className="flex-grow"> </div>
-        <FontAwesomeIcon
-          icon={solid("circle")}
-          className="icon"
+        <i className="ri-checkbox-blank-circle-fill icon"
           style={
             urbitStatus.connection < 2
               ? {
@@ -157,11 +256,12 @@ function Sidebar() {
       <div className="flex flex-col overflow-auto">
         <div className="mt-4 tree-item">
           <div className="font-bold flex-grow py-1">Your Ship</div>
-          <FontAwesomeIcon
-            onClick={() => setNewDoc(true)}
-            icon={regular("plus-square")}
-            className="icon clickable tree-item-hidden"
+          <menu onMouseLeave = {()=>(setAppear(false))}>
+          <i className="ri-add-box-line icon clickable tree-item-hidden"
+            onClick={(e) => {setAppear(true); setPos({top: e.clientY, left: e.clientX}); e.stopPropagation()}}
           />
+          {appear && <RootMenu position = {pos} setAppear = {setAppear} setDoc = {setNewDoc} setType = {setType}/>}
+          </menu>
         </div>
         {newDoc && (
           <div className="flex px-4 py-1 gap-3">
@@ -179,47 +279,36 @@ function Sidebar() {
               }}
               onKeyPress={(event) => {
                 console.log(event);
-                if (event.key == "Enter") createDoc();
+                if (event.key == "Enter") create(event);
                 if (event.key == "Esc") closeCreateDoc();
               }}
             />
-            <FontAwesomeIcon
-              onClick={createDoc}
-              icon={regular("check-square")}
-              className="icon clickable"
+            <i
+              onClick={(event)=>{create(event)}}
+              className="ri-checkbox-line icon clickable"
             />
-            <FontAwesomeIcon
+            <i
               onClick={closeCreateDoc}
-              icon={regular("square-xmark")}
-              className="icon clickable"
+              className=" ri-close-line icon clickable"
             />
           </div>
         )}
-        {list.map((doc, i) => {
-          return (
-            <div
-              className="tree-item clickable"
-              onClick={() => {
-                openDocument(doc);
-              }}
-            >
-              <div className="py-1 flex-grow overflow-hidden overflow-ellipsis whitespace-nowrap">
-                {doc.name}
-              </div>
-              <FontAwesomeIcon
-                onClick={(event) => {
-                  event.stopPropagation();
-                  deleteDoc(doc, i);
-                }}
-                icon={regular("trash-alt")}
-                className="icon clickable tree-item-hidden"
-              />
-            </div>
-          );
-        })}
+
+          {info.filter((child => !(ids.includes(child.name)))).map((childData, index) => (
+                            <div
+                            className=" pl-3"
+                            onClick={() => { if(childData.child) {
+                              openDocument(childData);}
+                            }}
+                          >    
+                <TreeComponent key = {childData.id} data = {childData} onDelete = {handleDelete} getChildren = {getChildren} handleAdd = {handleAdd} createChild = {createChild} handleRename ={handleRename} />
+                </div>
+            ))}
       </div>
     </div>
   );
+  
+
 }
 
 export default Sidebar;

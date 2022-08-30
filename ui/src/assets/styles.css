@@ -146,9 +146,8 @@
 .tree-menu {
   overflow: hidden;
   position: absolute;
-  display: flex;
-  flex-direction: column;
-  width: 180px;
+  width: 100px;
+  align-items: center
 }
 
 .check-mark {
