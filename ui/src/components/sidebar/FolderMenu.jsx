@@ -36,7 +36,7 @@ function FolderMenu(props){
                     </li>
                     <li className = "justify-center" onClick = {()=>{
                     console.log(props)
-                    props.onDelete(props.name);
+                    props.onDelete();
                     }
                 }>
                 <i className="ri-delete-bin-line"/>
