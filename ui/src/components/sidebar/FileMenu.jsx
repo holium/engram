@@ -9,12 +9,14 @@ function FileMenu(props) {
       style={{
         left: `${props.position.left}px`,
         top: `${props.position.top}px`,
+        zIndex: "10",
       }}
       onMouseLeave={(e) => props.ToggleFolderMenu(e)}
     >
       <li
         className="justify-center clickable"
         onClick={(e) => {
+          e.stopPropagation();
           props.renameFolder(true);
           props.ToggleFolderMenu(e);
         }}
@@ -23,7 +25,10 @@ function FileMenu(props) {
       </li>
       <li
         className="justify-center clickable"
-        onClick={(e) => props.onDelete()}
+        onClick={(e) => {
+          e.stopPropagation();
+          props.onDelete();
+        }}
       >
         Delete
       </li>

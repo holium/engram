@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
+import { OpenDocumentEvent } from "../document/types";
 import FolderMenu from "./FolderMenu";
 import FileMenu from "./FileMenu";
 
 function TreeComponent({
   data,
   onDelete,
+  folder,
   getChildren,
   handleAdd,
   handleRename,
@@ -21,7 +23,7 @@ function TreeComponent({
 
   const [newDoc, setNewDoc] = useState("untitled");
 
-  const [createChild, setCreateChild] = useState(false);
+  const [createChild, setCreateChild] = useState(null);
 
   const [pos, setPos] = useState({ top: 0, left: 0 });
 
@@ -29,14 +31,19 @@ function TreeComponent({
 
   const [type, setType] = useState("");
 
-  const [info, setInfo] = useState(data);
   const [children, setChildren] = useState([]);
 
   useEffect(() => {
     if (!data.owner) {
+      console.log(
+        "getting children: ",
+        info.children,
+        " => ",
+        getChildren(info.children)
+      );
       setChildren(getChildren(info.children));
     }
-  }, [createChild]);
+  }, [info.children ? info.children.length : info.id]);
 
   const toggleAdd = (name, type) => {
     handleAdd(info.name, name, type);
@@ -50,10 +57,12 @@ function TreeComponent({
   }
 
   const handleDelete = () => {
-    onDelete(info.name);
+    onDelete(info.id, folder);
+    /*
     setInfo({ id: null, name: null, children: [] });
     setChildren([]);
     setAppear(false);
+    */
   };
 
   function ToggleFolderMenu(event) {
@@ -68,13 +77,20 @@ function TreeComponent({
     //middleware
   }
 
+  function openDocument() {
+    console.log("opening doc:", info.id);
+    document.dispatchEvent(OpenDocumentEvent(info));
+  }
+
   return (
     <div>
       <div
         className="tree-item"
         onClick={(e) => {
-          setExpand(!expand);
           e.stopPropagation();
+          setExpand(!expand);
+
+          if (info.owner) openDocument();
         }}
       >
         {info.owner ? (
@@ -201,9 +217,31 @@ function TreeComponent({
       </div>
 
       {createChild && (
-        <div className="flex px-4 py-1 gap-3">
+        <div className="tree-item">
+          <div className="icon"></div>
+          {createChild == "folder" ? (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="var(--type-color)"
+              className="icon"
+            >
+              <path fill="none" d="M0 0h24v24H0z" />
+              <path d="M4 5v14h16V7h-8.414l-2-2H4zm8.414 0H21a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h7.414l2 2z" />
+            </svg>
+          ) : (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="var(--type-color)"
+              className="icon"
+            >
+              <path fill="none" d="M0 0h24v24H0z" />
+              <path d="M9 2.003V2h10.998C20.55 2 21 2.455 21 2.992v18.016a.993.993 0 0 1-.993.992H3.993A1 1 0 0 1 3 20.993V8l6-5.997zM5.83 8H9V4.83L5.83 8zM11 4v5a1 1 0 0 1-1 1H5v10h14V4h-8z" />
+            </svg>
+          )}
           <input
-            className="outline-none bg-none flex-grow outline rounded-1 px-2 py-1"
+            className="outline-none bg-none min-w-0 outline rounded-1 px-2 py-1 flex-1"
             style={{
               outlineColor: "var(--type-color)",
               outlineWidth: "1px",
@@ -214,30 +252,28 @@ function TreeComponent({
             onChange={(event) => {
               setNewDoc(event.target.value);
             }}
-          />
-          <i
-            onClick={(e) => (
-              e.stopPropagation(),
-              handleAdd(info.id, newDoc, "folder"),
-              setCreateChild(false)
-            )}
-            className="ri-checkbox-line icon clickable"
-          />
-          <i
-            onClick={(e) => (e.stopPropagation(), setCreateChild(false))}
-            className=" ri-close-line icon clickable"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleAdd(info.id, e.target.value, createChild);
+                setCreateChild(null);
+                e.stopPropagation();
+              } else if (e.key == "Esc") {
+                setCreateChild(null);
+              }
+            }}
           />
         </div>
       )}
 
       <div className={`${expand ? "block" : " hidden"} pl-3`}>
         {info.children &&
-          children.map((childData) => (
+          children.map((child) => (
             <div>
               <TreeComponent
-                key={childData.id}
+                key={child.id}
+                folder={info.id}
                 onDelete={onDelete}
-                data={childData}
+                data={child}
                 getChildren={getChildren}
                 handleAdd={handleAdd}
                 handleRename={handleRename}

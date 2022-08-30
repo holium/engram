@@ -13,19 +13,27 @@ function FolderMenu(props) {
       onMouseLeave={(e) => props.ToggleFolderMenu(e)}
     >
       <li
-        className="justify-center clickable"
-        onClick={(e) => (e.stopPropagation(), props.setCreateName(true))}
+        className="clickable"
+        onClick={(e) => {
+          e.stopPropagation();
+          props.setCreateChild("file");
+          props.ToggleFolderMenu(e);
+        }}
       >
         Add File
       </li>
       <li
-        className="justify-center clickable"
-        onClick={(e) => (e.stopPropagation(), props.setCreateChild(true))}
+        className="clickable"
+        onClick={(e) => {
+          e.stopPropagation();
+          props.setCreateChild("folder");
+          props.ToggleFolderMenu(e);
+        }}
       >
         Add Folder
       </li>
       <li
-        className="justify-center clickable"
+        className="clickable"
         onClick={(e) => {
           props.renameFolder(true);
           props.ToggleFolderMenu(e);
@@ -34,7 +42,7 @@ function FolderMenu(props) {
         Rename
       </li>
       <li
-        className="justify-center"
+        className="clickable"
         clickable
         onClick={() => {
           console.log(props);

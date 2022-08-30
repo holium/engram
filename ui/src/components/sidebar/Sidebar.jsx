@@ -11,7 +11,6 @@ import {
   addToFolder,
   removeFromFolder,
 } from "../urbit/index";
-import { OpenDocumentEvent } from "../document/types";
 import * as Y from "yjs";
 import FileTree from "./FileTree";
 import TreeComponent from "./TreeComponent";
@@ -40,42 +39,40 @@ function Sidebar() {
     checkUrbitWindow();
     sendData();
     listDocuments()
-      .then((res) => {
-        console.log("list documents result: ", res);
-        setList(
-          Object.keys(res).map((key) => {
-            return {
-              id: key,
-              owner: "~" + res[key].owner,
-              name: res[key].name,
-            };
+      .then((docRes) => {
+        console.log("list documents result: ", docRes);
+        listFolders()
+          .then((folRes) => {
+            console.log("list folders result: ", folRes);
+
+            setInfo([
+              ...Object.keys(docRes).map((key) => {
+                return {
+                  id: key,
+                  owner: "~" + docRes[key].owner,
+                  name: docRes[key].name,
+                };
+              }),
+              ...Object.keys(folRes).map((index) => {
+                console.log(Object.keys(folRes[index].content));
+                return {
+                  id: folRes[index].meta.id,
+                  name: folRes[index].meta.name,
+                  children: Object.keys(folRes[index].content),
+                };
+              }),
+            ]);
           })
-        );
+          .catch((err) => {
+            console.warn("error listing folders: ", err);
+            setList([{ id: "null", name: "error getting folders" }]);
+          });
       })
       .catch((err) => {
         console.log("no urbit :(");
         setList([
           { owner: "~zod", id: "null", name: "error getting documents" },
         ]);
-      });
-    listFolders()
-      .then((res) => {
-        console.log("list folders result: ", res);
-
-        setInfo(
-          Object.keys(res).map((index) => {
-            console.log(Object.keys(res[index].content));
-            return {
-              id: res[index].meta.id,
-              name: res[index].meta.name,
-              children: Object.keys(res[index].content),
-            };
-          })
-        );
-      })
-      .catch((err) => {
-        console.warn("error listing folders: ", err);
-        setList([{ id: "null", name: "error getting folders" }]);
       });
   }, []);
 
@@ -87,11 +84,8 @@ function Sidebar() {
   };
 
   const getChildren = (identifier) => {
-    const content = info
-      .filter((child) => identifier.includes(child.name))
-      .map((childData) => childData);
-    console.log("Log in getChildren:");
-    console.log(content);
+    console.log("getting children: ", identifier, " from ", info);
+    const content = info.filter((child) => identifier.includes(child.id));
     return content;
   };
 
@@ -104,7 +98,21 @@ function Sidebar() {
     console.log(info);
   };
 
-  function handleDelete(prop) {
+  function handleDelete(item, folder) {
+    const toDelete = info.findIndex((doc) => doc.id == item);
+    console.log("deleting: ", info[toDelete]);
+    moveToFrom(item, null, folder);
+    if (info[toDelete].owner) {
+      deleteDocument(info[toDelete]);
+    } else {
+      deleteFolder(info[toDelete]);
+    }
+
+    const newInfo = info;
+    newInfo.splice(toDelete, 1);
+    setInfo([...newInfo]);
+
+    /*
     const child = info.filter((child) => child.id === prop);
     const children = info.filter(
       (element) =>
@@ -117,6 +125,7 @@ function Sidebar() {
     });
     console.log(children);
     setInfo(children);
+    */
 
     sendData();
 
@@ -126,50 +135,64 @@ function Sidebar() {
   }
 
   function handleAdd(id, name, type) {
-    const children = info;
-    const new_id = crypto.randomUUID();
+    console.log("adding: ", name);
+    let res;
     if (type === "folder") {
-      children.push({ id: new_id, name: name, children: [] });
+      res = createFold(name);
     } else {
-      children.push({ id: new_id, name: name, owner: `~${window.ship}` });
+      res = createDoc(name);
     }
-    children.map((child) => {
-      if (child.id === id) {
-        child.children.push(new_id);
-      }
-    });
-    setInfo(children);
-    console.log(children);
+    console.log(res);
+    moveToFrom(res.id, id, null);
+
     sendData();
   }
 
-  function openDocument(doc: any) {
-    console.log("opening doc:", doc);
-    document.dispatchEvent(OpenDocumentEvent(doc));
+  function moveToFrom(id, to, from) {
+    // null for root
+    if (from != null) {
+      const removeFrom = info.find((folder) => folder.id == from);
+      removeFrom.children.splice(removeFrom.children.indexOf(id), 1);
+      info.splice(
+        info.findIndex((item) => item.id == from),
+        1
+      );
+      info.push(removeFrom);
+    }
+    if (to != null) {
+      const addTo = info.find((folder) => folder.id == to);
+      addTo.children.push(id);
+      info.splice(
+        info.findIndex((item) => item.id == to),
+        1
+      );
+      info.push(addTo);
+    }
   }
 
-  function createFold() {
+  function createFold(name) {
     console.log("create folder");
     checkUrbitWindow();
     const meta: FolderMeta = {
       id: `~${window.ship}-${crypto.randomUUID()}`,
-      name: newDocName.replaceAll(" ", "-"),
+      name: name.replaceAll(" ", "-"),
     };
 
     createFolder(meta).then((res) => {
       console.log("create folder result", res);
     });
-    setInfo([...info, meta]);
+    setInfo([...info, { ...meta, children: [] }]);
     closeCreateDoc();
+    return meta;
   }
 
-  function createDoc() {
+  function createDoc(name) {
     console.log("create doc");
     checkUrbitWindow();
     const meta: DocumentMeta = {
       owner: `~${window.ship}`,
       id: `~${window.ship}-${crypto.randomUUID()}`,
-      name: newDocName.replaceAll(" ", "-"),
+      name: name,
     };
 
     const doc = new Y.Doc();
@@ -187,7 +210,9 @@ function Sidebar() {
     });
     setInfo([...info, meta]);
     closeCreateDoc();
+    return meta;
   }
+
   function closeCreateDoc() {
     setNewDoc(false);
     setNewDocName("");
@@ -196,14 +221,11 @@ function Sidebar() {
 
   function deleteDoc(doc) {
     console.log("deleting document:", doc);
-    deleteDocument(doc).then((res) => {
-      console.log("delete document result:", res);
-    });
   }
 
   function deleteFold(folder) {
     console.log("deleting folder: ", folder);
-    deleteFolder(folder);
+
     listFolders().then((res) => {
       console.log(res);
     });
@@ -282,9 +304,11 @@ function Sidebar() {
                 console.log(event);
                 if (event.key == "Enter") {
                   if (type === "file") {
-                    createDoc();
+                    createDoc(newDocName);
+                    setNewDocName("");
                   } else if (type === "folder") {
-                    createFold();
+                    createFold(newDocName);
+                    setNewDocName("");
                   }
                   closeCreateDoc();
                 }
@@ -305,18 +329,13 @@ function Sidebar() {
         )}
 
         {info
-          .filter((child) => !ids.includes(child.name))
+          .filter((child) => !ids.includes(child.id))
           .map((childData, index) => (
-            <div
-              onClick={() => {
-                if (childData.child) {
-                  openDocument(childData);
-                }
-              }}
-            >
+            <div>
               <TreeComponent
                 key={childData.id}
                 data={childData}
+                folder={null}
                 onDelete={handleDelete}
                 getChildren={getChildren}
                 handleAdd={handleAdd}
