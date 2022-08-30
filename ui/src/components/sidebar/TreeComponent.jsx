@@ -58,14 +58,6 @@ const toggleAdd = (name) => {
         setAppear(!appear)
     }
 
-    function renameFolder(event) {
-        event.stopPropagation();
-        setrenameState(false);
-        console.log("rename")
-        //middleware
-
-    }
-
 
     return(
         <div>
@@ -79,17 +71,22 @@ const toggleAdd = (name) => {
             <div className='pr-3 pl-4'>
             {info.id === null ? "" :(info.children ? <i className="ri-folder-line"></i> : <i className="ri-file-line"></i>)}
             </div>
-                
+            
             {renameState ? 
-            <div className="flex px-4 py-1 gap-3"> 
+            <div>
+            <div className=" absolute flex px-1 py-1 gap-3"> 
             <input
-              className="outline-none bg-none flex-grow outline rounded-1 px-2 py-1"
+              className=" outline-none bg-none flex-grow outline rounded-1 px-2 py-1"
               style={{
                 outlineColor: "var(--type-color)",
                 outlineWidth: "1px",
                 outlineOffset: "0",
                 minWidth: "0",
               }} 
+              onKeyPress={(event) => {
+                if (event.key == "Enter") {event.stopPropagation(); handleRename(info.id, info.name); setrenameState(false);}
+                if (event.key == "Esc") {setrenameState(false);}
+              }}
               value = {info.name} onClick = {(e) =>(e.stopPropagation())} onChange ={(e)=>{
                 setInfo(previousInputs => ({ ...previousInputs, name: e.target.value}))
             }} autoFocus  onBlur={(e)=>{handleRename(info.id, info.name); setrenameState(false)}}/> 
@@ -97,9 +94,10 @@ const toggleAdd = (name) => {
               className="ri-checkbox-line icon clickable"
               onClick ={(e)=>{handleRename(info.id, info.name); setrenameState(false); e.stopPropagation()}}
             />
-            <i
+            <i onClick = {(e)=>(setrenameState(false))}
               className=" ri-close-line icon clickable"
             />
+            </div>
             </div>
             :
             <div> {info.name} </div>}
@@ -110,8 +108,8 @@ const toggleAdd = (name) => {
             </div>
             }
             {appear && (info.children ?
-            <FolderMenu ToggleFolderMenu = {ToggleFolderMenu} renameFolder = {setrenameState} onDelete = {handleDelete} id = {info.id} handleAdd = {toggleAdd} position = {pos} setCreateChild = {setCreateChild} setType = {setType}/> 
-            : <FileMenu ToggleFolderMenu = {ToggleFolderMenu} renameFolder = {setrenameState} onDelete = {handleDelete} position = {pos}/> 
+            <FolderMenu ToggleFolderMenu = {ToggleFolderMenu} onRename = {setrenameState} onDelete = {handleDelete} id = {info.id} handleAdd = {toggleAdd} position = {pos} setCreateChild = {setCreateChild} setType = {setType}/> 
+            : <FileMenu ToggleFolderMenu = {ToggleFolderMenu} onRename = {setrenameState} onDelete = {handleDelete} position = {pos}/> 
         ) }
             </menu>
         </div>
@@ -131,7 +129,6 @@ const toggleAdd = (name) => {
                 setNewDoc(event.target.value);
               }}
               onKeyPress={(event) => {
-                console.log(event);
                 if (event.key == "Enter") {event.stopPropagation(); handleAdd(info.id, newDoc, "folder"); setCreateChild(false); setExpand(true)}
                 if (event.key == "Esc") {event.stopPropagation(); setCreateChild(false);}
               }}
