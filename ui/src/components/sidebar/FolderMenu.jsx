@@ -21,11 +21,11 @@ function FolderMenu(props){
         onMouseLeave={(e)=>props.ToggleFolderMenu(e)}
       >
         <li className = "justify-center" onClick = {(e)=>(
-                    e.stopPropagation(), props.setCreateChild(true) )
+                    e.stopPropagation(), props.setType("folder"), props.setCreateChild(true))
                 }>
                 <i className="ri-folder-add-line "/>
                 </li>
-                <li className = "justify-center" onClick = {(e)=>(e.stopPropagation(), props.setCreateName(true))}>
+                <li className = "justify-center" onClick = {(e)=>(e.stopPropagation(), props.setType("file"), props.setCreateChild(true))}>
                 <i className="ri-file-add-line"/>
                 </li>
                 <li className = "justify-center" onClick={(e)=>{

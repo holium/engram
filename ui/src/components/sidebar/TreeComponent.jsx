@@ -20,6 +20,8 @@ function TreeComponent({ data, onDelete, getChildren, handleAdd, handleRename}) 
         left: 0
     });
 
+    const [type, setType] = useState("");
+
     const [info, setInfo] = useState(
         data)
 
@@ -32,7 +34,7 @@ useEffect(()=>{
 },[createChild])
 
 
-const toggleAdd = (name, type) => {
+const toggleAdd = (name) => {
     handleAdd(info.name, name, type)
     setChildren(getChildren(info.children))
     setExpand(true);
@@ -108,7 +110,7 @@ const toggleAdd = (name, type) => {
             </div>
             }
             {appear && (info.children ?
-            <FolderMenu ToggleFolderMenu = {ToggleFolderMenu} renameFolder = {setrenameState} onDelete = {handleDelete} name = {info.name} handleAdd = {toggleAdd} position = {pos} setCreateChild = {setCreateChild} /> 
+            <FolderMenu ToggleFolderMenu = {ToggleFolderMenu} renameFolder = {setrenameState} onDelete = {handleDelete} name = {info.name} handleAdd = {toggleAdd} position = {pos} setCreateChild = {setCreateChild} setType = {setType}/> 
             : <FileMenu ToggleFolderMenu = {ToggleFolderMenu} renameFolder = {setrenameState} onDelete = {handleDelete} position = {pos}/> 
         ) }
             </menu>
@@ -128,8 +130,13 @@ const toggleAdd = (name, type) => {
               onChange={(event) => {
                 setNewDoc(event.target.value);
               }}
+              onKeyPress={(event) => {
+                console.log(event);
+                if (event.key == "Enter") {event.stopPropagation(); handleAdd(info.id, newDoc, "folder"); setCreateChild(false); setExpand(true)}
+                if (event.key == "Esc") {event.stopPropagation(); setCreateChild(false);}
+              }}
             />
-            <i onClick={(e)=>(e.stopPropagation(), handleAdd(info.id, newDoc, "folder"), setCreateChild(false))}
+            <i onClick={(e)=>(e.stopPropagation(), handleAdd(info.id, newDoc, type), setCreateChild(false), setExpand(true))}
               className="ri-checkbox-line icon clickable"
             />
             <i onClick={(e)=>(e.stopPropagation(), setCreateChild(false))}
