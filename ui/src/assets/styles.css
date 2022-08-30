@@ -66,12 +66,12 @@
 
 /* File Tree Items */
 .tree-item {
-  @apply flex px-4 py-2;
+  @apply flex px-4 py-2 gap-2 items-center;
 }
 
 .tree-item-hidden {
   opacity: 0;
-  transition: opacity 80ms ease-out;
+  transition: opacity 80ms ease-out, background-color 80ms ease-out;
 }
 
 .tree-item:hover .tree-item-hidden {
@@ -147,7 +147,7 @@
   overflow: hidden;
   position: absolute;
   width: 100px;
-  align-items: center
+  align-items: center;
 }
 
 .check-mark {

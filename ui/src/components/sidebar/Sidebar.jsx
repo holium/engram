@@ -6,15 +6,12 @@ import {
   createDocument,
   checkUrbitWindow,
   deleteDocument,
-
   createFolder,
   deleteFolder,
   addToFolder,
-  removeFromFolder
+  removeFromFolder,
 } from "../urbit/index";
 import { OpenDocumentEvent } from "../document/types";
-import { regular, solid } from "@fortawesome/fontawesome-svg-core/import.macro";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as Y from "yjs";
 import FileTree from "./FileTree";
 import TreeComponent from "./TreeComponent";
@@ -24,29 +21,24 @@ import { UrbitContext } from "../urbit/UrbitProvider";
 import RootMenu from "./RootMenu";
 
 function Sidebar() {
-
   const [type, setType] = useState("");
 
-  const [ids, setIds] = useState([])
+  const [ids, setIds] = useState([]);
 
-  const [info, setInfo] = useState([])
+  const [info, setInfo] = useState([]);
 
-  const [pos, setPos] = useState({top: 0,
-  left: 0
-  });
-  
   const [appear, setAppear] = useState(false);
   const urbitStatus = useContext(UrbitContext);
   const [list, setList] = useState([]);
   const [newDoc, setNewDoc] = useState(false);
   const [newDocName, setNewDocName] = useState("");
-  const [slide, setSlide] = useState(false)
+  const [slide, setSlide] = useState(false);
   const [createChild, setCreateChild] = useState({});
 
   useEffect(() => {
-    console.log(info)
+    console.log(info);
     checkUrbitWindow();
-    sendData()
+    sendData();
     listDocuments()
       .then((res) => {
         console.log("list documents result: ", res);
@@ -62,90 +54,93 @@ function Sidebar() {
       })
       .catch((err) => {
         console.log("no urbit :(");
-        setInfo([{ owner: "~zod", id: "123", name: "doc" }]);
+        setList([
+          { owner: "~zod", id: "null", name: "error getting documents" },
+        ]);
       });
     listFolders()
       .then((res) => {
         console.log("list folders result: ", res);
+
+        setInfo(
+          Object.keys(res).map((index) => {
+            console.log(Object.keys(res[index].content));
+            return {
+              id: res[index].meta.id,
+              name: res[index].meta.name,
+              children: Object.keys(res[index].content),
+            };
+          })
+        );
       })
       .catch((err) => {
         console.warn("error listing folders: ", err);
+        setList([{ id: "null", name: "error getting folders" }]);
       });
   }, []);
 
-
-  const sendData  = () => {
-    const ids1 = info.map(childData => childData.children)
-    const ids2 = ids1.flat()
-    const set = new Set(ids2)
+  const sendData = () => {
+    const ids1 = info.map((childData) => childData.children);
+    const ids2 = ids1.flat();
+    const set = new Set(ids2);
     setIds(Array.from(set));
-    }
+  };
 
+  const getChildren = (identifier) => {
+    const content = info
+      .filter((child) => identifier.includes(child.name))
+      .map((childData) => childData);
+    console.log("Log in getChildren:");
+    console.log(content);
+    return content;
+  };
 
-    const getChildren = (identifier) => {
-      const content = info.filter(child => identifier.includes(child.id)).map(childData => childData);
-      console.log("Log in getChildren:")
-      console.log(content)
-      return content;
-    }
-
-    const handleRename = (id, newName) => {
-      info.find(child => {
-        if(child.id === id){
-          child.name = newName;
-        }
-      })
-      console.log(info)
-    }
-
-
-
-  function handleDelete(prop){
-    const child = info.filter(child => child.id === prop)
-    const children = info.filter(element => element.id !== prop && !child[0].children.includes(element.id));
-    children.map(element => {
-      if(element.children.includes(prop)){
-        element.children.splice(element.children.indexOf(prop), 1)
+  const handleRename = (id, newName) => {
+    info.find((child) => {
+      if (child.id === id) {
+        child.name = newName;
       }
-    }); 
-    console.log(children)
-    setInfo(children)
-    
-    sendData()
+    });
+    console.log(info);
+  };
+
+  function handleDelete(prop) {
+    const child = info.filter((child) => child.id === prop);
+    const children = info.filter(
+      (element) =>
+        element.id !== prop && !child[0].children.includes(element.id)
+    );
+    children.map((element) => {
+      if (element.children.includes(prop)) {
+        element.children.splice(element.children.indexOf(prop), 1);
+      }
+    });
+    console.log(children);
+    setInfo(children);
+
+    sendData();
 
     /*
     delete middleware for deleteFolder or deleteDocument
     */
   }
 
-
-  function handleAdd(id, name, type){
+  function handleAdd(id, name, type) {
     const children = info;
-    const new_id = crypto.randomUUID()
-    if (type === "folder"){
-    children.push({id: new_id, name: name, children: []})
+    const new_id = crypto.randomUUID();
+    if (type === "folder") {
+      children.push({ id: new_id, name: name, children: [] });
     } else {
-      children.push({id: new_id, name: name, owner: `~${window.ship}` })
+      children.push({ id: new_id, name: name, owner: `~${window.ship}` });
     }
-    children.map(child => {
-      if(child.id === id){
-        child.children.push(new_id)
+    children.map((child) => {
+      if (child.id === id) {
+        child.children.push(new_id);
       }
-    })
-    setInfo(children)
-    console.log(children)
-    sendData()
-  }
-  
-  function create(e){
-    e.stopPropagation()
-    if(type==="file") {
-      createDoc();
-  
-    } else if(type ==="folder"){
-      createFold();
-    }
-    closeCreateDoc()
+    });
+    setInfo(children);
+    console.log(children);
+    sendData();
   }
 
   function openDocument(doc: any) {
@@ -153,20 +148,18 @@ function Sidebar() {
     document.dispatchEvent(OpenDocumentEvent(doc));
   }
 
-
   function createFold() {
     console.log("create folder");
     checkUrbitWindow();
     const meta: FolderMeta = {
       id: `~${window.ship}-${crypto.randomUUID()}`,
       name: newDocName.replaceAll(" ", "-"),
-      children: [],
     };
 
     createFolder(meta).then((res) => {
       console.log("create folder result", res);
     });
-    setInfo(([...info, meta]))
+    setInfo([...info, meta]);
     closeCreateDoc();
   }
 
@@ -192,7 +185,7 @@ function Sidebar() {
     }).then((res) => {
       console.log("create document result", res);
     });
-    setInfo(([...info, meta]))
+    setInfo([...info, meta]);
     closeCreateDoc();
   }
   function closeCreateDoc() {
@@ -208,17 +201,7 @@ function Sidebar() {
     });
   }
 
-
-  function createFol() {
-    const testFolder = { id: `~${window.ship}-${crypto.randomUUID()}`, name: "Test Folder", content: [] };
-    console.log("creating folder: ", testFolder);
-    createFolder(testFolder);
-    listFolders().then((res) => {
-      console.log(res);
-    });
-  }
-
-  function deleteFol(folder) {
+  function deleteFold(folder) {
     console.log("deleting folder: ", folder);
     deleteFolder(folder);
     listFolders().then((res) => {
@@ -236,31 +219,50 @@ function Sidebar() {
       <div className="px-4 py-3 flex items-center">
         <div className="azimuth">~{urbitStatus.ship}</div>
         <div className="flex-grow"> </div>
-        <i className="ri-checkbox-blank-circle-fill icon"
-          style={
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          className="icon"
+          fill={
             urbitStatus.connection < 2
-              ? {
-                  color: "var(--status-success-color)",
-                  width: "1.26em",
-                  height: "1.26em",
-                }
-              : {
-                  color: "var(--status-failure-color)",
-                  width: "1.26em",
-                  height: "1.26em",
-                }
+              ? "var(--status-success-color)"
+              : "var(--status-failure-color)"
           }
-        />
+        >
+          <ellipse cx="12" cy="12" rx="10" ry="10" />
+        </svg>
       </div>
       <div className="flex flex-col overflow-auto">
         <div className="mt-4 tree-item">
           <div className="font-bold flex-grow py-1">Your Ship</div>
-          <menu onMouseLeave = {()=>(setAppear(false))}>
-          <i className="ri-add-box-line icon clickable tree-item-hidden"
-            onClick={(e) => {setAppear(true); setPos({top: e.clientY, left: e.clientX}); e.stopPropagation()}}
-          />
-          {appear && <RootMenu position = {pos} setAppear = {setAppear} setDoc = {setNewDoc} setType = {setType}/>}
-          </menu>
+          {/* Add Document */}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="var(--type-color)"
+            className="icon clickable tree-item-hidden"
+            onClick={() => {
+              setNewDoc(true);
+              setType("file");
+            }}
+          >
+            <path fill="none" d="M0 0h24v24H0z" />
+            <path d="M15 4H5v16h14V8h-4V4zM3 2.992C3 2.444 3.447 2 3.999 2H16l5 5v13.993A1 1 0 0 1 20.007 22H3.993A1 1 0 0 1 3 21.008V2.992zM11 11V8h2v3h3v2h-3v3h-2v-3H8v-2h3z" />
+          </svg>
+          {/* Add Folder */}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="var(--type-color)"
+            className="icon clickable tree-item-hidden"
+            onClick={() => {
+              setNewDoc(true);
+              setType("folder");
+            }}
+          >
+            <path fill="none" d="M0 0h24v24H0z" />
+            <path d="M12.414 5H21a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h7.414l2 2zM4 5v14h16V7h-8.414l-2-2H4zm7 7V9h2v3h3v2h-3v3h-2v-3H8v-2h3z" />
+          </svg>
         </div>
         {newDoc && (
           <div className="flex px-4 py-1 gap-3">
@@ -278,36 +280,54 @@ function Sidebar() {
               }}
               onKeyPress={(event) => {
                 console.log(event);
-                if (event.key == "Enter") create(event);
+                if (event.key == "Enter") {
+                  if (type === "file") {
+                    createDoc();
+                  } else if (type === "folder") {
+                    createFold();
+                  }
+                  closeCreateDoc();
+                }
                 if (event.key == "Esc") closeCreateDoc();
               }}
             />
-            <i
-              onClick={(event)=>{create(event)}}
+            {/*<i
+              onClick={(event) => {
+                create(event);
+              }}
               className="ri-checkbox-line icon clickable"
             />
             <i
               onClick={closeCreateDoc}
               className=" ri-close-line icon clickable"
-            />
+            />*/}
           </div>
         )}
 
-          {info.filter((child => !(ids.includes(child.id)))).map((childData, index) => (
-                            <div
-                            className=" pl-3"
-                            onClick={() => { if(childData.child) {
-                              openDocument(childData);}
-                            }}
-                          >    
-                <TreeComponent key = {childData.id} data = {childData} onDelete = {handleDelete} getChildren = {getChildren} handleAdd = {handleAdd} createChild = {createChild} handleRename ={handleRename} />
-                </div>
-            ))}
+        {info
+          .filter((child) => !ids.includes(child.name))
+          .map((childData, index) => (
+            <div
+              onClick={() => {
+                if (childData.child) {
+                  openDocument(childData);
+                }
+              }}
+            >
+              <TreeComponent
+                key={childData.id}
+                data={childData}
+                onDelete={handleDelete}
+                getChildren={getChildren}
+                handleAdd={handleAdd}
+                createChild={createChild}
+                handleRename={handleRename}
+              />
+            </div>
+          ))}
       </div>
     </div>
   );
-  
-
 }
 
 export default Sidebar;
