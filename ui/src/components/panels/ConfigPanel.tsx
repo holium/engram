@@ -1,41 +1,44 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react";
 import { EditorView } from "prosemirror-view";
 import { ConfigPluginKey } from "../document/plugins/config/plugin";
 
-function ConfigPanel(props: { show: boolean, view: EditorView }) {
-
+function ConfigPanel(props: { show: boolean; view: EditorView }) {
   const [config, setConfig] = useState({});
 
   useEffect(() => {
-    console.log(props.view)
+    console.log(props.view);
     const view = props.view;
-    if(view) {
-      const configState = ConfigPluginKey.getState(view.state)
+    if (view) {
+      const configState = ConfigPluginKey.getState(view.state);
       console.log(configState);
-      setConfig(configState.config);
+      const res = {};
+      Object.keys(configState.config).forEach((term: string) => {
+        res[term] = configState.config[term].value;
+      });
+      setConfig(res);
+      console.log(config);
     }
-  }, [props.show])
+  }, [props.show]);
 
   function handleChange(term: string) {
     return (event) => {
-      setConfig({ [term]: event.target.value })
+      setConfig({ ...config, [term]: event.target.value });
       setTerm(term, event.target.value);
-    }
+    };
   }
 
   function setTerm(term: string, value: any) {
-    const view = props.getView();
-    console.log(view);
-    view.state.doc.descendants((node, pos, parent, index) => {
+    console.log(props.view);
+    props.view.state.doc.descendants((node, pos, parent, index) => {
       console.log(node);
       if (node.type.name === "header") return true;
       if (node.type.name === "config") return true;
       if (node.type.spec.group === "configterm" && node.type.name == term) {
-        const tr = view.state.tr.setNodeMarkup(pos, null, {
+        const tr = props.view.state.tr.setNodeMarkup(pos, null, {
           value: value,
         });
         tr.setMeta(ConfigPluginKey, { term: term, value: value });
-        view.dispatch(tr);
+        props.view.dispatch(tr);
       }
       return false;
     });
@@ -44,20 +47,116 @@ function ConfigPanel(props: { show: boolean, view: EditorView }) {
   return (
     <div className="panel" style={props.show ? {} : { display: "none" }}>
       <div>
-        <div className="flex gap-3">
-          <div>
-            <div>Type Scale: </div>
-            <div>Size: <input className="min-w-0 flex-1" type="number" value={config.typefrequency} onChange={handleChange("typefrequency")}/></div>
-            <div>Ratio: <input className="min-w-0 flex-1" type="number" value={config.typeratio} onChange={handleChange("typeratio")}/></div>
+        <div className="flex gap-3 relative">
+          <div className="flex-1" style={{ width: "64%" }}>
+            <div className="flex gap-3 py-1">
+              <div className="py-1 px-2 flex-1 flex">
+                <div className="flex-grow">Width:</div> {config.documentwidth}
+              </div>
+              <input
+                className="min-w-0 flex-1 text-right py-1 px-2 outline-none"
+                min="40"
+                max="120"
+                type="range"
+                value={config.documentwidth}
+                onChange={handleChange("documentwidth")}
+              />
+            </div>
+            <div className="flex gap-3 py-1">
+              <div className="py-1 px-2 flex-1 flex">
+                <div className="flex-grow">Font Size:</div>
+                {config.typefrequency}
+              </div>
+              <input
+                className="min-w-0 flex-1 text-right py-1 px-2 outline-none"
+                min="8"
+                max="48"
+                type="range"
+                value={config.typefrequency}
+                onChange={handleChange("typefrequency")}
+              />
+            </div>
+            <div className="flex gap-3 py-1">
+              <div className="py-1 px-2 flex-1 flex">
+                <div className="flex-grow">Scale Ratio:</div>{" "}
+                {Math.floor(config.typeratio)}
+              </div>
+              <input
+                className="min-w-0 flex-1 text-right px-2 py-1 outline-none"
+                min="100"
+                max="400"
+                type="range"
+                value={config.typeratio * 100}
+                onChange={(event) => {
+                  handleChange("typeratio")({
+                    target: { value: event.target.value / 100 },
+                  });
+                }}
+              />
+            </div>
+            <div className="flex gap-3 py-1">
+              <div className="flex-1 py-1 px-2">Headings: </div>
+              <select
+                className="min-w-0 flex-1 text-right px-2 py-1 outline-none bg-none"
+                value={config.headingtypeface}
+                onChange={handleChange("headingtypeface")}
+              >
+                <option className="text-right" value="sans">
+                  Sans Serif
+                </option>
+                <option className="text-right" value="serif">
+                  Serif
+                </option>
+                <option className="text-right" value="mono">
+                  Monospace
+                </option>
+              </select>
+            </div>
+            <div className="flex gap-3 py-1">
+              <div className="flex-1 py-1 px-2">Body: </div>
+              <select
+                className="min-w-0 flex-1 text-right px-2 py-1 outline-none bg-none"
+                value={config.bodytypeface}
+                onChange={handleChange("bodytypeface")}
+              >
+                <option className="text-right" value="sans">
+                  Sans Serif
+                </option>
+                <option className="text-right" value="serif">
+                  Serif
+                </option>
+                <option className="text-right" value="mono">
+                  Monospace
+                </option>
+              </select>
+            </div>
           </div>
-          <div>
-            <span style={{fontSize: "var(--h1)"}}>H</span><span style={{fontSize: "var(--body)"}}>T</span>
+          <div
+            className="flex items-center justify-center p-4"
+            style={{ width: "32%" }}
+          >
+            <div>
+              <span
+                style={{
+                  fontSize: "var(--h1)",
+                  fontFamily: "var(--heading-font-family)",
+                  lineHeight: "var(--leading-heading)",
+                }}
+              >
+                H
+              </span>
+              <span
+                style={{
+                  fontSize: "var(--body)",
+                  fontFamily: "var(--body-font-family)",
+                  lineHeight: "var(--body-heading)",
+                }}
+              >
+                T
+              </span>
+            </div>
           </div>
         </div>
-        <div className="flex gap-3">Full Width</div>
-        <div className="flex gap-3">Heading Typeface</div>
-        <div className="flex gap-3">Body Typeface</div>
-        <div className="flex gap-3">Type Scale</div>
       </div>
     </div>
   );

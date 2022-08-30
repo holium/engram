@@ -12,7 +12,8 @@
 /* Atoms -------------------------------------------------------------------- */
 .azimuth {
   @apply font-azimuth px-2 shadow-sunk inline-block hover:underline cursor-pointer rounded-2;
-  font-size: var(--body);
+  font-size: 16px;
+  line-height: 1.26em;
   background-color: var(--glass-color);
 }
 
@@ -47,8 +48,8 @@
 .icon {
   @apply p-1 rounded-1;
   color: var(--rlm-icon-color, var(--type-color));
-  width: calc(var(--leading-body) + 4px);
-  height: calc(var(--leading-body) + 4px);
+  width: calc(1.26em + 4px);
+  height: calc(1.26em + 4px);
 }
 
 .clickable {

@@ -183,13 +183,18 @@ function Document(props: { path: string }) {
 
       <div id="document-wrapper">
         {/* Document --------------------------------------------------------- */}
-        <main id="document" onMouseLeave={() => { setSideMenu(null) }}>
+        <main
+          id="document"
+          onMouseLeave={() => {
+            setSideMenu(null);
+          }}
+        >
           {sideMenu ? (
             <SideMenu
               menu={sideMenu}
               hide={() => {
-                console.log("hiding")
-                setSideMenu(null)
+                console.log("hiding");
+                setSideMenu(null);
               }}
               view={view}
             />

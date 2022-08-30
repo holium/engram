@@ -11,11 +11,11 @@ export class DocumentConfig {
   config = DocumentConfig.defaultConfig;
 
   constructor(config: {
-    "typefrequency"?: number;
-    "typeratio"?: number;
-    "headingtypeface"?: string;
-    "bodytypeface"?: string;
-    "docmentwidth"?: number;
+    typefrequency?: number;
+    typeratio?: number;
+    headingtypeface?: string;
+    bodytypeface?: string;
+    docmentwidth?: number;
   }) {
     Object.keys(config).forEach((style) => {
       if (this.config[style]) this.config[style].value = config[style];
@@ -27,6 +27,7 @@ export class DocumentConfig {
   setTerm(key: string, value: any) {
     this.config[key].value = value;
     this.implement(key);
+    return this;
   }
 
   // implement a config field into a css variable
@@ -50,19 +51,21 @@ export class DocumentConfig {
   static defaultConfig: { [key: string]: ConfigTerm } = {
     // Typescale ---------------------------------------------------------------
     // The root font size
-    "typefrequency": {
+    typefrequency: {
       key: "typefrequency",
       display: "Typescale Root",
       type: "number",
       value: 16, // assumes default is 16px, converts to em to comply with browser/machine settings
       styles: {
         "--root-frequency": (value: number) => {
+          if (value < 8) return `${8 / 16}em`;
+          if (value > 48) return `${48 / 16}em`;
           return `${value / 16}em`;
         },
       },
     },
     // The ratio between octaves in the typescale
-    "typeratio": {
+    typeratio: {
       key: "typeratio",
       display: "Typescale Ratio",
       type: "number",
@@ -98,7 +101,7 @@ export class DocumentConfig {
         },
       },
     },
-    "headingtypeface": {
+    headingtypeface: {
       key: "headingtypeface",
       display: "Heading Font Family",
       type: "select",
@@ -110,17 +113,17 @@ export class DocumentConfig {
       value: 0,
       styles: {
         "--heading-font-family": (value: number) => {
-          if (value == 0) {
-            return "Rubik, sans-serif";
-          } else if (value == 1) {
+          if (value == "mono") {
+            return "IBM Plex Mono, monospace";
+          } else if (value == "serif") {
             return "serif";
           } else {
-            return "IBM Plex Mono, monospace";
+            return "Rubik, sans-serif";
           }
         },
       },
     },
-    "bodytypeface": {
+    bodytypeface: {
       key: "bodytypeface",
       display: "Body Font Family",
       type: "select",
@@ -132,19 +135,19 @@ export class DocumentConfig {
       value: null,
       styles: {
         "--body-font-family": (value: number) => {
-          if (value == 0) {
-            return "Rubik, sans-serif";
-          } else if (value == 1) {
+          if (value == "mono") {
+            return "IBM Plex Mono, monospace";
+          } else if (value == "serif") {
             return "serif";
           } else {
-            return "IBM Plex Mono, monospace";
+            return "Rubik, sans-serif";
           }
         },
       },
     },
 
     // Spacing & Sizing -----------------------------------------------------
-    "documentwidth": {
+    documentwidth: {
       key: "documentwidth",
       display: "Document Width",
       type: "number",

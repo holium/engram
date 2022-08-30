@@ -4,8 +4,7 @@ import { DocumentConfig, ConfigTerm } from "./config";
 import { assembleConfigNodeView, assembleConfigTermNodeView } from "./helpers";
 
 export const ConfigSpec = {
-  content:
-    "typefrequency typeratio headingtypeface bodytypeface documentwidth",
+  content: "typefrequency typeratio headingtypeface bodytypeface documentwidth",
   group: "config",
   parseDOM: [{ tag: "dl" }],
   toDOM() {
@@ -29,9 +28,11 @@ export const ConfigTermSpec = (defaultValue: any): NodeSpec => {
 };
 
 function configTermView(node, view, getPos) {
-  console.log(view.state["config$"]);
   const config = view.state["config$"].config;
-  const term = config[node.name];
+  console.log(config);
+  console.log(node);
+  const term = config[node.type.name];
+  console.log("building config term view", term);
 
   const dom = assembleConfigTermNodeView(term);
 
@@ -39,8 +40,8 @@ function configTermView(node, view, getPos) {
     dom: dom,
     update: (newNode) => {
       const configState = view.state["config$"];
-      if (newNode.attrs["value"] != configState.config[node.name].value) {
-        configState.setField(node.name, newNode.attrs["value"]);
+      if (newNode.attrs["value"] != configState.config[node.type.name].value) {
+        configState.setTerm(node.type.name, newNode.attrs["value"]);
       }
       return true;
     },
@@ -49,40 +50,46 @@ function configTermView(node, view, getPos) {
 
 export const ConfigPluginKey = new PluginKey("config");
 
-export const config =
-  new Plugin({
-    key: ConfigPluginKey,
-    state: {
-      init: (_, state) => {
-        let config = {};
-        state.doc.descendants((node, pos, parent, index) => {
-          if (node.type.name === "header") return true;
-          if (node.type.name === "config") return true;
-          if (node.type.spec.group === "configterm") {
-            config[node.type.name] = node.attrs["value"];
-          }
-          return false;
-        });
-        return new DocumentConfig(config);
-      },
-      apply: (tr, value, state) => {
-        const meta = tr.getMeta(ConfigPluginKey);
-        if (meta) {
-          ConfigPluginKey.getState(state).setTerm(meta.term, meta.value);
+export const config = new Plugin({
+  key: ConfigPluginKey,
+  state: {
+    init: (_, state) => {
+      let config = {};
+      state.doc.descendants((node, pos, parent, index) => {
+        if (node.type.name === "header") return true;
+        if (node.type.name === "config") return true;
+        if (node.type.spec.group === "configterm") {
+          console.log(node);
+          config[node.type.name] = node.attrs["value"];
         }
-        return value;
-      },
+        return false;
+      });
+      console.log(new DocumentConfig(config));
+      return new DocumentConfig(config);
     },
-    props: {
-      nodeViews: {
-        config: (node, view, getPos) => {
-          return { dom: assembleConfigNodeView() };
-        },
-        "typefrequency": configTermView,
-        "typeratio": configTermView,
-        "headingtypeface": configTermView,
-        "bodytypeface": configTermView,
-        "documentwidth": configTermView,
-      },
+    apply: (tr, value, state, oldState) => {
+      const meta = tr.getMeta(ConfigPluginKey);
+      if (meta) {
+        const newState = ConfigPluginKey.getState(oldState).setTerm(
+          meta.term,
+          meta.value
+        );
+        return newState;
+      }
+      return value;
     },
-})
+  },
+  props: {
+    nodeViews: {
+      config: (node, view, getPos) => {
+        const dom = assembleConfigNodeView();
+        return { dom: dom, contentDOM: dom };
+      },
+      typefrequency: configTermView,
+      typeratio: configTermView,
+      headingtypeface: configTermView,
+      bodytypeface: configTermView,
+      documentwidth: configTermView,
+    },
+  },
+});
