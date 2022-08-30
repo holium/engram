@@ -6,6 +6,8 @@
   @apply flex text-body;
   /* width: 100vw; */
   height: 100vh;
+  font-size: 16px;
+  line-height: 1.26em;
   background-color: var(--off-color);
 }
 

@@ -65,11 +65,13 @@ children: ["hell", "gosh"]}, {id: `${crypto.randomUUID()}`, name: "hell", childr
         console.log("no urbit :(");
         setInfo([{ owner: "~zod", id: "123", name: "doc" }]);
       });
-    listFolders().then((res) => {
-      console.log("list folders result: ", res);
-    }).catch((err) => {
-      console.warn("error listing folders: ", err);
-    });
+    listFolders()
+      .then((res) => {
+        console.log("list folders result: ", res);
+      })
+      .catch((err) => {
+        console.warn("error listing folders: ", err);
+      });
   }, []);
 
 
@@ -212,13 +214,17 @@ children: ["hell", "gosh"]}, {id: `${crypto.randomUUID()}`, name: "hell", childr
     const testFolder = { id: `~${window.ship}-${crypto.randomUUID()}`, name: "Test Folder", content: [] };
     console.log("creating folder: ", testFolder);
     createFolder(testFolder);
-    listFolders().then((res) => { console.log(res) });
+    listFolders().then((res) => {
+      console.log(res);
+    });
   }
 
   function deleteFol(folder) {
     console.log("deleting folder: ", folder);
     deleteFolder(folder);
-    listFolders().then((res) => { console.log(res) });
+    listFolders().then((res) => {
+      console.log(res);
+    });
   }
 
   return (
@@ -236,13 +242,13 @@ children: ["hell", "gosh"]}, {id: `${crypto.randomUUID()}`, name: "hell", childr
             urbitStatus.connection < 2
               ? {
                   color: "var(--status-success-color)",
-                  width: "var(--leading-body",
-                  height: "var(--leading-body)",
+                  width: "1.26em",
+                  height: "1.26em",
                 }
               : {
                   color: "var(--status-failure-color)",
-                  width: "var(--leading-body",
-                  height: "var(--leading-body)",
+                  width: "1.26em",
+                  height: "1.26em",
                 }
           }
         />
