@@ -27,7 +27,7 @@ import {
 } from "prosemirror-commands";
 import { undoInputRule } from "prosemirror-inputrules";
 import { wrapInList, splitListItem, liftListItem, sinkListItem } from "./lists";
-//import { undo, redo } from "y-prosemirror";
+import { undo, redo } from "y-prosemirror";
 
 const backspace = chainCommands(
   deleteSelection,
