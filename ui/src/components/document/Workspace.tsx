@@ -16,7 +16,7 @@ import shortcuts from "./plugins/shortcuts";
 import { comments } from "./plugins/comments";
 //import { sync } from "./plugins/crdt/sync";
 //import { localundo } from "./plugins/crdt/undo";
-//import { ySyncPlugin, yUndoPlugin, undo, redo } from "y-prosemirror";
+import { ySyncPlugin, yUndoPlugin, undo, redo } from "y-prosemirror";
 import { handleImage } from "./plugins/handleImage";
 import save from "./plugins/save";
 

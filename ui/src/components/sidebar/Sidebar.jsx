@@ -330,6 +330,21 @@ function Sidebar() {
 
         {info
           .filter((child) => !ids.includes(child.id))
+          .sort((a, b) => {
+            if ((a.owner && b.owner) || (!a.owner && !b.owner)) {
+              if (a.name > b.name) {
+                return 1;
+              } else if (a.name < b.name) {
+                return -1;
+              } else {
+                return 0;
+              }
+            } else if (a.owner) {
+              return 1;
+            } else {
+              return -1;
+            }
+          })
           .map((childData, index) => (
             <div>
               <TreeComponent

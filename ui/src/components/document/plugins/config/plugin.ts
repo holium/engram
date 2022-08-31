@@ -70,7 +70,8 @@ export const config = new Plugin({
     apply: (tr, value, state, oldState) => {
       const meta = tr.getMeta(ConfigPluginKey);
       if (meta) {
-        const newState = ConfigPluginKey.getState(oldState).setTerm(
+        console.log(state);
+        const newState = ConfigPluginKey.getState(state).setTerm(
           meta.term,
           meta.value
         );

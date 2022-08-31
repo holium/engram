@@ -267,19 +267,35 @@ function TreeComponent({
 
       <div className={`${expand ? "block" : " hidden"} pl-3`}>
         {info.children &&
-          children.map((child) => (
-            <div>
-              <TreeComponent
-                key={child.id}
-                folder={info.id}
-                onDelete={onDelete}
-                data={child}
-                getChildren={getChildren}
-                handleAdd={handleAdd}
-                handleRename={handleRename}
-              />
-            </div>
-          ))}
+          children
+            .sort((a, b) => {
+              if ((a.owner && b.owner) || (!a.owner && !b.owner)) {
+                if (a.name > b.name) {
+                  return 1;
+                } else if (a.name < b.name) {
+                  return -1;
+                } else {
+                  return 0;
+                }
+              } else if (a.owner) {
+                return 1;
+              } else {
+                return -1;
+              }
+            })
+            .map((child) => (
+              <div>
+                <TreeComponent
+                  key={child.id}
+                  folder={info.id}
+                  onDelete={onDelete}
+                  data={child}
+                  getChildren={getChildren}
+                  handleAdd={handleAdd}
+                  handleRename={handleRename}
+                />
+              </div>
+            ))}
       </div>
     </div>
   );
