@@ -35,7 +35,6 @@ function Sidebar() {
   const [createChild, setCreateChild] = useState({});
 
   useEffect(() => {
-    console.log(info);
     checkUrbitWindow();
     sendData();
     listDocuments()
@@ -74,7 +73,7 @@ function Sidebar() {
         ]);
       });
   }, []);
-
+  
   useEffect(() => {
     sendData();
   }, [info]);
@@ -83,10 +82,8 @@ function Sidebar() {
     const ids1 = info
       .filter((childData) => childData.children)
       .map((childData) => childData.children);
-    console.log("getting ommited files from:", info);
     const ids2 = ids1.flat();
     const set = new Set(ids2);
-    console.log("set of ommited files:", set);
     setIds([...Array.from(set)]);
   };
 
@@ -113,32 +110,11 @@ function Sidebar() {
       deleteDocument(info[toDelete]);
     } else {
       deleteFolder(info[toDelete]);
-    }
 
     const newInfo = info;
     newInfo.splice(toDelete, 1);
     setInfo([...newInfo]);
-
-    /*
-    const child = info.filter((child) => child.id === prop);
-    const children = info.filter(
-      (element) =>
-        element.id !== prop && !child[0].children.includes(element.id)
-    );
-    children.map((element) => {
-      if (element.children.includes(prop)) {
-        element.children.splice(element.children.indexOf(prop), 1);
-      }
-    });
-    console.log(children);
-    setInfo(children);
-    */
-
     sendData();
-
-    /*
-    delete middleware for deleteFolder or deleteDocument
-    */
   }
 
   function handleAdd(id, name, type) {
@@ -149,7 +125,6 @@ function Sidebar() {
     } else {
       res = createDoc(name);
     }
-    console.log(res);
     moveToFrom(res, id, null);
 
     sendData();
