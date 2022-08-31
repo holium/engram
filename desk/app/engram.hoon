@@ -183,7 +183,7 @@
     =/  meta  [owner=owner id=id name=name]
     =/  snap=(list snap:engram)  (need (~(get by su) meta))
     ~&  snap
-    ``noun+!>(enjs-getsnaps:engram snap)
+    ``noun+!>((enjs-getsnaps:engram snap))
   ==
 ::
 ++  on-agent  on-agent:def
