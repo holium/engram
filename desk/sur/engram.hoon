@@ -32,10 +32,10 @@
 ::
 :: State Data Types
 :: updts: a key-set storage for the staged updates ready to be merged into your current document
-:: docs: a key-set storage for the viewable documents 
+:: docs: a key-set storage for the viewable documents
 :: fldrs: all folders for a specific document
 :: dsnaps: a key-list store for snapshot containers
-:
+::
 ::
 +$  updts  (jug dmeta updt)
 +$  docs  (map dmeta doc)
@@ -53,7 +53,7 @@
 :: [%foldoc =fmeta =fldr] - add a document or folder pointer to a specified folder
 :: [%remfoldoc =fmeta =fldr] - remove a document or folder pointer from a specified folder
 :: [%merge =dmeta =@ud] - remove a specific update from the update list
-:: [%snap =dmeta =snap] - add a snapshot to a documents history 
+:: [%snap =dmeta =snap] - add a snapshot to a documents history
 ::
 +$  action
   $%  [%make =dmeta =doc]
