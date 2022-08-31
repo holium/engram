@@ -14,5 +14,30 @@
     [%merge (ot ~[dmeta+(ot ~[owner+(se %p) id+so name+so]) index+(ni)])]
     [%snap (ot ~[dmeta+(ot ~[owner+(se %p) id+so name+so]) snap+(ot ~[date+di ship+(se %p) data+(ar ni)])])]
   ==
-
+++  enjs-getsnaps
+  =,  enjs:format
+  |=  snaps=(list snap)
+  /=  counter  0
+  /=  results *(list [@t json])
+  /=  assembled
+  |-
+  ?:  =(counter (lent snaps))
+    results
+  /=  curr  snag counter snaps
+  /=  data  data:(curr)
+  /=  data-counter
+  /=  data-results  *(list [@t json])
+  /=  data-assembled
+  |-
+  ?:  =(data-counter (lent data))
+    data-results
+  %=  $
+    data-counter  (add data-counter 1)
+    data-results  (snoc data-results [(crip "{<counter>}") (numb (snag data-counter data))])
+  ==
+  %=  $
+    counter  (add counter 1)
+    results  (snoc results [(crip "{<counter>}") (pairs ~[['date' (time date:curr)] ['ship' (ship ship:curr)] ['data' (pairs data-assembled)]])]
+  ==
+  (pairs assembled)
 --
