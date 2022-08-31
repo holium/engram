@@ -46,19 +46,18 @@ function Sidebar() {
             console.log("list folders result: ", folRes);
 
             setInfo([
-              ...Object.keys(docRes).map((key) => {
+              ...Object.keys(docRes).map((index) => {
                 return {
-                  id: key,
-                  owner: "~" + docRes[key].owner,
-                  name: docRes[key].name,
+                  id: index,
+                  owner: "~" + docRes[index].owner,
+                  name: docRes[index].name,
                 };
               }),
-              ...Object.keys(folRes).map((index) => {
-                console.log(Object.keys(folRes[index].content));
+              ...Object.values(folRes).map((fol) => {
                 return {
-                  id: folRes[index].meta.id,
-                  name: folRes[index].meta.name,
-                  children: Object.keys(folRes[index].content),
+                  id: fol.meta.id,
+                  name: fol.meta.name,
+                  children: Object.values(fol.content).map((item) => item.id),
                 };
               }),
             ]);
@@ -76,11 +75,19 @@ function Sidebar() {
       });
   }, []);
 
+  useEffect(() => {
+    sendData();
+  }, [info]);
+
   const sendData = () => {
-    const ids1 = info.map((childData) => childData.children);
+    const ids1 = info
+      .filter((childData) => childData.children)
+      .map((childData) => childData.children);
+    console.log("getting ommited files from:", info);
     const ids2 = ids1.flat();
     const set = new Set(ids2);
-    setIds(Array.from(set));
+    console.log("set of ommited files:", set);
+    setIds([...Array.from(set)]);
   };
 
   const getChildren = (identifier) => {
@@ -143,28 +150,47 @@ function Sidebar() {
       res = createDoc(name);
     }
     console.log(res);
-    moveToFrom(res.id, id, null);
+    moveToFrom(res, id, null);
 
     sendData();
   }
 
   function moveToFrom(id, to, from) {
     // null for root
+    let target;
+    if (typeof target == "string") target = info.find((tar) => tar.id == id);
+    else target = id;
     if (from != null) {
       const removeFrom = info.find((folder) => folder.id == from);
-      removeFrom.children.splice(removeFrom.children.indexOf(id), 1);
+      removeFrom.children.splice(removeFrom.children.indexOf(target.id), 1);
       info.splice(
         info.findIndex((item) => item.id == from),
         1
+      );
+      removeFromFolder(
+        { id: removeFrom.id, name: removeFrom.name },
+        {
+          id: target.id,
+          name: target.name,
+          ...(target.owner ? { owner: target.owner } : {}),
+        }
       );
       info.push(removeFrom);
     }
     if (to != null) {
       const addTo = info.find((folder) => folder.id == to);
-      addTo.children.push(id);
+      addTo.children.push(target.id);
       info.splice(
         info.findIndex((item) => item.id == to),
         1
+      );
+      addToFolder(
+        { id: addTo.id, name: addTo.name },
+        {
+          id: target.id,
+          name: target.name,
+          ...(target.owner ? { owner: target.owner } : {}),
+        }
       );
       info.push(addTo);
     }
@@ -217,18 +243,6 @@ function Sidebar() {
     setNewDoc(false);
     setNewDocName("");
     setType("");
-  }
-
-  function deleteDoc(doc) {
-    console.log("deleting document:", doc);
-  }
-
-  function deleteFold(folder) {
-    console.log("deleting folder: ", folder);
-
-    listFolders().then((res) => {
-      console.log(res);
-    });
   }
 
   return (
@@ -315,16 +329,6 @@ function Sidebar() {
                 if (event.key == "Esc") closeCreateDoc();
               }}
             />
-            {/*<i
-              onClick={(event) => {
-                create(event);
-              }}
-              className="ri-checkbox-line icon clickable"
-            />
-            <i
-              onClick={closeCreateDoc}
-              className=" ri-close-line icon clickable"
-            />*/}
           </div>
         )}
 
