@@ -178,7 +178,7 @@
       [%x %getsnaps @ @ @ ~]
     ~&  "get document snapshots"
     =/  owner=@p  (slav %p i.t.t.path)
-    =/  id=@  (slav %ud i.t.t.t.path)
+    =/  id=@  (crip (trip i.t.t.t.path))
     =/  name=@t  (crip (trip i.t.t.t.t.path))
     =/  meta  [owner=owner id=id name=name]
     =/  snap=(list snap:engram)  (need (~(get by su) meta))
