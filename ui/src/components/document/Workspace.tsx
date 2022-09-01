@@ -3,7 +3,12 @@ import { useEffect, useState, useContext } from "react";
 import { EditorState } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
 import { keymap } from "prosemirror-keymap";
-import { getDocument, saveDocument, pathParser } from "../urbit/index";
+import {
+  getDocument,
+  saveDocument,
+  recordSnapshot,
+  pathParser,
+} from "../urbit/index";
 // Build
 import * as Y from "yjs";
 import schema from "./build/schema";
@@ -109,10 +114,16 @@ function Document(props: { path: string }) {
           save(() => {
             const version = Y.encodeStateVector(doc);
             const content = Y.encodeStateAsUpdate(doc);
+            const snapshot = Array.from(Y.encodeSnapshot(Y.snapshot(doc)));
 
             saveDocument(meta, {
               version: Array.from(version),
               content: Array.from(content),
+            });
+            recordSnapshot(meta, {
+              date: Date.now(),
+              ship: `~${(window as any).ship}`,
+              data: snapshot,
             });
           }),
         ],
