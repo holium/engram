@@ -5,7 +5,6 @@ function VersionLabel(props: {
   ships: Array<Patp>;
   version: Version;
   present: Array<number>;
-  viewing: boolean;
   view: () => void;
 }) {
   const commitIndex = props.ships.indexOf(props.version.ship);

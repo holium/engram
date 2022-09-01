@@ -1,11 +1,17 @@
 import { useState, useEffect } from "react";
 import { getSnapshots, pathParser } from "../urbit/index";
 import { Patp } from "@urbit/http-api";
+import * as Y from "yjs";
 import { Version } from "../document/types";
 import ShipLabel from "./ShipLabel";
 import VersionLabel from "./VersionLabel";
 
-function VersionPanel(props: { path: string; show: boolean }) {
+function VersionPanel(props: {
+  show: boolean;
+  path: string;
+  renderSnapshot: (snapshot: Y.Snapshot) => void;
+  closeSnapshot: () => void;
+}) {
   const [versions, setVersions] = useState([]);
 
   const [viewing, setViewing] = useState(null);
@@ -18,6 +24,14 @@ function VersionPanel(props: { path: string; show: boolean }) {
     });
     return latest;
   });
+
+  function renderVersion(snapshot) {
+    props.renderSnapshot(snapshot);
+  }
+
+  function closeVersion() {
+    props.closeSnapshot();
+  }
 
   useEffect(() => {
     console.log("getting snapshots from path:", props.path);
@@ -46,10 +60,13 @@ function VersionPanel(props: { path: string; show: boolean }) {
     <div className="panel" style={props.show ? {} : { display: "none" }}>
       <div>
         <div
-          className="text-pallet-0 text-pallet-1 text-pallet-2 text-pallet-3 text-pallet-4 text-pallet-5 text-pallet-6 text-pallet-7 text-pallet-8 text-pallet-9 text-pallet-10 text-pallet-11 text-pallet-12 text-pallet-13 text-pallet-14 text-pallet-15 text-pallet-16"
+          className="flex justify-between text-pallet-0 text-pallet-1 text-pallet-2 text-pallet-3 text-pallet-4 text-pallet-5 text-pallet-6 text-pallet-7 text-pallet-8 text-pallet-9 text-pallet-10 text-pallet-11 text-pallet-12 text-pallet-13 text-pallet-14 text-pallet-15 text-pallet-16"
           style={{ color: "var(--type-color)" }}
         >
-          History
+          <div>History</div>
+          <div className="px-2 py-1 clickable" onClick={closeVersion}>
+            clear
+          </div>
         </div>
         {ships.map((ship: Patp) => {
           return <ShipLabel ship={ship} ships={ships} key={ship} />;
@@ -81,8 +98,12 @@ function VersionPanel(props: { path: string; show: boolean }) {
                 )}
                 viewing={viewing === i}
                 view={() => {
-                  if (i == viewing) setViewing(null);
-                  else setViewing(i);
+                  if (i == viewing) {
+                    setViewing(null);
+                  } else {
+                    setViewing(i);
+                    renderVersion(version.snapshot);
+                  }
                 }}
               />
             );

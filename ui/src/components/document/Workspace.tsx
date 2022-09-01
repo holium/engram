@@ -1,6 +1,6 @@
 import { useEffect, useState, useContext } from "react";
 
-import { EditorState } from "prosemirror-state";
+import { EditorState, Plugin } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
 import { keymap } from "prosemirror-keymap";
 import {
@@ -21,7 +21,13 @@ import shortcuts from "./plugins/shortcuts";
 import { comments } from "./plugins/comments";
 //import { sync } from "./plugins/crdt/sync";
 //import { localundo } from "./plugins/crdt/undo";
-import { ySyncPlugin, yUndoPlugin, undo, redo } from "y-prosemirror";
+import {
+  ySyncPlugin,
+  yUndoPlugin,
+  undo,
+  redo,
+  yDocToProsemirror,
+} from "y-prosemirror";
 import { handleImage } from "./plugins/handleImage";
 import save from "./plugins/save";
 
@@ -57,12 +63,59 @@ function Document(props: { path: string }) {
   // Notifications
   const [notifStatus, setNotifStatus] = useState(false);
 
-  /* Document --------------------------------------------------------------- */
+  // Snapshots
+  const [snapshot, setSnapshot] = useState(null);
+  function renderSnapshot(snapshot: Y.Snapshot) {
+    if (props.path == null) return;
+    if (view != null) view.destroy();
+    const parsed = props.path.match(pathParser);
+    console.log("parsed path:", parsed);
+    const meta = {
+      owner: parsed.groups.owner,
+      id: parsed.groups.id,
+      name: parsed.groups.name,
+    };
 
+    const doc = new Y.Doc();
+    doc.clientID = 0; //(window as any).ship;
+    doc.gc = false;
+    getDocument(meta).then((res: any) => {
+      const content = new Uint8Array(
+        Object.keys(res.content).map((index: any) => {
+          return res.content[index];
+        })
+      );
+      Y.applyUpdate(doc, content);
+      const version = Y.createDocFromSnapshot(doc, snapshot);
+      const rendering = yDocToProsemirror(schema, version);
+
+      const state = EditorState.create({ schema: schema, doc: rendering });
+      if (view != null) view.destroy();
+      setView(
+        new EditorView(this.$refs["snapshot"] as any, {
+          state,
+          plugins: [
+            new Plugin({
+              props: {
+                editable: () => {
+                  return false;
+                },
+              },
+            }),
+          ],
+        })
+      );
+    });
+  }
+  function closeSnapshot() {
+    setup();
+  }
+
+  /* Document --------------------------------------------------------------- */
   const [view, setView] = useState(null);
 
   // Setup
-  useEffect(() => {
+  function setup() {
     if (props.path == null) return;
     if (view != null) view.destroy();
     const parsed = props.path.match(pathParser);
@@ -138,6 +191,10 @@ function Document(props: { path: string }) {
       Y.applyUpdate(doc, content);
       setView(view);
     });
+  }
+
+  useEffect(() => {
+    setup();
   }, [props.path]);
 
   const { slide, setSlide } = useContext(SlideContext);
@@ -192,7 +249,13 @@ function Document(props: { path: string }) {
         applyUpdate={/* applyUpdate */ () => {}}
         setNotifStatus={/* setNotifStatus */ () => {}}
       />
-      <VersionPanel show={panel == "version"} path={props.path} />
+
+      <VersionPanel 
+         show={panel == "version"} 
+        path={props.path} 
+        renderSnapshot={renderSnapshot}
+        closeSnapshot={closeSnapshot}
+       />
       <ConfigPanel show={panel == "config"} view={view} />
 
       <div id="document-wrapper">
