@@ -123,8 +123,8 @@ export function getSnapshots() {
 export function createDocument(
   meta: DocumentMeta,
   doc: { version: Array<number>; content: Array<number> }
-): Promise<void> {
-  return new Promise<void>((resolve, reject) => {
+): Promise<DocumentMeta> {
+  return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
     const dmeta = {
       owner: meta.owner,
@@ -136,7 +136,7 @@ export function createDocument(
       mark: "post",
       json: { make: { dmeta: dmeta, doc: doc } },
       onSuccess: () => {
-        resolve();
+        resolve(dmeta);
       },
       onError: (e: any) => {
         console.error("Error creating document: ", meta, e);
@@ -185,15 +185,18 @@ export function deleteDocument(meta: DocumentMeta) {
   });
 }
 
-export function createFolder(folder: FolderMeta) {
-  return new Promise<void>((resolve, reject) => {
+export function createFolder(folder: FolderMeta): Promise<FolderMeta> {
+  return new Promise<FolderMeta>((resolve, reject) => {
     checkUrbitWindow(reject);
-    (window as any).urbit.poke({
+    const fmeta = {
+      id: folder.id,
+      name: meta.name.replaceAll(" ", "-"),
+    }(window as any).urbit.poke({
       app: "engram",
       mark: "post",
-      json: { mfolder: { fmeta: folder } },
+      json: { mfolder: { fmeta: fmeta } },
       onSuccess: () => {
-        resolve();
+        resolve(fmeta);
       },
       onError: (e: any) => {
         console.error("Error creating folder: ", folder);
