@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { getSnapshots, pathParser } from "../urbit/index";
 import { Patp } from "@urbit/http-api";
 import * as Y from "yjs";
 import { Version } from "../document/types";
@@ -7,16 +8,11 @@ import VersionLabel from "./VersionLabel";
 
 function VersionPanel(props: {
   show: boolean;
+  path: string;
   renderSnapshot: (snapshot: Y.Snapshot) => void;
   closeSnapshot: () => void;
 }) {
-  const [versions, setVersions] = useState([
-    { timestamp: new Date(0), ship: "~zod", snapshot: null },
-    { timestamp: new Date(1), ship: "~bus", snapshot: null },
-    { timestamp: new Date(2), ship: "~dalsyr-diglyn", snapshot: null },
-    { timestamp: new Date(3), ship: "~zod", snapshot: null },
-    { timestamp: new Date(4), ship: "~nut", snapshot: null },
-  ]);
+  const [versions, setVersions] = useState([]);
 
   const [viewing, setViewing] = useState(null);
 
@@ -36,6 +32,20 @@ function VersionPanel(props: {
   function closeVersion() {
     props.closeSnapshot();
   }
+
+  useEffect(() => {
+    console.log("getting snapshots from path:", props.path);
+    const parsed = props.path.match(pathParser);
+    const meta = {
+      owner: parsed.groups.owner,
+      id: parsed.groups.id,
+      name: parsed.groups.name,
+    };
+    getSnapshots(meta).then((res) => {
+      console.log("getting snapshots result:", res);
+      setVersions(res);
+    });
+  }, [props.path]);
 
   useEffect(() => {
     const addys = new Set();
@@ -77,20 +87,28 @@ function VersionPanel(props: {
             />
           </svg>
         </div>
-        {versions.map((version: Version, i) => {
-          return (
-            <VersionLabel
-              ships={ships}
-              version={version}
-              present={present.map((latest: number) =>
-                i < latest ? 1 : i == latest ? 0 : -1
-              )}
-              view={() => {
-                renderVersion(version.snapshot);
-              }}
-            />
-          );
-        })}
+        <div className="flex flex-col-reverse">
+          {versions.map((version: Version, i) => {
+            return (
+              <VersionLabel
+                ships={ships}
+                version={version}
+                present={present.map((latest: number) =>
+                  i < latest ? 1 : i == latest ? 0 : -1
+                )}
+                viewing={viewing === i}
+                view={() => {
+                  if (i == viewing) {
+                    setViewing(null);
+                  } else {
+                    setViewing(i);
+                    renderVersion(version.snapshot);
+                  }
+                }}
+              />
+            );
+          })}
+        </div>
 
         <div style={{ height: "25px" }}>
           <svg

@@ -1,4 +1,5 @@
 import {} from "@urbit/http-api";
+import * as Y from "yjs";
 import {
   DocumentMeta,
   FolderMeta,
@@ -40,12 +41,29 @@ export function listDocuments(): Promise<Array<DocumentMeta>> {
   });
 }
 
+export function listFolders(): Promise<Array<FolderMeta>> {
+  return new Promise((resolve, reject) => {
+    /*
+    checkUrbitWindow(reject);
+    (window as any).urbit.scry({ app: "engram", path: "/gfolders" }).then(
+      (response: any) => {
+        console.log(response);
+        resolve(response);
+      },
+      (err: any) => {
+        console.log("list folders error: ", err);
+      }
+    );
+    */
+    resolve({});
+  });
+}
+
 export function getDocument(meta: DocumentMeta): Promise<Document> {
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
     console.log("calling get document", meta);
     (window as any).urbit
-      //.scry({ app: "engram", path: `/gdoc/${meta.owner}/${meta.id}/${meta.name}` })
       .scry({
         app: "engram",
         path: `/gdoc/${meta.owner}/${meta.id}/${meta.name}`,
@@ -104,13 +122,38 @@ export function getSnapshots(meta: DocumentMeta) {
   });
 }
 
+export function getSnapshots(meta: DocumentMeta) {
+  return new Promise((resolve, reject) => {
+    checkUrbitWindow(reject);
+    (window as any).urbit
+      .scry({
+        app: "engram",
+        path: `/getsnaps/${meta.owner}/${meta.id}/${meta.name}`,
+      })
+      .then((response: any) => {
+        resolve(
+          Object.values(response).map((snap) => {
+            console.log("parsing:", snap);
+            return {
+              timestamp: new Date(snap.date),
+              ship: `~${snap.ship}`,
+              snapshot: Y.decodeSnapshotV2(
+                Uint8Array.from(Object.values(snap.data))
+              ),
+            };
+          })
+        );
+      });
+  });
+}
+
 /* Pokes -------------------------------------------------------------------- */
 
 export function createDocument(
   meta: DocumentMeta,
   doc: { version: Array<number>; content: Array<number> }
-): Promise<void> {
-  return new Promise<void>((resolve, reject) => {
+): Promise<DocumentMeta> {
+  return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
     const dmeta = {
       owner: meta.owner,
@@ -122,7 +165,18 @@ export function createDocument(
       mark: "post",
       json: { make: { dmeta: dmeta, doc: doc } },
       onSuccess: () => {
-        resolve();
+        (window as any).urbit.poke({
+          app: "engram",
+          mark: "post",
+          json: { createsnap: { dmeta: dmeta } },
+          onSuccess: () => {
+            resolve(dmeta);
+          },
+          onError: (e: any) => {
+            console.error("Error initializing version history: ", meta, e);
+            reject("Error initializing version history");
+          },
+        });
       },
       onError: (e: any) => {
         console.error("Error creating document: ", meta, e);
@@ -171,12 +225,49 @@ export function deleteDocument(meta: DocumentMeta) {
   });
 }
 
+export function createFolder(folder: FolderMeta): Promise<FolderMeta> {
+  return new Promise<FolderMeta>((resolve, reject) => {
+    checkUrbitWindow(reject);
+    const fmeta = {
+      id: folder.id,
+      name: meta.name.replaceAll(" ", "-"),
+    }(window as any).urbit.poke({
+      app: "engram",
+      mark: "post",
+      json: { mfolder: { fmeta: fmeta } },
+      onSuccess: () => {
+        resolve(fmeta);
+      },
+      onError: (e: any) => {
+        console.error("Error creating folder: ", folder);
+      },
+    });
+  });
+}
+
+export function deleteFolder(folder: FolderMeta) {
+  return new Promise<void>((resolve, reject) => {
+    checkUrbitWindow(reject);
+    (window as any).urbit.poke({
+      app: "engram",
+      mark: "post",
+      json: { dfolder: { fmeta: folder } },
+      onSuccess: () => {
+        resolve();
+      },
+      onError: (e: any) => {
+        console.error("Error deleting folder: ", folder);
+      },
+    });
+  });
+}
+
 export function setDocumentSettings(doc: any, settings: any) {
   return new Promise<void>((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
       app: "engram",
-      mark: "engram-do",
+      mark: "post",
       json: { settings: { doc: doc, stg: settings } },
       onSuccess: () => {
         resolve();
@@ -190,42 +281,6 @@ export function setDocumentSettings(doc: any, settings: any) {
           e
         );
         reject("Error setting settings");
-      },
-    });
-  });
-}
-
-export function createFolder(meta: FolderMeta) {
-  return new Promise<void>((resolve, reject) => {
-    checkUrbitWindow(reject);
-    (window as any).urbit.poke({
-      app: "engram",
-      mark: "engram-do",
-      json: { mfolder: { fmeta: meta } },
-      onSuccess: () => {
-        resolve();
-      },
-      onError: (e: any) => {
-        console.error("Error creating folder: ", meta, e);
-        reject("Error creating folder");
-      },
-    });
-  });
-}
-
-export function deleteFolder(meta: FolderMeta) {
-  return new Promise<void>((resolve, reject) => {
-    checkUrbitWindow(reject);
-    (window as any).urbit.poke({
-      app: "engram",
-      mark: "post",
-      json: { dfolder: { fmeta: meta } },
-      onSuccess: () => {
-        resolve();
-      },
-      onError: (e: any) => {
-        console.error("Error deleteing folder: ", meta, e);
-        reject("Error deleteing folder");
       },
     });
   });
@@ -296,25 +351,28 @@ export function acknowledgeUpdate(meta: DocumentMeta, update: number) {
   });
 }
 
-export function recordSnapshot(meta: DocumentMeta, snap: Snap) {
+export function recordSnapshot(
+  meta: DocumentMeta,
+  snap: { date: number; ship: Patp; data: Array<number> }
+) {
   return new Promise<void>((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
       app: "engram",
       mark: "post",
-      json: { snap: { demta: meta, snap: snap } },
+      json: { snap: { dmeta: meta, snap: snap } },
       onSuccess: () => {
         resolve();
       },
       onError: (e: any) => {
         console.error(
-          "Error recording snapshot ",
+          "Error recording snap:",
           snap,
           " for document: ",
           meta,
           e
         );
-        reject("Error acknowleding update");
+        reject("Error recording snap");
       },
     });
   });

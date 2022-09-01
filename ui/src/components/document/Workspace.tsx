@@ -3,7 +3,12 @@ import { useEffect, useState, useContext } from "react";
 import { EditorState, Plugin } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
 import { keymap } from "prosemirror-keymap";
-import { getDocument, saveDocument, pathParser } from "../urbit/index";
+import {
+  getDocument,
+  saveDocument,
+  recordSnapshot,
+  pathParser,
+} from "../urbit/index";
 // Build
 import * as Y from "yjs";
 import schema from "./build/schema";
@@ -33,13 +38,13 @@ import highlightmenu from "./plugins/menus/highlightmenu";
 import HighlightMenu from "./plugins/menus/HighlightMenuNode";
 import slashmenu from "./plugins/menus/slashmenu";
 import NodeMenu from "./plugins/menus/NodeMenuNode";
-import ConfigMenu from "./plugins/config/ConfigMenu";
 
 //Toolbar
 import Toolbar from "../toolbar/Toolbar";
 import PublishPanel from "../panels/PublishPanel";
 import UpdatePanel from "../panels/UpdatePanel";
 import VersionPanel from "../panels/VersionPanel";
+import ConfigPanel from "../panels/ConfigPanel";
 import { NotifStatus } from "./types";
 import { SlideContext } from "../toolbar/SlideContext";
 
@@ -51,7 +56,6 @@ function Document(props: { path: string }) {
   const [highlightMenu, setHighlightMenu] = useState(null);
   const [nodeMenu, setNodeMenu] = useState(null);
   const [nodeMenuSearch, setNodeMenuSearch] = useState("");
-  const [configMenu, setConfigMenu] = useState(null);
 
   // Panel
   const [panel, setPanel] = useState(null);
@@ -151,7 +155,7 @@ function Document(props: { path: string }) {
           buildKeymap(schema),
           baseKeymap,
           shortcuts(schema),
-          config(setConfigMenu),
+          config,
           placeholders,
           sidemenu(setSideMenu),
           highlightmenu(setHighlightMenu),
@@ -163,10 +167,19 @@ function Document(props: { path: string }) {
           save(() => {
             const version = Y.encodeStateVector(doc);
             const content = Y.encodeStateAsUpdate(doc);
+            console.log(Y.snapshot(doc));
+            console.log(Y.encodeSnapshotV2(Y.snapshot(doc)));
+            console.log(Array.from(Y.encodeSnapshotV2(Y.snapshot(doc))));
+            const snapshot = Array.from(Y.encodeSnapshotV2(Y.snapshot(doc)));
 
             saveDocument(meta, {
               version: Array.from(version),
               content: Array.from(content),
+            });
+            recordSnapshot(meta, {
+              date: Date.now(),
+              ship: `~${(window as any).ship}`,
+              data: snapshot,
             });
           }),
         ],
@@ -236,19 +249,30 @@ function Document(props: { path: string }) {
         applyUpdate={/* applyUpdate */ () => {}}
         setNotifStatus={/* setNotifStatus */ () => {}}
       />
-      <VersionPanel
-        show={panel == "version"}
+
+      <VersionPanel 
+         show={panel == "version"} 
+        path={props.path} 
         renderSnapshot={renderSnapshot}
         closeSnapshot={closeSnapshot}
-      />
+       />
+      <ConfigPanel show={panel == "config"} view={view} />
 
       <div id="document-wrapper">
         {/* Document --------------------------------------------------------- */}
-        <main id="document">
+        <main
+          id="document"
+          onMouseLeave={() => {
+            setSideMenu(null);
+          }}
+        >
           {sideMenu ? (
             <SideMenu
               menu={sideMenu}
-              hide={() => setSideMenu(null)}
+              hide={() => {
+                console.log("hiding");
+                setSideMenu(null);
+              }}
               view={view}
             />
           ) : (
@@ -266,17 +290,6 @@ function Document(props: { path: string }) {
               hide={() => {
                 setNodeMenu(null);
                 setNodeMenuSearch("");
-              }}
-              view={view}
-            />
-          ) : (
-            ""
-          )}
-          {configMenu ? (
-            <ConfigMenu
-              menu={configMenu}
-              hide={() => {
-                setConfigMenu(null);
               }}
               view={view}
             />

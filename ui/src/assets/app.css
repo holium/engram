@@ -6,6 +6,8 @@
   @apply flex text-body;
   /* width: 100vw; */
   height: 100vh;
+  font-size: 16px;
+  line-height: 1.26em;
   background-color: var(--off-color);
 }
 
@@ -28,9 +30,10 @@
 
 @media (max-width: 800px) {
   #sidebar {
-    @apply absolute rounded-2 shadow-menu;
+    @apply absolute rounded-3 shadow-menu;
     background-color: var(--paper-color);
-    top: calc(20px + var(--leading-body));
+    top: calc(28px + var(--leading-body));
+    left: 16px;
     max-height: calc(100vh - calc(20px + var(--leading-body)));
   }
 }
