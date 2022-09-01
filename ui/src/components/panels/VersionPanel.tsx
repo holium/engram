@@ -70,22 +70,24 @@ function VersionPanel(props: { path: string; show: boolean }) {
             />
           </svg>
         </div>
-        {versions.map((version: Version, i) => {
-          return (
-            <VersionLabel
-              ships={ships}
-              version={version}
-              present={present.map((latest: number) =>
-                i < latest ? 1 : i == latest ? 0 : -1
-              )}
-              viewing={viewing === i}
-              view={() => {
-                if (i == viewing) setViewing(null);
-                else setViewing(i);
-              }}
-            />
-          );
-        })}
+        <div className="flex flex-col-reverse">
+          {versions.map((version: Version, i) => {
+            return (
+              <VersionLabel
+                ships={ships}
+                version={version}
+                present={present.map((latest: number) =>
+                  i < latest ? 1 : i == latest ? 0 : -1
+                )}
+                viewing={viewing === i}
+                view={() => {
+                  if (i == viewing) setViewing(null);
+                  else setViewing(i);
+                }}
+              />
+            );
+          })}
+        </div>
 
         <div style={{ height: "25px" }}>
           <svg
