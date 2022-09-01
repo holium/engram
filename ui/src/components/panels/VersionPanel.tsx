@@ -100,6 +100,7 @@ function VersionPanel(props: {
                 view={() => {
                   if (i == viewing) {
                     setViewing(null);
+                    closeVersion();
                   } else {
                     setViewing(i);
                     renderVersion(version.snapshot);

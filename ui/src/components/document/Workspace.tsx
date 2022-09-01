@@ -92,7 +92,7 @@ function Document(props: { path: string }) {
       const state = EditorState.create({ schema: schema, doc: rendering });
       if (view != null) view.destroy();
       setView(
-        new EditorView(this.$refs["snapshot"] as any, {
+        new EditorView(document.querySelector("#document"), {
           state,
           plugins: [
             new Plugin({
@@ -250,12 +250,12 @@ function Document(props: { path: string }) {
         setNotifStatus={/* setNotifStatus */ () => {}}
       />
 
-      <VersionPanel 
-         show={panel == "version"} 
-        path={props.path} 
+      <VersionPanel
+        show={panel == "version"}
+        path={props.path}
         renderSnapshot={renderSnapshot}
         closeSnapshot={closeSnapshot}
-       />
+      />
       <ConfigPanel show={panel == "config"} view={view} />
 
       <div id="document-wrapper">

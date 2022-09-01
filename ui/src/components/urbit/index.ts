@@ -113,27 +113,11 @@ export function getSnapshots(meta: DocumentMeta) {
     (window as any).urbit
       .scry({
         app: "engram",
-        path: `/gsnap/${meta.owner}/${meta.id}/${meta.name}`,
-      })
-      .then((response: any) => {
-        console.log(response);
-        resolve(response);
-      });
-  });
-}
-
-export function getSnapshots(meta: DocumentMeta) {
-  return new Promise((resolve, reject) => {
-    checkUrbitWindow(reject);
-    (window as any).urbit
-      .scry({
-        app: "engram",
         path: `/getsnaps/${meta.owner}/${meta.id}/${meta.name}`,
       })
       .then((response: any) => {
         resolve(
           Object.values(response).map((snap) => {
-            console.log("parsing:", snap);
             return {
               timestamp: new Date(snap.date),
               ship: `~${snap.ship}`,
