@@ -31,7 +31,7 @@ function Sidebar() {
   const [list, setList] = useState([]);
   const [newDoc, setNewDoc] = useState(false);
   const [newDocName, setNewDocName] = useState("");
-  const [slide, setSlide] = useState(false);
+  const { slide, setSlide } = useContext(SlideContext);
   const [createChild, setCreateChild] = useState({});
 
   useEffect(() => {
