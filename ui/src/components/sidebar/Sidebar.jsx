@@ -172,15 +172,13 @@ function Sidebar() {
     }
   }
 
-  function createFold(name) {
+  async function createFold(name) {
     console.log("create folder");
     checkUrbitWindow();
 
-    const meta = createFolder({
+    const meta = await createFolder({
       id: `~${window.ship}-${crypto.randomUUID()}`,
       name: name,
-    }).then((res) => {
-      console.log("create folder result", res);
     });
     setInfo([...info, { ...meta, children: [] }]);
     closeCreateDoc();

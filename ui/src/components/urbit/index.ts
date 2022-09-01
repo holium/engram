@@ -43,7 +43,6 @@ export function listDocuments(): Promise<Array<DocumentMeta>> {
 
 export function listFolders(): Promise<Array<FolderMeta>> {
   return new Promise((resolve, reject) => {
-    /*
     checkUrbitWindow(reject);
     (window as any).urbit.scry({ app: "engram", path: "/gfolders" }).then(
       (response: any) => {
@@ -54,7 +53,6 @@ export function listFolders(): Promise<Array<FolderMeta>> {
         console.log("list folders error: ", err);
       }
     );
-    */
     resolve({});
   });
 }
@@ -214,8 +212,9 @@ export function createFolder(folder: FolderMeta): Promise<FolderMeta> {
     checkUrbitWindow(reject);
     const fmeta = {
       id: folder.id,
-      name: meta.name.replaceAll(" ", "-"),
-    }(window as any).urbit.poke({
+      name: folder.name.replaceAll(" ", "-"),
+    };
+    (window as any).urbit.poke({
       app: "engram",
       mark: "post",
       json: { mfolder: { fmeta: fmeta } },
