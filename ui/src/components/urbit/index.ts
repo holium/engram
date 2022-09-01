@@ -1,4 +1,4 @@
-import {} from "@urbit/http-api";
+import * as Y from "yjs";
 import { DocumentMeta, FolderMeta, DocumentUpdate } from "../document/types";
 
 export type Folder = Array<DocumentMeta | FolderMeta>;
@@ -112,7 +112,18 @@ export function getSnapshots(meta: DocumentMeta) {
       })
       .then((response: any) => {
         console.log(response);
-        resolve(response);
+        resolve(
+          Object.values(response).map((snap) => {
+            console.log("parsing:", snap);
+            return {
+              timestamp: snap.date,
+              ship: `~${snap.ship}`,
+              snapshot: Y.decodeSnapshotV2(
+                Uint8Array.from(Object.values(snap.data))
+              ),
+            };
+          })
+        );
       });
   });
 }

@@ -114,7 +114,10 @@ function Document(props: { path: string }) {
           save(() => {
             const version = Y.encodeStateVector(doc);
             const content = Y.encodeStateAsUpdate(doc);
-            const snapshot = Array.from(Y.encodeSnapshot(Y.snapshot(doc)));
+            console.log(Y.snapshot(doc));
+            console.log(Y.encodeSnapshotV2(Y.snapshot(doc)));
+            console.log(Array.from(Y.encodeSnapshotV2(Y.snapshot(doc))));
+            const snapshot = Array.from(Y.encodeSnapshotV2(Y.snapshot(doc)));
 
             saveDocument(meta, {
               version: Array.from(version),
