@@ -37,16 +37,19 @@ export function listDocuments(): Promise<Array<DocumentMeta>> {
 
 export function listFolders(): Promise<Array<FolderMeta>> {
   return new Promise((resolve, reject) => {
+    /*
     checkUrbitWindow(reject);
     (window as any).urbit.scry({ app: "engram", path: "/gfolders" }).then(
       (response: any) => {
         console.log(response);
-	resolve(response);
+        resolve(response);
       },
       (err: any) => {
         console.log("list folders error: ", err);
       }
     );
+    */
+    resolve({});
   });
 }
 
@@ -92,6 +95,21 @@ export function getAvailibleUpdates(
         app: "engram",
         path: `/pull/${meta.owner}/${meta.id}/${meta.name}`,
         body: meta,
+      })
+      .then((response: any) => {
+        console.log(response);
+        resolve(response);
+      });
+  });
+}
+
+export function getSnapshots() {
+  return new Promise((resolve, reject) => {
+    checkUrbitWindow(reject);
+    (window as any).urbit
+      .scry({
+        app: "engram",
+        path: `/getsnaps/${meta.owner}/${meta.id}/${meta.name}`,
       })
       .then((response: any) => {
         console.log(response);
@@ -179,7 +197,7 @@ export function createFolder(folder: FolderMeta) {
       },
       onError: (e: any) => {
         console.error("Error creating folder: ", folder);
-      }
+      },
     });
   });
 }
@@ -196,7 +214,7 @@ export function deleteFolder(folder: FolderMeta) {
       },
       onError: (e: any) => {
         console.error("Error deleting folder: ", folder);
-      }
+      },
     });
   });
 }
@@ -231,7 +249,9 @@ export function addToFolder(meta: FolderMeta, doc: FolderMeta | DocumentMeta) {
     (window as any).urbit.poke({
       app: "engram",
       mark: "post",
-      json: { foldoc: { fmeta: meta, fldr: { [doc.owner ? "doc" : "folder"]: doc } } },
+      json: {
+        foldoc: { fmeta: meta, fldr: { [doc.owner ? "doc" : "folder"]: doc } },
+      },
       onSuccess: () => {
         resolve();
       },
@@ -283,6 +303,33 @@ export function acknowledgeUpdate(meta: DocumentMeta, update: number) {
           e
         );
         reject("Error acknowleding update");
+      },
+    });
+  });
+}
+
+export function recordSnapshot(
+  meta: DocumentMeta,
+  snap: { date: number; ship: Patp; data: Array<number> }
+) {
+  return new Promise<void>((resolve, reject) => {
+    checkUrbitWindow(reject);
+    (window as any).urbit.poke({
+      app: "engram",
+      mark: "post",
+      json: { snap: { dmeta: meta, snap: snap } },
+      onSuccess: () => {
+        resolve();
+      },
+      onError: (e: any) => {
+        console.error(
+          "Error recording snap:",
+          snap,
+          " for document: ",
+          meta,
+          e
+        );
+        reject("Error recording snap");
       },
     });
   });
