@@ -9,6 +9,28 @@ function VersionLabel(props: {
   view: () => void;
 }) {
   const commitIndex = props.ships.indexOf(props.version.ship);
+
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  function formatTimestamp(timestamp: Date) {
+    return `${timestamp.getHours()}:${timestamp.getMinutes()} ${
+      months[timestamp.getMonth()]
+    } ${timestamp.getDate()}, ${timestamp.getFullYear()}`;
+  }
+
   return (
     <div className="flex" style={{ position: "relative", top: "-25px" }}>
       <div
@@ -119,8 +141,8 @@ function VersionLabel(props: {
           </svg>
         );
       })}
-      <div>
-        {props.version.timestamp.getTime()} {props.version.ship}
+      <div className="flex items-center text-right flex-grow">
+        {formatTimestamp(props.version.timestamp)}
       </div>
     </div>
   );

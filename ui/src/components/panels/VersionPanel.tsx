@@ -6,13 +6,7 @@ import ShipLabel from "./ShipLabel";
 import VersionLabel from "./VersionLabel";
 
 function VersionPanel(props: { path: string; show: boolean }) {
-  const [versions, setVersions] = useState([
-    { timestamp: new Date(0), ship: "~zod", snapshot: null },
-    { timestamp: new Date(1), ship: "~bus", snapshot: null },
-    { timestamp: new Date(2), ship: "~dalsyr-diglyn", snapshot: null },
-    { timestamp: new Date(3), ship: "~zod", snapshot: null },
-    { timestamp: new Date(4), ship: "~nut", snapshot: null },
-  ]);
+  const [versions, setVersions] = useState([]);
 
   const [viewing, setViewing] = useState(null);
 
