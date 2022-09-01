@@ -35,6 +35,7 @@ function VersionPanel(props: { path: string; show: boolean }) {
     };
     getSnapshots(meta).then((res) => {
       console.log("getting snapshots result:", res);
+      setVersions(res);
     });
   }, [props.path]);
 

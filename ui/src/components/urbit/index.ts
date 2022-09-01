@@ -111,12 +111,11 @@ export function getSnapshots(meta: DocumentMeta) {
         path: `/getsnaps/${meta.owner}/${meta.id}/${meta.name}`,
       })
       .then((response: any) => {
-        console.log(response);
         resolve(
           Object.values(response).map((snap) => {
             console.log("parsing:", snap);
             return {
-              timestamp: snap.date,
+              timestamp: new Date(snap.date),
               ship: `~${snap.ship}`,
               snapshot: Y.decodeSnapshotV2(
                 Uint8Array.from(Object.values(snap.data))
