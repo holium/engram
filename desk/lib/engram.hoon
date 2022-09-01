@@ -34,7 +34,7 @@
       data-results
     %=  $
       data-counter  (add data-counter 1)
-      data-results  (snoc data-results [(crip "{<counter>}") (numb (snag data-counter data))])
+      data-results  (snoc data-results [(crip "{<data-counter>}") (numb (snag data-counter data))])
     ==
   %=  $
     counter  (add counter 1)
