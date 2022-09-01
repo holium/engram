@@ -208,9 +208,8 @@ function Sidebar() {
         version: Array.from(version),
         content: Array.from(encoding),
       }
-    ).then((res) => {
-      console.log("create document result", res);
-    });
+    );
+    console.log("create document result", meta);
     setInfo([...info, meta]);
     closeCreateDoc();
     return meta;

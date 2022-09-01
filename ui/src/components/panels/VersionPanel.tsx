@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
+import { getSnapshots, pathParser } from "../urbit/index";
 import { Patp } from "@urbit/http-api";
 import { Version } from "../document/types";
 import ShipLabel from "./ShipLabel";
 import VersionLabel from "./VersionLabel";
 
-function VersionPanel(props: { show: boolean }) {
+function VersionPanel(props: { path: string; show: boolean }) {
   const [versions, setVersions] = useState([
     { timestamp: new Date(0), ship: "~zod", snapshot: null },
     { timestamp: new Date(1), ship: "~bus", snapshot: null },
@@ -23,6 +24,19 @@ function VersionPanel(props: { show: boolean }) {
     });
     return latest;
   });
+
+  useEffect(() => {
+    console.log("getting snapshots from path:", props.path);
+    const parsed = props.path.match(pathParser);
+    const meta = {
+      owner: parsed.groups.owner,
+      id: parsed.groups.id,
+      name: parsed.groups.name,
+    };
+    getSnapshots(meta).then((res) => {
+      console.log("getting snapshots result:", res);
+    });
+  }, [props.path]);
 
   useEffect(() => {
     const addys = new Set();

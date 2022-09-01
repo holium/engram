@@ -178,7 +178,7 @@ function Document(props: { path: string }) {
         applyUpdate={/* applyUpdate */ () => {}}
         setNotifStatus={/* setNotifStatus */ () => {}}
       />
-      <VersionPanel show={panel == "version"} />
+      <VersionPanel show={panel == "version"} path={props.path} />
       <ConfigPanel show={panel == "config"} view={view} />
 
       <div id="document-wrapper">

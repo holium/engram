@@ -58,7 +58,6 @@ export function getDocument(meta: DocumentMeta): Promise<Document> {
     checkUrbitWindow(reject);
     console.log("calling get document", meta);
     (window as any).urbit
-      //.scry({ app: "engram", path: `/gdoc/${meta.owner}/${meta.id}/${meta.name}` })
       .scry({
         app: "engram",
         path: `/gdoc/${meta.owner}/${meta.id}/${meta.name}`,
@@ -103,7 +102,7 @@ export function getAvailibleUpdates(
   });
 }
 
-export function getSnapshots() {
+export function getSnapshots(meta: DocumentMeta) {
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit
@@ -136,7 +135,18 @@ export function createDocument(
       mark: "post",
       json: { make: { dmeta: dmeta, doc: doc } },
       onSuccess: () => {
-        resolve(dmeta);
+        (window as any).urbit.poke({
+          app: "engram",
+          mark: "post",
+          json: { createsnap: { dmeta: dmeta } },
+          onSuccess: () => {
+            resolve(dmeta);
+          },
+          onError: (e: any) => {
+            console.error("Error initializing version history: ", meta, e);
+            reject("Error initializing version history");
+          },
+        });
       },
       onError: (e: any) => {
         console.error("Error creating document: ", meta, e);
