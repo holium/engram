@@ -276,9 +276,11 @@ function TreeComponent({
               if (e.key === "Enter") {
                 handleAdd(info.id, e.target.value, createChild);
                 setCreateChild(null);
+                setNewDoc("");
                 e.stopPropagation();
               } else if (e.key == "Esc") {
                 setCreateChild(null);
+                setNewDoc("");
               }
             }}
           />

@@ -9,6 +9,8 @@ function FolderMenu(props) {
       style={{
         left: `${props.position.left}px`,
         top: `${props.position.top}px`,
+        zIndex: "10",
+        width: "120px",
       }}
       onMouseLeave={(e) => props.ToggleFolderMenu(e)}
     >
@@ -31,15 +33,6 @@ function FolderMenu(props) {
         }}
       >
         Add Folder
-      </li>
-      <li
-        className="clickable"
-        onClick={(e) => {
-          props.renameFolder(true);
-          props.ToggleFolderMenu(e);
-        }}
-      >
-        Rename
       </li>
       <li
         className="clickable"

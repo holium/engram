@@ -117,13 +117,13 @@ function Sidebar() {
     sendData();
   }
 
-  function handleAdd(id, name, type) {
+  async function handleAdd(id, name, type) {
     console.log("adding: ", name);
     let res;
     if (type === "folder") {
-      res = createFold(name);
+      res = await createFold(name);
     } else {
-      res = createDoc(name);
+      res = await createDoc(name);
     }
     moveToFrom(res, id, null);
 
@@ -135,6 +135,7 @@ function Sidebar() {
     let target;
     if (typeof target == "string") target = info.find((tar) => tar.id == id);
     else target = id;
+    console.log(target, id);
     if (from != null) {
       const removeFrom = info.find((folder) => folder.id == from);
       removeFrom.children.splice(removeFrom.children.indexOf(target.id), 1);
