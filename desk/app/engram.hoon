@@ -5,7 +5,7 @@
 +$  versioned-state
   $%  state-0
   ==
-+$  state-0  [%0 d=docs:engram f=fldrs:engram u=updts:engram s=dstgs:engram]
++$  state-0  [%0 d=docs:engram f=fldrs:engram u=updts:engram s=dstgs:engram su=dsnaps:engram]
 +$  card  card:agent:gall
 --
 %-  agent:dbug
@@ -45,6 +45,10 @@
       %make
     ?<  (~(has by d) dmeta.action)
     `this(d (~(put by d) dmeta.action doc.action))
+    ::
+     %createsnap
+    ?<  (~(has by su) dmeta.action)
+    `this(su (~(put by su) dmeta.action ~))
     ::
     :: modify a document by changing the stored document state
     ::
@@ -95,6 +99,10 @@
      %merge
     ~|  "merge"
     !!
+    ::
+     %snap
+    ?>  (~(has by su) dmeta.action)
+    `this(su (~(add ja su) dmeta.action snap.action))
     ==
   ==
 ::
@@ -142,6 +150,16 @@
     ``noun+!>((enjs-gfolders:engram f))
       :: (jug [id=@ name=@t] $%([%doc [owner=@p id=@ name=@t]] [%folder [id=@ name=@t]]))
     :: =/  t=(jug [id=@ name=@t] $%([%doc [owner=@p id=@ name=@t]] [%folder [id=@ name=@t]]))  f
+  ::
+      [%x %getsnaps @ @ @ ~]
+    ~&  "get document snapshots"
+    =/  owner=@p  (slav %p i.t.t.path)
+    =/  id=@  (crip (trip i.t.t.t.path))
+    =/  name=@t  (crip (trip i.t.t.t.t.path))
+    =/  meta  [owner=owner id=id name=name]
+    =/  snap=(list snap:engram)  (need (~(get by su) meta))
+    ~&  snap
+    ``noun+!>((enjs-getsnaps:engram snap))
   ==
 ::
 ++  on-agent

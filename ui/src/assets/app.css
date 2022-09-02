@@ -18,3 +18,19 @@
 #toolbar {
   @apply flex items-center px-4 py-3;
 }
+
+#sidebar {
+  @apply flex flex-col overflow-hidden;
+  z-index: 1;
+  width: 18vw;
+  min-width: 280px;
+}
+
+@media (max-width: 800px) {
+  #sidebar {
+    @apply absolute rounded-2 shadow-menu;
+    background-color: var(--paper-color);
+    top: calc(20px + var(--leading-body));
+    max-height: calc(100vh - calc(20px + var(--leading-body)));
+  }
+}
