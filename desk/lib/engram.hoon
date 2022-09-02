@@ -133,11 +133,11 @@
           [%doc]
         (pairs ~[['owner' (ship owner:dmeta:item)] ['id' (tape (trip `cord`id:dmeta:item))] ['name' (tape (trip name:dmeta:item))]])
           [%folder]
-        (tape "folder")
+        (pairs ~[['id' (tape (trip `cord`id:fmeta:item))] ['name' (tape (trip name:fmeta:item))]])
       ==
     %=  $
       content-counter  (add content-counter 1)
-      content-results  (snoc content-results [(crip "<content-counter>}") res])
+      content-results  (snoc content-results [(crip "{<content-counter>}") res])
     ==
   ~&  key
   %=  $
