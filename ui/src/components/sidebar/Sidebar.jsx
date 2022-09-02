@@ -110,12 +110,11 @@ function Sidebar() {
       deleteDocument(info[toDelete]);
     } else {
       deleteFolder(info[toDelete]);
-
-      const newInfo = info;
-      newInfo.splice(toDelete, 1);
-      setInfo([...newInfo]);
-      sendData();
     }
+    const newInfo = info;
+    newInfo.splice(toDelete, 1);
+    setInfo([...newInfo]);
+    sendData();
   }
 
   function handleAdd(id, name, type) {

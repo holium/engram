@@ -85,7 +85,7 @@ function TreeComponent({
   return (
     <div>
       <div
-        className="tree-item"
+        className="tree-item clickable"
         onClick={(e) => {
           e.stopPropagation();
           setExpand(!expand);
