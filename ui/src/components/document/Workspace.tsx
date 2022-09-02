@@ -187,13 +187,16 @@ function Document(props: { path: string }) {
       const view = new EditorView(document.querySelector("#document"), {
         state: state,
       });
-      console.log(view);
+      console.log("built view");
       Y.applyUpdate(doc, content);
+      console.log("applied update");
       setView(view);
+      console.log("set view");
     });
   }
 
   useEffect(() => {
+    console.log("setting up");
     setup();
   }, [props.path]);
 
@@ -236,20 +239,18 @@ function Document(props: { path: string }) {
         panel={panel}
         notifs={notifStatus}
       />
+
       <PublishPanel show={panel == "publish"} />
       <UpdatePanel
         path={props.path}
         show={panel == "update"}
-        save={/*saveDoc*/ () => {}}
-        getStage={
-          /* getStage */ () => {
-            return 0;
-          }
-        }
-        applyUpdate={/* applyUpdate */ () => {}}
-        setNotifStatus={/* setNotifStatus */ () => {}}
+        save={() => {}}
+        getStage={() => {
+          return 0;
+        }}
+        applyUpdate={() => {}}
+        setNotifStatus={() => {}}
       />
-
       <VersionPanel
         show={panel == "version"}
         path={props.path}
@@ -257,9 +258,7 @@ function Document(props: { path: string }) {
         closeSnapshot={closeSnapshot}
       />
       <ConfigPanel show={panel == "config"} view={view} />
-
       <div id="document-wrapper">
-        {/* Document --------------------------------------------------------- */}
         <main
           id="document"
           onMouseLeave={() => {
