@@ -128,10 +128,10 @@
       content-results
     =/  item  (snag content-counter items)
     ~&  item
-    =/  res  
+    =/  res
       ?-  -.item
           [%doc]
-        (pairs ~[['owner' (ship owner:dmeta:item)] ['id' (tape (trip `cord`id:dmeta:item))] ['name' (tape (trip name:dmeta:item))]]) 
+        (pairs ~[['owner' (ship owner:dmeta:item)] ['id' (tape (trip `cord`id:dmeta:item))] ['name' (tape (trip name:dmeta:item))]])
           [%folder]
         (tape "folder")
       ==
@@ -144,4 +144,5 @@
     counter  (add counter 1)
     results  (snoc results [(crip "{<counter>}") (pairs ~[['meta' (pairs ~[['id' (tape (trip `@t`id:key))] ['name' (tape (trip name:key))]])] ['content' content]])])
   ==
+  (pairs assembled)
 --
