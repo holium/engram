@@ -193,9 +193,8 @@ function TreeComponent({
             }}
           />
         ) : (
-          <div className="py-1 flex-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-            {" "}
-            {info.name}{" "}
+          <div className="py-1 flex-1 overflow-hidden overflow-ellipsis whitespace-nowrap cursor-pointer hover:underline">
+            {info.name}
           </div>
         )}
         {!renameState && (

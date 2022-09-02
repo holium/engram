@@ -81,7 +81,7 @@ function VersionLabel(props: {
         </svg>
       </div>
       {props.ships.map((ship, i) => {
-        if (props.present[i] < 0) {
+        if (props.present[i] > 0) {
           return (
             <svg
               width="25"
