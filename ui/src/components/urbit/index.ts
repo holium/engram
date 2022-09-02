@@ -1,5 +1,5 @@
 import {} from "@urbit/http-api";
-import { DocumentMeta, FolderMeta, DocumentUpdate } from "../workspace/types";
+import { DocumentMeta, FolderMeta, DocumentUpdate } from "../document/types";
 
 export type Folder = Array<DocumentMeta | FolderMeta>;
 
@@ -199,7 +199,7 @@ export function deleteFolder(meta: FolderMeta) {
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
       app: "engram",
-      mark: "engram-do",
+      mark: "post",
       json: { dfolder: { fmeta: meta } },
       onSuccess: () => {
         resolve();
@@ -217,8 +217,8 @@ export function addToFolder(meta: FolderMeta, doc: FolderMeta | DocumentMeta) {
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
       app: "engram",
-      mark: "engram-do",
-      json: { foldoc: { fmeta: meta, fldr: doc } },
+      mark: "post",
+      json: { foldoc: { fmeta: meta, fldr: { [doc.owner ? "doc" : "folder"]: doc } } },
       onSuccess: () => {
         resolve();
       },
@@ -238,7 +238,7 @@ export function removeFromFolder(
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
       app: "engram",
-      mark: "engram-do",
+      mark: "post",
       json: { remfoldoc: { fmeta: meta, fldr: doc } },
       onSuccess: () => {
         resolve();
@@ -256,7 +256,7 @@ export function acknowledgeUpdate(meta: DocumentMeta, update: number) {
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
       app: "engram",
-      mark: "engram-do",
+      mark: "post",
       json: { merge: { demta: meta, update: update } },
       onSuccess: () => {
         resolve();

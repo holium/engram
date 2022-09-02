@@ -159,6 +159,16 @@ aside {
   width: 280px;
 }
 
+@media (max-width: 800px) {
+  aside {
+    position: absolute;
+    float: none;
+    left: 4ch;
+    top: auto;
+    margin-top: var(--leading-body);
+  }
+}
+
 aside li {
   @apply px-3 py-2 gap-2 flex;
   list-style-type: none;
@@ -275,7 +285,8 @@ main ::selection {
 }
 
 main {
-  width: calc(var(--document-width) + 8ch);
+  flex-grow: 1;
+  max-width: calc(var(--document-width) + 8ch);
   position: relative;
   margin: 0 auto;
 }

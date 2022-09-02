@@ -1,10 +1,11 @@
 /-  engram
+/+  engram
 /+  default-agent, dbug
 |%
 +$  versioned-state
   $%  state-0
   ==
-+$  state-0  [%0 d=docs:engram f=fldrs:engram u=updts:engram s=dstgs:engram]
++$  state-0  [%0 d=docs:engram f=fldrs:engram u=updts:engram s=dstgs:engram su=dsnaps:engram]
 +$  card  card:agent:gall
 --
 %-  agent:dbug
@@ -44,6 +45,10 @@
       %make
     ?<  (~(has by d) dmeta.action)
     `this(d (~(put by d) dmeta.action doc.action))
+    ::
+     %createsnap
+    ?<  (~(has by su) dmeta.action)
+    `this(su (~(put by su) dmeta.action ~))
     ::
     :: modify a document by changing the stored document state
     ::
@@ -94,10 +99,26 @@
      %merge
     ~|  "merge"
     !!
+    ::
+     %snap
+    ?>  (~(has by su) dmeta.action)
+    `this(su (~(add ja su) dmeta.action snap.action))
     ==
   ==
 ::
 ++  on-watch  on-watch:def
+  ::|=  =path
+  ::^-  (quip card _this)
+  ::?+    path  (on-watch:def path)
+  ::    [%updates ~]
+  ::   :: ~&  "log"
+  ::  :: !!
+  ::  =/  a  (~(get by s) dmeta.update)
+  ::  ?>  (~(has in perms.a) src.bowl)
+  ::  :_  this
+  ::     :~  [%give %fact ~ %engram-update !>(`update:todo`initial+tasks)]
+  ::  ==
+  ::==
 ++  on-leave  on-leave:def
 ++  on-peek
   |=  =path
@@ -105,70 +126,65 @@
   ^-  (unit (unit cage))
   ?+    path  (on-peek:def path)
       [%x %docinfo ~]
-    =/  out  ~(tap in ~(key by d))
-    =/  results  *(list [@t json])
-    =/  counter  0
-    =/  assembled
-    |-
-    ?:  =(counter (lent out))
-      results
-    =/  curr  (snag counter out)
-    =/  meta  (pairs:enjs:format ~[['owner' (ship:enjs:format owner:curr)] ['name' (tape:enjs:format (trip name:curr))]])
-    %=  $
-      counter  (add counter 1)
-      results  (snoc results [id:curr meta])
-    ==
-    ``noun+!>((pairs:enjs:format assembled))
+    =/  docs  ~(tap in ~(key by d))
+    ``noun+!>((enjs-docinfo:engram docs))
   ::
       [%x %gdoc @ @ @ ~]
-    ~&  "get document"
     =/  owner=@p  (slav %p i.t.t.path)
     =/  id=@  (crip (trip i.t.t.t.path))
     =/  name=@t  (crip (trip i.t.t.t.t.path))
     =/  meta  [owner=owner id=id name=name]
     =/  doc=[version=(list @ud) cont=(list @ud)]  (need (~(get by d) meta))
-    ~&  doc
-    =/  version-result  *(list [@t json])
-    =/  version-counter  0
-    =/  assembled-version
-    |-
-    ?:  =(version-counter (lent version:doc))
-      version-result
-    %=  $
-      version-counter  (add version-counter 1)
-      version-result  (snoc version-result [(crip "{<version-counter>}") (numb:enjs:format (snag version-counter version:doc))])
-    ==
-    =/  content-result  *(list [@t json])
-    =/  content-counter  0
-    =/  assembled-content
-    |-
-    ?:  =(content-counter (lent cont:doc))
-      content-result
-    ~&  (snag content-counter cont:doc)
-    %=  $
-      content-counter  (add content-counter 1)
-      content-result  (snoc content-result [(crip "{<content-counter>}") (numb:enjs:format (snag content-counter cont:doc))])
-    ==
-    ~&  assembled-content
-    ``noun+!>((pairs:enjs:format ~[['version' (pairs:enjs:format assembled-version)] ['content' (pairs:enjs:format assembled-content)]]))
+    ``noun+!>((enjs-gdoc:engram doc))
   ::
       [%x %gsetting @ @ @ ~]
-    ~&  "get document settings"
     =/  owner=@p  (slav %p i.t.t.path)
     =/  id=@  (slav %ud i.t.t.t.path)
     =/  name=@t  (crip (trip i.t.t.t.t.path))
     =/  meta  [owner=owner id=id name=name]
-    ~&  meta
     =/  stg=[perms=(list @p)]  (need (~(get by s) meta))
     ~&  stg
-    ``noun+!>(stg)
+    ``noun+!>((enjs-gsetting:engram stg))
   ::
-      [%x %gfolders @ @ @ ~]  ``noun+!>(f)
-      :: (jug [id=@ name=@t] $%([%doc [owner=@p id=@ name=@t]] [%folder [id=@ name=@t]]))
-    :: =/  t=(jug [id=@ name=@t] $%([%doc [owner=@p id=@ name=@t]] [%folder [id=@ name=@t]]))  f
+      [%x %gfolders ~]
+    ``noun+!>((enjs-gfolders:engram f))
+  ::
+      [%x %getsnaps @ @ @ ~]
+    ~&  "get document snapshots"
+    =/  owner=@p  (slav %p i.t.t.path)
+    =/  id=@  (crip (trip i.t.t.t.path))
+    =/  name=@t  (crip (trip i.t.t.t.t.path))
+    =/  meta  [owner=owner id=id name=name]
+    =/  snap=(list snap:engram)  (need (~(get by su) meta))
+    ~&  snap
+    ``noun+!>((enjs-getsnaps:engram snap))
   ==
 ::
-++  on-agent  on-agent:def
+++  on-agent
+  |=  [=wire =sign:agent:gall]
+    ^-  (quip card _this)
+    ?+    wire  (on-agent:def wire sign)
+        [%subs ~]
+      ?+    -.sign  (on-agent:def wire sign)
+          %watch-ack
+        ?~  p.sign
+          ((slog '%engram: Subscribe succeeded!' ~) `this)
+        ((slog '%engram: Subscribe failed!' ~) `this)
+      ::
+          %kick
+        %-  (slog '%engram: Got kick, resubscribing...' ~)
+        :_  this
+        :~  [%pass /subs %agent [src.bowl %engram] %watch /updates]
+        ==
+      ::
+          %fact
+        ?+    p.cage.sign  (on-agent:def wire sign)
+            %engram-update
+          ~&  !<(update:engram q.cage.sign)
+          `this
+        ==
+      ==
+    ==
 ++  on-arvo   on-arvo:def
 ++  on-fail   on-fail:def
 --
