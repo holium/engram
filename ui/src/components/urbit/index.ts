@@ -53,7 +53,6 @@ export function listFolders(): Promise<Array<FolderMeta>> {
         console.log("list folders error: ", err);
       }
     );
-    resolve({});
   });
 }
 
