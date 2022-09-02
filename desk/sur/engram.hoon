@@ -67,8 +67,8 @@
       [%remfoldoc =fmeta =fldr]
       [%merge =dmeta =@ud]
       [%snap =dmeta =snap]
-      [%sub =@p] 
-      [%unsub =@p]
+      ::[%sub =@p]
+      ::[%unsub =@p]
   ==
 +$  update
   $%  [%sub =dmeta]

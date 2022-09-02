@@ -106,19 +106,19 @@
     ==
   ==
 ::
-++  on-watch
-  |=  =path
-  ^-  (quip card _this)
-  ?+    path  (on-watch:def path)
-      [%updates ~]
-     :: ~&  "log"
-    :: !!
-    =/  a  (~(get by s) dmeta.update)
-    ?>  (~(has in perms.a) src.bowl)
-    :_  this
-       :~  [%give %fact ~ %engram-update !>(`update:todo`initial+tasks)]
-    ==
-  ==
+++  on-watch  on-watch:def
+  ::|=  =path
+  ::^-  (quip card _this)
+  ::?+    path  (on-watch:def path)
+  ::    [%updates ~]
+  ::   :: ~&  "log"
+  ::  :: !!
+  ::  =/  a  (~(get by s) dmeta.update)
+  ::  ?>  (~(has in perms.a) src.bowl)
+  ::  :_  this
+  ::     :~  [%give %fact ~ %engram-update !>(`update:todo`initial+tasks)]
+  ::  ==
+  ::==
 ++  on-leave  on-leave:def
 ++  on-peek
   |=  =path
@@ -146,10 +146,8 @@
     ~&  stg
     ``noun+!>((enjs-gsetting:engram stg))
   ::
-      [%x %gfolders @ @ @ ~]
+      [%x %gfolders ~]
     ``noun+!>((enjs-gfolders:engram f))
-      :: (jug [id=@ name=@t] $%([%doc [owner=@p id=@ name=@t]] [%folder [id=@ name=@t]]))
-    :: =/  t=(jug [id=@ name=@t] $%([%doc [owner=@p id=@ name=@t]] [%folder [id=@ name=@t]]))  f
   ::
       [%x %getsnaps @ @ @ ~]
     ~&  "get document snapshots"
