@@ -3,7 +3,6 @@ import Workspace from "./components/document/Workspace";
 import Sidebar from "./components/sidebar/Sidebar";
 import SlideProvider from "./components/toolbar/SlideContext";
 import UrbitProvider from "./components/urbit/UrbitProvider";
-import Debuger from "./components/Debuger";
 
 function App() {
   const [doc, openDoc] = useState(null);
@@ -18,14 +17,10 @@ function App() {
   return (
     <UrbitProvider>
       <div id="app">
-        {/*
         <SlideProvider>
           <Sidebar />
           <Workspace path={doc} />
         </SlideProvider>
-      */}
-
-        <Debuger />
       </div>
     </UrbitProvider>
   );
