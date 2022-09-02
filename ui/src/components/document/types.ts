@@ -71,6 +71,7 @@ export interface DocumentMeta {
   owner: Patp;
   id: string;
   name: string;
+  isFolder: string;
 }
 
 export interface DocumentUpdate {
@@ -82,6 +83,13 @@ export interface DocumentUpdate {
 export interface FolderMeta {
   id: any;
   name: string;
+  isFolder: string;
+}
+
+export interface Snap {
+  time: number;
+  ship: Patp;
+  data: Array<number>;
 }
 
 export interface Folder {

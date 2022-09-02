@@ -1,41 +1,50 @@
-import {useEffect, useState} from 'react'
-import { light } from '@fortawesome/fontawesome-svg-core/import.macro'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { useEffect, useState } from "react";
 
-function FolderMenu(props){
+function FolderMenu(props) {
+  const [rename, setRename] = useState("");
 
-
-    const [rename, setRename] = useState("")
-
-    
-
-
-    return(
-
-        <menu
-        className="tree-menu context-menu select"
-        style={{
-          left: `${props.position.left}px`,
-          top: `${props.position.top}px`,
+  return (
+    <menu
+      className="tree-menu context-menu select"
+      style={{
+        left: `${props.position.left}px`,
+        top: `${props.position.top}px`,
+        zIndex: "10",
+        width: "120px",
+      }}
+      onMouseLeave={(e) => props.ToggleFolderMenu(e)}
+    >
+      <li
+        className="clickable"
+        onClick={(e) => {
+          e.stopPropagation();
+          props.setCreateChild("file");
+          props.ToggleFolderMenu(e);
         }}
-        onMouseLeave={(e)=>props.ToggleFolderMenu(e)}
       >
-                <FontAwesomeIcon className = "clickable" icon = {light('folder-plus')} onClick = {(e)=>(
-                    props.addFolder(e)
-                )}/>
-                <FontAwesomeIcon className = "clickable" icon = {light('file-circle-plus') } onClick = {(e)=>(props.addFile(e))}/>
-                <FontAwesomeIcon className = "clickable" icon = {light('input-text')} onClick={(e)=>{
-                    props.renameFolder(true)
-                    props.ToggleFolderMenu(e)
-                    }}/>
-                <FontAwesomeIcon className = "clickable" icon = {light('trash-can')} onClick = {(e)=>(
-                    props.deleteFolder(e)
-                )}/>
-        </menu>
-
-    )
-
-
-
+        Add File
+      </li>
+      <li
+        className="clickable"
+        onClick={(e) => {
+          e.stopPropagation();
+          props.setCreateChild("folder");
+          props.ToggleFolderMenu(e);
+        }}
+      >
+        Add Folder
+      </li>
+      <li
+        className="clickable"
+        clickable
+        onClick={() => {
+          console.log(props);
+          props.onDelete(props.id);
+        }}
+      >
+        Delete
+      </li>
+    </menu>
+  );
 }
 export default FolderMenu;

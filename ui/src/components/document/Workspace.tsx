@@ -1,9 +1,14 @@
 import { useEffect, useState, useContext } from "react";
 
-import { EditorState } from "prosemirror-state";
+import { EditorState, Plugin } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
 import { keymap } from "prosemirror-keymap";
-import { getDocument, saveDocument, pathParser } from "../urbit/index";
+import {
+  getDocument,
+  saveDocument,
+  recordSnapshot,
+  pathParser,
+} from "../urbit/index";
 // Build
 import * as Y from "yjs";
 import schema from "./build/schema";
@@ -16,7 +21,13 @@ import shortcuts from "./plugins/shortcuts";
 import { comments } from "./plugins/comments";
 //import { sync } from "./plugins/crdt/sync";
 //import { localundo } from "./plugins/crdt/undo";
-import { ySyncPlugin, yUndoPlugin, undo, redo } from "y-prosemirror";
+import {
+  ySyncPlugin,
+  yUndoPlugin,
+  undo,
+  redo,
+  yDocToProsemirror,
+} from "y-prosemirror";
 import { handleImage } from "./plugins/handleImage";
 import save from "./plugins/save";
 
@@ -27,13 +38,13 @@ import highlightmenu from "./plugins/menus/highlightmenu";
 import HighlightMenu from "./plugins/menus/HighlightMenuNode";
 import slashmenu from "./plugins/menus/slashmenu";
 import NodeMenu from "./plugins/menus/NodeMenuNode";
-import ConfigMenu from "./plugins/config/ConfigMenu";
 
 //Toolbar
 import Toolbar from "../toolbar/Toolbar";
 import PublishPanel from "../panels/PublishPanel";
 import UpdatePanel from "../panels/UpdatePanel";
 import VersionPanel from "../panels/VersionPanel";
+import ConfigPanel from "../panels/ConfigPanel";
 import { NotifStatus } from "./types";
 import { SlideContext } from "../toolbar/SlideContext";
 
@@ -45,7 +56,6 @@ function Document(props: { path: string }) {
   const [highlightMenu, setHighlightMenu] = useState(null);
   const [nodeMenu, setNodeMenu] = useState(null);
   const [nodeMenuSearch, setNodeMenuSearch] = useState("");
-  const [configMenu, setConfigMenu] = useState(null);
 
   // Panel
   const [panel, setPanel] = useState(null);
@@ -53,12 +63,59 @@ function Document(props: { path: string }) {
   // Notifications
   const [notifStatus, setNotifStatus] = useState(false);
 
-  /* Document --------------------------------------------------------------- */
+  // Snapshots
+  const [snapshot, setSnapshot] = useState(null);
+  function renderSnapshot(snapshot: Y.Snapshot) {
+    if (props.path == null) return;
+    if (view != null) view.destroy();
+    const parsed = props.path.match(pathParser);
+    console.log("parsed path:", parsed);
+    const meta = {
+      owner: parsed.groups.owner,
+      id: parsed.groups.id,
+      name: parsed.groups.name,
+    };
 
+    const doc = new Y.Doc();
+    doc.clientID = 0; //(window as any).ship;
+    doc.gc = false;
+    getDocument(meta).then((res: any) => {
+      const content = new Uint8Array(
+        Object.keys(res.content).map((index: any) => {
+          return res.content[index];
+        })
+      );
+      Y.applyUpdate(doc, content);
+      const version = Y.createDocFromSnapshot(doc, snapshot);
+      const rendering = yDocToProsemirror(schema, version);
+
+      const state = EditorState.create({ schema: schema, doc: rendering });
+      if (view != null) view.destroy();
+      setView(
+        new EditorView(document.querySelector("#document"), {
+          state,
+          plugins: [
+            new Plugin({
+              props: {
+                editable: () => {
+                  return false;
+                },
+              },
+            }),
+          ],
+        })
+      );
+    });
+  }
+  function closeSnapshot() {
+    setup();
+  }
+
+  /* Document --------------------------------------------------------------- */
   const [view, setView] = useState(null);
 
   // Setup
-  useEffect(() => {
+  function setup() {
     if (props.path == null) return;
     if (view != null) view.destroy();
     const parsed = props.path.match(pathParser);
@@ -98,7 +155,7 @@ function Document(props: { path: string }) {
           buildKeymap(schema),
           baseKeymap,
           shortcuts(schema),
-          config(setConfigMenu),
+          config,
           placeholders,
           sidemenu(setSideMenu),
           highlightmenu(setHighlightMenu),
@@ -110,10 +167,19 @@ function Document(props: { path: string }) {
           save(() => {
             const version = Y.encodeStateVector(doc);
             const content = Y.encodeStateAsUpdate(doc);
+            console.log(Y.snapshot(doc));
+            console.log(Y.encodeSnapshotV2(Y.snapshot(doc)));
+            console.log(Array.from(Y.encodeSnapshotV2(Y.snapshot(doc))));
+            const snapshot = Array.from(Y.encodeSnapshotV2(Y.snapshot(doc)));
 
             saveDocument(meta, {
               version: Array.from(version),
               content: Array.from(content),
+            });
+            recordSnapshot(meta, {
+              date: Date.now(),
+              ship: `~${(window as any).ship}`,
+              data: snapshot,
             });
           }),
         ],
@@ -125,6 +191,10 @@ function Document(props: { path: string }) {
       Y.applyUpdate(doc, content);
       setView(view);
     });
+  }
+
+  useEffect(() => {
+    setup();
   }, [props.path]);
 
   const { slide, setSlide } = useContext(SlideContext);
@@ -179,15 +249,30 @@ function Document(props: { path: string }) {
         applyUpdate={/* applyUpdate */ () => {}}
         setNotifStatus={/* setNotifStatus */ () => {}}
       />
-      <VersionPanel show={panel == "version"} />
+
+      <VersionPanel
+        show={panel == "version"}
+        path={props.path}
+        renderSnapshot={renderSnapshot}
+        closeSnapshot={closeSnapshot}
+      />
+      <ConfigPanel show={panel == "config"} view={view} />
 
       <div id="document-wrapper">
         {/* Document --------------------------------------------------------- */}
-        <main id="document">
+        <main
+          id="document"
+          onMouseLeave={() => {
+            setSideMenu(null);
+          }}
+        >
           {sideMenu ? (
             <SideMenu
               menu={sideMenu}
-              hide={() => setSideMenu(null)}
+              hide={() => {
+                console.log("hiding");
+                setSideMenu(null);
+              }}
               view={view}
             />
           ) : (
@@ -205,17 +290,6 @@ function Document(props: { path: string }) {
               hide={() => {
                 setNodeMenu(null);
                 setNodeMenuSearch("");
-              }}
-              view={view}
-            />
-          ) : (
-            ""
-          )}
-          {configMenu ? (
-            <ConfigMenu
-              menu={configMenu}
-              hide={() => {
-                setConfigMenu(null);
               }}
               view={view}
             />

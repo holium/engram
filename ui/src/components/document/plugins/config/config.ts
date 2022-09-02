@@ -11,18 +11,11 @@ export class DocumentConfig {
   config = DocumentConfig.defaultConfig;
 
   constructor(config: {
-    frequency?: number;
-    ratio?: number;
-
-    "paper-color"?: string;
-    "type-color"?: string;
-    "off-color"?: string;
-    "primary-color"?: string;
-    "success-color"?: string;
-    "warning-color"?: string;
-    "failure-color"?: string;
-
-    "docment-width"?: number;
+    typefrequency?: number;
+    typeratio?: number;
+    headingtypeface?: string;
+    bodytypeface?: string;
+    docmentwidth?: number;
   }) {
     Object.keys(config).forEach((style) => {
       if (this.config[style]) this.config[style].value = config[style];
@@ -31,9 +24,10 @@ export class DocumentConfig {
   }
 
   // set the value of a config field
-  setField(key: string, value: any) {
+  setTerm(key: string, value: any) {
     this.config[key].value = value;
     this.implement(key);
+    return this;
   }
 
   // implement a config field into a css variable
@@ -54,49 +48,29 @@ export class DocumentConfig {
     });
   }
 
-  static createTerm(
-    key: string,
-    styles: { [key: string]: (value: any) => string },
-    display?: string,
-    type?: string,
-    defaultValue?: any,
-    options?: { [display: string]: any }
-  ): ConfigTerm {
-    if (type === "select" && typeof options == undefined)
-      throw "You must provide options for a config term with the type select";
-    return {
-      key: key,
-      display: typeof display == undefined ? key : display,
-      type: typeof type == undefined ? "text" : type,
-      value: typeof defaultValue == undefined ? "" : defaultValue,
-      styles: styles,
-    };
-  }
-
   static defaultConfig: { [key: string]: ConfigTerm } = {
     // Typescale ---------------------------------------------------------------
     // The root font size
-    frequency: {
-      key: "frequency",
+    typefrequency: {
+      key: "typefrequency",
       display: "Typescale Root",
       type: "number",
       value: 16, // assumes default is 16px, converts to em to comply with browser/machine settings
       styles: {
         "--root-frequency": (value: number) => {
+          if (value < 8) return `${8 / 16}em`;
+          if (value > 48) return `${48 / 16}em`;
           return `${value / 16}em`;
         },
       },
     },
     // The ratio between octaves in the typescale
-    ratio: {
-      key: "ratio",
+    typeratio: {
+      key: "typeratio",
       display: "Typescale Ratio",
       type: "number",
       value: 2,
       styles: {
-        "--title": (value, config) => {
-          return `${value ** config.config["title-octave"].value}rem`;
-        },
         "--h1": (value: number) => {
           return `${value}rem`;
         },
@@ -127,30 +101,8 @@ export class DocumentConfig {
         },
       },
     },
-    "title-octave": {
-      key: "title-octave",
-      display: "Title Octave",
-      type: "number",
-      value: 1,
-      styles: {
-        "--title": (value, config) => {
-          return `${config.config["ratio"].value ** (parseInt(value) + 1)}rem`;
-        },
-      },
-    },
-    "heading-weight": {
-      key: "heading-weight",
-      display: "Heading Weight",
-      type: "number",
-      value: 700,
-      styles: {
-        "--heading-weight": (value: number) => {
-          return `${value}`;
-        },
-      },
-    },
-    "heading-font-family": {
-      key: "heading-font-family",
+    headingtypeface: {
+      key: "headingtypeface",
       display: "Heading Font Family",
       type: "select",
       options: {
@@ -161,18 +113,18 @@ export class DocumentConfig {
       value: 0,
       styles: {
         "--heading-font-family": (value: number) => {
-          if (value == 0) {
-            return "Rubik, sans-serif";
-          } else if (value == 1) {
+          if (value == "mono") {
+            return "IBM Plex Mono, monospace";
+          } else if (value == "serif") {
             return "serif";
           } else {
-            return "IBM Plex Mono, monospace";
+            return "Rubik, sans-serif";
           }
         },
       },
     },
-    "body-font-family": {
-      key: "body-font-family",
+    bodytypeface: {
+      key: "bodytypeface",
       display: "Body Font Family",
       type: "select",
       options: {
@@ -183,119 +135,20 @@ export class DocumentConfig {
       value: null,
       styles: {
         "--body-font-family": (value: number) => {
-          if (value == 0) {
-            return "Rubik, sans-serif";
-          } else if (value == 1) {
+          if (value == "mono") {
+            return "IBM Plex Mono, monospace";
+          } else if (value == "serif") {
             return "serif";
           } else {
-            return "IBM Plex Mono, monospace";
+            return "Rubik, sans-serif";
           }
         },
       },
     },
 
-    // Colours ---------------------------------------------------------------
-    "paper-color": {
-      key: "paper-color",
-      display: "Paper Color",
-      type: "color",
-      value: null,
-      styles: {
-        "--paper-color": (value: string) => {
-          return value;
-        },
-        "--paper-glass-color": (value: string) => {
-          return `${value}20`;
-        },
-      },
-    },
-    "type-color": {
-      key: "type-color",
-      display: "Type Color",
-      type: "color",
-      value: null,
-      styles: {
-        "--type-color": (value: string) => {
-          return value;
-        },
-        "--type-glass-color": (value: string) => {
-          return `${value}20`;
-        },
-      },
-    },
-    "off-color": {
-      key: "off-color",
-      display: "Off Color",
-      type: "color",
-      value: null,
-      styles: {
-        "--off-color": (value: string) => {
-          return value;
-        },
-      },
-    },
-    "primary-color": {
-      key: "primary-color",
-      display: "Primary Color",
-      type: "color",
-      value: "null",
-      styles: {
-        "--primary-color": (value: string) => {
-          return value;
-        },
-        "--primary-glass-color": (value: string) => {
-          return `${value}20`;
-        },
-      },
-    },
-    /*
-    "success-color": {
-      key: "success-color",
-      display: "Success Color",
-      type: "color",
-      value: "#10A30D",
-      styles: {
-        "--success-color": (value: string) => {
-          return value;
-        },
-        "--success-glass-color": (value: string) => {
-          return `${value}20`;
-        },
-      },
-    },
-    "warning-color": {
-      key: "warning-color",
-      display: "Warning  Color",
-      type: "color",
-      value: "#FACA1F",
-      styles: {
-        "--warning-color": (value: string) => {
-          return value;
-        },
-        "--warning-glass-color": (value: string) => {
-          return `${value}20`;
-        },
-      },
-    },
-    "failure-color": {
-      key: "failure-color",
-      display: "Failure Color",
-      type: "color",
-      value: "#E71F1F",
-      styles: {
-        "--failure-color": (value: string) => {
-          return value;
-        },
-        "--failure-glass-color": (value: string) => {
-          return `${value}20`;
-        },
-      },
-    },
-    */
-
     // Spacing & Sizing -----------------------------------------------------
-    "document-width": {
-      key: "document-width",
+    documentwidth: {
+      key: "documentwidth",
       display: "Document Width",
       type: "number",
       value: 60,
