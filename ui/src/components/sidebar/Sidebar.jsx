@@ -110,21 +110,20 @@ function Sidebar() {
       deleteDocument(info[toDelete]);
     } else {
       deleteFolder(info[toDelete]);
-
-      const newInfo = info;
-      newInfo.splice(toDelete, 1);
-      setInfo([...newInfo]);
-      sendData();
     }
+    const newInfo = info;
+    newInfo.splice(toDelete, 1);
+    setInfo([...newInfo]);
+    sendData();
   }
 
-  function handleAdd(id, name, type) {
+  async function handleAdd(id, name, type) {
     console.log("adding: ", name);
     let res;
     if (type === "folder") {
-      res = createFold(name);
+      res = await createFold(name);
     } else {
-      res = createDoc(name);
+      res = await createDoc(name);
     }
     moveToFrom(res, id, null);
 
@@ -136,6 +135,7 @@ function Sidebar() {
     let target;
     if (typeof target == "string") target = info.find((tar) => tar.id == id);
     else target = id;
+    console.log(target, id);
     if (from != null) {
       const removeFrom = info.find((folder) => folder.id == from);
       removeFrom.children.splice(removeFrom.children.indexOf(target.id), 1);
@@ -214,6 +214,7 @@ function Sidebar() {
   }
 
   function closeCreateDoc() {
+    console.log("closing create doc");
     setNewDoc(false);
     setNewDocName("");
     setType("");
@@ -292,8 +293,7 @@ function Sidebar() {
               onChange={(event) => {
                 setNewDocName(event.target.value);
               }}
-              onKeyPress={(event) => {
-                console.log(event);
+              onKeyDown={(event) => {
                 if (event.key == "Enter") {
                   if (type === "file") {
                     createDoc(newDocName);
@@ -304,7 +304,7 @@ function Sidebar() {
                   }
                   closeCreateDoc();
                 }
-                if (event.key == "Esc") closeCreateDoc();
+                if (event.key == "Escape") closeCreateDoc();
               }}
             />
           </div>

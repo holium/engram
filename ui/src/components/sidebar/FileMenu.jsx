@@ -5,26 +5,17 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 function FileMenu(props) {
   return (
     <menu
-      className=" tree-menu context-menu select"
+      className="tree-menu context-menu select"
       style={{
         left: `${props.position.left}px`,
         top: `${props.position.top}px`,
         zIndex: "10",
+        width: "120px",
       }}
       onMouseLeave={(e) => props.ToggleFolderMenu(e)}
     >
       <li
-        className="justify-center clickable"
-        onClick={(e) => {
-          e.stopPropagation();
-          props.renameFolder(true);
-          props.ToggleFolderMenu(e);
-        }}
-      >
-        Rename
-      </li>
-      <li
-        className="justify-center clickable"
+        className="clickable"
         onClick={(e) => {
           e.stopPropagation();
           props.onDelete();
