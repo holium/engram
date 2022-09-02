@@ -213,6 +213,7 @@ function Sidebar() {
   }
 
   function closeCreateDoc() {
+    console.log("closing create doc");
     setNewDoc(false);
     setNewDocName("");
     setType("");
@@ -291,8 +292,7 @@ function Sidebar() {
               onChange={(event) => {
                 setNewDocName(event.target.value);
               }}
-              onKeyPress={(event) => {
-                console.log(event);
+              onKeyDown={(event) => {
                 if (event.key == "Enter") {
                   if (type === "file") {
                     createDoc(newDocName);
@@ -303,7 +303,7 @@ function Sidebar() {
                   }
                   closeCreateDoc();
                 }
-                if (event.key == "Esc") closeCreateDoc();
+                if (event.key == "Escape") closeCreateDoc();
               }}
             />
           </div>

@@ -94,11 +94,11 @@ function TreeComponent({
         }}
       >
         {info.owner ? (
-          info.owner == window.ship ? (
+          info.owner == "~" + window.ship ? (
             // a dot if this ship is the origin
             <svg
               viewBox="0 0 25 25"
-              fill="var(--type-color)"
+              fill="var(--trim-color)"
               className="icon"
               xmlns="http://www.w3.org/2000/svg"
             >
@@ -108,7 +108,7 @@ function TreeComponent({
             // a tilde if the origin is remote
             <svg
               viewBox="0 0 25 25"
-              fill="var(--type-color)"
+              fill="var(--trim-color)"
               className="icon"
               xmlns="http://www.w3.org/2000/svg"
             >
@@ -187,7 +187,7 @@ function TreeComponent({
                 handleRename(info.id, e.target.value);
                 setrenameState(false);
                 e.stopPropagation();
-              } else if (e.key == "Esc") {
+              } else if (e.key == "Escape") {
                 setrenameState(false);
               }
             }}
