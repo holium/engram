@@ -18,11 +18,7 @@ function VersionPanel(props: {
 
   const [ships, setShips] = useState([]);
   const present = ships.map((ship) => {
-    let latest = 0;
-    versions.forEach((version, i) => {
-      if (version.ship == ship) latest = i;
-    });
-    return latest;
+    return versions.findIndex((version) => version.ship == ship);
   });
 
   function renderVersion(snapshot) {
@@ -45,7 +41,7 @@ function VersionPanel(props: {
       console.log("getting snapshots result:", res);
       setVersions(res);
     });
-  }, [props.path]);
+  }, [props.path, props.show]);
 
   useEffect(() => {
     const addys = new Set();
@@ -59,34 +55,20 @@ function VersionPanel(props: {
   return (
     <div className="panel" style={props.show ? {} : { display: "none" }}>
       <div>
-        <div
-          className="flex justify-between text-pallet-0 text-pallet-1 text-pallet-2 text-pallet-3 text-pallet-4 text-pallet-5 text-pallet-6 text-pallet-7 text-pallet-8 text-pallet-9 text-pallet-10 text-pallet-11 text-pallet-12 text-pallet-13 text-pallet-14 text-pallet-15 text-pallet-16"
-          style={{ color: "var(--type-color)" }}
+        <svg
+          width="25"
+          height="25"
+          viewBox="0 0 25 25"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <div>History</div>
-          <div className="px-2 py-1 clickable" onClick={closeVersion}>
-            clear
-          </div>
-        </div>
-        {ships.map((ship: Patp) => {
-          return <ShipLabel ship={ship} ships={ships} key={ship} />;
-        })}
-        <div>
-          <svg
-            width="25"
-            height="25"
-            viewBox="0 0 25 25"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <line
-              x1="12.5"
-              x2="12.5"
-              y2="25"
-              stroke="var(--type-color)"
-              stroke-width="2px"
-            />
-          </svg>
-        </div>
+          <line
+            x1="12.5"
+            x2="12.5"
+            y2="25"
+            stroke="var(--type-color)"
+            stroke-width="2px"
+          />
+        </svg>
         <div className="flex flex-col-reverse">
           {versions.map((version: Version, i) => {
             return (
@@ -117,6 +99,13 @@ function VersionPanel(props: {
             height="25"
             viewBox="0 0 25 25"
             xmlns="http://www.w3.org/2000/svg"
+            className="cursor-pointer text-pallet-0 text-pallet-1 text-pallet-2 text-pallet-3 text-pallet-4 text-pallet-5 text-pallet-6 text-pallet-7 text-pallet-8 text-pallet-9 text-pallet-10 text-pallet-11 text-pallet-12 text-pallet-13 text-pallet-14 text-pallet-15 text-pallet-16"
+            onClick={() => {
+              if (viewing != null) {
+                setViewing(null);
+                closeVersion();
+              }
+            }}
           >
             {viewing == null ? (
               <path
