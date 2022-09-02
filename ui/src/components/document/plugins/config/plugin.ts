@@ -29,10 +29,7 @@ export const ConfigTermSpec = (defaultValue: any): NodeSpec => {
 
 function configTermView(node, view, getPos) {
   const config = view.state["config$"].config;
-  console.log(config);
-  console.log(node);
   const term = config[node.type.name];
-  console.log("building config term view", term);
 
   const dom = assembleConfigTermNodeView(term);
 
@@ -59,18 +56,15 @@ export const config = new Plugin({
         if (node.type.name === "header") return true;
         if (node.type.name === "config") return true;
         if (node.type.spec.group === "configterm") {
-          console.log(node);
           config[node.type.name] = node.attrs["value"];
         }
         return false;
       });
-      console.log(new DocumentConfig(config));
       return new DocumentConfig(config);
     },
     apply: (tr, value, state, oldState) => {
       const meta = tr.getMeta(ConfigPluginKey);
       if (meta) {
-        console.log(state);
         const newState = ConfigPluginKey.getState(state).setTerm(
           meta.term,
           meta.value
