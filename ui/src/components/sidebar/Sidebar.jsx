@@ -31,7 +31,7 @@ function Sidebar() {
   const [list, setList] = useState([]);
   const [newDoc, setNewDoc] = useState(false);
   const [newDocName, setNewDocName] = useState("");
-  const [slide, setSlide] = useState(false);
+  const { slide, setSlide } = useContext(SlideContext);
   const [createChild, setCreateChild] = useState({});
 
   useEffect(() => {
@@ -73,7 +73,7 @@ function Sidebar() {
         ]);
       });
   }, []);
-  
+
   useEffect(() => {
     sendData();
   }, [info]);
@@ -111,10 +111,11 @@ function Sidebar() {
     } else {
       deleteFolder(info[toDelete]);
 
-    const newInfo = info;
-    newInfo.splice(toDelete, 1);
-    setInfo([...newInfo]);
-    sendData();
+      const newInfo = info;
+      newInfo.splice(toDelete, 1);
+      setInfo([...newInfo]);
+      sendData();
+    }
   }
 
   function handleAdd(id, name, type) {
@@ -171,30 +172,22 @@ function Sidebar() {
     }
   }
 
-  function createFold(name) {
+  async function createFold(name) {
     console.log("create folder");
     checkUrbitWindow();
-    const meta: FolderMeta = {
-      id: `~${window.ship}-${crypto.randomUUID()}`,
-      name: name.replaceAll(" ", "-"),
-    };
 
-    createFolder(meta).then((res) => {
-      console.log("create folder result", res);
+    const meta = await createFolder({
+      id: `~${window.ship}-${crypto.randomUUID()}`,
+      name: name,
     });
     setInfo([...info, { ...meta, children: [] }]);
     closeCreateDoc();
     return meta;
   }
 
-  function createDoc(name) {
+  async function createDoc(name) {
     console.log("create doc");
     checkUrbitWindow();
-    const meta: DocumentMeta = {
-      owner: `~${window.ship}`,
-      id: `~${window.ship}-${crypto.randomUUID()}`,
-      name: name,
-    };
 
     const doc = new Y.Doc();
     doc.clientID = window.ship; // the ship
@@ -203,12 +196,18 @@ function Sidebar() {
     const version = Y.encodeStateVector(doc);
     const encoding = Y.encodeStateAsUpdateV2(doc);
 
-    createDocument(meta, {
-      version: Array.from(version),
-      content: Array.from(encoding),
-    }).then((res) => {
-      console.log("create document result", res);
-    });
+    const meta = await createDocument(
+      {
+        owner: `~${window.ship}`,
+        id: `~${window.ship}-${crypto.randomUUID()}`,
+        name: name,
+      },
+      {
+        version: Array.from(version),
+        content: Array.from(encoding),
+      }
+    );
+    console.log("create document result", meta);
     setInfo([...info, meta]);
     closeCreateDoc();
     return meta;
@@ -246,7 +245,9 @@ function Sidebar() {
       <div className="flex flex-col overflow-auto">
         <div className="mt-4 tree-item">
           <div className="font-bold flex-grow py-1">Your Ship</div>
-          {/* Add Document */}
+          {
+            //Add Document
+          }
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -260,7 +261,9 @@ function Sidebar() {
             <path fill="none" d="M0 0h24v24H0z" />
             <path d="M15 4H5v16h14V8h-4V4zM3 2.992C3 2.444 3.447 2 3.999 2H16l5 5v13.993A1 1 0 0 1 20.007 22H3.993A1 1 0 0 1 3 21.008V2.992zM11 11V8h2v3h3v2h-3v3h-2v-3H8v-2h3z" />
           </svg>
-          {/* Add Folder */}
+          {
+            // Add Folder
+          }
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -341,7 +344,6 @@ function Sidebar() {
       </div>
     </div>
   );
-}
 }
 
 export default Sidebar;

@@ -5,10 +5,31 @@ function VersionLabel(props: {
   ships: Array<Patp>;
   version: Version;
   present: Array<number>;
-  viewing: boolean;
   view: () => void;
 }) {
   const commitIndex = props.ships.indexOf(props.version.ship);
+
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  function formatTimestamp(timestamp: Date) {
+    return `${timestamp.getHours()}:${timestamp.getMinutes()} ${
+      months[timestamp.getMonth()]
+    } ${timestamp.getDate()}, ${timestamp.getFullYear()}`;
+  }
+
   return (
     <div className="flex" style={{ position: "relative", top: "-25px" }}>
       <div
@@ -42,12 +63,14 @@ function VersionLabel(props: {
           height="25"
           viewBox="0 0 25 25"
           xmlns="http://www.w3.org/2000/svg"
+          className="cursor-pointer"
+          style={{ zIndex: 10 }}
           onClick={props.view}
         >
           {props.viewing ? (
             <path
-              d="M11.5 18.6797C8.52734 18.2266 6.25 15.6328 6.25 12.5C6.25 9.36719 8.52734 6.77344 11.5 6.32031V6.78003e-06C11.5 6.78003e-06 11.9805 0 12.5 0C13.0195 0 13.5 6.78003e-06 13.5 6.78003e-06V6.32031C16.5078 6.77344 18.75 9.36719 18.75 12.5C18.75 15.6328 16.5078 18.2266 13.5 18.6797C13.5 18.6797 13.0195 18.75 12.5 18.75C11.9805 18.75 11.5 18.6797 11.5 18.6797Z"
-              fill="var(--type-color)"
+              d="M13.5 6.32031C16.4727 6.77344 18.75 9.36719 18.75 12.5C18.75 15.6328 16.4727 18.2266 13.5 18.6797V25C13.5 25 13.0195 25 12.5 25C11.9805 25 11.5 25 11.5 25V18.6797C8.49219 18.2266 6.25 15.6328 6.25 12.5C6.25 9.36719 8.49219 6.77344 11.5 6.32031L11.5 0C11.5 0 11.9805 0 12.5 0C13.0195 0 13.5 0 13.5 0L13.5 6.32031Z"
+              fill="(--var-type-color)"
             />
           ) : (
             <path
@@ -119,8 +142,8 @@ function VersionLabel(props: {
           </svg>
         );
       })}
-      <div>
-        {props.version.timestamp.getTime()} {props.version.ship}
+      <div className="flex items-center text-right flex-grow">
+        {formatTimestamp(props.version.timestamp)}
       </div>
     </div>
   );

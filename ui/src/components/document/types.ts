@@ -85,3 +85,9 @@ export interface FolderMeta {
   name: string;
   isFolder: string;
 }
+
+export interface Snap {
+  time: number;
+  ship: Patp;
+  data: Array<number>;
+}
