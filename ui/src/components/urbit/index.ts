@@ -417,6 +417,13 @@ export function addRemoteDocument(from: Patp, path: string) {}
 export function whitelistShip(doc: string, ship: Patp) {}
 export function removeShipFromWhitelist(doc: string, ship: Patp) {}
 
+// simply a caller function
+export async function collectUpdates() {
+  (await listDocuments()).forEach((doc) => {
+    subscribeToRemoteDocument;
+  });
+}
+
 /* Subscriptions */
 export function subscribeToRemoteDocument(
   from: Patp,
@@ -424,8 +431,8 @@ export function subscribeToRemoteDocument(
   handler: (event: any) => void,
   handleQuit?: (event: any) => void,
   handleError?: (e: any) => void
-): Promise<void> {
-  return new Promise<void>((resolve, reject) => {
+): Promise<string> {
+  return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit
       .subscribe({
@@ -449,9 +456,17 @@ export function subscribeToRemoteDocument(
           if (typeof handleError != "undefined") handleError(err);
         },
       })
-      .then((response) => {
-        console.log(response);
-        resolve();
+      .then((subId) => {
+        console.log(subId);
+        resolve(subId);
       });
+  });
+}
+
+export function unsubscribe(subscriptionId: string): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    (window as any).urbit.unsubscribe(subscriptionId).then(() => {
+      resolve();
+    });
   });
 }
