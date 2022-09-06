@@ -1,5 +1,4 @@
 /-  engram
-/+  engram
 /+  default-agent, dbug
 |%
 +$  versioned-state
@@ -36,7 +35,7 @@
   |=  [=mark =vase]
   ^-  (quip card _this)
   ?+    mark  (on-poke:def mark vase)
-      %post
+      %noun
     =/  action  !<(?(action:engram) vase)
     ?-    -.action
     ::
@@ -93,41 +92,87 @@
     :: remove the merged update from the update list (as updates aren't implemented this will just log)
     ::
      %merge
-    ~|  "merge"
+
+    =/  a  (~(get ju u) dmeta.action)
+   :: ?:  =(~(wyt in a) 1)
+    :: =/  b  
+    :: =/  c  (snag a b)
     !!
+    ::`this(u (~(del ju u) dmeta.action b))
+    
+    :: ~|  "merge"
+    :: !!
+    %sub
+  ::  ~&  owner.dmeta.action
+  :: !!
+    =/  li  /updates/(scot %p owner.dmeta.action)/(scot %ud id.dmeta.action)/[`@ta`name.dmeta.action]
+   :: ~&  li
+    :_  this
+    :~  [%pass /engram %agent [owner.dmeta.action %engram] %watch li]
+    ==
+    %unsub
+    :_  this
+    :~  [%pass /engram %agent [owner.dmeta.action %engram] %leave ~]
+    ==
+
+    %update-live
+    =/  li  /updates/(scot %p owner.dmeta.action)/(scot %ud id.dmeta.action)/[`@ta`name.dmeta.action]
+   :: ~&  li
+    :_  this
+    :~  [%give %fact ~[li] %noun !>(u)]
+    ==
+    %update
+  :: ~&  owner.dmeta.action
+  :: !!
+   `this(u (~(put ju u) dmeta.action updt.action))
     ==
   ==
-::
+
 ++  on-watch
   |=  =path
   ^-  (quip card _this)
+  ~&  "hi from zod"
   ?+    path  (on-watch:def path)
-      [%updates ~]
-     :: ~&  "log"
-    :: !!
-    =/  a  (~(get by s) dmeta.update)
-    ?>  (~(has in perms.a) src.bowl)
+      [%updates @ @ @ ~]
+    ::~&  i.t.path
+    =/  owner=@p  (slav %p i.t.path)
+    ::~&  owner
+    =/  id=@  (slav %ud i.t.t.path)
+    ::~&  id
+    =/  name=@t  (crip (trip i.t.t.t.path))
+    ::~&  name
+    =/  meta  [owner=owner id=id name=name]
+    =/  stg=[perms=(list @p)]  (need (~(get by s) meta))
+    :: ~&  src.bowl
+    :: ~&  perms.stg
+    ?~  (find [src.bowl]~ perms.stg)
+     :: ~&  "is null"
+      !!
+    
     :_  this
-       :~  [%give %fact ~ %engram-update !>(`update:todo`initial+tasks)]
-    ==
-  ==
+    ~&  u
+    :: ~&  '---'
+    :: ~&  !>(u)
+    =/  docu  (~(get by d) meta)
+       :~  [%give %fact ~ %noun !>(docu)]
+    ==   
+==
 ++  on-leave  on-leave:def
 ++  on-peek
   |=  =path
-  ~&  path
   ^-  (unit (unit cage))
   ?+    path  (on-peek:def path)
       [%x %docinfo ~]
-    =/  docs  ~(tap in ~(key by d))
-    ``noun+!>((enjs-docinfo:engram docs))
+    =/  k=(set [owner=@p id=@ name=@t])  ~(key by d)
+    ``noun+!>(k)
   ::
       [%x %gdoc @ @ @ ~]
     =/  owner=@p  (slav %p i.t.t.path)
-    =/  id=@  (crip (trip i.t.t.t.path))
+    =/  id=@  (slav %ud i.t.t.t.path)
     =/  name=@t  (crip (trip i.t.t.t.t.path))
     =/  meta  [owner=owner id=id name=name]
     =/  doc=[version=(list @ud) cont=(list @ud)]  (need (~(get by d) meta))
-    ``noun+!>((enjs-gdoc:engram doc))
+    ``noun+!>(doc)
   ::
       [%x %gsetting @ @ @ ~]
     =/  owner=@p  (slav %p i.t.t.path)
@@ -135,20 +180,20 @@
     =/  name=@t  (crip (trip i.t.t.t.t.path))
     =/  meta  [owner=owner id=id name=name]
     =/  stg=[perms=(list @p)]  (need (~(get by s) meta))
-    ~&  stg
-    ``noun+!>((enjs-gsetting:engram stg))
+    ``noun+!>(stg)
   ::
-      [%x %gfolders @ @ @ ~]
-    ``noun+!>((enjs-gfolders:engram f))
+      [%x %gfolders @ @ @ ~]  ``noun+!>(f)
       :: (jug [id=@ name=@t] $%([%doc [owner=@p id=@ name=@t]] [%folder [id=@ name=@t]]))
     :: =/  t=(jug [id=@ name=@t] $%([%doc [owner=@p id=@ name=@t]] [%folder [id=@ name=@t]]))  f
   ==
 ::
 ++  on-agent
-  |=  [=wire =sign:agent:gall]
+ |=  [=wire =sign:agent:gall]
     ^-  (quip card _this)
+    ~&  "This should print- nut"
     ?+    wire  (on-agent:def wire sign)
-        [%subs ~]
+    
+        [%engram ~]
       ?+    -.sign  (on-agent:def wire sign)
           %watch-ack
         ?~  p.sign
@@ -163,7 +208,7 @@
       ::
           %fact
         ?+    p.cage.sign  (on-agent:def wire sign)
-            %engram-update
+            %noun
           ~&  !<(update:engram q.cage.sign)
           `this
         ==
