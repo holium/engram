@@ -1,4 +1,4 @@
-import {} from "@urbit/http-api";
+import { Patp } from "@urbit/http-api";
 import * as Y from "yjs";
 import {
   DocumentMeta,
@@ -114,7 +114,7 @@ export function getSnapshots(meta: DocumentMeta) {
       })
       .then((response: any) => {
         resolve(
-          Object.values(response).map((snap) => {
+          Object.values(response).map((snap: any) => {
             return {
               timestamp: new Date(snap.date),
               ship: `~${snap.ship}`,
@@ -275,7 +275,10 @@ export function addToFolder(meta: FolderMeta, doc: FolderMeta | DocumentMeta) {
       app: "engram",
       mark: "post",
       json: {
-        foldoc: { fmeta: meta, fldr: { [doc.owner ? "doc" : "folder"]: doc } },
+        foldoc: {
+          fmeta: meta,
+          fldr: { [(doc as any).owner ? "doc" : "folder"]: doc },
+        },
       },
       onSuccess: () => {
         resolve();
@@ -309,30 +312,6 @@ export function removeFromFolder(
   });
 }
 
-export function acknowledgeUpdate(meta: DocumentMeta, update: number) {
-  return new Promise<void>((resolve, reject) => {
-    checkUrbitWindow(reject);
-    (window as any).urbit.poke({
-      app: "engram",
-      mark: "post",
-      json: { merge: { demta: meta, update: update } },
-      onSuccess: () => {
-        resolve();
-      },
-      onError: (e: any) => {
-        console.error(
-          "Error acknowleding update ",
-          update,
-          " for document: ",
-          meta,
-          e
-        );
-        reject("Error acknowleding update");
-      },
-    });
-  });
-}
-
 export function recordSnapshot(
   meta: DocumentMeta,
   snap: { date: number; ship: Patp; data: Array<number> }
@@ -360,27 +339,134 @@ export function recordSnapshot(
   });
 }
 
-/* Subscriptions */
-// WIP
-export function subscribeUpdateStream(
-  documentPath: string,
-  handler: (event: any) => void,
-  quit: (event: any) => void,
-  err: (e: any) => void
-): Promise<void> {
+export function sendUpdate(doc: string, update: DocumentUpdate) {
   return new Promise<void>((resolve, reject) => {
+    checkUrbitWindow(reject);
+    (window as any).urbit.poke({
+      app: "engram",
+      mark: "post",
+      json: { sendUpdate: { doc: doc, update: update } },
+      onSuccess: () => {
+        resolve();
+      },
+      onError: (e: any) => {
+        console.error(
+          "Error sending update ",
+          update,
+          " for document: ",
+          doc,
+          e
+        );
+        reject("Error sending update");
+      },
+    });
+  });
+}
+
+export function recordUpdate(doc: string, update: DocumentUpdate) {
+  return new Promise<void>((resolve, reject) => {
+    checkUrbitWindow(reject);
+    (window as any).urbit.poke({
+      app: "engram",
+      mark: "post",
+      json: { record: { doc: doc, update: update } },
+      onSuccess: () => {
+        resolve();
+      },
+      onError: (e: any) => {
+        console.error(
+          "Error recording update ",
+          update,
+          " for document: ",
+          doc,
+          e
+        );
+        reject("Error recording update");
+      },
+    });
+  });
+}
+
+export function acknowledgeUpdate(doc: string, update: number) {
+  return new Promise<void>((resolve, reject) => {
+    checkUrbitWindow(reject);
+    (window as any).urbit.poke({
+      app: "engram",
+      mark: "post",
+      json: { merge: { doc: doc, update: update } },
+      onSuccess: () => {
+        resolve();
+      },
+      onError: (e: any) => {
+        console.error(
+          "Error acknowleding update ",
+          update,
+          " for document: ",
+          doc,
+          e
+        );
+        reject("Error acknowleding update");
+      },
+    });
+  });
+}
+
+export function addRemoteDocument(from: Patp, path: string) {}
+
+// both whitelist and blacklist just modify the settings
+export function whitelistShip(doc: string, ship: Patp) {}
+export function removeShipFromWhitelist(doc: string, ship: Patp) {}
+
+// simply a caller function
+export async function collectUpdates() {
+  (await listDocuments()).forEach((doc) => {
+    subscribeToRemoteDocument;
+  });
+}
+
+/* Subscriptions */
+export function subscribeToRemoteDocument(
+  from: Patp,
+  doc: string,
+  handler: (event: any) => void,
+  handleQuit?: (event: any) => void,
+  handleError?: (e: any) => void
+): Promise<string> {
+  return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit
       .subscribe({
         app: "engram",
-        path: `/streamupt/${documentPath}`,
-        event: handler,
-        quit: quit,
-        err: err,
+        path: `/${doc}`,
+        ship: from,
+        event: (event) => {
+          console.log("received event from subscription: ", doc, ": ", event);
+          //recordUpdate()
+          handler(event);
+        },
+        quit: (event: any) => {
+          console.log(
+            "remote document subscription quit to:" + doc + " quit:",
+            event
+          );
+          if (typeof handleQuit != "undefined") handleQuit(event);
+        },
+        err: (err: AnimationPlayState) => {
+          console.warn("error wiht subscription to document", doc, err);
+          if (typeof handleError != "undefined") handleError(err);
+        },
       })
-      .then((response) => {
-        console.log(response);
-        resolve();
+      .then((subId) => {
+        console.log(subId);
+        resolve(subId);
       });
+  });
+}
+
+export function unsubscribe(subscriptionId: string): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    (window as any).urbit.unsubscribe(subscriptionId).then(() => {
+      resolve();
+    });
   });
 }
