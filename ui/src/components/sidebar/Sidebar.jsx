@@ -10,6 +10,7 @@ import {
   deleteFolder,
   addToFolder,
   removeFromFolder,
+  addRemoteDocument,
 } from "../urbit/index";
 import * as Y from "yjs";
 import FileTree from "./FileTree";

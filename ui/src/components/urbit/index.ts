@@ -78,10 +78,9 @@ export function getDocumentSettings(meta: DocumentMeta): Promise<Document> {
     (window as any).urbit
       .scry({
         app: "engram",
-        path: `/gsettings/${meta.owner}/${meta.id}/${meta.name}`,
+        path: `/gsetting/${meta.owner}/${meta.id}/${meta.name}`,
       })
       .then((response: any) => {
-        console.log(response);
         resolve(response);
       });
   });
@@ -411,17 +410,67 @@ export function acknowledgeUpdate(doc: string, update: number) {
   });
 }
 
-export function addRemoteDocument(from: Patp, path: string) {}
+export function addRemoteDocument(
+  from: Patp,
+  path: string
+): Promise<DocumentMeta> {
+  return new Promise((resolve, reject) => {
+    const subId = (window as any).urbit.subscribeToRemoteDocument(
+      from,
+      path,
+      (event: any) => {
+        console.log("adding remote doc, event: ", event);
+        /*
+        createDocument().then((meta) => {
+          resolve(meta);
+          subId.then((id) => {
+            unsubscribe(id);
+          })
+        });
+        */
+      }
+    );
+  });
+}
 
 // both whitelist and blacklist just modify the settings
-export function whitelistShip(doc: string, ship: Patp) {}
-export function removeShipFromWhitelist(doc: string, ship: Patp) {}
+export function setWhitelist(
+  dmeta: DocumentMeta,
+  whitelist: Array<Patp>
+): Promise<Array<Patp>> {
+  return new Promise((resolve, reject) => {
+    if ((window as any) == dmeta.owner) {
+      (window as any).urbit.poke({
+        app: "engram",
+        mark: "post",
+        json: { settings: { dmeta: dmeta, stg: whitelist } },
+        onSuccess: () => {
+          resolve(whitelist);
+        },
+        onError: (e: any) => {
+          console.error(
+            "Error setting whitelist ",
+            update,
+            " for document: ",
+            dmeta,
+            e
+          );
+          reject("Error acknowleding update");
+        },
+      });
+    } else {
+      reject();
+    }
+  });
+}
 
 // simply a caller function
 export async function collectUpdates() {
+  /*
   (await listDocuments()).forEach((doc) => {
-    subscribeToRemoteDocument;
+    subscribeToRemoteDocument(doc);
   });
+  */
 }
 
 /* Subscriptions */

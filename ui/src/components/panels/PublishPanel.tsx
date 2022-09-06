@@ -1,15 +1,55 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getDocumentSettings, setWhitelist, pathParser } from "../urbit/index";
 
-function PublishPanel(props: { show: boolean }) {
-  const [members, setMembers] = useState(["~dalsyr-diglyn"]);
-  const [owner, setOwner] = useState("dalsyr-diglyn");
+function PublishPanel(props: { path: string; show: boolean }) {
+  const [members, setMembers] = useState([]);
+  const [owner, setOwner] = useState();
   const [newMember, setNewMember] = useState("");
+
+  useEffect(() => {
+    const parsed = props.path.match(pathParser);
+    const meta = {
+      owner: parsed.groups.owner,
+      id: parsed.groups.id,
+      name: parsed.groups.name,
+    };
+    setOwner(parsed.groups.owner);
+    getDocumentSettings(meta).then((res) => {
+      console.log("set settings result", res);
+    });
+  }, []);
 
   function addMember() {
     // poke
     console.log("Add member: ", newMember);
-    setMembers([newMember, ...members]);
-    setNewMember("");
+    if ((window as any).ship == owner) {
+      const whitelist = [newMember, ...members];
+      setNewMember("");
+      setWhitelist(whitelist)
+        .then((res) => {
+          console.log("set whitelist result: ", res);
+          setMembers([...res]);
+        })
+        .catch(() => {
+          console.warn("you are not the owner");
+        });
+    }
+  }
+
+  function removeMember(index) {
+    console.log("Remove member: ", index);
+    if ((window as any).ship == owner) {
+      const whitelist = whitelist.splice(index, 1);
+      setNewMember("");
+      setWhitelist(whitelist)
+        .then((res) => {
+          console.log("set whitelist result: ", res);
+          setMembers([...res]);
+        })
+        .catch(() => {
+          console.warn("you are not the owner");
+        });
+    }
   }
 
   return (
@@ -17,18 +57,23 @@ function PublishPanel(props: { show: boolean }) {
       <div className="">
         <div className="flex gap-3 py-2">
           <div className="flex-grow">Owner:</div>
-          <div className="azimuth">~zod</div>
+          <div className="azimuth">~{owner}</div>
         </div>
         <div className="py-2">
-          <div className="border-b border-type">Members: </div>
+          <div className="border-b border-type">Whitelist: </div>
         </div>
-        {members.map((member: string) => {
+        {members.map((member: string, i: number) => {
           return (
             <div className="flex gap-3 py-1 items-center">
               <div className="azimuth">{member}</div>
               <div className="flex-grow"></div>
               {owner == (window as any).ship && (
-                <div className="border rounded-1 clickable border-accent px-2 py-1">
+                <div
+                  className="border rounded-1 clickable border-accent px-2 py-1"
+                  onClick={() => {
+                    removeMember(i);
+                  }}
+                >
                   remove
                 </div>
               )}

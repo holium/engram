@@ -236,7 +236,7 @@ function Document(props: { path: string }) {
         panel={panel}
         notifs={notifStatus}
       />
-      <PublishPanel show={panel == "publish"} />
+      <PublishPanel show={panel == "publish"} path={props.path} />
       <UpdatePanel
         path={props.path}
         show={panel == "update"}
