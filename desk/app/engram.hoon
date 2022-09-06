@@ -1,5 +1,5 @@
 /-  engram
-/+  engram
+:: /+  engram
 /+  default-agent, dbug
 |%
 +$  versioned-state
@@ -36,7 +36,7 @@
   |=  [=mark =vase]
   ^-  (quip card _this)
   ?+    mark  (on-poke:def mark vase)
-      %post
+      %noun
     =/  action  !<(?(action:engram) vase)
     ?-    -.action
     ::
@@ -107,18 +107,6 @@
   ==
 ::
 ++  on-watch  on-watch:def
-  ::|=  =path
-  ::^-  (quip card _this)
-  ::?+    path  (on-watch:def path)
-  ::    [%updates ~]
-  ::   :: ~&  "log"
-  ::  :: !!
-  ::  =/  a  (~(get by s) dmeta.update)
-  ::  ?>  (~(has in perms.a) src.bowl)
-  ::  :_  this
-  ::     :~  [%give %fact ~ %engram-update !>(`update:todo`initial+tasks)]
-  ::  ==
-  ::==
 ++  on-leave  on-leave:def
 ++  on-peek
   |=  =path
@@ -127,37 +115,33 @@
   ?+    path  (on-peek:def path)
       [%x %docinfo ~]
     =/  docs  ~(tap in ~(key by d))
-    ``noun+!>((enjs-docinfo:engram docs))
+    ``noun+!>(docs)
   ::
-      [%x %gdoc @ @ @ ~]
-    =/  owner=@p  (slav %p i.t.t.path)
-    =/  id=@  (crip (trip i.t.t.t.path))
-    =/  name=@t  (crip (trip i.t.t.t.t.path))
-    =/  meta  [owner=owner id=id name=name]
+      [%x %gdoc @ @ ~]
+    =/  id=@  (crip (trip i.t.t.path))
+    =/  timestamp=@d  (slav %d i.t.t.t.path)
+    =/  meta  [id=id timestamp=timestamp]
     =/  doc=[version=(list @ud) cont=(list @ud)]  (need (~(get by d) meta))
-    ``noun+!>((enjs-gdoc:engram doc))
+    ``noun+!>(doc)
   ::
-      [%x %gsetting @ @ @ ~]
-    =/  owner=@p  (slav %p i.t.t.path)
-    =/  id=@  (slav %ud i.t.t.t.path)
-    =/  name=@t  (crip (trip i.t.t.t.t.path))
-    =/  meta  [owner=owner id=id name=name]
-    =/  stg=[perms=(list @p)]  (need (~(get by s) meta))
+      [%x %gsetting @ @ ~]
+    =/  id=@  (crip (trip i.t.t.path))
+    =/  timestamp=@d  (slav %d i.t.t.t.path)
+    =/  meta  [id=id timestamp=timestamp]
+    =/  stg=[perms=(list @p) owner=@p name=@t]  (need (~(get by s) meta))
     ~&  stg
-    ``noun+!>((enjs-gsetting:engram stg))
+    ``noun+!>(stg)
   ::
       [%x %gfolders ~]
-    ``noun+!>((enjs-gfolders:engram f))
+    ``noun+!>(f)
   ::
       [%x %getsnaps @ @ @ ~]
-    ~&  "get document snapshots"
-    =/  owner=@p  (slav %p i.t.t.path)
-    =/  id=@  (crip (trip i.t.t.t.path))
-    =/  name=@t  (crip (trip i.t.t.t.t.path))
-    =/  meta  [owner=owner id=id name=name]
+    =/  id=@  (crip (trip i.t.t.path))
+    =/  timestamp=@d  (slav %d i.t.t.t.path)
+    =/  meta  [id=id timestamp=timestamp]
     =/  snap=(list snap:engram)  (need (~(get by su) meta))
     ~&  snap
-    ``noun+!>((enjs-getsnaps:engram snap))
+    ``noun+!>(snap)
   ==
 ::
 ++  on-agent

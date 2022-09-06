@@ -4,7 +4,7 @@
 ++  grab
   |%
   ++  noun  action:engram
-  ++  json  dejs-action:engram
+  :: ++  json  dejs-action:engram
   --
 ++  grow
   |%
