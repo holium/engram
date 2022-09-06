@@ -29,7 +29,7 @@ import {
   yDocToProsemirror,
 } from "y-prosemirror";
 import { handleImage } from "./plugins/handleImage";
-import save from "./plugins/save";
+import { save, SavePluginKey } from "./plugins/save";
 
 // Menus
 import sidemenu from "./plugins/menus/sidemenu";
@@ -113,6 +113,7 @@ function Document(props: { path: string }) {
 
   /* Document --------------------------------------------------------------- */
   const [view, setView] = useState(null);
+  const [doc, setDoc] = useState(null);
 
   // Setup
   function setup() {
@@ -167,9 +168,6 @@ function Document(props: { path: string }) {
           save(() => {
             const version = Y.encodeStateVector(doc);
             const content = Y.encodeStateAsUpdate(doc);
-            console.log(Y.snapshot(doc));
-            console.log(Y.encodeSnapshotV2(Y.snapshot(doc)));
-            console.log(Array.from(Y.encodeSnapshotV2(Y.snapshot(doc))));
             const snapshot = Array.from(Y.encodeSnapshotV2(Y.snapshot(doc)));
 
             saveDocument(meta, {
@@ -190,6 +188,7 @@ function Document(props: { path: string }) {
       console.log(view);
       Y.applyUpdate(doc, content);
       setView(view);
+      setDoc(doc);
     });
   }
 
@@ -240,13 +239,19 @@ function Document(props: { path: string }) {
       <UpdatePanel
         path={props.path}
         show={panel == "update"}
-        save={/*saveDoc*/ () => {}}
+        save={() => {
+          console.log(SavePluginKey.getState(view.state));
+          SavePluginKey.getState(view.state)();
+        }}
         getStage={
           /* getStage */ () => {
             return 0;
           }
         }
-        applyUpdate={/* applyUpdate */ () => {}}
+        applyUpdate={(content: Uint8Array) => {
+          doc.applyUpdate(content);
+          return doc;
+        }}
         setNotifStatus={/* setNotifStatus */ () => {}}
       />
 

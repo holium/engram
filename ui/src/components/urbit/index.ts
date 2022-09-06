@@ -467,8 +467,14 @@ export function setWhitelist(
 // simply a caller function
 export async function collectUpdates() {
   /*
-  (await listDocuments()).forEach((doc) => {
-    subscribeToRemoteDocument(doc);
+  (await listDocuments()).forEach(async (doc) => {
+    const members = await getDocumentSettings(doc);
+    members.forEach((member) => {
+      const subId = subscribeToRemoteDocument(member, doc, (event) => {
+        recordUpdate(doc, event);
+        subId.then((id) => unsubscribe(id))
+    });
+    })
   });
   */
 }
