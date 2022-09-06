@@ -3,7 +3,8 @@ import { getDocumentSettings, setWhitelist, pathParser } from "../urbit/index";
 
 function PublishPanel(props: { path: string; show: boolean }) {
   const [members, setMembers] = useState([]);
-  const [owner, setOwner] = useState();
+  const [owner, setOwner] = useState("");
+  const [id, setId] = useState("");
   const [newMember, setNewMember] = useState("");
 
   useEffect(() => {
@@ -14,6 +15,7 @@ function PublishPanel(props: { path: string; show: boolean }) {
       name: parsed.groups.name,
     };
     setOwner(parsed.groups.owner);
+    setId(parsed.groups.id);
     getDocumentSettings(meta).then((res) => {
       console.log("set settings result", res);
     });
@@ -57,7 +59,28 @@ function PublishPanel(props: { path: string; show: boolean }) {
       <div className="">
         <div className="flex gap-3 py-2">
           <div className="flex-grow">Owner:</div>
-          <div className="azimuth">~{owner}</div>
+          <div className="azimuth">{owner}</div>
+        </div>
+        <div className="flex gap-3 py-1">
+          <div className="py-1 flex-shrink-0">Shareable Link:</div>
+          <div
+            className="px-2 py-1 rounded-2 border overflow-auto scrollbar-none flex-1 whitespace-nowrap"
+            style={{ borderColor: "var(--trim-color)" }}
+          >
+            {owner}/{id}
+          </div>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            className="icon clickable focus:shadow-sunk flex-shrink-0"
+            fill="var(--type-color)"
+            onClick={() => {
+              navigator.clipboard.writeText(`${owner}/${id}`);
+            }}
+          >
+            <path fill="none" d="M0 0h24v24H0z" />
+            <path d="M7 6V3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-3v3c0 .552-.45 1-1.007 1H4.007A1.001 1.001 0 0 1 3 21l.003-14c0-.552.45-1 1.007-1H7zM5.003 8L5 20h10V8H5.003zM9 6h8v10h2V4H9v2z" />
+          </svg>
         </div>
         <div className="py-2">
           <div className="border-b border-type">Whitelist: </div>
@@ -67,7 +90,7 @@ function PublishPanel(props: { path: string; show: boolean }) {
             <div className="flex gap-3 py-1 items-center">
               <div className="azimuth">{member}</div>
               <div className="flex-grow"></div>
-              {owner == (window as any).ship && (
+              {owner == "~" + (window as any).ship && (
                 <div
                   className="border rounded-1 clickable border-accent px-2 py-1"
                   onClick={() => {

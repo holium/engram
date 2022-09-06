@@ -255,7 +255,7 @@ function Sidebar() {
         </svg>
       </div>
       <div className="flex flex-col overflow-auto">
-        <div className="mt-4 tree-item">
+        <div className="mt-3 tree-item">
           <div className="font-bold flex-grow py-1">Library</div>
           {
             //Add Remote Document

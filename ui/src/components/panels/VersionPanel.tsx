@@ -55,6 +55,9 @@ function VersionPanel(props: {
   return (
     <div className="panel" style={props.show ? {} : { display: "none" }}>
       <div>
+        {ships.map((ship) => {
+          return <ShipLabel ship={ship} ships={ships} />;
+        })}
         <svg
           width="25"
           height="25"
