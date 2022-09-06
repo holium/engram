@@ -20,9 +20,9 @@
 +$  updt  [author=athr cont=dcont time=@da]
 +$  ver  (list @ud)
 +$  doc  [version=ver cont=dcont]
-+$  dmeta  [owner=athr id=id name=@t]
++$  dmeta  [id=id timestamp=@d]
 +$  whtlst  (list @p)
-+$  stg  [perms=whtlst]
++$  stg  [perms=whtlst owner=@p name=@t]
 +$  fmeta  [id=id name=@t]
 +$  snap  [date=@d ship=@p data=(list @ud)]
 +$  fldr
