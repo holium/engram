@@ -122,8 +122,10 @@ function Sidebar() {
     let res;
     if (type === "folder") {
       res = await createFold(name);
-    } else {
+    } else if (type === "file") {
       res = await createDoc(name);
+    } else if (type == "remote") {
+      res = await addRemoteDoc(name);
     }
     moveToFrom(res, id, null);
 
@@ -186,7 +188,6 @@ function Sidebar() {
   }
 
   async function createDoc(name) {
-    console.log("create doc");
     checkUrbitWindow();
 
     const doc = new Y.Doc();
@@ -208,6 +209,15 @@ function Sidebar() {
       }
     );
     console.log("create document result", meta);
+    setInfo([...info, meta]);
+    closeCreateDoc();
+    return meta;
+  }
+
+  async function addRemoteDoc(link) {
+    console.log("add remote doc");
+    checkUrbitWindow();
+    const { meta, content } = await addRemoteDocument(link);
     setInfo([...info, meta]);
     closeCreateDoc();
     return meta;
@@ -245,7 +255,23 @@ function Sidebar() {
       </div>
       <div className="flex flex-col overflow-auto">
         <div className="mt-4 tree-item">
-          <div className="font-bold flex-grow py-1">Your Ship</div>
+          <div className="font-bold flex-grow py-1">Library</div>
+          {
+            //Add Remote Document
+          }
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="var(--type-color)"
+            className="icon clickable tree-item-hidden"
+            onClick={() => {
+              setNewDoc(true);
+              setType("remote");
+            }}
+          >
+            <path fill="none" d="M0 0h24v24H0z" />
+            <path d="M17.657 14.828l-1.414-1.414L17.657 12A4 4 0 1 0 12 6.343l-1.414 1.414-1.414-1.414 1.414-1.414a6 6 0 0 1 8.485 8.485l-1.414 1.414zm-2.829 2.829l-1.414 1.414a6 6 0 1 1-8.485-8.485l1.414-1.414 1.414 1.414L6.343 12A4 4 0 1 0 12 17.657l1.414-1.414 1.414 1.414zm0-9.9l1.415 1.415-7.071 7.07-1.415-1.414 7.071-7.07z" />
+          </svg>
           {
             //Add Document
           }
@@ -289,6 +315,7 @@ function Sidebar() {
                 outlineOffset: "0",
                 minWidth: "0",
               }}
+              placeholder={type == "remote" ? "document link" : "name"}
               value={newDocName}
               onChange={(event) => {
                 setNewDocName(event.target.value);
@@ -300,6 +327,9 @@ function Sidebar() {
                     setNewDocName("");
                   } else if (type === "folder") {
                     createFold(newDocName);
+                    setNewDocName("");
+                  } else if (type === "remote") {
+                    addRemoteDoc(newDocName);
                     setNewDocName("");
                   }
                   closeCreateDoc();
