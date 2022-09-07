@@ -10,7 +10,7 @@ function FileMenu(props) {
         left: `${props.position.left}px`,
         top: `${props.position.top}px`,
         zIndex: "10",
-        width: "120px",
+        width: "240px",
       }}
       onMouseLeave={(e) => props.ToggleFolderMenu(e)}
     >
@@ -19,6 +19,7 @@ function FileMenu(props) {
         onClick={(e) => {
           e.stopPropagation();
           props.renameFile(true);
+          props.ToggleFolderMenu(e);
         }}
       >
         Rename
@@ -28,6 +29,7 @@ function FileMenu(props) {
         onClick={(e) => {
           e.stopPropagation();
           props.onDelete();
+          props.ToggleFolderMenu(e);
         }}
       >
         Delete
