@@ -3,6 +3,8 @@ import { SlideContext } from "../toolbar/SlideContext";
 import {
   listDocuments,
   listFolders,
+  renameDocument,
+  renameFolder,
   createDocument,
   checkUrbitWindow,
   deleteDocument,
@@ -26,26 +28,6 @@ function Sidebar() {
   const [ids, setIds] = useState([]);
 
   const [info, setInfo] = useState([]);
-  function updateInfo(newInfo) {
-    setInfo([
-      ...newInfo.sort((a, b) => {
-        if ((a.owner && b.owner) || (!a.owner && !b.owner)) {
-          if (a.name > b.name) {
-            return 1;
-          } else if (a.name < b.name) {
-            return -1;
-          } else {
-            return 0;
-          }
-        } else if (a.owner) {
-          return 1;
-        } else {
-          return -1;
-        }
-      }),
-    ]);
-    sendData();
-  }
 
   const [appear, setAppear] = useState(false);
   const urbitStatus = useContext(UrbitContext);
@@ -65,7 +47,7 @@ function Sidebar() {
           .then((folRes) => {
             console.log("list folders result: ", folRes);
 
-            updateInfo([
+            setInfo([
               ...Object.values(docRes).map((doc) => {
                 console.log(doc);
                 return {
@@ -115,14 +97,22 @@ function Sidebar() {
     return content;
   };
 
-  const handleRename = (id, newName) => {
-    info.find((child) => {
-      if (child.id === id) {
-        child.name = newName;
-      }
+  function handleRename(id, newName, isDoc) {
+    const toRename = info.findIndex((child) => {
+      return (child.id = id);
     });
-    console.log(info);
-  };
+    console.log(info[toRename]);
+    if (isDoc) {
+      renameDocument(id, newName).then((res) => {
+        console.log("rename document result:", res);
+      });
+    } else {
+      renameFolder(info[toRename], newName).then((res) => {
+        console.log("rename folder result: ", res);
+      });
+    }
+    info[toRename].name = newName;
+  }
 
   function handleDelete(item, folder) {
     const toDelete = info.findIndex((doc) => doc.id == item);
@@ -137,9 +127,8 @@ function Sidebar() {
       children = info[toDelete].children;
       deleteFolder(info[toDelete]);
     }
-    const newInfo = info;
-    newInfo.splice(toDelete, 1);
-    updateInfo([...newInfo]);
+    info.splice(toDelete, 1);
+    setInfo([...info]);
     if (isFolder) {
       children.forEach((child) => {
         handleDelete(child, item);
@@ -210,7 +199,8 @@ function Sidebar() {
       id: `~${window.ship}-${crypto.randomUUID()}`,
       name: name,
     });
-    updateInfo([...info, { ...meta, children: [] }]);
+    info.push({ ...meta, children: [] });
+    setInfo([...info]);
     closeCreateDoc();
     return meta;
   }
@@ -230,10 +220,8 @@ function Sidebar() {
       content: Array.from(encoding),
     });
     console.log("create document result", id, settings);
-    updateInfo([
-      ...info,
-      { id: id, name: settings.name, owner: settings.owner },
-    ]);
+    info.push({ id: id, name: settings.name, owner: settings.owner });
+    setInfo([...info]);
     closeCreateDoc();
     return { id, settings };
   }
@@ -242,7 +230,8 @@ function Sidebar() {
     console.log("add remote doc");
     checkUrbitWindow();
     const { meta, content } = await addRemoteDocument(link);
-    updateInfo([...info, meta]);
+    info.push(meta);
+    setInfo([...info]);
     closeCreateDoc();
     return meta;
   }
@@ -368,6 +357,23 @@ function Sidebar() {
           .filter((child) => {
             return !ids.includes(child.id.id ? child.id.id : child.id);
           })
+          /*
+          .sort((a, b) => {
+            if ((a.owner && b.owner) || (!a.owner && !b.owner)) {
+              if (a.name > b.name) {
+                return 1;
+              } else if (a.name < b.name) {
+                return -1;
+              } else {
+                return 0;
+              }
+            } else if (a.owner) {
+              return 1;
+            } else {
+              return -1;
+            }
+          })
+          */
           .map((childData, index, arr) => {
             console.log(arr);
             return (

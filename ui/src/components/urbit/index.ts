@@ -132,7 +132,7 @@ export function createDocument(
       timestamp: Date.now(),
     };
     const settings: DocumentSettings = {
-      name: name.replaceAll(" ", "-"),
+      name: name,
       owner: owner ? owner : "~" + (window as any).ship,
       perms: owner
         ? [owner, (window as any).ship]
@@ -246,6 +246,51 @@ export function deleteDocument(id: DocumentId) {
   });
 }
 
+export function setDocumentSettings(
+  id: DocumentId,
+  settings: DocumentSettings
+) {
+  return new Promise<void>((resolve, reject) => {
+    checkUrbitWindow(reject);
+    (window as any).urbit.poke({
+      app: "engram",
+      mark: "post",
+      json: { settings: { dmeta: id, stg: settings } },
+      onSuccess: () => {
+        resolve();
+      },
+      onError: (e: any) => {
+        console.error(
+          "Error setting settings of doc: ",
+          doc,
+          " to: ",
+          settings,
+          e
+        );
+        reject("Error setting settings");
+      },
+    });
+  });
+}
+
+export function renameDocument(id: DocumentId, newName: string): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    console.log("renaming document: ", id, " to: ", newName);
+    getDocumentSettings(id).then((stg) => {
+      const newStg = {
+        name: newName,
+        owner: "~" + stg.owner,
+        perms: Object.values(stg.whitelist).map((ship) => "~" + ship),
+      };
+      console.log(newStg);
+      setDocumentSettings(id, newStg).then((res) => {
+        console.log("rename document result: ", res);
+        resolve();
+      });
+    });
+  });
+}
+
 export function createFolder(folder: FolderMeta): Promise<FolderMeta> {
   return new Promise<FolderMeta>((resolve, reject) => {
     checkUrbitWindow(reject);
@@ -284,16 +329,20 @@ export function deleteFolder(folder: FolderMeta) {
   });
 }
 
-export function setDocumentSettings(
-  id: DocumentId,
-  settings: DocumentSettings
-) {
+export function renameFolder(
+  folder: FolderMeta,
+  newName: string
+): Promise<void> {
   return new Promise<void>((resolve, reject) => {
+    const fmeta = {
+      id: folder.id,
+      name: newName,
+    };
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
       app: "engram",
       mark: "post",
-      json: { settings: { dmeta: id, stg: settings } },
+      json: { renamefolder: { old: folder, new: fmeta } },
       onSuccess: () => {
         resolve();
       },

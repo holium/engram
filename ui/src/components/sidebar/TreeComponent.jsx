@@ -179,16 +179,24 @@ function TreeComponent({
             }}
             autoFocus
             onBlur={(e) => {
-              handleRename(info.id, e.target.value);
+              handleRename(
+                info.id,
+                e.target.value,
+                typeof info.owner != "undefined"
+              );
               setrenameState(false);
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                handleRename(info.id, e.target.value);
+                handleRename(
+                  info.id,
+                  e.target.value,
+                  typeof info.owner != "undefined"
+                );
                 setrenameState(false);
-                e.stopPropagation();
               } else if (e.key == "Escape") {
                 setrenameState(false);
+                setNewName("");
               }
             }}
           />
@@ -227,7 +235,7 @@ function TreeComponent({
             ) : (
               <FileMenu
                 ToggleFolderMenu={ToggleFolderMenu}
-                renameFolder={setrenameState}
+                renameFile={setrenameState}
                 onDelete={handleDelete}
                 position={pos}
               />

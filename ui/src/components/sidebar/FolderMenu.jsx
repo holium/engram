@@ -39,6 +39,16 @@ function FolderMenu(props) {
         clickable
         onClick={() => {
           console.log(props);
+          props.renameFolder(true);
+        }}
+      >
+        Rename
+      </li>
+      <li
+        className="clickable"
+        clickable
+        onClick={() => {
+          console.log(props);
           props.onDelete(props.id);
         }}
       >

@@ -18,6 +18,15 @@ function FileMenu(props) {
         className="clickable"
         onClick={(e) => {
           e.stopPropagation();
+          props.renameFile(true);
+        }}
+      >
+        Rename
+      </li>
+      <li
+        className="clickable"
+        onClick={(e) => {
+          e.stopPropagation();
           props.onDelete();
         }}
       >
