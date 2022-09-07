@@ -1,11 +1,11 @@
 import { toggleMark, wrapIn } from "prosemirror-commands";
 import { MarkType, NodeRange } from "prosemirror-model";
 import { findWrapping } from "prosemirror-transform";
-import schema from "../../build/schema.ts";
-import { extendMark } from "../shortcuts.ts";
+import schema from "../../build/schema";
+import { extendMark } from "../shortcuts";
 import { useState, useEffect } from "react";
 
-function HighlightMenu(props) {
+function HighlightMenu(props: any) {
   // toggle basic marks
   function toggleBold() {
     toggleMark(schema.marks["strong"])(
@@ -169,9 +169,7 @@ function HighlightMenu(props) {
         <li
           onClick={toggleItalic}
           style={
-            hasMark("italic")
-              ? { backgroundColor: "var(--type-glass-color)" }
-              : {}
+            hasMark("italic") ? { backgroundColor: "var(--glass-color)" } : {}
           }
         >
           {/* Italic */}
@@ -189,7 +187,7 @@ function HighlightMenu(props) {
           onClick={toggleUnderline}
           style={
             hasMark("underline")
-              ? { backgroundColor: "var(--type-glass-color)" }
+              ? { backgroundColor: "var(--glass-color)" }
               : {}
           }
         >
@@ -207,9 +205,7 @@ function HighlightMenu(props) {
         <li
           onClick={toggleStrike}
           style={
-            hasMark("strike")
-              ? { backgroundColor: "var(--type-glass-color)" }
-              : {}
+            hasMark("strike") ? { backgroundColor: "var(--glass-color)" } : {}
           }
         >
           {/* Strike */}
@@ -226,9 +222,7 @@ function HighlightMenu(props) {
         <li
           onClick={toggleCode}
           style={
-            hasMark("code")
-              ? { backgroundColor: "var(--type-glass-color)" }
-              : {}
+            hasMark("code") ? { backgroundColor: "var(--glass-color)" } : {}
           }
         >
           {/* Code */}
@@ -246,7 +240,7 @@ function HighlightMenu(props) {
           onClick={toggleLink}
           style={
             hasMark("hyperlink")
-              ? { backgroundColor: "var(--type-glass-color)" }
+              ? { backgroundColor: "var(--glass-color)" }
               : {}
           }
         >
@@ -268,7 +262,7 @@ function HighlightMenu(props) {
             viewBox="0 0 513 224"
             width="16"
             height="16"
-            style={{ fill: "var(--type-glass-color)" }}
+            style={{ fill: "var(--glass-color)" }}
           >
             <path d="M361.77 223.848C453.641 223.848 493.899 127.848 512.48 25.6542L449.512 11.2026C434.028 74.1704 418.545 154.686 362.803 154.686C327.706 154.686 298.803 108.235 268.867 73.1381C237.899 35.9768 203.835 0.880005 151.19 0.880005C58.2864 0.880005 19.0606 96.88 0.47998 199.074L63.4477 213.525C78.9316 150.557 94.4155 70.0413 150.157 70.0413C185.254 70.0413 214.157 116.493 244.093 151.59C275.061 188.751 309.125 223.848 361.77 223.848Z" />
           </svg>
@@ -280,7 +274,7 @@ function HighlightMenu(props) {
             viewBox="0 0 448 512"
             width="16"
             height="16"
-            style={{ fill: "var(--type-glass-color)" }}
+            style={{ fill: "var(--glass-color)" }}
           >
             <path d="M417.1 368c-4.437 7.688-12.5 12-20.81 12c-4.062 0-8.188-1.031-11.97-3.219L248 297.6V456c0 13.25-10.75 24-23.1 24S200 469.3 200 456V297.6l-137.2 79.22C59 378.1 54.88 380 50.81 380c-8.312 0-16.37-4.312-20.81-12c-6.625-11.47-2.687-26.16 8.781-32.78L176 256l-137.2-79.22C27.31 170.2 23.38 155.5 29.1 144C36.59 132.6 51.28 128.5 62.78 135.2L200 214.4V56C200 42.75 210.8 32 224 32S248 42.75 248 56v158.4l137.2-79.22C396.8 128.5 411.4 132.6 417.1 144c6.625 11.47 2.688 26.16-8.781 32.78L271.1 256l137.2 79.22C420.7 341.8 424.6 356.5 417.1 368z" />
           </svg>

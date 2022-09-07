@@ -47,8 +47,8 @@
 .icon {
   @apply p-1 rounded-1;
   color: var(--rlm-icon-color, var(--type-color));
-  width: var(--leading-body);
-  height: var(--leading-body);
+  width: calc(var(--leading-body) + 4px);
+  height: calc(var(--leading-body) + 4px);
 }
 
 .clickable {

@@ -1,10 +1,11 @@
 /-  engram
+/+  engram
 /+  default-agent, dbug
 |%
 +$  versioned-state
   $%  state-0
   ==
-+$  state-0  [%0 d=docs:engram f=fldrs:engram u=updts:engram s=dstgs:engram]
++$  state-0  [%0 d=docs:engram f=fldrs:engram u=updts:engram s=dstgs:engram su=dsnaps:engram]
 +$  card  card:agent:gall
 --
 %-  agent:dbug
@@ -45,6 +46,10 @@
     ?<  (~(has by d) dmeta.action)
     `this(d (~(put by d) dmeta.action doc.action))
     ::
+     %createsnap
+    ?<  (~(has by su) dmeta.action)
+    `this(su (~(put by su) dmeta.action ~))
+    ::
     :: modify a document by changing the stored document state
     ::
       %save
@@ -61,6 +66,11 @@
     ::
       %settings
     `this(s (~(put by s) dmeta.action stg.action))
+    ::
+    ::
+    ::
+      %dsettings
+    `this(s (~(del by s) dmeta.action))
     ::
     :: create a new folder
     ::
@@ -88,6 +98,17 @@
     ?:  =(~(wyt in a) 1)
         `this(f (~(put by f) fmeta.action ~))
     `this(f (~(del ju f) fmeta.action fldr.action))
+    ::
+    ::
+    ::
+      %renamefolder
+    ~&  old.action
+    ~&  new.action
+    =/  data=(set fldr:engram)  (~(get ja f) old.action)
+    ~&  data
+    =/  new-folder=fldrs:engram  (~(del by f) old.action)
+    ~&  new-folder
+    `this(f (~(put by new-folder) new.action data))
     ::
     :: remove the merged update from the update list (as updates aren't implemented this will just log)
     ::
@@ -154,30 +175,37 @@
   ^-  (unit (unit cage))
   ?+    path  (on-peek:def path)
       [%x %docinfo ~]
-    =/  k=(set [owner=@p id=@ name=@t])  ~(key by d)
-    ``noun+!>(k)
+    ``noun+!>((enjs-docinfo:engram s))
   ::
-      [%x %gdoc @ @ @ ~]
-    =/  owner=@p  (slav %p i.t.t.path)
-    =/  id=@  (slav %ud i.t.t.t.path)
-    =/  name=@t  (crip (trip i.t.t.t.t.path))
-    =/  meta  [owner=owner id=id name=name]
+      [%x %gdoc @ @ ~]
+    =/  id=@  (crip (trip i.t.t.path))
+    =/  timestamp=@d  (di:dejs:format [%n p=i.t.t.t.path])
+    ~&  (di:dejs:format [%n p=i.t.t.t.path])
+    ~&  timestamp
+    =/  meta  [id=id timestamp=timestamp]
+    ~&  meta
     =/  doc=[version=(list @ud) cont=(list @ud)]  (need (~(get by d) meta))
     ``noun+!>(doc)
   ::
-      [%x %gsetting @ @ @ ~]
-    =/  owner=@p  (slav %p i.t.t.path)
-    =/  id=@  (slav %ud i.t.t.t.path)
-    =/  name=@t  (crip (trip i.t.t.t.t.path))
-    =/  meta  [owner=owner id=id name=name]
-    =/  stg=[perms=(list @p)]  (need (~(get by s) meta))
-    ``noun+!>(stg)
+      [%x %gsetting @ @ ~]
+    =/  id=@  (crip (trip i.t.t.path))
+    =/  timestamp=@d  (di:dejs:format [%n p=i.t.t.t.path])
+    =/  meta  [id=id timestamp=timestamp]
+    =/  stg=[perms=(list @p) owner=@p name=@t]  (need (~(get by s) meta))
+    ~&  stg
+    ``noun+!>((enjs-gsetting:engram stg))
   ::
-      [%x %gfolders @ @ @ ~]  ``noun+!>(f)
-      :: (jug [id=@ name=@t] $%([%doc [owner=@p id=@ name=@t]] [%folder [id=@ name=@t]]))
-    :: =/  t=(jug [id=@ name=@t] $%([%doc [owner=@p id=@ name=@t]] [%folder [id=@ name=@t]]))  f
-  
-    [%x %gupdates @ @ @ ~]
+      [%x %gfolders ~]
+    ``noun+!>((enjs-gfolders:engram f))
+  ::
+      [%x %getsnaps @ @ ~]
+    =/  id=@  (crip (trip i.t.t.path))
+    =/  timestamp=@d  (di:dejs:format [%n p=i.t.t.t.path])
+    =/  meta  [id=id timestamp=timestamp]
+    =/  snap=(list snap:engram)  (need (~(get by su) meta))
+    ~&  snap
+    ``noun+!>((enjs-getsnaps:engram snap))
+      [%x %gupdates @ @ @ ~]
     =/  owner=@p  (slav %p i.t.t.path)
     =/  id=@  (slav %ud i.t.t.t.path)
     =/  name=@t  (crip (trip i.t.t.t.t.path))
