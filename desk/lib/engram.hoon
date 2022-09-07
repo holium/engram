@@ -15,6 +15,7 @@
     [%dsettings (ot ~[dmeta+(ot ~[id+so timestamp+di])])]
     [%mfolder (ot ~[fmeta+(ot ~[id+so name+so])])]
     [%dfolder (ot ~[fmeta+(ot ~[id+so name+so])])]
+    [%renamefolder (ot ~[old+(ot ~[id+so name+so]) new+(ot ~[id+so name+so])])]
     [%foldoc (ot ~[fmeta+(ot ~[id+so name+so]) fldr+(of ~[[[%doc] (ot ~[id+so timestamp+di])] [[%folder] (ot ~[id+so name+so])]])])]
     [%remfoldoc (ot ~[fmeta+(ot ~[id+so name+so]) fldr+(of ~[[[%doc] (ot ~[id+so timestamp+di])] [[%folder] (ot ~[id+so name+so])]])])]
     [%createsnap (ot ~[dmeta+(ot ~[id+so timestamp+di])])]
