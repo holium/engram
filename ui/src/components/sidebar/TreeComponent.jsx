@@ -46,7 +46,7 @@ function TreeComponent({
   }, [info.children ? info.children.length : info.id]);
 
   const toggleAdd = (name, type) => {
-    handleAdd(info.name, name, type);
+    handleAdd(info.id, name, type);
     setChildren(getChildren(info.children));
     setExpand(true);
   };
@@ -57,7 +57,7 @@ function TreeComponent({
   }
 
   const handleDelete = () => {
-    onDelete(info.id, folder);
+    onDelete(info.id.id, folder);
     /*
     setInfo({ id: null, name: null, children: [] });
     setChildren([]);
@@ -78,7 +78,7 @@ function TreeComponent({
   }
 
   function openDocument() {
-    console.log("opening doc:", info.id);
+    console.log("opening doc:", info.id.id);
     document.dispatchEvent(OpenDocumentEvent(info));
   }
 
@@ -94,7 +94,7 @@ function TreeComponent({
         }}
       >
         {info.owner ? (
-          info.owner == "~" + window.ship ? (
+          info.owner == window.ship ? (
             // a dot if this ship is the origin
             <svg
               viewBox="0 0 25 25"

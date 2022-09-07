@@ -47,8 +47,9 @@ function Sidebar() {
 
             setInfo([
               ...Object.values(docRes).map((doc) => {
+                console.log(doc);
                 return {
-                  id: doc.id.id,
+                  id: doc.id,
                   owner: doc.owner,
                   name: doc.name,
                 };
@@ -82,15 +83,20 @@ function Sidebar() {
   const sendData = () => {
     const ids1 = info
       .filter((childData) => childData.children)
-      .map((childData) => childData.children);
+      .map((childData) =>
+        childData.children.map((child) =>
+          typeof child == "string" ? child : child.id
+        )
+      );
     const ids2 = ids1.flat();
     const set = new Set(ids2);
+    console.log(set);
     setIds([...Array.from(set)]);
   };
 
   const getChildren = (identifier) => {
     console.log("getting children: ", identifier, " from ", info);
-    const content = info.filter((child) => identifier.includes(child.id));
+    const content = info.filter((child) => identifier.includes(child.id.id));
     return content;
   };
 
@@ -128,7 +134,11 @@ function Sidebar() {
     } else if (type == "remote") {
       res = await addRemoteDoc(name);
     }
-    moveToFrom(res, id, null);
+    moveToFrom(
+      { id: res.id, name: res.settings.name, owner: res.settings.owner },
+      id,
+      null
+    );
 
     sendData();
   }
@@ -136,7 +146,7 @@ function Sidebar() {
   function moveToFrom(id, to, from) {
     // null for root
     let target;
-    if (typeof target == "string") target = info.find((tar) => tar.id == id);
+    if (typeof target == "string") target = info.find((tar) => tar.id.id == id);
     else target = id;
     console.log(target, id);
     if (from != null) {
@@ -148,11 +158,8 @@ function Sidebar() {
       );
       removeFromFolder(
         { id: removeFrom.id, name: removeFrom.name },
-        {
-          id: target.id,
-          name: target.name,
-          ...(target.owner ? { owner: target.owner } : {}),
-        }
+        target.id,
+        target.owner ? true : false
       );
       info.push(removeFrom);
     }
@@ -165,11 +172,8 @@ function Sidebar() {
       );
       addToFolder(
         { id: addTo.id, name: addTo.name },
-        {
-          id: target.id,
-          name: target.name,
-          ...(target.owner ? { owner: target.owner } : {}),
-        }
+        target.id,
+        target.owner ? true : false
       );
       info.push(addTo);
     }
@@ -205,7 +209,7 @@ function Sidebar() {
     console.log("create document result", id, settings);
     setInfo([...info, { id: id, name: settings.name, owner: settings.owner }]);
     closeCreateDoc();
-    return id;
+    return { id, settings };
   }
 
   async function addRemoteDoc(link) {
@@ -335,7 +339,13 @@ function Sidebar() {
         )}
 
         {info
-          .filter((child) => !ids.includes(child.id))
+          .filter((child) => {
+            console.log(
+              child.id.id ? child.id.id : child.id,
+              !ids.includes(child.id.id ? child.id.id : child.id)
+            );
+            return !ids.includes(child.id.id ? child.id.id : child.id);
+          })
           .sort((a, b) => {
             if ((a.owner && b.owner) || (!a.owner && !b.owner)) {
               if (a.name > b.name) {

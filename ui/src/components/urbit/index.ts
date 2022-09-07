@@ -159,7 +159,6 @@ export function createDocument(
         ? [owner, (window as any).ship]
         : ["~" + (window as any).ship],
     };
-    console.log(id, settings);
     setDocumentSettings(id, settings).then(() => {
       (window as any).urbit.poke({
         app: "engram",
@@ -176,7 +175,14 @@ export function createDocument(
             mark: "post",
             json: { createsnap: { dmeta: id } },
             onSuccess: () => {
-              resolve({ id: id, settings: settings });
+              resolve({
+                id: id,
+                settings: {
+                  name: settings.name,
+                  owner: owner ? owner : (window as any).ship,
+                  perms: settings.perms,
+                },
+              });
             },
             onError: (e: any) => {
               console.error("Error initializing version history: ", meta, e);
@@ -297,7 +303,11 @@ export function setDocumentSettings(
   });
 }
 
-export function addToFolder(meta: FolderMeta, doc: FolderMeta | DocumentMeta) {
+export function addToFolder(
+  meta: FolderMeta,
+  doc: FolderMeta | DocumentId,
+  isDoc: boolean
+) {
   return new Promise<void>((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
@@ -306,7 +316,7 @@ export function addToFolder(meta: FolderMeta, doc: FolderMeta | DocumentMeta) {
       json: {
         foldoc: {
           fmeta: meta,
-          fldr: { [(doc as any).owner ? "doc" : "folder"]: doc },
+          fldr: { [isDoc ? "doc" : "folder"]: doc },
         },
       },
       onSuccess: () => {
@@ -322,14 +332,17 @@ export function addToFolder(meta: FolderMeta, doc: FolderMeta | DocumentMeta) {
 
 export function removeFromFolder(
   meta: FolderMeta,
-  doc: FolderMeta | DocumentMeta
+  doc: FolderMeta | DocumentId,
+  isDoc: boolean
 ) {
   return new Promise<void>((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
       app: "engram",
       mark: "post",
-      json: { remfoldoc: { fmeta: meta, fldr: doc } },
+      json: {
+        remfoldoc: { fmeta: meta, fldr: { [isDoc ? "doc" : "folder"]: doc } },
+      },
       onSuccess: () => {
         resolve();
       },
