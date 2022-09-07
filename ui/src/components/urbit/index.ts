@@ -211,10 +211,38 @@ export function deleteDocument(id: DocumentId) {
         resolve();
       },
       onError: (e: any) => {
+        console.warn("Error deleting document: ", id, e);
+        reject("Error deleting document");
+      },
+    });
+    (window as any).urbit.poke({
+      app: "engram",
+      mark: "post",
+      json: { dsettings: { dmeta: id } },
+      onSuccess: () => {
+        //delete document settings
+        resolve();
+      },
+      onError: (e: any) => {
+        console.warn("Error deleting document settings: ", id, e);
+        reject("Error deleting document settings");
+      },
+    });
+    /*
+    (window as any).urbit.poke({
+      app: "engram",
+      mark: "post",
+      json: { dupdates: { dmeta: id } },
+      onSuccess: () => {
+        //delete document settings
+        resolve();
+      },
+      onError: (e: any) => {
         console.error("Error deleting document: ", id, e);
         reject("Error deleting document");
       },
     });
+    */
   });
 }
 
