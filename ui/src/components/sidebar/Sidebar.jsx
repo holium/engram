@@ -107,11 +107,10 @@ function Sidebar() {
   };
 
   function handleRename(id, newName, isDoc) {
-    const toRename = info.findIndex((child) => {
-      return (child.id = id);
+    const toRename = info.findIndex((doc) => {
+      return (doc.id.id ? doc.id.id : doc.id) == (id.id ? id.id : id);
     });
-    console.log(info[toRename]);
-    if (isDoc) {
+    if (id.id) {
       renameDocument(id, newName).then((res) => {
         console.log("rename document result:", res);
       });
@@ -125,15 +124,8 @@ function Sidebar() {
 
   function handleDelete(item, folder) {
     const toDelete = info.findIndex((doc) => {
-      console.log(
-        "comparing:",
-        item,
-        doc,
-        (doc.id.id ? doc.id.id : doc.id) == (item.id ? item.id : item)
-      );
       return (doc.id.id ? doc.id.id : doc.id) == (item.id ? item.id : item);
     });
-    console.log("deleting: ", item, toDelete, info[toDelete]);
     moveToFrom(item, null, folder);
     let children = [];
     if (item.id) {
