@@ -198,14 +198,14 @@ function Sidebar() {
     const version = Y.encodeStateVector(doc);
     const encoding = Y.encodeStateAsUpdateV2(doc);
 
-    const meta = await createDocument(name, {
+    const { id, settings } = await createDocument(name, {
       version: Array.from(version),
       content: Array.from(encoding),
     });
-    console.log("create document result", meta);
-    setInfo([...info, meta]);
+    console.log("create document result", id, settings);
+    setInfo([...info, { id: id, name: settings.name, owner: settings.owner }]);
     closeCreateDoc();
-    return meta;
+    return id;
   }
 
   async function addRemoteDoc(link) {

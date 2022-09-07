@@ -75,7 +75,7 @@ export interface DocumentId {
 export interface DocumentSettings {
   name: string;
   owner: Patp;
-  whitelist?: Array<Patp>;
+  perms?: Array<Patp>;
 }
 
 export interface DocumentUpdate {

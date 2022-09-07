@@ -135,26 +135,31 @@ export function createDocument(
   doc: { version: Array<number>; content: Array<number> },
   owner?: Patp
 ): Promise<{ id: DocumentId; settings: DocumentSettings }> {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     checkUrbitWindow(reject);
     const id: DocumentId = {
       id: Array.from(
         new Uint8Array(
-          crypto.subtle.digest(
+          await crypto.subtle.digest(
             "SHA-256",
             new TextEncoder().encode(`~${window.ship}-${crypto.randomUUID()}`)
           )
         )
       )
-        .map((a) => a.toString(16).padStart(2, "0"))
+        .map((a) => {
+          return a.toString(16).padStart(2, "0");
+        })
         .join(""),
       timestamp: Date.now(),
     };
     const settings: DocumentSettings = {
       name: name.replaceAll(" ", "-"),
-      owner: owner ? owner : (window as any).ship,
-      whitelist: owner ? [owner, (window as any).ship] : [(window as any).ship],
+      owner: owner ? owner : "~" + (window as any).ship,
+      perms: owner
+        ? [owner, (window as any).ship]
+        : ["~" + (window as any).ship],
     };
+    console.log(id, settings);
     setDocumentSettings(id, settings).then(() => {
       (window as any).urbit.poke({
         app: "engram",
@@ -169,7 +174,7 @@ export function createDocument(
           (window as any).urbit.poke({
             app: "engram",
             mark: "post",
-            json: { createsnap: { dmeta: dmeta } },
+            json: { createsnap: { dmeta: id } },
             onSuccess: () => {
               resolve({ id: id, settings: settings });
             },
@@ -265,7 +270,10 @@ export function deleteFolder(folder: FolderMeta) {
   });
 }
 
-export function setDocumentSettings(id: DocumentId, settings: any) {
+export function setDocumentSettings(
+  id: DocumentId,
+  settings: DocumentSettings
+) {
   return new Promise<void>((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
