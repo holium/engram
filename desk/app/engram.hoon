@@ -91,7 +91,7 @@
     ::
     :: remove the merged update from the update list (as updates aren't implemented this will just log)
     ::
-     %merge
+      %merge
 
     =/  a  (~(get ju u) dmeta.action)
    :: ?:  =(~(wyt in a) 1)
@@ -131,7 +131,7 @@
 ++  on-watch
   |=  =path
   ^-  (quip card _this)
-  ~&  "hi from zod"
+  ~&  "hi from nut"
   ?+    path  (on-watch:def path)
       [%updates @ @ @ ~]
     ::~&  i.t.path
@@ -143,18 +143,14 @@
     ::~&  name
     =/  meta  [owner=owner id=id name=name]
     =/  stg=[perms=(list @p)]  (need (~(get by s) meta))
-    :: ~&  src.bowl
-    :: ~&  perms.stg
+    ::~&  src.bowl
+    ::~&  perms.stg
     ?~  (find [src.bowl]~ perms.stg)
      :: ~&  "is null"
       !!
     
     :_  this
-    ~&  u
-    :: ~&  '---'
-    :: ~&  !>(u)
-    =/  docu  (~(get by d) meta)
-       :~  [%give %fact ~ %noun !>(docu)]
+       :~  [%give %fact ~ %noun !>(u)]
     ==   
 ==
 ++  on-leave  on-leave:def
@@ -187,12 +183,11 @@
     :: =/  t=(jug [id=@ name=@t] $%([%doc [owner=@p id=@ name=@t]] [%folder [id=@ name=@t]]))  f
   ==
 ::
-++  on-agent
- |=  [=wire =sign:agent:gall]
+++  on-agent  
+  |=  [=wire =sign:agent:gall]
     ^-  (quip card _this)
-    ~&  "This should print- nut"
+    ::~&  "This should print- nut"
     ?+    wire  (on-agent:def wire sign)
-    
         [%engram ~]
       ?+    -.sign  (on-agent:def wire sign)
           %watch-ack
@@ -209,7 +204,9 @@
           %fact
         ?+    p.cage.sign  (on-agent:def wire sign)
             %noun
-          ~&  !<(update:engram q.cage.sign)
+          ~&  'logging'
+          ~&  q.cage.sign
+          ::~&  !<(update:engram q.cage.sign)
           `this
         ==
       ==
