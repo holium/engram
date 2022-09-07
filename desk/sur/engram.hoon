@@ -59,11 +59,11 @@
       [%dfolder =fmeta]
       [%foldoc =fmeta =fldr]
       [%remfoldoc =fmeta =fldr]
-      [%merge =dmeta @ud]
+      [%merge =dmeta =updt]
       [%sub =dmeta] 
-      [%unsub =dmeta]
+      [%unsub =dmeta =updt]
       [%update =dmeta =updt]
-      [%update-live =dmeta]
+      [%update-live =dmeta =updt]
   ==
 +$  update
   $%  [%sub =dmeta]

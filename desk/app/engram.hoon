@@ -92,16 +92,7 @@
     :: remove the merged update from the update list (as updates aren't implemented this will just log)
     ::
       %merge
-
-    =/  a  (~(get ju u) dmeta.action)
-   :: ?:  =(~(wyt in a) 1)
-    :: =/  b  
-    :: =/  c  (snag a b)
-    !!
-    ::`this(u (~(del ju u) dmeta.action b))
-    
-    :: ~|  "merge"
-    :: !!
+    `this(u (~(del ju u) dmeta.action updt.action))
     %sub
   ::  ~&  owner.dmeta.action
   :: !!
@@ -117,14 +108,13 @@
 
     %update-live
     =/  li  /updates/(scot %p owner.dmeta.action)/(scot %ud id.dmeta.action)/[`@ta`name.dmeta.action]
-   :: ~&  li
+    :: ~&  li
+    ~&  updt.action
     :_  this
-    :~  [%give %fact ~[li] %noun !>(u)]
+    :~  [%give %fact ~[li] %noun !>(updt.action)]
     ==
     %update
-  :: ~&  owner.dmeta.action
-  :: !!
-   `this(u (~(put ju u) dmeta.action updt.action))
+    `this(u (~(put ju u) dmeta.action updt.action))
     ==
   ==
 
@@ -148,9 +138,14 @@
     ?~  (find [src.bowl]~ perms.stg)
      :: ~&  "is null"
       !!
-    
+    ~&  'check print zod'
     :_  this
-       :~  [%give %fact ~ %noun !>(u)]
+    ~&  'this should print'
+    =/  stg  (need (~(get by s) meta))
+    ~&  stg
+    =/  docu  (need (~(get by d) meta))
+    ~&  docu
+       :~  [%give %fact ~ %noun !>(stg+docu)]
     ==   
 ==
 ++  on-leave  on-leave:def
@@ -181,6 +176,14 @@
       [%x %gfolders @ @ @ ~]  ``noun+!>(f)
       :: (jug [id=@ name=@t] $%([%doc [owner=@p id=@ name=@t]] [%folder [id=@ name=@t]]))
     :: =/  t=(jug [id=@ name=@t] $%([%doc [owner=@p id=@ name=@t]] [%folder [id=@ name=@t]]))  f
+  
+    [%x %gupdates @ @ @ ~]
+    =/  owner=@p  (slav %p i.t.t.path)
+    =/  id=@  (slav %ud i.t.t.t.path)
+    =/  name=@t  (crip (trip i.t.t.t.t.path))
+    =/  meta  [owner=owner id=id name=name]
+    =/  upd  (need (~(get by u) meta))
+    ``noun+!>(upd)
   ==
 ::
 ++  on-agent  
