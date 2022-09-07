@@ -61,7 +61,7 @@
       [%remfoldoc =fmeta =fldr]
       [%merge =dmeta =updt]
       [%sub =dmeta] 
-      [%unsub =dmeta =updt]
+      [%unsub =dmeta]
       [%update =dmeta =updt]
       [%update-live =dmeta =updt]
   ==
