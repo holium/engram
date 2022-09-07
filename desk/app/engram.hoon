@@ -1,5 +1,5 @@
 /-  engram
-:: /+  engram
+/+  engram
 /+  default-agent, dbug
 |%
 +$  versioned-state
@@ -36,7 +36,7 @@
   |=  [=mark =vase]
   ^-  (quip card _this)
   ?+    mark  (on-poke:def mark vase)
-      %noun
+      %post
     =/  action  !<(?(action:engram) vase)
     ?-    -.action
     ::
@@ -114,15 +114,14 @@
   ^-  (unit (unit cage))
   ?+    path  (on-peek:def path)
       [%x %docinfo ~]
-    =/  docs  ~(tap in ~(key by d))
-    ``noun+!>(docs)
+    ``noun+!>((enjs-docinfo:engram s))
   ::
       [%x %gdoc @ @ ~]
     =/  id=@  (crip (trip i.t.t.path))
     =/  timestamp=@d  (slav %d i.t.t.t.path)
     =/  meta  [id=id timestamp=timestamp]
     =/  doc=[version=(list @ud) cont=(list @ud)]  (need (~(get by d) meta))
-    ``noun+!>(doc)
+    ``noun+!>((enjs-gdoc:engram doc))
   ::
       [%x %gsetting @ @ ~]
     =/  id=@  (crip (trip i.t.t.path))
@@ -130,7 +129,7 @@
     =/  meta  [id=id timestamp=timestamp]
     =/  stg=[perms=(list @p) owner=@p name=@t]  (need (~(get by s) meta))
     ~&  stg
-    ``noun+!>(stg)
+    ``noun+!>((enjs-gsetting:engram stg))
   ::
       [%x %gfolders ~]
     ``noun+!>(f)
@@ -141,7 +140,7 @@
     =/  meta  [id=id timestamp=timestamp]
     =/  snap=(list snap:engram)  (need (~(get by su) meta))
     ~&  snap
-    ``noun+!>(snap)
+    ``noun+!>((enjs-getsnaps:engram snap))
   ==
 ::
 ++  on-agent

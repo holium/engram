@@ -8,43 +8,34 @@
   %.  jon
   %-  of
   :~
-    [%make (ot ~[dmeta+(ot ~[owner+(se %p) id+so name+so]) doc+(ot ~[version+(ar ni) content+(ar ni)])])]
-    [%delete (ot ~[dmeta+(ot ~[owner+(se %p) id+so name+so])])]
-    [%save (ot ~[dmeta+(ot ~[owner+(se %p) id+so name+so]) doc+(ot ~[version+(ar ni) content+(ar ni)])])]
+    [%make (ot ~[dmeta+(ot ~[id+so timestamp+di]) doc+(ot ~[version+(ar ni) content+(ar ni)])])]
+    [%delete (ot ~[dmeta+(ot ~[id+so timestamp+di])])]
+    [%save (ot ~[dmeta+(ot ~[id+so timestamp+di]) doc+(ot ~[version+(ar ni) content+(ar ni)])])]
     [%mfolder (ot ~[fmeta+(ot ~[id+so name+so])])]
     [%dfolder (ot ~[fmeta+(ot ~[id+so name+so])])]
-    [%foldoc (ot ~[fmeta+(ot ~[id+so name+so]) fldr+(of ~[[[%doc] (ot ~[owner+(se %p) id+so name+so])] [[%folder] (ot ~[id+so name+so])]])])]
-    [%remfoldoc (ot ~[fmeta+(ot ~[id+so name+so]) fldr+(of ~[[[%doc] (ot ~[owner+(se %p) id+so name+so])] [[%folder] (ot ~[id+so name+so])]])])]
-    [%createsnap (ot ~[dmeta+(ot ~[owner+(se %p) id+so name+so])])]
-    [%merge (ot ~[dmeta+(ot ~[owner+(se %p) id+so name+so]) index+ni])]
-    [%snap (ot ~[dmeta+(ot ~[owner+(se %p) id+so name+so]) snap+(ot ~[date+di ship+(se %p) data+(ar ni)])])]
+    [%foldoc (ot ~[fmeta+(ot ~[id+so name+so]) fldr+(of ~[[[%doc] (ot ~[id+so timestamp+di])] [[%folder] (ot ~[id+so name+so])]])])]
+    [%remfoldoc (ot ~[fmeta+(ot ~[id+so name+so]) fldr+(of ~[[[%doc] (ot ~[id+so timestamp+di])] [[%folder] (ot ~[id+so name+so])]])])]
+    [%createsnap (ot ~[dmeta+(ot ~[id+so timestamp+di])])]
+    [%merge (ot ~[dmeta+(ot ~[id+so timestamp+di]) index+ni])]
+    [%snap (ot ~[dmeta+(ot ~[id+so timestamp+di]) snap+(ot ~[date+di ship+(se %p) data+(ar ni)])])]
   ==
-++  enjs-getsnaps
+++  enjs-docinfo
   =,  enjs:format
-  |=  snaps=(list snap)
-  =/  counter  0
+  |=  stgs=dstgs
+  =/  docs  ~(tap in ~(key by stgs))
   =/  results  *(list [@t json])
-  =/  assembled
+  =/  counter  0
+  %-  pairs
   |-
-    ?:  =(counter (lent snaps))
-      results
-    =/  curr  (snag counter snaps)
-    =/  data  data:curr
-    =/  data-counter  0
-    =/  data-results  *(list [@t json])
-    =/  data-assembled
-    |-
-    ?:  =(data-counter (lent data))
-      data-results
-    %=  $
-      data-counter  (add data-counter 1)
-      data-results  (snoc data-results [(crip "{<data-counter>}") (numb (snag data-counter data))])
-    ==
+  ?:  =(counter (lent docs))
+    results
+  =/  curr  (snag counter docs)
+  =/  dstg  (~(got by stgs) curr)
+  =/  meta  (pairs ~[['id' (pairs ~[['id' (tape (trip id:curr))] ['timestamp' (time timestamp:curr)]])] ['name' (tape (trip name:dstg))] ['owner' (tape (trip owner:dstg))]])
   %=  $
     counter  (add counter 1)
-    results  (snoc results [(crip "{<counter>}") (pairs ~[['date' (time date:curr)] ['ship' (ship ship:curr)] ['data' (pairs data-assembled)]])])
+    results  (snoc results [id:curr meta])
   ==
-  (pairs assembled)
 ++  enjs-gdoc
   =,  enjs:format
   |=  document=doc
@@ -69,39 +60,23 @@
     content-result  (snoc content-result [(crip "{<content-counter>}") (numb:enjs:format (snag content-counter cont:document))])
   ==
   (pairs:enjs:format ~[['version' (pairs:enjs:format assembled-version)] ['content' (pairs:enjs:format assembled-content)]])
-++  enjs-docinfo
-  =,  enjs:format
-  |=  docs=(list dmeta)
-  =/  results  *(list [@t json])
-  =/  counter  0
-  =/  assembled
-  |-
-  ?:  =(counter (lent docs))
-    results
-  =/  curr  (snag counter docs)
-  =/  meta  (pairs ~[['owner' (ship owner:curr)] ['name' (tape (trip name:curr))]])
-  %=  $
-    counter  (add counter 1)
-    results  (snoc results [id:curr meta])
-  ==
-  (pairs assembled)
 ++  enjs-gsetting
   =,  enjs:format
   |=  settings=stg
-  =/  results  *(list [@t json])
+  =/  wl  *(list [@t json])
   =/  counter  0
-  =/  assembled
+  =/  assembled-wl
   |-
   ?:  =(counter (lent perms:settings))
-    results
+    wl
   =/  curr  (snag counter perms:settings)
   %=  $
-    results  (snoc results [(crip "{<counter>}") (ship curr)])
+    wl  (snoc wl [(crip "{<counter>}") (ship curr)])
   ==
-  (pairs assembled)
+  (pairs ~[['owner' (ship owner:settings)] ['name' (tape (trip name:settings))] ['whitelist' (pairs assembled-wl)]])
 ++  enjs-gfolders
   =,  enjs:format
-  |=  folders=(jug fmeta fldr)
+  |=  folders=fldrs
   =/  keys  ~(tap in ~(key by folders))
   ~&  "keys"
   ~&  (lent keys)
@@ -131,7 +106,7 @@
     =/  res
       ?-  -.item
           [%doc]
-        (pairs ~[['owner' (ship owner:dmeta:item)] ['id' (tape (trip `cord`id:dmeta:item))] ['name' (tape (trip name:dmeta:item))]])
+        (pairs ~[['id' (tape (trip `cord`id:dmeta:item))] ['timestamp' (time timestamp:dmeta:item)]])
           [%folder]
         (pairs ~[['id' (tape (trip `cord`id:fmeta:item))] ['name' (tape (trip name:fmeta:item))]])
       ==
@@ -143,6 +118,32 @@
   %=  $
     counter  (add counter 1)
     results  (snoc results [(crip "{<counter>}") (pairs ~[['meta' (pairs ~[['id' (tape (trip `@t`id:key))] ['name' (tape (trip name:key))]])] ['content' content]])])
+  ==
+  (pairs assembled)
+++  enjs-getsnaps
+  =,  enjs:format
+  |=  snaps=(list snap)
+  =/  counter  0
+  =/  results  *(list [@t json])
+  =/  assembled
+  |-
+    ?:  =(counter (lent snaps))
+      results
+    =/  curr  (snag counter snaps)
+    =/  data  data:curr
+    =/  data-counter  0
+    =/  data-results  *(list [@t json])
+    =/  data-assembled
+    |-
+    ?:  =(data-counter (lent data))
+      data-results
+    %=  $
+      data-counter  (add data-counter 1)
+      data-results  (snoc data-results [(crip "{<data-counter>}") (numb (snag data-counter data))])
+    ==
+  %=  $
+    counter  (add counter 1)
+    results  (snoc results [(crip "{<counter>}") (pairs ~[['date' (time date:curr)] ['ship' (ship ship:curr)] ['data' (pairs data-assembled)]])])
   ==
   (pairs assembled)
 --
