@@ -72,6 +72,7 @@
     wl
   =/  curr  (snag counter perms:settings)
   %=  $
+    counter  (add counter 1)
     wl  (snoc wl [(crip "{<counter>}") (ship curr)])
   ==
   (pairs ~[['owner' (ship owner:settings)] ['name' (tape (trip name:settings))] ['whitelist' (pairs assembled-wl)]])

@@ -118,14 +118,17 @@
   ::
       [%x %gdoc @ @ ~]
     =/  id=@  (crip (trip i.t.t.path))
-    =/  timestamp=@d  (slav %d i.t.t.t.path)
+    =/  timestamp=@d  (di:dejs:format [%n p=i.t.t.t.path])
+    ~&  (di:dejs:format [%n p=i.t.t.t.path])
+    ~&  timestamp
     =/  meta  [id=id timestamp=timestamp]
+    ~&  meta
     =/  doc=[version=(list @ud) cont=(list @ud)]  (need (~(get by d) meta))
     ``noun+!>((enjs-gdoc:engram doc))
   ::
       [%x %gsetting @ @ ~]
     =/  id=@  (crip (trip i.t.t.path))
-    =/  timestamp=@d  (slav %d i.t.t.t.path)
+    =/  timestamp=@d  (di:dejs:format [%n p=i.t.t.t.path])
     =/  meta  [id=id timestamp=timestamp]
     =/  stg=[perms=(list @p) owner=@p name=@t]  (need (~(get by s) meta))
     ~&  stg
@@ -134,9 +137,9 @@
       [%x %gfolders ~]
     ``noun+!>((enjs-gfolders:engram f))
   ::
-      [%x %getsnaps @ @ @ ~]
+      [%x %getsnaps @ @ ~]
     =/  id=@  (crip (trip i.t.t.path))
-    =/  timestamp=@d  (slav %d i.t.t.t.path)
+    =/  timestamp=@d  (di:dejs:format [%n p=i.t.t.t.path])
     =/  meta  [id=id timestamp=timestamp]
     =/  snap=(list snap:engram)  (need (~(get by su) meta))
     ~&  snap
