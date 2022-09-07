@@ -1,23 +1,15 @@
 import { useState, useEffect } from "react";
-import { getDocumentSettings, setWhitelist, pathParser } from "../urbit/index";
+import { getDocumentSettings, setWhitelist } from "../urbit/index";
 
-function PublishPanel(props: { path: string; show: boolean }) {
+function PublishPanel(props: { path: DocumentId; show: boolean }) {
   const [members, setMembers] = useState([]);
   const [owner, setOwner] = useState("");
-  const [id, setId] = useState("");
   const [newMember, setNewMember] = useState("");
 
   useEffect(() => {
-    const parsed = props.path.match(pathParser);
-    const meta = {
-      owner: parsed.groups.owner,
-      id: parsed.groups.id,
-      name: parsed.groups.name,
-    };
-    setOwner(parsed.groups.owner);
-    setId(parsed.groups.id);
-    getDocumentSettings(meta).then((res) => {
+    getDocumentSettings(props.path).then((res) => {
       console.log("set settings result", res);
+      setOwner(res.owner);
     });
   }, []);
 
@@ -27,7 +19,7 @@ function PublishPanel(props: { path: string; show: boolean }) {
     if ((window as any).ship == owner) {
       const whitelist = [newMember, ...members];
       setNewMember("");
-      setWhitelist(whitelist)
+      setWhitelist(props.path, whitelist)
         .then((res) => {
           console.log("set whitelist result: ", res);
           setMembers([...res]);
@@ -43,7 +35,7 @@ function PublishPanel(props: { path: string; show: boolean }) {
     if ((window as any).ship == owner) {
       const whitelist = whitelist.splice(index, 1);
       setNewMember("");
-      setWhitelist(whitelist)
+      setWhitelist(props.path, whitelist)
         .then((res) => {
           console.log("set whitelist result: ", res);
           setMembers([...res]);
@@ -67,7 +59,7 @@ function PublishPanel(props: { path: string; show: boolean }) {
             className="px-2 py-1 rounded-2 border overflow-auto scrollbar-none flex-1 whitespace-nowrap"
             style={{ borderColor: "var(--trim-color)" }}
           >
-            {owner}/{id}
+            {(window as any).ship}/{props.path.id}/{props.path.timestamp}
           </div>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -75,7 +67,11 @@ function PublishPanel(props: { path: string; show: boolean }) {
             className="icon clickable focus:shadow-sunk flex-shrink-0"
             fill="var(--type-color)"
             onClick={() => {
-              navigator.clipboard.writeText(`${owner}/${id}`);
+              navigator.clipboard.writeText(
+                `${(window as any).ship}/${props.path.id}/${
+                  props.path.timestamp
+                }`
+              );
             }}
           >
             <path fill="none" d="M0 0h24v24H0z" />

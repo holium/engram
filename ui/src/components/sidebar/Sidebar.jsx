@@ -83,11 +83,7 @@ function Sidebar() {
   const sendData = () => {
     const ids1 = info
       .filter((childData) => childData.children)
-      .map((childData) =>
-        childData.children.map((child) =>
-          typeof child == "string" ? child : child.id
-        )
-      );
+      .map((childData) => childData.children);
     const ids2 = ids1.flat();
     const set = new Set(ids2);
     console.log(set);
@@ -96,7 +92,7 @@ function Sidebar() {
 
   const getChildren = (identifier) => {
     console.log("getting children: ", identifier, " from ", info);
-    const content = info.filter((child) => identifier.includes(child.id.id));
+    const content = info.filter((child) => identifier.includes(child.id));
     return content;
   };
 
@@ -114,8 +110,12 @@ function Sidebar() {
     console.log("deleting: ", info[toDelete]);
     moveToFrom(item, null, folder);
     if (info[toDelete].owner) {
-      deleteDocument(info[toDelete]);
+      deleteDocument(info[toDelete].id);
     } else {
+      console.log(info[toDelete].children);
+      info[toDelete].children.forEach((child) => {
+        handleDelete(child, item);
+      });
       deleteFolder(info[toDelete]);
     }
     const newInfo = info;
@@ -146,7 +146,7 @@ function Sidebar() {
   function moveToFrom(id, to, from) {
     // null for root
     let target;
-    if (typeof target == "string") target = info.find((tar) => tar.id.id == id);
+    if (typeof target == "string") target = info.find((tar) => tar.id == id);
     else target = id;
     console.log(target, id);
     if (from != null) {

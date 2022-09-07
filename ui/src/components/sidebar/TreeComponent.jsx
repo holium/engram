@@ -57,7 +57,7 @@ function TreeComponent({
   }
 
   const handleDelete = () => {
-    onDelete(info.id.id, folder);
+    onDelete(info.id, folder, false);
     /*
     setInfo({ id: null, name: null, children: [] });
     setChildren([]);
@@ -79,7 +79,7 @@ function TreeComponent({
 
   function openDocument() {
     console.log("opening doc:", info.id.id);
-    document.dispatchEvent(OpenDocumentEvent(info));
+    document.dispatchEvent(OpenDocumentEvent(info.id));
   }
 
   return (

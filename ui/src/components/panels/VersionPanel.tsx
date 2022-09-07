@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getSnapshots, pathParser } from "../urbit/index";
+import { getSnapshots } from "../urbit/index";
 import { Patp } from "@urbit/http-api";
 import * as Y from "yjs";
 import { Version } from "../document/types";
@@ -31,13 +31,7 @@ function VersionPanel(props: {
 
   useEffect(() => {
     console.log("getting snapshots from path:", props.path);
-    const parsed = props.path.match(pathParser);
-    const meta = {
-      owner: parsed.groups.owner,
-      id: parsed.groups.id,
-      name: parsed.groups.name,
-    };
-    getSnapshots(meta).then((res) => {
+    getSnapshots(props.path).then((res) => {
       console.log("getting snapshots result:", res);
       setVersions(res);
     });

@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Update, NotifStatus } from "../document/types";
 import * as Y from "yjs";
 import {
-  pathParser,
   getAvailibleUpdates,
   getDocumentSettings,
   subscribeToRemoteDocument,
@@ -13,7 +12,7 @@ import {
 
 function UpdatePanel(props: {
   show: boolean;
-  path: string;
+  path: DocumentId;
   getStage: () => number;
   save: () => void;
   setNotifStatus: (status: NotifStatus) => void;
@@ -29,13 +28,7 @@ function UpdatePanel(props: {
       unsubscribe(sub);
     });
     setChanges(getMag(props.getStage()));
-    const parsed = props.path.match(pathParser);
-    const meta = {
-      owner: parsed.groups.owner,
-      id: parsed.groups.id,
-      name: parsed.groups.name,
-    };
-    getAvailibleUpdates(meta).then((res) => {
+    getAvailibleUpdates(props.path).then((res) => {
       console.log("get updates result: ", res);
 
       setUpdates([
@@ -49,10 +42,10 @@ function UpdatePanel(props: {
       ]);
     });
 
-    getDocumentSettings(meta).then((res) => {
+    getDocumentSettings(props.path).then((res) => {
       console.log("Get document settings result: ", res);
       res.map((member) => {
-        return subscribeToRemoteDocument(member, meta, (event) => {
+        return subscribeToRemoteDocument(member, props.path, (event) => {
           //if event != init
           setUpdates([
             ...updates,
@@ -90,22 +83,16 @@ function UpdatePanel(props: {
 
   function executeUpdate(index: number) {
     console.log("executing update: ", updates[index]);
-    const parsed = props.path.match(pathParser);
-    const meta = {
-      owner: parsed.groups.owner,
-      id: parsed.groups.id,
-      name: parsed.groups.name,
-    };
 
     // apply the update in workspace
     const doc = props.applyUpdate(index, updates[index].content);
     props.save();
-    recordSnapshot(meta, {
+    recordSnapshot(props.path, {
       date: updates[index].time,
       ship: updates[index].author,
       data: Array.from(Y.encodeSnapshotV2(Y.snapshot(doc))),
     });
-    acknowledgeUpdate(meta, index);
+    acknowledgeUpdate(props.path, index);
 
     // correct the local state
     setUpdates(updates.filter((update, i) => i != index));

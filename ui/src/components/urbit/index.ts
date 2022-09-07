@@ -10,10 +10,6 @@ import {
 
 export type Folder = Array<DocumentMeta | FolderMeta>;
 
-export const pathParser = new RegExp(
-  "(?<owner>[^/]+)/(?<id>[^/]+)/(?<name>[^/]+)"
-);
-
 export function checkUrbitWindow(reject?: (message?: any) => void) {
   if (
     typeof (window as any).ship == "undefined" ||
@@ -57,14 +53,14 @@ export function listFolders(): Promise<Array<FolderMeta>> {
   });
 }
 
-export function getDocument(meta: DocumentMeta): Promise<Document> {
+export function getDocument(meta: DocumentId): Promise<Document> {
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
     console.log("calling get document", meta);
     (window as any).urbit
       .scry({
         app: "engram",
-        path: `/gdoc/${meta.owner}/${meta.id}/${meta.name}`,
+        path: `/gdoc/${meta.id}/${meta.timestamp}`,
       })
       .then((response: any) => {
         console.log(response);
@@ -73,13 +69,13 @@ export function getDocument(meta: DocumentMeta): Promise<Document> {
   });
 }
 
-export function getDocumentSettings(meta: DocumentMeta): Promise<Document> {
+export function getDocumentSettings(meta: DocumentId): Promise<Document> {
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit
       .scry({
         app: "engram",
-        path: `/gsetting/${meta.owner}/${meta.id}/${meta.name}`,
+        path: `/gsetting/${meta.id}/${meta.timestamp}`,
       })
       .then((response: any) => {
         resolve(response);
@@ -88,14 +84,14 @@ export function getDocumentSettings(meta: DocumentMeta): Promise<Document> {
 }
 
 export function getAvailibleUpdates(
-  meta: DocumentMeta
+  meta: DocumentId
 ): Promise<Array<DocumentUpdate>> {
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit
       .scry({
         app: "engram",
-        path: `/pull/${meta.owner}/${meta.id}/${meta.name}`,
+        path: `/pull/${meta.id}/${meta.timestamp}`,
       })
       .then((response: any) => {
         console.log(response);
@@ -104,13 +100,13 @@ export function getAvailibleUpdates(
   });
 }
 
-export function getSnapshots(meta: DocumentMeta) {
+export function getSnapshots(meta: DocumentId) {
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit
       .scry({
         app: "engram",
-        path: `/getsnaps/${meta.owner}/${meta.id}/${meta.name}`,
+        path: `/getsnaps/${meta.id}/${meta.timestamp}`,
       })
       .then((response: any) => {
         resolve(
@@ -200,7 +196,7 @@ export function createDocument(
 }
 
 export function saveDocument(
-  meta: DocumentMeta,
+  meta: DocumentId,
   doc: { version: Array<number>; content: Array<number> }
 ) {
   return new Promise<void>((resolve, reject) => {
@@ -220,18 +216,19 @@ export function saveDocument(
   });
 }
 
-export function deleteDocument(meta: DocumentMeta) {
+export function deleteDocument(id: DocumentId) {
   return new Promise<void>((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
       app: "engram",
       mark: "post",
-      json: { delete: { dmeta: meta } },
+      json: { delete: { dmeta: id } },
       onSuccess: () => {
+        //delete document settings
         resolve();
       },
       onError: (e: any) => {
-        console.error("Error deleting document: ", meta, e);
+        console.error("Error deleting document: ", id, e);
         reject("Error deleting document");
       },
     });
