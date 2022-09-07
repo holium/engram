@@ -67,6 +67,11 @@
       %settings
     `this(s (~(put by s) dmeta.action stg.action))
     ::
+    ::
+    ::
+      %dsettings
+    `this(s (~(del by s) dmeta.action))
+    ::
     :: create a new folder
     ::
       %mfolder
@@ -93,6 +98,17 @@
     ?:  =(~(wyt in a) 1)
         `this(f (~(put by f) fmeta.action ~))
     `this(f (~(del ju f) fmeta.action fldr.action))
+    ::
+    ::
+    ::
+      %renamefolder
+    ~&  old.action
+    ~&  new.action
+    =/  data=(set fldr:engram)  (~(get ja f) old.action)
+    ~&  data
+    =/  new-folder=fldrs:engram  (~(del by f) old.action)
+    ~&  new-folder
+    `this(f (~(put by new-folder) new.action data))
     ::
     :: remove the merged update from the update list (as updates aren't implemented this will just log)
     ::
