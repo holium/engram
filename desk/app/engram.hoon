@@ -132,7 +132,7 @@
     ``noun+!>((enjs-gsetting:engram stg))
   ::
       [%x %gfolders ~]
-    ``noun+!>(f)
+    ``noun+!>((enjs-gfolders:engram f))
   ::
       [%x %getsnaps @ @ @ ~]
     =/  id=@  (crip (trip i.t.t.path))
