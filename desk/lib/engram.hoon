@@ -11,6 +11,7 @@
     [%make (ot ~[dmeta+(ot ~[id+so timestamp+di]) doc+(ot ~[version+(ar ni) content+(ar ni)])])]
     [%delete (ot ~[dmeta+(ot ~[id+so timestamp+di])])]
     [%save (ot ~[dmeta+(ot ~[id+so timestamp+di]) doc+(ot ~[version+(ar ni) content+(ar ni)])])]
+    [%settings (ot ~[dmeta+(ot ~[id+so timestamp+di]) stg+(ot ~[perms+(ar (se %p)) owner+(se %p) name+so])])]
     [%mfolder (ot ~[fmeta+(ot ~[id+so name+so])])]
     [%dfolder (ot ~[fmeta+(ot ~[id+so name+so])])]
     [%foldoc (ot ~[fmeta+(ot ~[id+so name+so]) fldr+(of ~[[[%doc] (ot ~[id+so timestamp+di])] [[%folder] (ot ~[id+so name+so])]])])]
