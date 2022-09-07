@@ -32,7 +32,7 @@
     results
   =/  curr  (snag counter docs)
   =/  dstg  (~(got by stgs) curr)
-  =/  meta  (pairs ~[['id' (pairs ~[['id' (tape (trip id:curr))] ['timestamp' (time timestamp:curr)]])] ['name' (tape (trip name:dstg))] ['owner' (tape (trip owner:dstg))]])
+  =/  meta  (pairs ~[['id' (pairs ~[['id' (tape (trip id:curr))] ['timestamp' (time timestamp:curr)]])] ['name' (tape (trip name:dstg))] ['owner' (ship owner:dstg)]])
   %=  $
     counter  (add counter 1)
     results  (snoc results [id:curr meta])
