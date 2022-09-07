@@ -26,6 +26,26 @@ function Sidebar() {
   const [ids, setIds] = useState([]);
 
   const [info, setInfo] = useState([]);
+  function updateInfo(newInfo) {
+    setInfo([
+      ...newInfo.sort((a, b) => {
+        if ((a.owner && b.owner) || (!a.owner && !b.owner)) {
+          if (a.name > b.name) {
+            return 1;
+          } else if (a.name < b.name) {
+            return -1;
+          } else {
+            return 0;
+          }
+        } else if (a.owner) {
+          return 1;
+        } else {
+          return -1;
+        }
+      }),
+    ]);
+    sendData();
+  }
 
   const [appear, setAppear] = useState(false);
   const urbitStatus = useContext(UrbitContext);
@@ -45,7 +65,7 @@ function Sidebar() {
           .then((folRes) => {
             console.log("list folders result: ", folRes);
 
-            setInfo([
+            updateInfo([
               ...Object.values(docRes).map((doc) => {
                 console.log(doc);
                 return {
@@ -86,7 +106,6 @@ function Sidebar() {
       .map((childData) => childData.children);
     const ids2 = ids1.flat();
     const set = new Set(ids2);
-    console.log(set);
     setIds([...Array.from(set)]);
   };
 
@@ -107,21 +126,25 @@ function Sidebar() {
 
   function handleDelete(item, folder) {
     const toDelete = info.findIndex((doc) => doc.id == item);
-    console.log("deleting: ", info[toDelete]);
+    console.log("deleting: ", toDelete, info[toDelete]);
     moveToFrom(item, null, folder);
-    if (info[toDelete].owner) {
+    const isFolder = typeof info[toDelete].owner == "undefined";
+    let children = [];
+    if (!isFolder) {
       deleteDocument(info[toDelete].id);
     } else {
       console.log(info[toDelete].children);
-      info[toDelete].children.forEach((child) => {
-        handleDelete(child, item);
-      });
+      children = info[toDelete].children;
       deleteFolder(info[toDelete]);
     }
     const newInfo = info;
     newInfo.splice(toDelete, 1);
-    setInfo([...newInfo]);
-    sendData();
+    updateInfo([...newInfo]);
+    if (isFolder) {
+      children.forEach((child) => {
+        handleDelete(child, item);
+      });
+    }
   }
 
   async function handleAdd(id, name, type) {
@@ -187,7 +210,7 @@ function Sidebar() {
       id: `~${window.ship}-${crypto.randomUUID()}`,
       name: name,
     });
-    setInfo([...info, { ...meta, children: [] }]);
+    updateInfo([...info, { ...meta, children: [] }]);
     closeCreateDoc();
     return meta;
   }
@@ -207,7 +230,10 @@ function Sidebar() {
       content: Array.from(encoding),
     });
     console.log("create document result", id, settings);
-    setInfo([...info, { id: id, name: settings.name, owner: settings.owner }]);
+    updateInfo([
+      ...info,
+      { id: id, name: settings.name, owner: settings.owner },
+    ]);
     closeCreateDoc();
     return { id, settings };
   }
@@ -216,7 +242,7 @@ function Sidebar() {
     console.log("add remote doc");
     checkUrbitWindow();
     const { meta, content } = await addRemoteDocument(link);
-    setInfo([...info, meta]);
+    updateInfo([...info, meta]);
     closeCreateDoc();
     return meta;
   }
@@ -340,41 +366,25 @@ function Sidebar() {
 
         {info
           .filter((child) => {
-            console.log(
-              child.id.id ? child.id.id : child.id,
-              !ids.includes(child.id.id ? child.id.id : child.id)
-            );
             return !ids.includes(child.id.id ? child.id.id : child.id);
           })
-          .sort((a, b) => {
-            if ((a.owner && b.owner) || (!a.owner && !b.owner)) {
-              if (a.name > b.name) {
-                return 1;
-              } else if (a.name < b.name) {
-                return -1;
-              } else {
-                return 0;
-              }
-            } else if (a.owner) {
-              return 1;
-            } else {
-              return -1;
-            }
-          })
-          .map((childData, index) => (
-            <div>
-              <TreeComponent
-                key={childData.id}
-                data={childData}
-                folder={null}
-                onDelete={handleDelete}
-                getChildren={getChildren}
-                handleAdd={handleAdd}
-                createChild={createChild}
-                handleRename={handleRename}
-              />
-            </div>
-          ))}
+          .map((childData, index, arr) => {
+            console.log(arr);
+            return (
+              <div>
+                <TreeComponent
+                  key={childData.id}
+                  data={childData}
+                  folder={null}
+                  onDelete={handleDelete}
+                  getChildren={getChildren}
+                  handleAdd={handleAdd}
+                  createChild={createChild}
+                  handleRename={handleRename}
+                />
+              </div>
+            );
+          })}
       </div>
     </div>
   );
