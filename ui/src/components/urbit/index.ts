@@ -83,23 +83,6 @@ export function getDocumentSettings(meta: DocumentId): Promise<Document> {
   });
 }
 
-export function getAvailibleUpdates(
-  meta: DocumentId
-): Promise<Array<DocumentUpdate>> {
-  return new Promise((resolve, reject) => {
-    checkUrbitWindow(reject);
-    (window as any).urbit
-      .scry({
-        app: "engram",
-        path: `/pull/${meta.id}/${meta.timestamp}`,
-      })
-      .then((response: any) => {
-        console.log(response);
-        resolve(response);
-      });
-  });
-}
-
 export function getSnapshots(meta: DocumentId) {
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
@@ -475,32 +458,28 @@ export function addRemoteDocument(
 
 // both whitelist and blacklist just modify the settings
 export function setWhitelist(
-  dmeta: DocumentMeta,
+  id: DocumentId,
   whitelist: Array<Patp>
 ): Promise<Array<Patp>> {
   return new Promise((resolve, reject) => {
-    if ((window as any) == dmeta.owner) {
-      (window as any).urbit.poke({
-        app: "engram",
-        mark: "post",
-        json: { settings: { dmeta: dmeta, stg: whitelist } },
-        onSuccess: () => {
-          resolve(whitelist);
-        },
-        onError: (e: any) => {
-          console.error(
-            "Error setting whitelist ",
-            update,
-            " for document: ",
-            dmeta,
-            e
-          );
-          reject("Error acknowleding update");
-        },
-      });
-    } else {
-      reject();
-    }
+    (window as any).urbit.poke({
+      app: "engram",
+      mark: "post",
+      json: { settings: { dmeta: id, stg: whitelist } },
+      onSuccess: () => {
+        resolve(whitelist);
+      },
+      onError: (e: any) => {
+        console.error(
+          "Error setting whitelist ",
+          update,
+          " for document: ",
+          id,
+          e
+        );
+        reject("Error acknowleding update");
+      },
+    });
   });
 }
 

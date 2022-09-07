@@ -1,28 +1,38 @@
 import { useState, useEffect } from "react";
-import { getDocumentSettings, setWhitelist } from "../urbit/index";
+import { getDocumentSettings, setDocumentSettings } from "../urbit/index";
 
 function PublishPanel(props: { path: DocumentId; show: boolean }) {
   const [members, setMembers] = useState([]);
   const [owner, setOwner] = useState("");
+  const [name, setName] = useState("");
   const [newMember, setNewMember] = useState("");
 
   useEffect(() => {
     getDocumentSettings(props.path).then((res) => {
       console.log("set settings result", res);
       setOwner(res.owner);
+      setName(res.name);
+      setMembers(Object.values(res.whitelist).map((ship) => "~" + ship));
     });
   }, []);
 
   function addMember() {
     // poke
     console.log("Add member: ", newMember);
-    if ((window as any).ship == owner) {
+    if (
+      (window as any).ship == owner &&
+      newMember.charCodeAt(0) == "~".charCodeAt(0)
+    ) {
       const whitelist = [newMember, ...members];
       setNewMember("");
-      setWhitelist(props.path, whitelist)
+      setDocumentSettings(props.path, {
+        name: name,
+        owner: "~" + owner,
+        perms: whitelist,
+      })
         .then((res) => {
           console.log("set whitelist result: ", res);
-          setMembers([...res]);
+          setMembers([...whitelist]);
         })
         .catch(() => {
           console.warn("you are not the owner");
@@ -33,12 +43,17 @@ function PublishPanel(props: { path: DocumentId; show: boolean }) {
   function removeMember(index) {
     console.log("Remove member: ", index);
     if ((window as any).ship == owner) {
-      const whitelist = whitelist.splice(index, 1);
+      const whitelist = members;
+      whitelist.splice(index, 1);
       setNewMember("");
-      setWhitelist(props.path, whitelist)
+      setDocumentSettings(props.path, {
+        name: name,
+        owner: "~" + owner,
+        perms: whitelist,
+      })
         .then((res) => {
           console.log("set whitelist result: ", res);
-          setMembers([...res]);
+          setMembers([...whitelist]);
         })
         .catch(() => {
           console.warn("you are not the owner");
@@ -51,7 +66,7 @@ function PublishPanel(props: { path: DocumentId; show: boolean }) {
       <div className="">
         <div className="flex gap-3 py-2">
           <div className="flex-grow">Owner:</div>
-          <div className="azimuth">{owner}</div>
+          <div className="azimuth">~{owner}</div>
         </div>
         <div className="flex gap-3 py-1">
           <div className="py-1 flex-shrink-0">Shareable Link:</div>
@@ -86,9 +101,9 @@ function PublishPanel(props: { path: DocumentId; show: boolean }) {
             <div className="flex gap-3 py-1 items-center">
               <div className="azimuth">{member}</div>
               <div className="flex-grow"></div>
-              {owner == "~" + (window as any).ship && (
+              {owner == (window as any).ship && "~" + owner != member && (
                 <div
-                  className="border rounded-1 clickable border-accent px-2 py-1"
+                  className="border rounded-1 clickable border-accent px-2 py-1 rounded-2"
                   onClick={() => {
                     removeMember(i);
                   }}
@@ -103,7 +118,8 @@ function PublishPanel(props: { path: DocumentId; show: boolean }) {
           <div className="flex gap-3 py-1">
             <input
               type="text"
-              className="py-1 px-2 flex-grow clickable outline-none rounded-1"
+              className="py-1 px-2 flex-grow outline-none rounded-1 border-b"
+              style={{ borderColor: "var(--type-color)" }}
               placeholder="add member"
               value={newMember}
               onChange={(event) => {

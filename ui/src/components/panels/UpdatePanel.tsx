@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Update, NotifStatus } from "../document/types";
 import * as Y from "yjs";
 import {
-  getAvailibleUpdates,
   getDocumentSettings,
   subscribeToRemoteDocument,
   unsubscribe,
@@ -28,23 +27,10 @@ function UpdatePanel(props: {
       unsubscribe(sub);
     });
     setChanges(getMag(props.getStage()));
-    getAvailibleUpdates(props.path).then((res) => {
-      console.log("get updates result: ", res);
-
-      setUpdates([
-        ...res.map((update) => {
-          return {
-            author: update.author,
-            time: update.time,
-            content: new Uint8Array(update.content),
-          };
-        }),
-      ]);
-    });
 
     getDocumentSettings(props.path).then((res) => {
       console.log("Get document settings result: ", res);
-      res.map((member) => {
+      Object.values(res.whitelist).map((member) => {
         return subscribeToRemoteDocument(member, props.path, (event) => {
           //if event != init
           setUpdates([
@@ -151,7 +137,7 @@ function UpdatePanel(props: {
         return (
           <div className="flex gap-3 items-center" key={update.time.toString()}>
             <div className="flex-grow">
-              <span className="azimuth">{update.author}</span>
+              <span className="azimuth">~{update.author}</span>
             </div>
 
             <div>
