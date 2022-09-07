@@ -1,5 +1,5 @@
 /-  engram
-:: /+  engram
+/+  engram
 /+  default-agent, dbug
 |%
 +$  versioned-state
@@ -36,7 +36,7 @@
   |=  [=mark =vase]
   ^-  (quip card _this)
   ?+    mark  (on-poke:def mark vase)
-      %noun
+      %post
     =/  action  !<(?(action:engram) vase)
     ?-    -.action
     ::
@@ -67,6 +67,11 @@
       %settings
     `this(s (~(put by s) dmeta.action stg.action))
     ::
+    ::
+    ::
+      %dsettings
+    `this(s (~(del by s) dmeta.action))
+    ::
     :: create a new folder
     ::
       %mfolder
@@ -94,6 +99,17 @@
         `this(f (~(put by f) fmeta.action ~))
     `this(f (~(del ju f) fmeta.action fldr.action))
     ::
+    ::
+    ::
+      %renamefolder
+    ~&  old.action
+    ~&  new.action
+    =/  data=(set fldr:engram)  (~(get ja f) old.action)
+    ~&  data
+    =/  new-folder=fldrs:engram  (~(del by f) old.action)
+    ~&  new-folder
+    `this(f (~(put by new-folder) new.action data))
+    ::
     :: remove the merged update from the update list (as updates aren't implemented this will just log)
     ::
      %merge
@@ -114,34 +130,36 @@
   ^-  (unit (unit cage))
   ?+    path  (on-peek:def path)
       [%x %docinfo ~]
-    =/  docs  ~(tap in ~(key by d))
-    ``noun+!>(docs)
+    ``noun+!>((enjs-docinfo:engram s))
   ::
       [%x %gdoc @ @ ~]
     =/  id=@  (crip (trip i.t.t.path))
-    =/  timestamp=@d  (slav %d i.t.t.t.path)
+    =/  timestamp=@d  (di:dejs:format [%n p=i.t.t.t.path])
+    ~&  (di:dejs:format [%n p=i.t.t.t.path])
+    ~&  timestamp
     =/  meta  [id=id timestamp=timestamp]
+    ~&  meta
     =/  doc=[version=(list @ud) cont=(list @ud)]  (need (~(get by d) meta))
-    ``noun+!>(doc)
+    ``noun+!>((enjs-gdoc:engram doc))
   ::
       [%x %gsetting @ @ ~]
     =/  id=@  (crip (trip i.t.t.path))
-    =/  timestamp=@d  (slav %d i.t.t.t.path)
+    =/  timestamp=@d  (di:dejs:format [%n p=i.t.t.t.path])
     =/  meta  [id=id timestamp=timestamp]
     =/  stg=[perms=(list @p) owner=@p name=@t]  (need (~(get by s) meta))
     ~&  stg
-    ``noun+!>(stg)
+    ``noun+!>((enjs-gsetting:engram stg))
   ::
       [%x %gfolders ~]
-    ``noun+!>(f)
+    ``noun+!>((enjs-gfolders:engram f))
   ::
-      [%x %getsnaps @ @ @ ~]
+      [%x %getsnaps @ @ ~]
     =/  id=@  (crip (trip i.t.t.path))
-    =/  timestamp=@d  (slav %d i.t.t.t.path)
+    =/  timestamp=@d  (di:dejs:format [%n p=i.t.t.t.path])
     =/  meta  [id=id timestamp=timestamp]
     =/  snap=(list snap:engram)  (need (~(get by su) meta))
     ~&  snap
-    ``noun+!>(snap)
+    ``noun+!>((enjs-getsnaps:engram snap))
   ==
 ::
 ++  on-agent
