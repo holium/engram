@@ -46,11 +46,11 @@ function Sidebar() {
             console.log("list folders result: ", folRes);
 
             setInfo([
-              ...Object.keys(docRes).map((index) => {
+              ...Object.values(docRes).map((doc) => {
                 return {
-                  id: index,
-                  owner: "~" + docRes[index].owner,
-                  name: docRes[index].name,
+                  id: doc.id.id,
+                  owner: doc.owner,
+                  name: doc.name,
                 };
               }),
               ...Object.values(folRes).map((fol) => {
