@@ -46,9 +46,17 @@
     ?<  (~(has by d) dmeta.action)
     `this(d (~(put by d) dmeta.action doc.action))
     ::
-     %createsnap
+    ::
+    ::
+      %createsnap
     ?<  (~(has by su) dmeta.action)
     `this(su (~(put by su) dmeta.action ~))
+    ::
+    ::
+    ::
+     %snap
+    ?<  (~(has by su) dmeta.action)
+    `this(su (~(add ja su) dmeta.action snap.action))
     ::
     :: modify a document by changing the stored document state
     ::
@@ -67,7 +75,7 @@
       %settings
     `this(s (~(put by s) dmeta.action stg.action))
     ::
-    ::
+    :: {Documentation Here}
     ::
       %dsettings
     `this(s (~(del by s) dmeta.action))
@@ -99,7 +107,7 @@
         `this(f (~(put by f) fmeta.action ~))
     `this(f (~(del ju f) fmeta.action fldr.action))
     ::
-    ::
+    :: {Documentation Here}
     ::
       %renamefolder
     ~&  old.action
@@ -114,27 +122,34 @@
     ::
       %merge
     `this(u (~(del ju u) dmeta.action updt.action))
-    %sub
-  ::  ~&  owner.dmeta.action
-  :: !!
-    =/  li  /updates/(scot %p owner.dmeta.action)/(scot %ud id.dmeta.action)/[`@ta`name.dmeta.action]
-   :: ~&  li
+    ::
+    :: {Documentation Here}
+    ::
+      %sub
+    =/  li  /updates/(scot %ud id.dmeta.action)/(scot %da timestamp.dmeta.action)
     :_  this
-    :~  [%pass /engram %agent [owner.dmeta.action %engram] %watch li]
+    :~  [%pass /engram %agent [owner.action %engram] %watch li]
     ==
-    %unsub
+    ::
+    :: {Documentation Here}
+    ::
+      %unsub
     :_  this
-    :~  [%pass /engram %agent [owner.dmeta.action %engram] %leave ~]
+    :~  [%pass /engram %agent [owner.action %engram] %leave ~]
     ==
-
-    %update-live
-    =/  li  /updates/(scot %p owner.dmeta.action)/(scot %ud id.dmeta.action)/[`@ta`name.dmeta.action]
-    :: ~&  li
+    ::
+    :: {Documentation Here}
+    ::
+      %update-live
+    =/  li  /updates/(scot %ud id.dmeta.action)/(scot %da timestamp.dmeta.action)
     ~&  updt.action
     :_  this
     :~  [%give %fact ~[li] %noun !>(updt.action)]
     ==
-    %update
+    ::
+    :: {Documentation Here}
+    ::
+      %update
     `this(u (~(put ju u) dmeta.action updt.action))
     ==
   ==
@@ -142,28 +157,16 @@
 ++  on-watch
   |=  =path
   ^-  (quip card _this)
-  ~&  "hi from nut"
   ?+    path  (on-watch:def path)
-      [%updates @ @ @ ~]
-    ::~&  i.t.path
-    =/  owner=@p  (slav %p i.t.path)
-    ::~&  owner
-    =/  id=@  (slav %ud i.t.t.path)
-    ::~&  id
-    =/  name=@t  (crip (trip i.t.t.t.path))
-    ::~&  name
-    =/  meta  [owner=owner id=id name=name]
-    =/  stg=[perms=(list @p)]  (need (~(get by s) meta))
-    ::~&  src.bowl
-    ::~&  perms.stg
+      [%updates @ @ ~]
+    =/  id=@  (crip (trip i.t.path))
+    =/  timestamp=@d  (di:dejs:format [%n p=i.t.t.path])
+    =/  meta  [id=id timestamp=timestamp]
+    =/  stg=[perms=(list @p) owner=@p name=@t]  (need (~(get by s) meta))
     ?~  (find [src.bowl]~ perms.stg)
-     :: ~&  "is null"
       !!
-    ~&  'check print zod'
     :_  this
-    ~&  'this should print'
     =/  stg  (need (~(get by s) meta))
-    ~&  stg
     =/  docu  (need (~(get by d) meta))
     ~&  docu
        :~  [%give %fact ~ %noun !>(stg+docu)]
@@ -205,11 +208,11 @@
     =/  snap=(list snap:engram)  (need (~(get by su) meta))
     ~&  snap
     ``noun+!>((enjs-getsnaps:engram snap))
-      [%x %gupdates @ @ @ ~]
-    =/  owner=@p  (slav %p i.t.t.path)
-    =/  id=@  (slav %ud i.t.t.t.path)
-    =/  name=@t  (crip (trip i.t.t.t.t.path))
-    =/  meta  [owner=owner id=id name=name]
+  ::
+      [%x %gupdates @ @ ~]
+    =/  id=@  (crip (trip i.t.t.path))
+    =/  timestamp=@d  (di:dejs:format [%n p=i.t.t.t.path])
+    =/  meta  [id=id timestamp=timestamp]
     =/  upd  (need (~(get by u) meta))
     ``noun+!>(upd)
   ==
@@ -237,7 +240,6 @@
             %noun
           ~&  'logging'
           ~&  q.cage.sign
-          ::~&  !<(update:engram q.cage.sign)
           `this
         ==
       ==
