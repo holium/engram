@@ -315,7 +315,7 @@ function TreeComponent({
             .map((child) => (
               <div>
                 <TreeComponent
-                  key={child.id}
+                  key={child.owner ? child.id.id : child.id}
                   folder={info.id}
                   onDelete={onDelete}
                   data={child}

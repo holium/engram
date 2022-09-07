@@ -60,7 +60,7 @@ function Sidebar() {
                 return {
                   id: fol.meta.id,
                   name: fol.meta.name,
-                  children: Object.values(fol.content).map((item) => item.id),
+                  children: Object.values(fol.content),
                 };
               }),
             ]);
@@ -83,7 +83,7 @@ function Sidebar() {
   }, [info]);
 
   const sendData = () => {
-    const ids1 = info
+    const ids1 = [...info]
       .filter((childData) => childData.children)
       .map((childData) => childData.children);
     const ids2 = ids1.flat();
@@ -93,7 +93,16 @@ function Sidebar() {
 
   const getChildren = (identifier) => {
     console.log("getting children: ", identifier, " from ", info);
-    const content = info.filter((child) => identifier.includes(child.id));
+    const content = [...info].filter((child) => {
+      return (
+        0 <=
+        identifier.findIndex((item) => {
+          return (
+            (item.id ? item.id : item) == (child.id.id ? child.id.id : child.id)
+          );
+        })
+      );
+    });
     return content;
   };
 
@@ -355,9 +364,16 @@ function Sidebar() {
 
         {info
           .filter((child) => {
-            return !ids.includes(child.id.id ? child.id.id : child.id);
+            return (
+              0 >
+              ids.findIndex((item) => {
+                return (
+                  (item.id ? item.id : item) ==
+                  (child.id.id ? child.id.id : child.id)
+                );
+              })
+            );
           })
-          /*
           .sort((a, b) => {
             if ((a.owner && b.owner) || (!a.owner && !b.owner)) {
               if (a.name > b.name) {
@@ -373,13 +389,13 @@ function Sidebar() {
               return -1;
             }
           })
-          */
+
           .map((childData, index, arr) => {
             console.log(arr);
             return (
               <div>
                 <TreeComponent
-                  key={childData.id}
+                  key={childData.owner ? childData.id.id : childData.id}
                   data={childData}
                   folder={null}
                   onDelete={handleDelete}
