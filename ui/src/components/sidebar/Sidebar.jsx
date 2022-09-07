@@ -198,17 +198,10 @@ function Sidebar() {
     const version = Y.encodeStateVector(doc);
     const encoding = Y.encodeStateAsUpdateV2(doc);
 
-    const meta = await createDocument(
-      {
-        owner: `~${window.ship}`,
-        id: `~${window.ship}-${crypto.randomUUID()}`,
-        name: name,
-      },
-      {
-        version: Array.from(version),
-        content: Array.from(encoding),
-      }
-    );
+    const meta = await createDocument(name, {
+      version: Array.from(version),
+      content: Array.from(encoding),
+    });
     console.log("create document result", meta);
     setInfo([...info, meta]);
     closeCreateDoc();

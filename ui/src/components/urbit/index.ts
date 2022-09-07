@@ -1,7 +1,8 @@
 import { Patp } from "@urbit/http-api";
 import * as Y from "yjs";
 import {
-  DocumentMeta,
+  DocumentId,
+  DocumentSettings,
   FolderMeta,
   DocumentUpdate,
   Snap,
@@ -130,38 +131,59 @@ export function getSnapshots(meta: DocumentMeta) {
 /* Pokes -------------------------------------------------------------------- */
 
 export function createDocument(
-  meta: DocumentMeta,
-  doc: { version: Array<number>; content: Array<number> }
-): Promise<DocumentMeta> {
+  name: string,
+  doc: { version: Array<number>; content: Array<number> },
+  owner?: Patp
+): Promise<{ id: DocumentId; settings: DocumentSettings }> {
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
-    const dmeta = {
-      owner: meta.owner,
-      id: meta.id,
-      name: meta.name.replaceAll(" ", "-"),
+    const id: DocumentId = {
+      id: Array.from(
+        new Uint8Array(
+          crypto.subtle.digest(
+            "SHA-256",
+            new TextEncoder().encode(`~${window.ship}-${crypto.randomUUID()}`)
+          )
+        )
+      )
+        .map((a) => a.toString(16).padStart(2, "0"))
+        .join(""),
+      timestamp: Date.now(),
     };
-    (window as any).urbit.poke({
-      app: "engram",
-      mark: "post",
-      json: { make: { dmeta: dmeta, doc: doc } },
-      onSuccess: () => {
-        (window as any).urbit.poke({
-          app: "engram",
-          mark: "post",
-          json: { createsnap: { dmeta: dmeta } },
-          onSuccess: () => {
-            resolve(dmeta);
+    const settings: DocumentSettings = {
+      name: name.replaceAll(" ", "-"),
+      owner: owner ? owner : (window as any).ship,
+      whitelist: owner ? [owner, (window as any).ship] : [(window as any).ship],
+    };
+    setDocumentSettings(id, settings).then(() => {
+      (window as any).urbit.poke({
+        app: "engram",
+        mark: "post",
+        json: {
+          make: {
+            dmeta: id,
+            doc: doc,
           },
-          onError: (e: any) => {
-            console.error("Error initializing version history: ", meta, e);
-            reject("Error initializing version history");
-          },
-        });
-      },
-      onError: (e: any) => {
-        console.error("Error creating document: ", meta, e);
-        reject("Error creating document");
-      },
+        },
+        onSuccess: () => {
+          (window as any).urbit.poke({
+            app: "engram",
+            mark: "post",
+            json: { createsnap: { dmeta: dmeta } },
+            onSuccess: () => {
+              resolve({ id: id, settings: settings });
+            },
+            onError: (e: any) => {
+              console.error("Error initializing version history: ", meta, e);
+              reject("Error initializing version history");
+            },
+          });
+        },
+        onError: (e: any) => {
+          console.error("Error creating document: ", meta, e);
+          reject("Error creating document");
+        },
+      });
     });
   });
 }
@@ -243,13 +265,13 @@ export function deleteFolder(folder: FolderMeta) {
   });
 }
 
-export function setDocumentSettings(doc: any, settings: any) {
+export function setDocumentSettings(id: DocumentId, settings: any) {
   return new Promise<void>((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
       app: "engram",
       mark: "post",
-      json: { settings: { doc: doc, stg: settings } },
+      json: { settings: { dmeta: id, stg: settings } },
       onSuccess: () => {
         resolve();
       },

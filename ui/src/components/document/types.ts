@@ -67,10 +67,15 @@ export interface Update {
   time: Date;
 }
 
-export interface DocumentMeta {
-  owner: Patp;
+export interface DocumentId {
   id: string;
+  timestamp: number;
+}
+
+export interface DocumentSettings {
   name: string;
+  owner: Patp;
+  whitelist?: Array<Patp>;
 }
 
 export interface DocumentUpdate {
