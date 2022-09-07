@@ -336,7 +336,7 @@ export function renameFolder(
   return new Promise<void>((resolve, reject) => {
     const fmeta = {
       id: folder.id,
-      name: newName,
+      name: newName.replaceAll(" ", "-"),
     };
     checkUrbitWindow(reject);
     (window as any).urbit.poke({

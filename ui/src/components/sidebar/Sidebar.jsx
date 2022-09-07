@@ -124,12 +124,19 @@ function Sidebar() {
   }
 
   function handleDelete(item, folder) {
-    const toDelete = info.findIndex((doc) => doc.id == item);
-    console.log("deleting: ", toDelete, info[toDelete]);
+    const toDelete = info.findIndex((doc) => {
+      console.log(
+        "comparing:",
+        item,
+        doc,
+        (doc.id.id ? doc.id.id : doc.id) == (item.id ? item.id : item)
+      );
+      return (doc.id.id ? doc.id.id : doc.id) == (item.id ? item.id : item);
+    });
+    console.log("deleting: ", item, toDelete, info[toDelete]);
     moveToFrom(item, null, folder);
-    const isFolder = typeof info[toDelete].owner == "undefined";
     let children = [];
-    if (!isFolder) {
+    if (item.id) {
       deleteDocument(info[toDelete].id);
     } else {
       console.log(info[toDelete].children);
@@ -138,9 +145,9 @@ function Sidebar() {
     }
     info.splice(toDelete, 1);
     setInfo([...info]);
-    if (isFolder) {
+    if (typeof item.id == "undefined") {
       children.forEach((child) => {
-        handleDelete(child, item);
+        handleDelete(child, null);
       });
     }
   }
