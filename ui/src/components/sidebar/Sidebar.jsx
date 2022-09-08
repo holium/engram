@@ -185,7 +185,7 @@ function Sidebar() {
       );
       removeFromFolder(
         { id: removeFrom.id, name: removeFrom.name },
-        {id: target.id, name: target.name},
+        { id: target.id, name: target.name },
         target.owner ? true : false
       );
       info.push(removeFrom);
