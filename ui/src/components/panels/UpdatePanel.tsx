@@ -3,8 +3,9 @@ import { Update, NotifStatus } from "../document/types";
 import * as Y from "yjs";
 import {
   getDocumentSettings,
+  getDocumentUpdates,
   subscribeToRemoteDocument,
-  unsubscribe,
+  unsubscribeFromRemoteDocument,
   acknowledgeUpdate,
   recordSnapshot,
 } from "../urbit/index";
@@ -24,27 +25,23 @@ function UpdatePanel(props: {
 
   useEffect(() => {
     activeSubs.forEach((sub) => {
-      unsubscribe(sub);
+      unsubscribeFromRemoteDocument(sub);
     });
-    setChanges(getMag(props.getStage()));
-
+    setActiveSubs([]);
     getDocumentSettings(props.path).then((res) => {
       console.log("Get document settings result: ", res);
-      /*
       Object.values(res.whitelist).map((member) => {
-        return subscribeToRemoteDocument(member, props.path, (event) => {
-          //if event != init
-          setUpdates([
-            ...updates,
-            {
-              author: event.author,
-              time: event.time,
-              content: new Uint8Array(event.content),
-            },
-          ]);
-        });
+        subscribeToRemoteDocument(member, props.path);
+        setActiveSubs([...activeSubs, member]);
       });
-      */
+    });
+  }, [props.path]);
+
+  useEffect(() => {
+    setChanges(getMag(props.getStage()));
+
+    getDocumentUpdates(props.path).then((res) => {
+      console.log("get document updates result", res);
     });
   }, [props.show]);
 

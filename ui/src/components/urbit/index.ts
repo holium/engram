@@ -83,6 +83,20 @@ export function getDocumentSettings(meta: DocumentId): Promise<Document> {
   });
 }
 
+export function getDocumentUpdates(meta: DocumentId): Promise {
+  return new Promise((resolve, reject) => {
+    checkUrbitWindow(reject);
+    (window as any).urbit
+      .scry({
+        app: "engram",
+        path: `/gupdates/${meta.id}/${meta.timestamp}`,
+      })
+      .then((response: any) => {
+        resolve(response);
+      });
+  });
+}
+
 export function getSnapshots(meta: DocumentId) {
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
@@ -575,49 +589,59 @@ export async function collectUpdates() {
 }
 
 /* Subscriptions */
+let subs = [];
+
 export function subscribeToRemoteDocument(
   from: Patp,
-  doc: string,
-  handler: (event: any) => void,
-  handleQuit?: (event: any) => void,
-  handleError?: (e: any) => void
+  doc: string
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
-    console.log("adding remote document: ", doc, " from ship: ", from);
-    (window as any).urbit
-      .subscribe({
-        app: "engram",
-        path: `/updates/${doc}`,
-        ship: from,
-        event: (event) => {
-          console.log("received event from subscription: ", doc, ": ", event);
-          //recordUpdate()
-          handler(event);
-        },
-        quit: (event: any) => {
-          console.log(
-            "remote document subscription quit to:" + doc + " quit:",
-            event
-          );
-          if (typeof handleQuit != "undefined") handleQuit(event);
-        },
-        err: (err: AnimationPlayState) => {
-          console.warn("error wiht subscription to document", doc, err);
-          if (typeof handleError != "undefined") handleError(err);
-        },
-      })
-      .then((subId) => {
-        console.log(subId);
-        resolve(subId);
-      });
+    console.log("subing to remote document: ", doc, " from ship: ", from);
+    subs.push(from);
+    (window as any).urbit.poke({
+      app: "engram",
+      mark: "post",
+      json: { sub: { dmeta: id, ship: "~" + from } },
+      onSuccess: () => {
+        resolve();
+      },
+      onError: (e: any) => {
+        console.error(
+          "Error subscribing to document ",
+          doc,
+          " from ship: ",
+          from,
+          e
+        );
+        reject("Error acknowleding update");
+      },
+    });
   });
 }
 
-export function unsubscribe(subscriptionId: string): Promise<void> {
-  return new Promise<void>((resolve, reject) => {
-    (window as any).urbit.unsubscribe(subscriptionId).then(() => {
-      resolve();
+export function unsubscribeFromRemoteDocument(from: Patp): Promise<string> {
+  return new Promise((resolve, reject) => {
+    checkUrbitWindow(reject);
+    console.log("unsubing from ship: ", from);
+    subs.splice(subs.indexOf(from), 1);
+    (window as any).urbit.poke({
+      app: "engram",
+      mark: "post",
+      json: { unsub: { ship: "~" + from } },
+      onSuccess: () => {
+        resolve();
+      },
+      onError: (e: any) => {
+        console.error("Error unsibscribing from ship ", from, e);
+        reject("Error acknowleding update");
+      },
     });
+  });
+}
+
+export function unsubscribeFromAl() {
+  subs.forEach((ship) => {
+    unsubscribeFromRemoteDocument(ship);
   });
 }
