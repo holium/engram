@@ -528,21 +528,65 @@ export function addRemoteDocument(path: string): Promise<DocumentMeta> {
   return new Promise((resolve, reject) => {
     const urlParser = new RegExp("(?<from>[^/]+)/(?<id>.+)");
     const parsed = path.match(urlParser);
-    const subId = subscribeToRemoteDocument(
-      parsed.groups.from,
-      parsed.groups.id,
-      (event: any) => {
-        console.log("adding remote doc, event: ", event);
-        /*
-        createDocument().then((meta) => {
-          resolve(meta);
-          subId.then((id) => {
-            unsubscribe(id);
-          })
-        });
-        */
-      }
+    const parsedId = parsed.groups.id.match(
+      new RegExp("(?<id>[^/]+)/(?<timestamp>.+)")
     );
+    const docId = { id: parsedId.groups.id, timestamp: parsedId.groups.id };
+    subscribeToRemoteDocument(parsed.groups.from, docId).then((res) => {
+      console.log("adding remote doc, path:", path);
+
+      const ydoc = new Y.Doc();
+      const type = doc.getXmlFragment("prosemirror");
+      const version = Y.encodeStateVector(doc);
+      const encoding = Y.encodeStateAsUpdateV2(doc);
+
+      getDocumentSettings(docId).then((settings) => {
+        (window as any).urbit.poke({
+          app: "engram",
+          mark: "post",
+          json: {
+            make: {
+              dmeta: docId,
+              doc: {
+                version: Array.from(version),
+                content: Array.from(encoding),
+              },
+            },
+          },
+          onSuccess: () => {
+            (window as any).urbit.poke({
+              app: "engram",
+              mark: "post",
+              json: { createsnap: { dmeta: docId } },
+              onSuccess: () => {
+                resolve({
+                  id: docId,
+                  settings: {
+                    name: settings.name,
+                    owner: settings.owner,
+                    perms: settings.perms,
+                  },
+                });
+              },
+              onError: (e: any) => {
+                console.error(
+                  "Error initializing version history for remote document: ",
+                  docId,
+                  e
+                );
+                reject(
+                  "Error initializing version history for remote document"
+                );
+              },
+            });
+          },
+          onError: (e: any) => {
+            console.error("Error creating remote document: ", path, e);
+            reject("Error creating remote document");
+          },
+        });
+      });
+    });
   });
 }
 
@@ -593,23 +637,23 @@ let subs = [];
 
 export function subscribeToRemoteDocument(
   from: Patp,
-  doc: string
+  id: DocumentId
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
-    console.log("subing to remote document: ", doc, " from ship: ", from);
-    subs.push(from);
+    console.log("subing to remote document: ", id, " from ship: ", from);
     (window as any).urbit.poke({
       app: "engram",
       mark: "post",
       json: { sub: { dmeta: id, ship: "~" + from } },
       onSuccess: () => {
-        resolve();
+        subs.push(from);
+        resolve(from);
       },
       onError: (e: any) => {
-        console.error(
+        console.warn(
           "Error subscribing to document ",
-          doc,
+          id,
           " from ship: ",
           from,
           e
