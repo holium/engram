@@ -27,7 +27,9 @@ function Sidebar() {
 
   const [ids, setIds] = useState([]);
 
-  const [info, setInfo] = useState([]);
+  const [info, setInfo] = useState([{ name: "root", id: 1, children: [] },
+  { name: "tree-component", id: 2, children: [] },
+  { owner: "zod", name: "hey", id: 3, timestamp: 1 }]);
 
   const [appear, setAppear] = useState(false);
   const urbitStatus = useContext(UrbitContext);

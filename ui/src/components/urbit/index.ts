@@ -365,6 +365,9 @@ export function addToFolder(
   doc: FolderMeta | DocumentId,
   isDoc: boolean
 ) {
+  console.log("FolderMeta: ", meta)
+  console.log(doc);
+  console.log(isDoc)
   return new Promise<void>((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit.poke({

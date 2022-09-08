@@ -95,9 +95,11 @@ function TreeComponent({
         console.log("drag started:", e.dataTransfer.getData("parent"));
       }}
       onDragOver={(event) => {
+        event.stopPropagation()
         event.preventDefault();
       }}
-      onDrop={(event) => {
+
+      onDrop={!info.children ? (e)=>{console.log("tried adding something to a file")} : (event) => {
         event.stopPropagation();
         event.preventDefault();
         console.log("dropped: ", event);
