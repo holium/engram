@@ -209,6 +209,7 @@ function Sidebar() {
       );
       info.push(addTo);
     }
+    sendData();
   }
 
   async function createFold(name) {
