@@ -208,7 +208,7 @@ function Sidebar() {
       console.log("target owner true/false: ",target.owner ? true : false)
       addToFolder(
         { id: addTo.id, name: addTo.name },
-        target.id,
+        { id: target.id, name: target.name},
         target.owner ? true : false
       );
       info.push(addTo);
