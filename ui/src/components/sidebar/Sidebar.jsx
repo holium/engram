@@ -291,25 +291,26 @@ function Sidebar() {
           <ellipse cx="12" cy="12" rx="10" ry="10" />
         </svg>
       </div>
-      <div 
-      dropzone
-      onDragOver={(event) => {
-        event.preventDefault();
-      }}
-      onDrop={(event) => {
-        event.stopPropagation();
-        event.preventDefault();
-        console.log("dropped: ", event);
-        console.log(event.dataTransfer.getData("id"));
-        if (event.dataTransfer.getData("id") != info.id) {
-          console.log(info.id)
-          moveToFrom(
-            event.dataTransfer.getData("id"),
-            info.id,
-            event.dataTransfer.getData("parent")
-          );
-        }
-      }}>
+      <div
+        dropzone
+        onDragOver={(event) => {
+          event.preventDefault();
+        }}
+        onDrop={(event) => {
+          event.stopPropagation();
+          event.preventDefault();
+          console.log("dropped: ", event);
+          console.log(event.dataTransfer.getData("id"));
+          if (event.dataTransfer.getData("id") != info.id) {
+            console.log(info.id);
+            moveToFrom(
+              event.dataTransfer.getData("id"),
+              info.id,
+              event.dataTransfer.getData("parent")
+            );
+          }
+        }}
+      >
         <div className="flex flex-col overflow-auto">
           <div className="mt-3 tree-item">
             <div className="font-bold flex-grow py-1">Library</div>
