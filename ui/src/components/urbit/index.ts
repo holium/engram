@@ -531,7 +531,10 @@ export function addRemoteDocument(path: string): Promise<DocumentMeta> {
     const parsedId = parsed.groups.id.match(
       new RegExp("(?<id>[^/]+)/(?<timestamp>.+)")
     );
-    const docId = { id: parsedId.groups.id, timestamp: parsedId.groups.id };
+    const docId = {
+      id: parsedId.groups.id,
+      timestamp: parsedId.groups.timestamp,
+    };
     subscribeToRemoteDocument(parsed.groups.from, docId).then((res) => {
       console.log("adding remote doc, path:", path);
 
