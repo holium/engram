@@ -36,7 +36,7 @@
   |=  [=mark =vase]
   ^-  (quip card _this)
   ?+    mark  (on-poke:def mark vase)
-      %noun
+      %post
     =/  action  !<(?(action:engram) vase)
     ?-    -.action
     ::
@@ -170,7 +170,7 @@
     =/  docu  (need (~(get by d) meta))
     ~&  docu
        :~  [%give %fact ~ %noun !>(stg+docu)]
-    ==   
+    ==
 ==
 ++  on-leave  on-leave:def
 ++  on-peek
@@ -217,7 +217,7 @@
     ``noun+!>(upd)
   ==
 ::
-++  on-agent  
+++  on-agent
   |=  [=wire =sign:agent:gall]
     ^-  (quip card _this)
     ::~&  "This should print- nut"
