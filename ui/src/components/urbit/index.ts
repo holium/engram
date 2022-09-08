@@ -525,7 +525,7 @@ export function acknowledgeUpdate(doc: string, update: number) {
 }
 
 export function addRemoteDocument(path: string): Promise<DocumentMeta> {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     const urlParser = new RegExp("(?<from>[^/]+)/(?<id>.+)");
     const parsed = path.match(urlParser);
     const parsedId = parsed.groups.id.match(
@@ -535,9 +535,11 @@ export function addRemoteDocument(path: string): Promise<DocumentMeta> {
       id: parsedId.groups.id,
       timestamp: parseInt(parsedId.groups.timestamp),
     };
+    await unsubscribeFromRemoteDocument(parsed.groups.from);
     subscribeToRemoteDocument(parsed.groups.from, docId).then((res) => {
       console.log("adding remote doc, path:", path);
-
+      resolve();
+      /*
       const ydoc = new Y.Doc();
       const type = ydoc.getXmlFragment("prosemirror");
       const version = Y.encodeStateVector(ydoc);
@@ -589,6 +591,7 @@ export function addRemoteDocument(path: string): Promise<DocumentMeta> {
           },
         });
       });
+      */
     });
   });
 }
