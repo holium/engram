@@ -27,11 +27,7 @@ function Sidebar() {
 
   const [ids, setIds] = useState([]);
 
-  const [info, setInfo] = useState([
-    { name: "root", id: 1, children: [] },
-    { name: "tree-component", id: 2, children: [] },
-    { owner: "zod", name: "hey", id: 3, timestamp: 1 },
-  ]);
+  const [info, setInfo] = useState([]);
 
   const [appear, setAppear] = useState(false);
   const urbitStatus = useContext(UrbitContext);
@@ -207,6 +203,7 @@ function Sidebar() {
       console.log("target Name: ", addTo.name);
       console.log("target ID: ", target.id);
       console.log("target owner: ", target.owner);
+      console.log("target owner true/false: ",target.owner ? true : false)
       addToFolder(
         { id: addTo.id, name: addTo.name },
         target.id,
