@@ -166,7 +166,7 @@ function Sidebar() {
   function moveToFrom(id, to, from) {
     // null for root
     let target;
-    if (typeof target == "string") target = info.find((tar) => tar.id == id);
+    if (typeof id == "string") target = info.find((tar) => tar.id == id);
     else target = id;
     console.log(target, id);
     if (from != null) {
@@ -183,8 +183,10 @@ function Sidebar() {
       );
       info.push(removeFrom);
     }
+    console.log("to: ", to)
     if (to != null) {
       const addTo = info.find((folder) => folder.id == to);
+      console.log("target: ", addTo);
       addTo.children.push(target.id);
       info.splice(
         info.findIndex((item) => item.id == to),
