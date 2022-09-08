@@ -58,6 +58,7 @@
 +$  action
   $%  [%make =dmeta =doc]
       [%createsnap =dmeta]
+      [%snap =dmeta =snap]
       [%save =dmeta =doc]
       [%delete =dmeta]
       [%settings =dmeta =stg]
@@ -67,10 +68,11 @@
       [%foldoc =fmeta =fldr]
       [%remfoldoc =fmeta =fldr]
       [%renamefolder old=fmeta new=fmeta]
-      [%merge =dmeta =@ud]
-      [%snap =dmeta =snap]
-      ::[%sub =@p]
-      ::[%unsub =@p]
+      [%merge =dmeta =updt]
+      [%sub =dmeta owner=@p] 
+      [%unsub owner=@p]
+      [%update =dmeta =updt]
+      [%update-live =dmeta =updt]
   ==
 +$  update
   $%  [%sub =dmeta]

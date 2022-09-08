@@ -36,7 +36,7 @@
   |=  [=mark =vase]
   ^-  (quip card _this)
   ?+    mark  (on-poke:def mark vase)
-      %post
+      %noun
     =/  action  !<(?(action:engram) vase)
     ?-    -.action
     ::
@@ -46,9 +46,17 @@
     ?<  (~(has by d) dmeta.action)
     `this(d (~(put by d) dmeta.action doc.action))
     ::
-     %createsnap
+    ::
+    ::
+      %createsnap
     ?<  (~(has by su) dmeta.action)
     `this(su (~(put by su) dmeta.action ~))
+    ::
+    ::
+    ::
+     %snap
+    ?<  (~(has by su) dmeta.action)
+    `this(su (~(add ja su) dmeta.action snap.action))
     ::
     :: modify a document by changing the stored document state
     ::
@@ -67,7 +75,7 @@
       %settings
     `this(s (~(put by s) dmeta.action stg.action))
     ::
-    ::
+    :: {Documentation Here}
     ::
       %dsettings
     `this(s (~(del by s) dmeta.action))
@@ -99,7 +107,7 @@
         `this(f (~(put by f) fmeta.action ~))
     `this(f (~(del ju f) fmeta.action fldr.action))
     ::
-    ::
+    :: {Documentation Here}
     ::
       %renamefolder
     ~&  old.action
@@ -112,21 +120,61 @@
     ::
     :: remove the merged update from the update list (as updates aren't implemented this will just log)
     ::
-     %merge
-    ~|  "merge"
-    !!
+      %merge
+    `this(u (~(del ju u) dmeta.action updt.action))
     ::
-     %snap
-    ?>  (~(has by su) dmeta.action)
-    `this(su (~(add ja su) dmeta.action snap.action))
+    :: {Documentation Here}
+    ::
+      %sub
+    =/  li  /updates/(scot %ud id.dmeta.action)/(scot %da timestamp.dmeta.action)
+    :_  this
+    :~  [%pass /engram %agent [owner.action %engram] %watch li]
+    ==
+    ::
+    :: {Documentation Here}
+    ::
+      %unsub
+    :_  this
+    :~  [%pass /engram %agent [owner.action %engram] %leave ~]
+    ==
+    ::
+    :: {Documentation Here}
+    ::
+      %update-live
+    =/  li  /updates/(scot %ud id.dmeta.action)/(scot %da timestamp.dmeta.action)
+    ~&  updt.action
+    :_  this
+    :~  [%give %fact ~[li] %noun !>(updt.action)]
+    ==
+    ::
+    :: {Documentation Here}
+    ::
+      %update
+    `this(u (~(put ju u) dmeta.action updt.action))
     ==
   ==
-::
-++  on-watch  on-watch:def
+
+++  on-watch
+  |=  =path
+  ^-  (quip card _this)
+  ?+    path  (on-watch:def path)
+      [%updates @ @ ~]
+    =/  id=@  (crip (trip i.t.path))
+    =/  timestamp=@d  (di:dejs:format [%n p=i.t.t.path])
+    =/  meta  [id=id timestamp=timestamp]
+    =/  stg=[perms=(list @p) owner=@p name=@t]  (need (~(get by s) meta))
+    ?~  (find [src.bowl]~ perms.stg)
+      !!
+    :_  this
+    =/  stg  (need (~(get by s) meta))
+    =/  docu  (need (~(get by d) meta))
+    ~&  docu
+       :~  [%give %fact ~ %noun !>(stg+docu)]
+    ==   
+==
 ++  on-leave  on-leave:def
 ++  on-peek
   |=  =path
-  ~&  path
   ^-  (unit (unit cage))
   ?+    path  (on-peek:def path)
       [%x %docinfo ~]
@@ -140,7 +188,7 @@
     =/  meta  [id=id timestamp=timestamp]
     ~&  meta
     =/  doc=[version=(list @ud) cont=(list @ud)]  (need (~(get by d) meta))
-    ``noun+!>((enjs-gdoc:engram doc))
+    ``noun+!>(doc)
   ::
       [%x %gsetting @ @ ~]
     =/  id=@  (crip (trip i.t.t.path))
@@ -160,13 +208,21 @@
     =/  snap=(list snap:engram)  (need (~(get by su) meta))
     ~&  snap
     ``noun+!>((enjs-getsnaps:engram snap))
+  ::
+      [%x %gupdates @ @ ~]
+    =/  id=@  (crip (trip i.t.t.path))
+    =/  timestamp=@d  (di:dejs:format [%n p=i.t.t.t.path])
+    =/  meta  [id=id timestamp=timestamp]
+    =/  upd  (need (~(get by u) meta))
+    ``noun+!>(upd)
   ==
 ::
-++  on-agent
+++  on-agent  
   |=  [=wire =sign:agent:gall]
     ^-  (quip card _this)
+    ::~&  "This should print- nut"
     ?+    wire  (on-agent:def wire sign)
-        [%subs ~]
+        [%engram ~]
       ?+    -.sign  (on-agent:def wire sign)
           %watch-ack
         ?~  p.sign
@@ -181,8 +237,9 @@
       ::
           %fact
         ?+    p.cage.sign  (on-agent:def wire sign)
-            %engram-update
-          ~&  !<(update:engram q.cage.sign)
+            %noun
+          ~&  'logging'
+          ~&  q.cage.sign
           `this
         ==
       ==
