@@ -46,7 +46,7 @@ function TreeComponent({
   }, [info.children ? info.children.length : info.id]);
 
   const toggleAdd = (name, type) => {
-    handleAdd(info.name, name, type);
+    handleAdd(info.id, name, type);
     setChildren(getChildren(info.children));
     setExpand(true);
   };
@@ -57,7 +57,7 @@ function TreeComponent({
   }
 
   const handleDelete = () => {
-    onDelete(info.id, folder);
+    onDelete(info.id, folder, false);
     /*
     setInfo({ id: null, name: null, children: [] });
     setChildren([]);
@@ -78,14 +78,14 @@ function TreeComponent({
   }
 
   function openDocument() {
-    console.log("opening doc:", info.id);
-    document.dispatchEvent(OpenDocumentEvent(info));
+    console.log("opening doc:", info.id.id);
+    document.dispatchEvent(OpenDocumentEvent(info.id));
   }
 
   return (
     <div>
       <div
-        className="tree-item clickable"
+        className="tree-item"
         onClick={(e) => {
           e.stopPropagation();
           setExpand(!expand);
@@ -94,7 +94,7 @@ function TreeComponent({
         }}
       >
         {info.owner ? (
-          info.owner == "~" + window.ship ? (
+          info.owner == window.ship ? (
             // a dot if this ship is the origin
             <svg
               viewBox="0 0 25 25"
@@ -179,16 +179,24 @@ function TreeComponent({
             }}
             autoFocus
             onBlur={(e) => {
-              handleRename(info.id, e.target.value);
+              handleRename(
+                info.id,
+                e.target.value,
+                typeof info.owner != "undefined"
+              );
               setrenameState(false);
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                handleRename(info.id, e.target.value);
+                handleRename(
+                  info.id,
+                  e.target.value,
+                  typeof info.owner != "undefined"
+                );
                 setrenameState(false);
-                e.stopPropagation();
               } else if (e.key == "Escape") {
                 setrenameState(false);
+                setNewName("");
               }
             }}
           />
@@ -227,7 +235,7 @@ function TreeComponent({
             ) : (
               <FileMenu
                 ToggleFolderMenu={ToggleFolderMenu}
-                renameFolder={setrenameState}
+                renameFile={setrenameState}
                 onDelete={handleDelete}
                 position={pos}
               />
@@ -307,7 +315,7 @@ function TreeComponent({
             .map((child) => (
               <div>
                 <TreeComponent
-                  key={child.id}
+                  key={child.owner ? child.id.id : child.id}
                   folder={info.id}
                   onDelete={onDelete}
                   data={child}

@@ -10,7 +10,7 @@ function FolderMenu(props) {
         left: `${props.position.left}px`,
         top: `${props.position.top}px`,
         zIndex: "10",
-        width: "120px",
+        width: "240px",
       }}
       onMouseLeave={(e) => props.ToggleFolderMenu(e)}
     >
@@ -37,9 +37,19 @@ function FolderMenu(props) {
       <li
         className="clickable"
         clickable
-        onClick={() => {
-          console.log(props);
+        onClick={(e) => {
+          props.renameFolder(true);
+          props.ToggleFolderMenu(e);
+        }}
+      >
+        Rename
+      </li>
+      <li
+        className="clickable"
+        clickable
+        onClick={(e) => {
           props.onDelete(props.id);
+          props.ToggleFolderMenu(e);
         }}
       >
         Delete

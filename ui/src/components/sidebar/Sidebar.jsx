@@ -3,6 +3,8 @@ import { SlideContext } from "../toolbar/SlideContext";
 import {
   listDocuments,
   listFolders,
+  renameDocument,
+  renameFolder,
   createDocument,
   checkUrbitWindow,
   deleteDocument,
@@ -10,6 +12,7 @@ import {
   deleteFolder,
   addToFolder,
   removeFromFolder,
+  addRemoteDocument,
 } from "../urbit/index";
 import * as Y from "yjs";
 import FileTree from "./FileTree";
@@ -45,18 +48,19 @@ function Sidebar() {
             console.log("list folders result: ", folRes);
 
             setInfo([
-              ...Object.keys(docRes).map((index) => {
+              ...Object.values(docRes).map((doc) => {
+                console.log(doc);
                 return {
-                  id: index,
-                  owner: "~" + docRes[index].owner,
-                  name: docRes[index].name,
+                  id: doc.id,
+                  owner: doc.owner,
+                  name: doc.name,
                 };
               }),
               ...Object.values(folRes).map((fol) => {
                 return {
                   id: fol.meta.id,
                   name: fol.meta.name,
-                  children: Object.values(fol.content).map((item) => item.id),
+                  children: Object.values(fol.content),
                 };
               }),
             ]);
@@ -79,7 +83,7 @@ function Sidebar() {
   }, [info]);
 
   const sendData = () => {
-    const ids1 = info
+    const ids1 = [...info]
       .filter((childData) => childData.children)
       .map((childData) => childData.children);
     const ids2 = ids1.flat();
@@ -89,32 +93,55 @@ function Sidebar() {
 
   const getChildren = (identifier) => {
     console.log("getting children: ", identifier, " from ", info);
-    const content = info.filter((child) => identifier.includes(child.id));
+    const content = [...info].filter((child) => {
+      return (
+        0 <=
+        identifier.findIndex((item) => {
+          return (
+            (item.id ? item.id : item) == (child.id.id ? child.id.id : child.id)
+          );
+        })
+      );
+    });
     return content;
   };
 
-  const handleRename = (id, newName) => {
-    info.find((child) => {
-      if (child.id === id) {
-        child.name = newName;
-      }
+  function handleRename(id, newName, isDoc) {
+    const toRename = info.findIndex((doc) => {
+      return (doc.id.id ? doc.id.id : doc.id) == (id.id ? id.id : id);
     });
-    console.log(info);
-  };
+    if (id.id) {
+      renameDocument(id, newName).then((res) => {
+        console.log("rename document result:", res);
+      });
+    } else {
+      renameFolder(info[toRename], newName).then((res) => {
+        console.log("rename folder result: ", res);
+      });
+    }
+    info[toRename].name = newName;
+  }
 
   function handleDelete(item, folder) {
-    const toDelete = info.findIndex((doc) => doc.id == item);
-    console.log("deleting: ", info[toDelete]);
+    const toDelete = info.findIndex((doc) => {
+      return (doc.id.id ? doc.id.id : doc.id) == (item.id ? item.id : item);
+    });
     moveToFrom(item, null, folder);
-    if (info[toDelete].owner) {
-      deleteDocument(info[toDelete]);
+    let children = [];
+    if (item.id) {
+      deleteDocument(info[toDelete].id);
     } else {
+      console.log(info[toDelete].children);
+      children = info[toDelete].children;
       deleteFolder(info[toDelete]);
     }
-    const newInfo = info;
-    newInfo.splice(toDelete, 1);
-    setInfo([...newInfo]);
-    sendData();
+    info.splice(toDelete, 1);
+    setInfo([...info]);
+    if (typeof item.id == "undefined") {
+      children.forEach((child) => {
+        handleDelete(child, null);
+      });
+    }
   }
 
   async function handleAdd(id, name, type) {
@@ -127,7 +154,11 @@ function Sidebar() {
     } else if (type == "remote") {
       res = await addRemoteDoc(name);
     }
-    moveToFrom(res, id, null);
+    moveToFrom(
+      { id: res.id, name: res.settings.name, owner: res.settings.owner },
+      id,
+      null
+    );
 
     sendData();
   }
@@ -147,11 +178,8 @@ function Sidebar() {
       );
       removeFromFolder(
         { id: removeFrom.id, name: removeFrom.name },
-        {
-          id: target.id,
-          name: target.name,
-          ...(target.owner ? { owner: target.owner } : {}),
-        }
+        target.id,
+        target.owner ? true : false
       );
       info.push(removeFrom);
     }
@@ -164,11 +192,8 @@ function Sidebar() {
       );
       addToFolder(
         { id: addTo.id, name: addTo.name },
-        {
-          id: target.id,
-          name: target.name,
-          ...(target.owner ? { owner: target.owner } : {}),
-        }
+        target.id,
+        target.owner ? true : false
       );
       info.push(addTo);
     }
@@ -182,7 +207,8 @@ function Sidebar() {
       id: `~${window.ship}-${crypto.randomUUID()}`,
       name: name,
     });
-    setInfo([...info, { ...meta, children: [] }]);
+    info.push({ ...meta, children: [] });
+    setInfo([...info]);
     closeCreateDoc();
     return meta;
   }
@@ -197,28 +223,23 @@ function Sidebar() {
     const version = Y.encodeStateVector(doc);
     const encoding = Y.encodeStateAsUpdateV2(doc);
 
-    const meta = await createDocument(
-      {
-        owner: `~${window.ship}`,
-        id: `~${window.ship}-${crypto.randomUUID()}`,
-        name: name,
-      },
-      {
-        version: Array.from(version),
-        content: Array.from(encoding),
-      }
-    );
-    console.log("create document result", meta);
-    setInfo([...info, meta]);
+    const { id, settings } = await createDocument(name, {
+      version: Array.from(version),
+      content: Array.from(encoding),
+    });
+    console.log("create document result", id, settings);
+    info.push({ id: id, name: settings.name, owner: settings.owner });
+    setInfo([...info]);
     closeCreateDoc();
-    return meta;
+    return { id, settings };
   }
 
   async function addRemoteDoc(link) {
     console.log("add remote doc");
     checkUrbitWindow();
     const { meta, content } = await addRemoteDocument(link);
-    setInfo([...info, meta]);
+    info.push(meta);
+    setInfo([...info]);
     closeCreateDoc();
     return meta;
   }
@@ -254,7 +275,7 @@ function Sidebar() {
         </svg>
       </div>
       <div className="flex flex-col overflow-auto">
-        <div className="mt-4 tree-item">
+        <div className="mt-3 tree-item">
           <div className="font-bold flex-grow py-1">Library</div>
           {
             //Add Remote Document
@@ -341,7 +362,17 @@ function Sidebar() {
         )}
 
         {info
-          .filter((child) => !ids.includes(child.id))
+          .filter((child) => {
+            return (
+              0 >
+              ids.findIndex((item) => {
+                return (
+                  (item.id ? item.id : item) ==
+                  (child.id.id ? child.id.id : child.id)
+                );
+              })
+            );
+          })
           .sort((a, b) => {
             if ((a.owner && b.owner) || (!a.owner && !b.owner)) {
               if (a.name > b.name) {
@@ -357,20 +388,24 @@ function Sidebar() {
               return -1;
             }
           })
-          .map((childData, index) => (
-            <div>
-              <TreeComponent
-                key={childData.id}
-                data={childData}
-                folder={null}
-                onDelete={handleDelete}
-                getChildren={getChildren}
-                handleAdd={handleAdd}
-                createChild={createChild}
-                handleRename={handleRename}
-              />
-            </div>
-          ))}
+
+          .map((childData, index, arr) => {
+            console.log(arr);
+            return (
+              <div>
+                <TreeComponent
+                  key={childData.owner ? childData.id.id : childData.id}
+                  data={childData}
+                  folder={null}
+                  onDelete={handleDelete}
+                  getChildren={getChildren}
+                  handleAdd={handleAdd}
+                  createChild={createChild}
+                  handleRename={handleRename}
+                />
+              </div>
+            );
+          })}
       </div>
     </div>
   );

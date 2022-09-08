@@ -3,14 +3,20 @@ import Workspace from "./components/document/Workspace";
 import Sidebar from "./components/sidebar/Sidebar";
 import SlideProvider from "./components/toolbar/SlideContext";
 import UrbitProvider from "./components/urbit/UrbitProvider";
+import { pathParser } from "./components/document/types";
 
 function App() {
-  const [doc, openDoc] = useState(null);
+  const [path, openDoc] = useState(null);
 
   useEffect(() => {
     document.addEventListener("open-document", (event) => {
       console.log("open document: ", event);
-      openDoc((event as CustomEvent).detail);
+      const parsed = (event as CustomEvent).detail.match(pathParser);
+      console.log("parsed:", parsed);
+      openDoc({
+        id: parsed.groups.id,
+        timestamp: parseInt(parsed.groups.timestamp),
+      });
     });
   }, []);
 
@@ -19,7 +25,7 @@ function App() {
       <div id="app">
         <SlideProvider>
           <Sidebar />
-          <Workspace path={doc} />
+          <Workspace path={path} />
         </SlideProvider>
       </div>
     </UrbitProvider>

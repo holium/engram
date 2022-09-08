@@ -3,12 +3,7 @@ import { useEffect, useState, useContext } from "react";
 import { EditorState, Plugin } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
 import { keymap } from "prosemirror-keymap";
-import {
-  getDocument,
-  saveDocument,
-  recordSnapshot,
-  pathParser,
-} from "../urbit/index";
+import { getDocument, saveDocument, recordSnapshot } from "../urbit/index";
 // Build
 import * as Y from "yjs";
 import schema from "./build/schema";
@@ -29,7 +24,7 @@ import {
   yDocToProsemirror,
 } from "y-prosemirror";
 import { handleImage } from "./plugins/handleImage";
-import save from "./plugins/save";
+import { save, SavePluginKey } from "./plugins/save";
 
 // Menus
 import sidemenu from "./plugins/menus/sidemenu";
@@ -48,7 +43,7 @@ import ConfigPanel from "../panels/ConfigPanel";
 import { NotifStatus } from "./types";
 import { SlideContext } from "../toolbar/SlideContext";
 
-function Document(props: { path: string }) {
+function Document(props: { path: DocumentId }) {
   /* Periphery -------------------------------------------------------------- */
 
   // Menus
@@ -65,21 +60,19 @@ function Document(props: { path: string }) {
 
   // Snapshots
   const [snapshot, setSnapshot] = useState(null);
+
+  // Document
+  const [view, setView] = useState(null);
+  const [doc, setDoc] = useState(null);
+
   function renderSnapshot(snapshot: Y.Snapshot) {
     if (props.path == null) return;
     if (view != null) view.destroy();
-    const parsed = props.path.match(pathParser);
-    console.log("parsed path:", parsed);
-    const meta = {
-      owner: parsed.groups.owner,
-      id: parsed.groups.id,
-      name: parsed.groups.name,
-    };
 
     const doc = new Y.Doc();
     doc.clientID = 0; //(window as any).ship;
     doc.gc = false;
-    getDocument(meta).then((res: any) => {
+    getDocument(props.path).then((res: any) => {
       const content = new Uint8Array(
         Object.keys(res.content).map((index: any) => {
           return res.content[index];
@@ -111,24 +104,15 @@ function Document(props: { path: string }) {
     setup();
   }
 
-  /* Document --------------------------------------------------------------- */
-  const [view, setView] = useState(null);
-
   // Setup
   function setup() {
     if (props.path == null) return;
     if (view != null) view.destroy();
-    const parsed = props.path.match(pathParser);
-    console.log("parsed path:", parsed);
-    const meta = {
-      owner: parsed.groups.owner,
-      id: parsed.groups.id,
-      name: parsed.groups.name,
-    };
+
     const doc = new Y.Doc();
     doc.clientID = 0; //(window as any).ship;
     doc.gc = false;
-    getDocument(meta).then((res: any) => {
+    getDocument(props.path).then((res: any) => {
       const version = new Uint8Array(
         Object.keys(res.version).map((index: any) => {
           return res.version[index];
@@ -167,16 +151,13 @@ function Document(props: { path: string }) {
           save(() => {
             const version = Y.encodeStateVector(doc);
             const content = Y.encodeStateAsUpdate(doc);
-            console.log(Y.snapshot(doc));
-            console.log(Y.encodeSnapshotV2(Y.snapshot(doc)));
-            console.log(Array.from(Y.encodeSnapshotV2(Y.snapshot(doc))));
             const snapshot = Array.from(Y.encodeSnapshotV2(Y.snapshot(doc)));
 
-            saveDocument(meta, {
+            saveDocument(props.path, {
               version: Array.from(version),
               content: Array.from(content),
             });
-            recordSnapshot(meta, {
+            recordSnapshot(props.path, {
               date: Date.now(),
               ship: `~${(window as any).ship}`,
               data: snapshot,
@@ -187,9 +168,9 @@ function Document(props: { path: string }) {
       const view = new EditorView(document.querySelector("#document"), {
         state: state,
       });
-      console.log(view);
       Y.applyUpdate(doc, content);
       setView(view);
+      setDoc(doc);
     });
   }
 
@@ -236,17 +217,23 @@ function Document(props: { path: string }) {
         panel={panel}
         notifs={notifStatus}
       />
-      <PublishPanel show={panel == "publish"} />
+      <PublishPanel show={panel == "publish"} path={props.path} />
       <UpdatePanel
         path={props.path}
         show={panel == "update"}
-        save={/*saveDoc*/ () => {}}
+        save={() => {
+          console.log(SavePluginKey.getState(view.state));
+          SavePluginKey.getState(view.state)();
+        }}
         getStage={
           /* getStage */ () => {
             return 0;
           }
         }
-        applyUpdate={/* applyUpdate */ () => {}}
+        applyUpdate={(content: Uint8Array) => {
+          doc.applyUpdate(content);
+          return doc;
+        }}
         setNotifStatus={/* setNotifStatus */ () => {}}
       />
 
