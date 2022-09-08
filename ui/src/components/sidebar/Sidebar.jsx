@@ -302,7 +302,7 @@ function Sidebar() {
             console.log(info.id);
             moveToFrom(
               event.dataTransfer.getData("id"),
-              info.id,
+              null,
               event.dataTransfer.getData("parent")
             );
           }
