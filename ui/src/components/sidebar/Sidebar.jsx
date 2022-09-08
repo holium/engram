@@ -410,6 +410,7 @@ function Sidebar() {
                   handleAdd={handleAdd}
                   createChild={createChild}
                   handleRename={handleRename}
+                  moveToFrom = {moveToFrom}
                 />
               </div>
             );

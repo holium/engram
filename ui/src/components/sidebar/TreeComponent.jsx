@@ -10,6 +10,7 @@ function TreeComponent({
   getChildren,
   handleAdd,
   handleRename,
+  moveToFrom
 }) {
   const [expand, setExpand] = useState(false);
 
@@ -83,7 +84,34 @@ function TreeComponent({
   }
 
   return (
-    <div>
+    <div
+      draggable="true"
+      dropzone
+      onDragStart={(e) => {
+        e.stopPropagation();
+        e.dataTransfer.setData("id", info.id);
+        e.dataTransfer.setData("parent", folder);
+        //e.dataTransfer.setData("text/plain", folder)
+        console.log("drag started:", e.dataTransfer.getData("parent"));
+      }}
+      onDragOver={(event) => {
+        event.preventDefault();
+      }}
+      onDrop={(event) => {
+        event.stopPropagation();
+        event.preventDefault();
+        console.log("dropped: ", event);
+        console.log(event.dataTransfer.getData("id"));
+        if (event.dataTransfer.getData("id") != info.id) {
+          moveToFrom(
+            event.dataTransfer.getData("id"),
+            info.id,
+            event.dataTransfer.getData("parent")
+          );
+          console.log(data);
+        }
+      }}
+    >
       <div
         className="tree-item"
         onClick={(e) => {
@@ -322,6 +350,7 @@ function TreeComponent({
                   getChildren={getChildren}
                   handleAdd={handleAdd}
                   handleRename={handleRename}
+                  moveToFrom={moveToFrom}
                 />
               </div>
             ))}
