@@ -19,10 +19,10 @@
     [%foldoc (ot ~[fmeta+(ot ~[id+so name+so]) fldr+(of ~[[[%doc] (ot ~[id+so timestamp+di])] [[%folder] (ot ~[id+so name+so])]])])]
     [%remfoldoc (ot ~[fmeta+(ot ~[id+so name+so]) fldr+(of ~[[[%doc] (ot ~[id+so timestamp+di])] [[%folder] (ot ~[id+so name+so])]])])]
     [%createsnap (ot ~[dmeta+(ot ~[id+so timestamp+di])])]
-    [%merge (ot ~[dmeta+(ot ~[id+so timestamp+di]) index+ni])]
+    ::[%merge (ot ~[dmeta+(ot ~[id+so timestamp+di]) index+ni])]
     [%snap (ot ~[dmeta+(ot ~[id+so timestamp+di]) snap+(ot ~[date+di ship+(se %p) data+(ar ni)])])]
     [%sub (ot ~[dmeta+(ot ~[id+so timestamp+di]) ship+(se %p)])]
-    [%unsub (ship+(se %p))]
+    [%unsub (ot ~[ship+(se %p)])]
   ==
 ++  enjs-docinfo
   =,  enjs:format
