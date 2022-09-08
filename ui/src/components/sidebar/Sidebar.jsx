@@ -198,6 +198,10 @@ function Sidebar() {
         info.findIndex((item) => item.id == to),
         1
       );
+      console.log("AddTo ID: ", addTo.id)
+      console.log("target Name: ",addTo.name )
+      console.log("target ID: ", target.id)
+      console.log("target owner: ", target.owner)
       addToFolder(
         { id: addTo.id, name: addTo.name },
         target.id,
