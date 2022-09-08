@@ -159,12 +159,13 @@
   ^-  (quip card _this)
   ?+    path  (on-watch:def path)
       [%updates @ @ ~]
-    =/  id=@  (crip (trip i.t.path))
-    =/  timestamp=@d  (di:dejs:format [%n p=i.t.t.path])
+    =/  id=@  (slav %ud i.t.path)
+    =/  timestamp=@d  (slav %da i.t.t.path)
     =/  meta  [id=id timestamp=timestamp]
     =/  stg=[perms=(list @p) owner=@p name=@t]  (need (~(get by s) meta))
     ?~  (find [src.bowl]~ perms.stg)
       !!
+    ~&  "passed perms check"
     :_  this
     =/  stg  (need (~(get by s) meta))
     =/  docu  (need (~(get by d) meta))
