@@ -30,6 +30,7 @@ function UpdatePanel(props: {
 
     getDocumentSettings(props.path).then((res) => {
       console.log("Get document settings result: ", res);
+      /*
       Object.values(res.whitelist).map((member) => {
         return subscribeToRemoteDocument(member, props.path, (event) => {
           //if event != init
@@ -43,6 +44,7 @@ function UpdatePanel(props: {
           ]);
         });
       });
+      */
     });
   }, [props.show]);
 

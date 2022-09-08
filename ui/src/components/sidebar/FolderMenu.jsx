@@ -37,7 +37,7 @@ function FolderMenu(props) {
       <li
         className="clickable"
         clickable
-        onClick={() => {
+        onClick={(e) => {
           props.renameFolder(true);
           props.ToggleFolderMenu(e);
         }}
@@ -47,7 +47,7 @@ function FolderMenu(props) {
       <li
         className="clickable"
         clickable
-        onClick={() => {
+        onClick={(e) => {
           props.onDelete(props.id);
           props.ToggleFolderMenu(e);
         }}

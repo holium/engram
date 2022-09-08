@@ -515,12 +515,9 @@ export function addRemoteDocument(
   path: string
 ): Promise<DocumentMeta> {
   return new Promise((resolve, reject) => {
-    const subId = (window as any).urbit.subscribeToRemoteDocument(
-      from,
-      path,
-      (event: any) => {
-        console.log("adding remote doc, event: ", event);
-        /*
+    const subId = subscribeToRemoteDocument(from, path, (event: any) => {
+      console.log("adding remote doc, event: ", event);
+      /*
         createDocument().then((meta) => {
           resolve(meta);
           subId.then((id) => {
@@ -528,8 +525,7 @@ export function addRemoteDocument(
           })
         });
         */
-      }
-    );
+    });
   });
 }
 
@@ -585,11 +581,12 @@ export function subscribeToRemoteDocument(
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
+    console.log("adding remote document: ", doc, " from ship: ", from);
     (window as any).urbit
       .subscribe({
         app: "engram",
-        path: `/${doc}`,
-        ship: from,
+        path: `/updates/${from}`,
+        ship: "zod",
         event: (event) => {
           console.log("received event from subscription: ", doc, ": ", event);
           //recordUpdate()
