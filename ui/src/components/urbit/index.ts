@@ -533,15 +533,15 @@ export function addRemoteDocument(path: string): Promise<DocumentMeta> {
     );
     const docId = {
       id: parsedId.groups.id,
-      timestamp: parsedId.groups.timestamp,
+      timestamp: parseInt(parsedId.groups.timestamp),
     };
     subscribeToRemoteDocument(parsed.groups.from, docId).then((res) => {
       console.log("adding remote doc, path:", path);
 
       const ydoc = new Y.Doc();
-      const type = doc.getXmlFragment("prosemirror");
-      const version = Y.encodeStateVector(doc);
-      const encoding = Y.encodeStateAsUpdateV2(doc);
+      const type = ydoc.getXmlFragment("prosemirror");
+      const version = Y.encodeStateVector(ydoc);
+      const encoding = Y.encodeStateAsUpdateV2(ydoc);
 
       getDocumentSettings(docId).then((settings) => {
         (window as any).urbit.poke({
