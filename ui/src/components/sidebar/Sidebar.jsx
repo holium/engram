@@ -169,8 +169,13 @@ function Sidebar() {
     if (typeof id == "string") target = info.find((tar) => tar.id == id);
     else target = id;
     console.log(target, id);
-    if (from != null) {
-      const removeFrom = info.find((folder) => folder.id == from);
+    let parent;
+    if (typeof from == "string") parent = info.find((tar) => tar.id == from);
+    else if(from === "null") parent = null;
+    else parent = from;
+
+    if (parent != null) {
+      const removeFrom = info.find((folder) => folder.id == parent);
       removeFrom.children.splice(removeFrom.children.indexOf(target.id), 1);
       info.splice(
         info.findIndex((item) => item.id == from),
