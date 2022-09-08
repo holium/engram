@@ -394,6 +394,7 @@ export function removeFromFolder(
   doc: FolderMeta | DocumentId,
   isDoc: boolean
 ) {
+  if(isDoc) doc = doc.id;
   return new Promise<void>((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
