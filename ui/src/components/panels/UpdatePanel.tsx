@@ -3,8 +3,9 @@ import { Update, NotifStatus } from "../document/types";
 import * as Y from "yjs";
 import {
   getDocumentSettings,
+  getDocumentUpdates,
   subscribeToRemoteDocument,
-  unsubscribe,
+  unsubscribeFromRemoteDocument,
   acknowledgeUpdate,
   recordSnapshot,
 } from "../urbit/index";
@@ -24,27 +25,34 @@ function UpdatePanel(props: {
 
   useEffect(() => {
     activeSubs.forEach((sub) => {
-      unsubscribe(sub);
+      unsubscribeFromRemoteDocument(sub);
     });
-    setChanges(getMag(props.getStage()));
-
+    setActiveSubs([]);
     getDocumentSettings(props.path).then((res) => {
       console.log("Get document settings result: ", res);
-      /*
       Object.values(res.whitelist).map((member) => {
-        return subscribeToRemoteDocument(member, props.path, (event) => {
-          //if event != init
-          setUpdates([
-            ...updates,
-            {
-              author: event.author,
-              time: event.time,
-              content: new Uint8Array(event.content),
-            },
-          ]);
-        });
+        subscribeToRemoteDocument(member, props.path);
+        setActiveSubs([...activeSubs, member]);
       });
-      */
+    });
+  }, [props.path]);
+
+  useEffect(() => {
+    setChanges(getMag(props.getStage()));
+
+    getDocumentUpdates(props.path).then((res) => {
+      console.log("get document updates result", res);
+      console.log(Object.values(res));
+      console.log(Object.values(res).map((update) => update.content));
+      setUpdates([
+        ...Object.values(res).map((update) => {
+          return {
+            author: update.author,
+            timestamp: new Date(update.timestamp),
+            content: new Uint8Array(Object.values(update.content)),
+          };
+        }),
+      ]);
     });
   }, [props.show]);
 
@@ -73,14 +81,8 @@ function UpdatePanel(props: {
     console.log("executing update: ", updates[index]);
 
     // apply the update in workspace
-    const doc = props.applyUpdate(index, updates[index].content);
-    props.save();
-    recordSnapshot(props.path, {
-      date: updates[index].time,
-      ship: updates[index].author,
-      data: Array.from(Y.encodeSnapshotV2(Y.snapshot(doc))),
-    });
-    acknowledgeUpdate(props.path, index);
+    const doc = props.applyUpdate(updates[index].content);
+    acknowledgeUpdate(props.path, updates[index]);
 
     // correct the local state
     setUpdates(updates.filter((update, i) => i != index));
@@ -137,7 +139,10 @@ function UpdatePanel(props: {
       )}
       {updates.map((update: Update, i: number) => {
         return (
-          <div className="flex gap-3 items-center" key={update.time.toString()}>
+          <div
+            className="flex gap-3 items-center"
+            key={update.timestamp.toString()}
+          >
             <div className="flex-grow">
               <span className="azimuth">~{update.author}</span>
             </div>
