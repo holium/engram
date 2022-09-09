@@ -4,6 +4,7 @@
   =,  dejs:format
   |=  jon=json
   ^-  action
+  ~&  "Parsing json:"
   ~&  jon
   %.  jon
   %-  of
@@ -21,6 +22,7 @@
     [%createsnap (ot ~[dmeta+(ot ~[id+so timestamp+di])])]
     [%merge (ot ~[dmeta+(ot ~[id+so timestamp+di]) update+(ot ~[author+(se %p) content+(ar ni) time+di])])]
     [%snap (ot ~[dmeta+(ot ~[id+so timestamp+di]) snap+(ot ~[date+di ship+(se %p) data+(ar ni)])])]
+    [%dsnap (ot ~[dmeta+(ot ~[id+so timestamp+di])])]
     [%sub (ot ~[dmeta+(ot ~[id+so timestamp+di]) ship+(se %p)])]
     [%unsub (ot ~[ship+(se %p)])]
   ==
@@ -84,9 +86,6 @@
   =,  enjs:format
   |=  folders=fldrs
   =/  keys  ~(tap in ~(key by folders))
-  ~&  "keys"
-  ~&  (lent keys)
-  ~&  keys
   =/  results  *(list [@t json])
   =/  counter  0
   =/  assembled
@@ -97,8 +96,6 @@
   =/  curr  (~(get by folders) key)
   =/  meta  (pairs ~[['id' (tape (trip `cord`id:key))] ['name' (tape (trip name:key))]])
   =/  items  ~(tap in (~(get ju folders) key))
-  ~&  "items"
-  ~&  items
   =/  content-results  *(list [@t json])
   =/  content-counter  0
   =/  content
@@ -108,7 +105,6 @@
     ?:  =(content-counter (lent items))
       content-results
     =/  item  (snag content-counter items)
-    ~&  item
     =/  res
       ?-  -.item
           [%doc]
@@ -120,7 +116,6 @@
       content-counter  (add content-counter 1)
       content-results  (snoc content-results [(crip "{<content-counter>}") res])
     ==
-  ~&  key
   %=  $
     counter  (add counter 1)
     results  (snoc results [(crip "{<counter>}") (pairs ~[['meta' (pairs ~[['id' (tape (trip `@t`id:key))] ['name' (tape (trip name:key))]])] ['content' content]])])
