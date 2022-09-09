@@ -42,6 +42,8 @@ function UpdatePanel(props: {
 
     getDocumentUpdates(props.path).then((res) => {
       console.log("get document updates result", res);
+      console.log(Object.values(res));
+      console.log(Object.values(res).map((update) => update.content));
       setUpdates([
         ...Object.values(res).map((update) => {
           return {
@@ -79,14 +81,8 @@ function UpdatePanel(props: {
     console.log("executing update: ", updates[index]);
 
     // apply the update in workspace
-    const doc = props.applyUpdate(index, updates[index].content);
-    props.save();
-    recordSnapshot(props.path, {
-      date: updates[index].timestamp,
-      ship: updates[index].author,
-      data: Array.from(Y.encodeSnapshotV2(Y.snapshot(doc))),
-    });
-    acknowledgeUpdate(props.path, index);
+    const doc = props.applyUpdate(updates[index].content);
+    acknowledgeUpdate(props.path, updates[index]);
 
     // correct the local state
     setUpdates(updates.filter((update, i) => i != index));

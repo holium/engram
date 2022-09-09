@@ -500,13 +500,22 @@ export function recordUpdate(doc: string, update: DocumentUpdate) {
   });
 }
 
-export function acknowledgeUpdate(doc: string, update: number) {
+export function acknowledgeUpdate(dmeta: DocumentId, update: any) {
   return new Promise<void>((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
       app: "engram",
       mark: "post",
-      json: { merge: { doc: doc, update: update } },
+      json: {
+        merge: {
+          dmeta: dmeta,
+          update: {
+            author: "~" + update.author,
+            content: Array.from(update.content),
+            time: update.timestamp.getTime(),
+          },
+        },
+      },
       onSuccess: () => {
         resolve();
       },
