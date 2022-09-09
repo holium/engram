@@ -27,7 +27,7 @@ function Sidebar() {
 
   const [ids, setIds] = useState([]);
 
-  const [info, setInfo] = useState([]);
+  const [info, setInfo] = useState([{id: 1, name: "folder1", children: [2]}, {id:2, name: "folder2", children:[]}]);
 
   const [appear, setAppear] = useState(false);
   const urbitStatus = useContext(UrbitContext);
@@ -289,6 +289,7 @@ function Sidebar() {
         </svg>
       </div>
       <div
+      className=" flex-grow"
         dropzone
         onDragOver={(event) => {
           event.preventDefault();
