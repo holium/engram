@@ -59,6 +59,7 @@
   $%  [%make =dmeta =doc]
       [%createsnap =dmeta]
       [%snap =dmeta =snap]
+      [%dsnap =dmeta]
       [%save =dmeta =doc]
       [%delete =dmeta]
       [%settings =dmeta =stg]
