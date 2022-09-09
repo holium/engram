@@ -36,6 +36,7 @@ function TreeComponent({
     if (!data.owner) {
       setChildren(getChildren(info.children));
     }
+    console.log(info);
   }, [info.children ? info.children.length : info.id]);
 
   const toggleAdd = (name, type) => {
@@ -234,7 +235,7 @@ function TreeComponent({
             <path d="M4.5 10.5c-.825 0-1.5.675-1.5 1.5s.675 1.5 1.5 1.5S6 12.825 6 12s-.675-1.5-1.5-1.5zm15 0c-.825 0-1.5.675-1.5 1.5s.675 1.5 1.5 1.5S21 12.825 21 12s-.675-1.5-1.5-1.5zm-7.5 0c-.825 0-1.5.675-1.5 1.5s.675 1.5 1.5 1.5 1.5-.675 1.5-1.5-.675-1.5-1.5-1.5z" />
           </svg>
         )}
-        <menu onMouseLeave={hideMenu}>
+        <menu>
           {appear &&
             (info.children ? (
               <FolderMenu
@@ -249,6 +250,7 @@ function TreeComponent({
             ) : (
               <FileMenu
                 ToggleFolderMenu={ToggleFolderMenu}
+                canRename={info.owner == (window as any).ship}
                 renameFile={setrenameState}
                 onDelete={handleDelete}
                 position={pos}

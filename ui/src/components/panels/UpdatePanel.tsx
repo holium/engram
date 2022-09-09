@@ -31,8 +31,10 @@ function UpdatePanel(props: {
     getDocumentSettings(props.path).then((res) => {
       console.log("Get document settings result: ", res);
       Object.values(res.whitelist).map((member) => {
-        subscribeToRemoteDocument(member, props.path);
-        setActiveSubs([...activeSubs, member]);
+        if (member != (window as any).ship) {
+          subscribeToRemoteDocument(member, props.path);
+          setActiveSubs([...activeSubs, member]);
+        }
       });
     });
   }, [props.path]);

@@ -21,7 +21,7 @@
 }
 
 #sidebar {
-  @apply flex flex-col overflow-hidden;
+  @apply flex flex-col;
   z-index: 1;
   width: 18vw;
   min-width: 280px;
@@ -34,5 +34,12 @@
     top: calc(28px + var(--leading-body));
     left: 16px;
     max-height: calc(100vh - calc(20px + var(--leading-body)));
+  }
+
+  #sidebar :first-child {
+    @apply rounded-t-3 overflow-hidden;
+  }
+  #sidebar :last-child {
+    @apply rounded-b-3 overflow-hidden;
   }
 }

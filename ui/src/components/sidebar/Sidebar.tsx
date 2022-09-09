@@ -415,6 +415,7 @@ function Sidebar() {
             })}
         </div>
       </div>
+      <div className="pb-3"></div>
     </div>
   );
 }

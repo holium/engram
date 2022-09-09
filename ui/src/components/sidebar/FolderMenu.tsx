@@ -6,13 +6,15 @@ function FolderMenu(props) {
   return (
     <menu
       className="tree-menu context-menu select"
+      tabIndex="0"
       style={{
+        possition: "fixed",
         left: `${props.position.left}px`,
         top: `${props.position.top}px`,
         zIndex: "10",
         width: "240px",
       }}
-      onMouseLeave={(e) => props.ToggleFolderMenu(e)}
+      onBlur={(e) => props.ToggleFolderMenu(e)}
     >
       <li
         className="clickable"

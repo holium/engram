@@ -1,29 +1,39 @@
-import { useEffect, useState } from "react";
-import { regular } from "@fortawesome/fontawesome-svg-core/import.macro";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useEffect, useRef } from "react";
 
 function FileMenu(props) {
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    console.log("menu ref:", menuRef);
+    if (menuRef.current && menuRef.current.focus) menuRef.current.focus();
+  });
+
   return (
     <menu
       className="tree-menu context-menu select"
+      tabIndex="0"
       style={{
+        position: "fixed",
         left: `${props.position.left}px`,
         top: `${props.position.top}px`,
         zIndex: "10",
         width: "240px",
       }}
-      onMouseLeave={(e) => props.ToggleFolderMenu(e)}
+      onBlur={(e) => props.ToggleFolderMenu(e)}
+      ref={menuRef}
     >
-      <li
-        className="clickable"
-        onClick={(e) => {
-          e.stopPropagation();
-          props.renameFile(true);
-          props.ToggleFolderMenu(e);
-        }}
-      >
-        Rename
-      </li>
+      {props.canRename && (
+        <li
+          className="clickable"
+          onClick={(e) => {
+            e.stopPropagation();
+            props.renameFile(true);
+            props.ToggleFolderMenu(e);
+          }}
+        >
+          Rename
+        </li>
+      )}
       <li
         className="clickable"
         onClick={(e) => {
