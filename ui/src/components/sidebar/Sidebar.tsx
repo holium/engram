@@ -16,21 +16,15 @@ import {
 } from "../urbit/index";
 import * as Y from "yjs";
 import TreeComponent from "./TreeComponent";
-import FolderMenu from "./FolderMenu";
-
 import { UrbitContext } from "../urbit/UrbitProvider";
-import RootMenu from "./RootMenu";
-
 function Sidebar() {
   const [type, setType] = useState("");
 
   const [ids, setIds] = useState([]);
 
-  const [info, setInfo] = useState([]);
+  const [info, setInfo] = useState([{id: 1, name: "folder1", children: [2]}, {id:2, name: "folder2", children:[]}]);
 
-  const [appear, setAppear] = useState(false);
   const urbitStatus = useContext(UrbitContext);
-  const [list, setList] = useState([]);
   const [newDoc, setNewDoc] = useState(false);
   const [newDocName, setNewDocName] = useState("");
   const { slide, setSlide } = useContext(SlideContext);
@@ -66,12 +60,12 @@ function Sidebar() {
           })
           .catch((err) => {
             console.warn("error listing folders: ", err);
-            setList([{ id: "null", name: "error getting folders" }]);
+            setInfo([{ id: "null", name: "error getting folders" }]);
           });
       })
       .catch((err) => {
         console.log("no urbit :(");
-        setList([
+        setInfo([
           { owner: "~zod", id: "null", name: "error getting documents" },
         ]);
       });
