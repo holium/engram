@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import { SlideContext } from "./SlideContext";
-import { getDocumentSettings } from "../urbit/index";
+import { getDocumentSettings, renameDocument } from "../urbit/index";
 
 function Navbar(props: {
   path: DocumentId;
@@ -18,15 +18,14 @@ function Navbar(props: {
     });
   }, [props.path]);
 
-  function updateDocumentName(event: any) {
-    console.log("update document name to:", event.target.value);
-    // urbit call
-    setName(event.target.value);
-  }
-
   const { slide, setSlide } = useContext(SlideContext);
   function toggleSidebar() {
     setSlide(!slide);
+  }
+
+  function handleRename(event) {
+    renameDocument(path, event.target.value);
+    setName(event.target.value);
   }
 
   return (
@@ -48,15 +47,7 @@ function Navbar(props: {
       >
         /
       </div>
-      <input
-        className="flex-grow px-3 py-1 bg-none focus:outline rounded-1"
-        value={name}
-        onChange={(event) => {
-          setName(event.target.value);
-        }}
-        style={{ outlineColor: "var(--type-color)" }}
-        onBlur={updateDocumentName}
-      />
+      <div className="flex-grow ">{name}</div>
       {/* Sharing */}
       <svg
         xmlns="http://www.w3.org/2000/svg"
