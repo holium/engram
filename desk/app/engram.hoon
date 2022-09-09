@@ -1,6 +1,6 @@
 /-  engram
 /+  engram
-/+  default-agent, dbug
+/+  default-agent, dbug, agentio
 |%
 +$  versioned-state
   $%  state-0
@@ -14,7 +14,7 @@
 ^-  agent:gall
 |_  =bowl:gall
 +*  this  .
-    def   ~(. (default-agent this %.n) bowl)
+    def   ~(. (default-agent this %|) bowl)
 ::
 ++  on-init
   ^-  (quip card _this)
@@ -36,7 +36,7 @@
   |=  [=mark =vase]
   ^-  (quip card _this)
   ?+    mark  (on-poke:def mark vase)
-      %noun
+      %post
     =/  action  !<(?(action:engram) vase)
     ?-    -.action
     ::
@@ -54,9 +54,17 @@
     ::
     ::
     ::
-     %snap
-    ?<  (~(has by su) dmeta.action)
+      %snap
+    ~&  "adding snap"
+    ~&  action
+    ~&  su
     `this(su (~(add ja su) dmeta.action snap.action))
+    ::
+    ::
+    ::
+      %dnsap
+    ?>  (~(has by su) dmeta.action)
+    `this(su (~(del by su) dmeta.action))
     ::
     :: modify a document by changing the stored document state
     ::
@@ -159,18 +167,22 @@
   ^-  (quip card _this)
   ?+    path  (on-watch:def path)
       [%updates @ @ ~]
-    =/  id=@  (crip (trip i.t.path))
-    =/  timestamp=@d  (di:dejs:format [%n p=i.t.t.path])
+    =/  id=@  (slav %ud i.t.path)
+    =/  timestamp=@d  (slav %da i.t.t.path)
     =/  meta  [id=id timestamp=timestamp]
     =/  stg=[perms=(list @p) owner=@p name=@t]  (need (~(get by s) meta))
     ?~  (find [src.bowl]~ perms.stg)
       !!
+    ~&  "passed perms check"
     :_  this
     =/  stg  (need (~(get by s) meta))
     =/  docu  (need (~(get by d) meta))
     ~&  docu
-       :~  [%give %fact ~ %noun !>(stg+docu)]
-    ==   
+    =/  li  /updates/(scot %ud id.meta)/(scot %da timestamp.meta)
+    :~  %-  fact-init:agentio
+      update+!>(`update:engram`[%init meta docu stg])
+      [%pass /engram %agent [src.bowl %engram] %watch li]
+    ==
 ==
 ++  on-leave  on-leave:def
 ++  on-peek
@@ -181,6 +193,7 @@
     ``noun+!>((enjs-docinfo:engram s))
   ::
       [%x %gdoc @ @ ~]
+    ~&  "get doc"
     =/  id=@  (crip (trip i.t.t.path))
     =/  timestamp=@d  (di:dejs:format [%n p=i.t.t.t.path])
     ~&  (di:dejs:format [%n p=i.t.t.t.path])
@@ -188,7 +201,8 @@
     =/  meta  [id=id timestamp=timestamp]
     ~&  meta
     =/  doc=[version=(list @ud) cont=(list @ud)]  (need (~(get by d) meta))
-    ``noun+!>(doc)
+    ~&  doc
+    ``noun+!>((enjs-gdoc:engram doc))
   ::
       [%x %gsetting @ @ ~]
     =/  id=@  (crip (trip i.t.t.path))
@@ -202,6 +216,7 @@
     ``noun+!>((enjs-gfolders:engram f))
   ::
       [%x %getsnaps @ @ ~]
+    ~&  "getting snaps"
     =/  id=@  (crip (trip i.t.t.path))
     =/  timestamp=@d  (di:dejs:format [%n p=i.t.t.t.path])
     =/  meta  [id=id timestamp=timestamp]
@@ -210,17 +225,25 @@
     ``noun+!>((enjs-getsnaps:engram snap))
   ::
       [%x %gupdates @ @ ~]
+   ~&  "getting updates"
     =/  id=@  (crip (trip i.t.t.path))
+    ~&  id
     =/  timestamp=@d  (di:dejs:format [%n p=i.t.t.t.path])
+    ~&  timestamp
     =/  meta  [id=id timestamp=timestamp]
-    =/  upd  (need (~(get by u) meta))
-    ``noun+!>(upd)
+    ~&  meta
+    =/  upd  (~(get ju u) meta)
+    ~&  u
+    ~&  "---"
+    ~&  upd
+    ``noun+!>((enjs-gupdates:engram upd))
   ==
 ::
-++  on-agent  
+++  on-agent
   |=  [=wire =sign:agent:gall]
     ^-  (quip card _this)
-    ::~&  "This should print- nut"
+    ~&  "Reached agent"
+    ~&  sign
     ?+    wire  (on-agent:def wire sign)
         [%engram ~]
       ?+    -.sign  (on-agent:def wire sign)
@@ -241,6 +264,24 @@
           ~&  'logging'
           ~&  q.cage.sign
           `this
+            %update
+          ~&  "reached update"
+          ~&  q.cage.sign
+          =/  update  !<(update:engram q.cage.sign)
+          ?-  -.update
+            %init
+          ~&  update
+          =/  up=updt:engram  [author=owner.stg.update cont=cont.doc.update time=timestamp.dmeta.update]
+          ~&  (~(put ju u) dmeta.update up)
+          :_  this
+          :~  [%pass /settings %agent [our.bowl %engram] %poke %post !>([%settings dmeta.update stg.update])]
+              [%pass /update %agent [our.bowl %engram] %poke %post !>([%update dmeta.update up])]
+          ==
+            %update
+          :_  this
+          :~  [%pass /update %agent [our.bowl %engram] %poke %post !>([%update dmeta.update updt.update])]
+          ==
+          ==
         ==
       ==
     ==
