@@ -223,10 +223,7 @@
 ++  on-agent
   |=  [=wire =sign:agent:gall]
     ^-  (quip card _this)
-    ~&  "Reached agent on sign:"
-    ~&  p.sign
-    ~&  "with data"
-    ~&  q.cage.sign
+    ~&  "Reached agent"
     ?+    wire  (on-agent:def wire sign)
         [%engram ~]
       ?+    -.sign  (on-agent:def wire sign)
@@ -247,6 +244,7 @@
           `this
             %update
           =/  update  !<(update:engram q.cage.sign)
+          ~&  update
           ?-  -.update
             %init
           =/  up=updt:engram  [author=owner.stg.update cont=cont.doc.update time=timestamp.dmeta.update]
