@@ -234,14 +234,15 @@ function Sidebar() {
     return { id, settings };
   }
 
-  async function addRemoteDoc(link) {
+  function addRemoteDoc(link) {
     console.log("add remote doc");
     checkUrbitWindow();
-    const { meta, content } = await addRemoteDocument(link);
-    info.push(meta);
-    setInfo([...info]);
-    closeCreateDoc();
-    return meta;
+    addRemoteDocument(link).then(({ meta, content }) => {
+      info.push(meta);
+      setInfo([...info]);
+      closeCreateDoc();
+      return meta;
+    });
   }
 
   function closeCreateDoc() {

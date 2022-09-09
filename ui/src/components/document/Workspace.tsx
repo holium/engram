@@ -231,7 +231,8 @@ function Document(props: { path: DocumentId }) {
           }
         }
         applyUpdate={(content: Uint8Array) => {
-          doc.applyUpdate(content);
+          console.log("applying update:", content);
+          Y.applyUpdateV2(doc, content);
           return doc;
         }}
         setNotifStatus={/* setNotifStatus */ () => {}}

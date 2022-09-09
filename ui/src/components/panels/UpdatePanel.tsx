@@ -42,6 +42,15 @@ function UpdatePanel(props: {
 
     getDocumentUpdates(props.path).then((res) => {
       console.log("get document updates result", res);
+      setUpdates([
+        ...Object.values(res).map((update) => {
+          return {
+            author: update.author,
+            timestamp: new Date(update.timestamp),
+            content: new Uint8Array(Object.values(update.content)),
+          };
+        }),
+      ]);
     });
   }, [props.show]);
 
@@ -73,7 +82,7 @@ function UpdatePanel(props: {
     const doc = props.applyUpdate(index, updates[index].content);
     props.save();
     recordSnapshot(props.path, {
-      date: updates[index].time,
+      date: updates[index].timestamp,
       ship: updates[index].author,
       data: Array.from(Y.encodeSnapshotV2(Y.snapshot(doc))),
     });
@@ -134,7 +143,10 @@ function UpdatePanel(props: {
       )}
       {updates.map((update: Update, i: number) => {
         return (
-          <div className="flex gap-3 items-center" key={update.time.toString()}>
+          <div
+            className="flex gap-3 items-center"
+            key={update.timestamp.toString()}
+          >
             <div className="flex-grow">
               <span className="azimuth">~{update.author}</span>
             </div>

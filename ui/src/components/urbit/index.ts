@@ -538,14 +538,14 @@ export function addRemoteDocument(path: string): Promise<DocumentMeta> {
     await unsubscribeFromRemoteDocument(parsed.groups.from);
     subscribeToRemoteDocument(parsed.groups.from, docId).then((res) => {
       console.log("adding remote doc, path:", path);
-      resolve();
-      /*
+
       const ydoc = new Y.Doc();
       const type = ydoc.getXmlFragment("prosemirror");
       const version = Y.encodeStateVector(ydoc);
       const encoding = Y.encodeStateAsUpdateV2(ydoc);
 
       getDocumentSettings(docId).then((settings) => {
+        console.log("got settings of new doc");
         (window as any).urbit.poke({
           app: "engram",
           mark: "post",
@@ -559,6 +559,7 @@ export function addRemoteDocument(path: string): Promise<DocumentMeta> {
             },
           },
           onSuccess: () => {
+            console.log("initiating snpashots of new doc");
             (window as any).urbit.poke({
               app: "engram",
               mark: "post",
@@ -569,7 +570,7 @@ export function addRemoteDocument(path: string): Promise<DocumentMeta> {
                   settings: {
                     name: settings.name,
                     owner: settings.owner,
-                    perms: settings.perms,
+                    whitelist: settings.whitelist,
                   },
                 });
               },
@@ -591,7 +592,6 @@ export function addRemoteDocument(path: string): Promise<DocumentMeta> {
           },
         });
       });
-      */
     });
   });
 }
