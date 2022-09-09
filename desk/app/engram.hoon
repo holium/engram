@@ -54,11 +54,17 @@
     ::
     ::
     ::
-     %snap
+      %snap
     ~&  "adding snap"
     ~&  action
     ~&  su
     `this(su (~(add ja su) dmeta.action snap.action))
+    ::
+    ::
+    ::
+      %dnsap
+    ?>  (~(has by su) dmeta.action)
+    `this(su (~(del by su) dmeta.action))
     ::
     :: modify a document by changing the stored document state
     ::
