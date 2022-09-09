@@ -67,6 +67,7 @@ function Document(props: { path: DocumentId }) {
 
   function renderSnapshot(snapshot: Y.Snapshot) {
     if (props.path == null) return;
+    console.log(view, "should destroy view: ", view != null);
     if (view != null) view.destroy();
 
     const doc = new Y.Doc();
@@ -82,7 +83,11 @@ function Document(props: { path: DocumentId }) {
       const version = Y.createDocFromSnapshot(doc, snapshot);
       const rendering = yDocToProsemirror(schema, version);
 
-      const state = EditorState.create({ schema: schema, doc: rendering });
+      const state = EditorState.create({
+        schema: schema,
+        doc: rendering,
+        plugins: [config],
+      });
       if (view != null) view.destroy();
       setView(
         new EditorView(document.querySelector("#document"), {
@@ -107,7 +112,6 @@ function Document(props: { path: DocumentId }) {
   // Setup
   function setup() {
     if (props.path == null) return;
-    if (view != null) view.destroy();
 
     const doc = new Y.Doc();
     doc.clientID = 0; //(window as any).ship;
@@ -165,11 +169,16 @@ function Document(props: { path: DocumentId }) {
           }),
         ],
       });
-      const view = new EditorView(document.querySelector("#document"), {
+      Y.applyUpdate(doc, content);
+      const collection = document.getElementsByClassName("ProseMirror");
+      console.log("prosemirrors: ", collection);
+      Array.from(collection).forEach((element) => {
+        element.remove();
+      });
+      const newView = new EditorView(document.querySelector("#document"), {
         state: state,
       });
-      Y.applyUpdate(doc, content);
-      setView(view);
+      setView(newView);
       setDoc(doc);
     });
   }
@@ -229,7 +238,7 @@ function Document(props: { path: DocumentId }) {
             return 0;
           }
         }
-        applyUpdate={(update: Uint8Array) => {
+        applyUpdate={(update: Uint8Array, from: string) => {
           console.log("applying update:", update);
           Y.applyUpdate(doc, update);
 
@@ -243,7 +252,7 @@ function Document(props: { path: DocumentId }) {
           });
           recordSnapshot(props.path, {
             date: Date.now(),
-            ship: `~${(window as any).ship}`,
+            ship: `~${from}`,
             data: snapshot,
           });
           return doc;

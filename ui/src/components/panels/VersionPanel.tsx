@@ -21,20 +21,31 @@ function VersionPanel(props: {
     return versions.findIndex((version) => version.ship == ship);
   });
 
-  function renderVersion(snapshot) {
-    props.renderSnapshot(snapshot);
-  }
-
-  function closeVersion() {
-    props.closeSnapshot();
-  }
-
   useEffect(() => {
-    console.log("getting snapshots from path:", props.path);
-    getSnapshots(props.path).then((res) => {
-      console.log("getting snapshots result:", res);
-      setVersions(res);
-    });
+    if (props.show) {
+      console.log("getting snapshots from path:", props.path);
+      getSnapshots(props.path).then((res) => {
+        console.log("getting snapshots result:", res);
+        setVersions(
+          res
+            .sort((a, b) => {
+              return a.timestamp.getTime() < b.timestamp.getTime() ? 1 : -1;
+            })
+            .filter((snap, i, snaps) => {
+              if (i === 0) return true;
+              return (
+                snaps[i - 1].timestamp.getTime() - snap.timestamp.getTime() >
+                1000 * 60
+              );
+            })
+        );
+      });
+    } else {
+      if (viewing != null) {
+        props.closeSnapshot();
+        setViewing(null);
+      }
+    }
   }, [props.path, props.show]);
 
   useEffect(() => {
@@ -79,10 +90,10 @@ function VersionPanel(props: {
                 view={() => {
                   if (i == viewing) {
                     setViewing(null);
-                    closeVersion();
+                    props.closeSnapshot();
                   } else {
                     setViewing(i);
-                    renderVersion(version.snapshot);
+                    props.renderSnapshot(version.snapshot);
                   }
                 }}
               />
@@ -100,7 +111,7 @@ function VersionPanel(props: {
             onClick={() => {
               if (viewing != null) {
                 setViewing(null);
-                closeVersion();
+                props.closeSnapshot();
               }
             }}
           >

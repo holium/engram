@@ -9,12 +9,12 @@ function PublishPanel(props: { path: DocumentId; show: boolean }) {
 
   useEffect(() => {
     getDocumentSettings(props.path).then((res) => {
-      console.log("set settings result", res);
+      console.log("get settings result", res);
       setOwner(res.owner);
       setName(res.name);
       setMembers(Object.values(res.whitelist).map((ship) => "~" + ship));
     });
-  }, []);
+  }, [props.path]);
 
   function addMember() {
     // poke
@@ -103,7 +103,7 @@ function PublishPanel(props: { path: DocumentId; show: boolean }) {
               <div className="flex-grow"></div>
               {owner == (window as any).ship && "~" + owner != member && (
                 <div
-                  className="border rounded-1 clickable border-accent px-2 py-1 rounded-2"
+                  className="border rounded-1 clickable border-accent px-2 rounded-2"
                   onClick={() => {
                     removeMember(i);
                   }}
@@ -118,7 +118,7 @@ function PublishPanel(props: { path: DocumentId; show: boolean }) {
           <div className="flex gap-3 py-1">
             <input
               type="text"
-              className="py-1 px-2 flex-grow outline-none rounded-1 border-b"
+              className="py-1 px-2 flex-grow outline-none border-b"
               style={{ borderColor: "var(--type-color)" }}
               placeholder="add member"
               value={newMember}

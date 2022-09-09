@@ -42,8 +42,6 @@ function UpdatePanel(props: {
 
     getDocumentUpdates(props.path).then((res) => {
       console.log("get document updates result", res);
-      console.log(Object.values(res));
-      console.log(Object.values(res).map((update) => update.content));
       setUpdates([
         ...Object.values(res).map((update) => {
           return {
@@ -66,22 +64,14 @@ function UpdatePanel(props: {
     };
   }
 
-  function executeStage() {
-    console.log("executing stage: ", changes);
-
-    //apply the update in workspace
-    // push updates
-    props.save();
-
-    // correct the local state
-    setChanges({ size: 0, mag: "b" });
-  }
-
   function executeUpdate(index: number) {
-    console.log("executing update: ", updates[index]);
+    console.log("Executing update: ", updates[index]);
 
     // apply the update in workspace
-    const doc = props.applyUpdate(updates[index].content);
+    const doc = props.applyUpdate(
+      updates[index].content,
+      updates[index].author
+    );
     acknowledgeUpdate(props.path, updates[index]);
 
     // correct the local state

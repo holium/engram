@@ -10,7 +10,7 @@ function TreeComponent({
   getChildren,
   handleAdd,
   handleRename,
-  moveToFrom
+  moveToFrom,
 }) {
   const [expand, setExpand] = useState(false);
 
@@ -34,12 +34,6 @@ function TreeComponent({
 
   useEffect(() => {
     if (!data.owner) {
-      console.log(
-        "getting children: ",
-        info.children,
-        " => ",
-        getChildren(info.children)
-      );
       setChildren(getChildren(info.children));
     }
   }, [info.children ? info.children.length : info.id]);
@@ -57,11 +51,6 @@ function TreeComponent({
 
   const handleDelete = () => {
     onDelete(info.id, folder, false);
-    /*
-    setInfo({ id: null, name: null, children: [] });
-    setChildren([]);
-    setAppear(false);
-    */
   };
 
   function ToggleFolderMenu(event) {
@@ -72,12 +61,9 @@ function TreeComponent({
   function renameFolder(event) {
     event.stopPropagation();
     setrenameState(false);
-    console.log("rename");
-    //middleware
   }
 
   function openDocument() {
-    console.log("opening doc:", info.id.id);
     document.dispatchEvent(OpenDocumentEvent(info.id));
   }
 
@@ -89,28 +75,28 @@ function TreeComponent({
         e.stopPropagation();
         e.dataTransfer.setData("id", info.id);
         e.dataTransfer.setData("parent", folder);
-        //e.dataTransfer.setData("text/plain", folder)
-        console.log("drag started:", e.dataTransfer.getData("parent"));
       }}
       onDragOver={(event) => {
-        event.stopPropagation()
-        event.preventDefault();
-      }}
-
-      onDrop={!info.children ? (e)=>{console.log("tried adding something to a file")} : (event) => {
         event.stopPropagation();
         event.preventDefault();
-        console.log("dropped: ", event);
-        console.log(event.dataTransfer.getData("id"));
-        if (event.dataTransfer.getData("id") != info.id) {
-          moveToFrom(
-            event.dataTransfer.getData("id"),
-            info.id,
-            event.dataTransfer.getData("parent")
-          );
-          console.log(data);
-        }
       }}
+      onDrop={
+        !info.children
+          ? (e) => {
+              /* */
+            }
+          : (event) => {
+              event.stopPropagation();
+              event.preventDefault();
+              if (event.dataTransfer.getData("id") != info.id) {
+                moveToFrom(
+                  event.dataTransfer.getData("id"),
+                  info.id,
+                  event.dataTransfer.getData("parent")
+                );
+              }
+            }
+      }
     >
       <div
         className="tree-item"

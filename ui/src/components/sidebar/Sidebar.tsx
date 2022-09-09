@@ -22,7 +22,10 @@ function Sidebar() {
 
   const [ids, setIds] = useState([]);
 
-  const [info, setInfo] = useState([{id: 1, name: "folder1", children: [2]}, {id:2, name: "folder2", children:[]}]);
+  const [info, setInfo] = useState([
+    { id: 1, name: "folder1", children: [2] },
+    { id: 2, name: "folder2", children: [] },
+  ]);
 
   const urbitStatus = useContext(UrbitContext);
   const [newDoc, setNewDoc] = useState(false);
@@ -42,7 +45,6 @@ function Sidebar() {
 
             setInfo([
               ...Object.values(docRes).map((doc) => {
-                console.log(doc);
                 return {
                   id: doc.id,
                   owner: doc.owner,
@@ -85,7 +87,6 @@ function Sidebar() {
   };
 
   const getChildren = (identifier) => {
-    console.log("getting children: ", identifier, " from ", info);
     const content = [...info].filter((child) => {
       return (
         0 <=
@@ -104,13 +105,9 @@ function Sidebar() {
       return (doc.id.id ? doc.id.id : doc.id) == (id.id ? id.id : id);
     });
     if (id.id) {
-      renameDocument(id, newName).then((res) => {
-        console.log("rename document result:", res);
-      });
+      renameDocument(id, newName);
     } else {
-      renameFolder(info[toRename], newName).then((res) => {
-        console.log("rename folder result: ", res);
-      });
+      renameFolder(info[toRename], newName);
     }
     info[toRename].name = newName;
   }
@@ -124,7 +121,6 @@ function Sidebar() {
     if (item.id) {
       deleteDocument(info[toDelete].id);
     } else {
-      console.log(info[toDelete].children);
       children = info[toDelete].children;
       deleteFolder(info[toDelete]);
     }
@@ -138,7 +134,6 @@ function Sidebar() {
   }
 
   async function handleAdd(id, name, type) {
-    console.log("adding: ", name);
     let res;
     if (type === "folder") {
       res = await createFold(name);
@@ -161,13 +156,10 @@ function Sidebar() {
     let target;
     if (typeof id == "string") target = info.find((tar) => tar.id == id);
     else target = id;
-    console.log(target, id);
     let parent;
     if (typeof from == "string") parent = info.find((tar) => tar.id == from);
     else if (from === "null") parent = null;
     else parent = from;
-
-    console.log(parent);
 
     if (parent != null) {
       const removeFrom = info.find((folder) => folder.id == parent.id);
@@ -183,20 +175,13 @@ function Sidebar() {
       );
       info.push(removeFrom);
     }
-    console.log("to: ", to);
     if (to != null) {
       const addTo = info.find((folder) => folder.id == to);
-      console.log("target: ", addTo);
       addTo.children.push(target.id);
       info.splice(
         info.findIndex((item) => item.id == to),
         1
       );
-      console.log("AddTo ID: ", addTo.id);
-      console.log("target Name: ", addTo.name);
-      console.log("target ID: ", target.id);
-      console.log("target owner: ", target.owner);
-      console.log("target owner true/false: ", target.owner ? true : false);
       addToFolder(
         { id: addTo.id, name: addTo.name },
         { id: target.id, name: target.name },
@@ -208,7 +193,6 @@ function Sidebar() {
   }
 
   async function createFold(name) {
-    console.log("create folder");
     checkUrbitWindow();
     const meta = await createFolder({
       id: `~${window.ship}-${crypto.randomUUID()}`,
@@ -234,7 +218,6 @@ function Sidebar() {
       version: Array.from(version),
       content: Array.from(encoding),
     });
-    console.log("create document result", id, settings);
     info.push({ id: id, name: settings.name, owner: settings.owner });
     setInfo([...info]);
     closeCreateDoc();
@@ -242,7 +225,6 @@ function Sidebar() {
   }
 
   function addRemoteDoc(link) {
-    console.log("add remote doc");
     checkUrbitWindow();
     addRemoteDocument(link).then(({ meta, content }) => {
       info.push(meta);
@@ -253,7 +235,6 @@ function Sidebar() {
   }
 
   function closeCreateDoc() {
-    console.log("closing create doc");
     setNewDoc(false);
     setNewDocName("");
     setType("");
@@ -283,7 +264,7 @@ function Sidebar() {
         </svg>
       </div>
       <div
-      className=" flex-grow"
+        className=" flex-grow"
         dropzone
         onDragOver={(event) => {
           event.preventDefault();
@@ -291,10 +272,7 @@ function Sidebar() {
         onDrop={(event) => {
           event.stopPropagation();
           event.preventDefault();
-          console.log("dropped: ", event);
-          console.log(event.dataTransfer.getData("id"));
           if (event.dataTransfer.getData("id") != info.id) {
-            console.log(info.id);
             moveToFrom(
               event.dataTransfer.getData("id"),
               null,
@@ -419,7 +397,6 @@ function Sidebar() {
             })
 
             .map((childData, index, arr) => {
-              console.log(arr);
               return (
                 <div>
                   <TreeComponent
