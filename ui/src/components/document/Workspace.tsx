@@ -222,16 +222,30 @@ function Document(props: { path: DocumentId }) {
         path={props.path}
         show={panel == "update"}
         save={() => {
-          console.log(SavePluginKey.getState(view.state));
-          SavePluginKey.getState(view.state)();
+          console.log(view.state);
         }}
         getStage={
           /* getStage */ () => {
             return 0;
           }
         }
-        applyUpdate={(content: Uint8Array) => {
-          doc.applyUpdate(content);
+        applyUpdate={(update: Uint8Array) => {
+          console.log("applying update:", update);
+          Y.applyUpdate(doc, update);
+
+          const version = Y.encodeStateVector(doc);
+          const content = Y.encodeStateAsUpdate(doc);
+          const snapshot = Array.from(Y.encodeSnapshotV2(Y.snapshot(doc)));
+
+          saveDocument(props.path, {
+            version: Array.from(version),
+            content: Array.from(content),
+          });
+          recordSnapshot(props.path, {
+            date: Date.now(),
+            ship: `~${(window as any).ship}`,
+            data: snapshot,
+          });
           return doc;
         }}
         setNotifStatus={/* setNotifStatus */ () => {}}
