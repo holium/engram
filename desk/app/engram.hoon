@@ -249,8 +249,16 @@
           `this
             %update
           ~&  "reached update"
-          ~&  cage.sign
-          `this(u u)
+          ~&  q.cage.sign
+          =/  update  !<(update:engram q.cage.sign)
+          ?-  -.update
+            %init
+          ~&  update
+          `this
+            %update
+          ~&  "test 2"
+          `this
+          ==
         ==
       ==
     ==
