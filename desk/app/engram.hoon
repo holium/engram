@@ -170,11 +170,10 @@
     =/  stg  (need (~(get by s) meta))
     =/  docu  (need (~(get by d) meta))
     ~&  docu
-    ::   :~  [%give %fact ~ %update !>([doc=docu stg=stg])]
-    ::==
-
+    =/  li  /updates/(scot %ud id.meta)/(scot %da timestamp.meta)
     :~  %-  fact-init:agentio
       update+!>(`update:engram`[%init meta docu stg])
+      [%pass /engram %agent [src.bowl %engram] %watch li]
     ==
 ==
 ++  on-leave  on-leave:def
