@@ -15,7 +15,6 @@ import {
   addRemoteDocument,
 } from "../urbit/index";
 import * as Y from "yjs";
-import FileTree from "./FileTree";
 import TreeComponent from "./TreeComponent";
 import FolderMenu from "./FolderMenu";
 
@@ -27,7 +26,7 @@ function Sidebar() {
 
   const [ids, setIds] = useState([]);
 
-  const [info, setInfo] = useState([{id: 1, name: "folder1", children: [2]}, {id:2, name: "folder2", children:[]}]);
+  const [info, setInfo] = useState([]);
 
   const [appear, setAppear] = useState(false);
   const urbitStatus = useContext(UrbitContext);
