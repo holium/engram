@@ -1,6 +1,6 @@
 /-  engram
 /+  engram
-/+  default-agent, dbug
+/+  default-agent, dbug, agentio
 |%
 +$  versioned-state
   $%  state-0
@@ -170,7 +170,11 @@
     =/  stg  (need (~(get by s) meta))
     =/  docu  (need (~(get by d) meta))
     ~&  docu
-       :~  [%give %fact ~ %noun !>(stg+docu)]
+    ::   :~  [%give %fact ~ %update !>([doc=docu stg=stg])]
+    ::==
+
+    :~  %-  fact-init:agentio
+      update+!>(`update:engram`[%init meta docu stg])
     ==
 ==
 ++  on-leave  on-leave:def
@@ -221,7 +225,8 @@
 ++  on-agent
   |=  [=wire =sign:agent:gall]
     ^-  (quip card _this)
-    ::~&  "This should print- nut"
+    ~&  "Reached agent"
+    ~&  sign
     ?+    wire  (on-agent:def wire sign)
         [%engram ~]
       ?+    -.sign  (on-agent:def wire sign)
@@ -242,6 +247,10 @@
           ~&  'logging'
           ~&  q.cage.sign
           `this
+            %update
+          ~&  "reached update"
+          ~&  cage.sign
+          `this(u u)
         ==
       ==
     ==
