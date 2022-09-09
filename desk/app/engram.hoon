@@ -14,7 +14,7 @@
 ^-  agent:gall
 |_  =bowl:gall
 +*  this  .
-    def   ~(. (default-agent this %.n) bowl)
+    def   ~(. (default-agent this %|) bowl)
 ::
 ++  on-init
   ^-  (quip card _this)
@@ -249,8 +249,22 @@
           `this
             %update
           ~&  "reached update"
-          ~&  cage.sign
-          `this(u u)
+          ~&  q.cage.sign
+          =/  update  !<(update:engram q.cage.sign)
+          ?-  -.update
+            %init
+          ~&  update
+          =/  up=updt:engram  [author=owner.stg.update cont=cont.doc.update time=timestamp.dmeta.update]
+          ~&  (~(put ju u) dmeta.update up)
+          :_  this
+          :~  [%pass /settings %agent [our.bowl %engram] %poke %post !>([%settings dmeta.update stg.update])]
+              [%pass /update %agent [our.bowl %engram] %poke %post !>([%update dmeta.update up])]
+          ==
+            %update
+          :_  this
+          :~  [%pass /update %agent [our.bowl %engram] %poke %post !>([%update dmeta.update updt.update])]
+          ==
+          ==
         ==
       ==
     ==
