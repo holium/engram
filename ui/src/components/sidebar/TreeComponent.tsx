@@ -30,8 +30,6 @@ function TreeComponent({
 
   const [info, setInfo] = useState(data);
 
-  const [type, setType] = useState("");
-
   const [children, setChildren] = useState([]);
 
   useEffect(() => {
