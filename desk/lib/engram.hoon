@@ -126,6 +126,33 @@
     results  (snoc results [(crip "{<counter>}") (pairs ~[['meta' (pairs ~[['id' (tape (trip `@t`id:key))] ['name' (tape (trip name:key))]])] ['content' content]])])
   ==
   (pairs assembled)
+++  enjs-gupdates
+  =,  enjs:format
+  |=  updts=(set updt)
+  =/  lupdts  ~(tap in updts)
+  =/  counter  0
+  =/  results  *(list [@t json])
+  =/  assembled
+  |-
+    ?:  =(counter (lent lupdts))
+      results
+    =/  curr  (snag counter lupdts)
+    =/  cont  cont:curr
+    =/  cont-counter  0
+    =/  cont-results  *(list [@t json])
+    =/  cont-assembled
+    |-
+    ?:  =(cont-counter (lent cont))
+      cont-results
+    %=  $
+      cont-counter  (add cont-counter 1)
+      cont-results  (snoc cont-results [(crip "{<cont-counter>}") (numb (snag cont-counter cont))])
+    ==
+  %=  $
+    counter  (add counter 1)
+    results  (snoc results [(crip "{<counter>}") (pairs ~[['timestamp' (time time:curr)] ['author' (ship author:curr)] ['content' (pairs cont-assembled)]])])
+  ==
+  (pairs assembled)
 ++  enjs-getsnaps
   =,  enjs:format
   |=  snaps=(list snap)

@@ -55,7 +55,9 @@
     ::
     ::
      %snap
-    ?<  (~(has by su) dmeta.action)
+    ~&  "adding snap"
+    ~&  action
+    ~&  su
     `this(su (~(add ja su) dmeta.action snap.action))
     ::
     :: modify a document by changing the stored document state
@@ -185,6 +187,7 @@
     ``noun+!>((enjs-docinfo:engram s))
   ::
       [%x %gdoc @ @ ~]
+    ~&  "get doc"
     =/  id=@  (crip (trip i.t.t.path))
     =/  timestamp=@d  (di:dejs:format [%n p=i.t.t.t.path])
     ~&  (di:dejs:format [%n p=i.t.t.t.path])
@@ -192,7 +195,8 @@
     =/  meta  [id=id timestamp=timestamp]
     ~&  meta
     =/  doc=[version=(list @ud) cont=(list @ud)]  (need (~(get by d) meta))
-    ``noun+!>(doc)
+    ~&  doc
+    ``noun+!>((enjs-gdoc:engram doc))
   ::
       [%x %gsetting @ @ ~]
     =/  id=@  (crip (trip i.t.t.path))
@@ -206,6 +210,7 @@
     ``noun+!>((enjs-gfolders:engram f))
   ::
       [%x %getsnaps @ @ ~]
+    ~&  "getting snaps"
     =/  id=@  (crip (trip i.t.t.path))
     =/  timestamp=@d  (di:dejs:format [%n p=i.t.t.t.path])
     =/  meta  [id=id timestamp=timestamp]
@@ -214,11 +219,18 @@
     ``noun+!>((enjs-getsnaps:engram snap))
   ::
       [%x %gupdates @ @ ~]
+   ~&  "getting updates"
     =/  id=@  (crip (trip i.t.t.path))
+    ~&  id
     =/  timestamp=@d  (di:dejs:format [%n p=i.t.t.t.path])
+    ~&  timestamp
     =/  meta  [id=id timestamp=timestamp]
-    =/  upd  (need (~(get by u) meta))
-    ``noun+!>(upd)
+    ~&  meta
+    =/  upd  (~(get ju u) meta)
+    ~&  u
+    ~&  "---"
+    ~&  upd
+    ``noun+!>((enjs-gupdates:engram upd))
   ==
 ::
 ++  on-agent
