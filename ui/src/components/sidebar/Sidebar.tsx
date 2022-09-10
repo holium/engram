@@ -66,7 +66,7 @@ function Sidebar() {
           });
       })
       .catch((err) => {
-        console.log("no urbit :(");
+        console.warn("no urbit :(");
         setInfo([
           { owner: "~zod", id: "null", name: "error getting documents" },
         ]);

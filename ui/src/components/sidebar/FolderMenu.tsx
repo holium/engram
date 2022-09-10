@@ -1,12 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 function FolderMenu(props) {
   const [rename, setRename] = useState("");
+
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    if (menuRef.current && menuRef.current.focus) menuRef.current.focus();
+  });
 
   return (
     <menu
       className="tree-menu context-menu select"
       tabIndex="0"
+      ref={menuRef}
       style={{
         possition: "fixed",
         left: `${props.position.left}px`,

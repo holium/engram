@@ -23,11 +23,6 @@ function Navbar(props: {
     setSlide(!slide);
   }
 
-  function handleRename(event) {
-    renameDocument(path, event.target.value);
-    setName(event.target.value);
-  }
-
   return (
     <div id="toolbar">
       <svg

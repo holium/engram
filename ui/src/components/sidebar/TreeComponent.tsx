@@ -36,7 +36,6 @@ function TreeComponent({
     if (!data.owner) {
       setChildren(getChildren(info.children));
     }
-    console.log(info);
   }, [info.children ? info.children.length : info.id]);
 
   const toggleAdd = (name, type) => {
