@@ -86,13 +86,19 @@ function FileMenu(props) {
         </svg>
         <div>Delete</div>
       </li>
-      <li className="flex" style={{ backgroundColor: "#ffffff00" }}>
+      <li
+        className="flex"
+        style={{ backgroundColor: "#ffffff00", cursor: "default" }}
+      >
         <div className="flex-grow" style={{ opacity: ".6" }}>
           Owner:
         </div>
         <div className="azimuth">~{props.owner}</div>
       </li>
-      <li className="flex" style={{ backgroundColor: "#ffffff00" }}>
+      <li
+        className="flex"
+        style={{ backgroundColor: "#ffffff00", cursor: "default" }}
+      >
         <div className="flex-grow" style={{ opacity: ".6" }}>
           Created:
         </div>

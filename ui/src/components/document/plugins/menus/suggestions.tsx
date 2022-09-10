@@ -250,7 +250,7 @@ const suggestions: { [key: string]: SuggestionItem } = {
           view,
           pos,
           schema.nodes["image"].create({
-            src: "https://avalonlabs.earth/_nuxt/img/point-loma.ff5a71c.png",
+            src: "",
           })
         );
       } else {
@@ -259,7 +259,7 @@ const suggestions: { [key: string]: SuggestionItem } = {
           view,
           sel.head,
           schema.nodes["image"].create({
-            src: "https://avalonlabs.earth/_nuxt/img/point-loma.ff5a71c.png",
+            src: "",
           })
         );
       }
