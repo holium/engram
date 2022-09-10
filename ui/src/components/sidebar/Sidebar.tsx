@@ -22,10 +22,7 @@ function Sidebar() {
 
   const [ids, setIds] = useState([]);
 
-  const [info, setInfo] = useState([
-    { id: 1, name: "folder1", children: [2] },
-    { id: 2, name: "folder2", children: [] },
-  ]);
+  const [info, setInfo] = useState([]);
 
   const urbitStatus = useContext(UrbitContext);
   const [newDoc, setNewDoc] = useState(false);

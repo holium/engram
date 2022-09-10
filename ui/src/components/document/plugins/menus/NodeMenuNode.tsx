@@ -1,5 +1,5 @@
-import suggestions from "./suggestions.ts";
-import { SuggestionItem } from "./suggestions.ts";
+import suggestions from "./suggestions";
+import { SuggestionItem } from "./suggestions";
 import { useState, useEffect } from "react";
 
 function NodeMenu(props) {
@@ -33,11 +33,18 @@ function NodeMenu(props) {
         return (
           <li
             key={suggestion}
+            classnName="flex items-center"
             onClick={() => {
               runCommand(suggestion);
             }}
           >
-            {suggestions[suggestion].display}
+            {suggestions[suggestion].icon()}
+            <div className="flex flex-col ml-3">
+              <div className="font-bold">{suggestions[suggestion].display}</div>
+              <div style={{ opacity: ".8" }}>
+                {suggestions[suggestion].description}
+              </div>
+            </div>
           </li>
         );
       })}

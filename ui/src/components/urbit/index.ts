@@ -221,7 +221,7 @@ export function deleteDocument(id: DocumentId) {
       mark: "post",
       json: { delete: { dmeta: id } },
       onSuccess: () => {
-        //delete document settings
+        //delete document
         resolve();
       },
       onError: (e: any) => {
@@ -242,13 +242,12 @@ export function deleteDocument(id: DocumentId) {
         reject("Error deleting document settings");
       },
     });
-    /*
     (window as any).urbit.poke({
       app: "engram",
       mark: "post",
       json: { dupdates: { dmeta: id } },
       onSuccess: () => {
-        //delete document settings
+        //delete document updates
         resolve();
       },
       onError: (e: any) => {
@@ -256,7 +255,19 @@ export function deleteDocument(id: DocumentId) {
         reject("Error deleting document");
       },
     });
-    */
+    (window as any).urbit.poke({
+      app: "engram",
+      mark: "post",
+      json: { dsnaps: { dmeta: id } },
+      onSuccess: () => {
+        //delete document snapshots
+        resolve();
+      },
+      onError: (e: any) => {
+        console.error("Error deleting document: ", id, e);
+        reject("Error deleting document");
+      },
+    });
   });
 }
 
@@ -379,8 +390,8 @@ export function addToFolder(
   doc: FolderMeta | DocumentId,
   isDoc: boolean
 ) {
-  if(isDoc) doc = doc.id;
-  
+  if (isDoc) doc = doc.id;
+
   return new Promise<void>((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
@@ -408,7 +419,7 @@ export function removeFromFolder(
   doc: FolderMeta | DocumentId,
   isDoc: boolean
 ) {
-  if(isDoc) doc = doc.id;
+  if (isDoc) doc = doc.id;
   return new Promise<void>((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
