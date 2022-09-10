@@ -36,10 +36,7 @@ function Navbar(props: {
         <path d="M3 4h18v2H3V4zm0 7h18v2H3v-2zm0 7h18v2H3v-2z" />
       </svg>
       <div className="azimuth mx-2">~{owner}</div>
-      <div
-        className="mx-2 cursor-default"
-        style={{ color: "var(--type-glass-color)" }}
-      >
+      <div className="mx-2 cursor-default" style={{ opacity: ".8" }}>
         /
       </div>
       <div className="flex-grow ">{name}</div>

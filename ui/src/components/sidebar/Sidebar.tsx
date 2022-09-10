@@ -340,7 +340,13 @@ function Sidebar() {
                   outlineOffset: "0",
                   minWidth: "0",
                 }}
-                placeholder={type == "remote" ? "document link" : "name"}
+                placeholder={
+                  type == "remote"
+                    ? "~zod/..."
+                    : type == "folder"
+                    ? "Folder-Path"
+                    : "Document Name"
+                }
                 value={newDocName}
                 onChange={(event) => {
                   setNewDocName(event.target.value);

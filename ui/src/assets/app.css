@@ -36,10 +36,10 @@
     max-height: calc(100vh - calc(20px + var(--leading-body)));
   }
 
-  #sidebar :first-child {
+  #sidebar > :first-child {
     @apply rounded-t-3 overflow-hidden;
   }
-  #sidebar :last-child {
+  #sidebar > :last-child {
     @apply rounded-b-3 overflow-hidden;
   }
 }

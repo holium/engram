@@ -112,7 +112,8 @@ function TreeComponent({
             // a dot if this ship is the origin
             <svg
               viewBox="0 0 25 25"
-              fill="var(--trim-color)"
+              fill="var(--type-color)"
+              style={{ opacity: ".8" }}
               className="icon"
               xmlns="http://www.w3.org/2000/svg"
             >
@@ -122,8 +123,9 @@ function TreeComponent({
             // a tilde if the origin is remote
             <svg
               viewBox="0 0 25 25"
-              fill="var(--trim-color)"
+              fill="var(--type-color)"
               className="icon"
+              style={{ opacity: ".8" }}
               xmlns="http://www.w3.org/2000/svg"
             >
               <path d="M8.90419 10.8605C8.32859 10.8605 7.86054 11.3286 7.86054 11.9042V14.5816C7.86054 15.0962 7.44483 15.5119 6.93027 15.5119C6.41572 15.5119 6 15.0962 6 14.5816V11.9042C6 10.2995 7.29947 9 8.90419 9C9.67457 9 10.413 9.30525 10.9566 9.85178L15.3812 14.2764C15.576 14.4712 15.8434 14.5816 16.1196 14.5816C16.6952 14.5816 17.1633 14.1136 17.1633 13.538V10.8605C17.1633 10.346 17.579 9.93027 18.0935 9.93027C18.6081 9.93027 19.0238 10.346 19.0238 10.8605V13.538C19.0238 15.1427 17.7243 16.4422 16.1196 16.4422C15.3492 16.4422 14.6108 16.1369 14.0672 15.5904L9.6426 11.1658C9.44782 10.971 9.18037 10.8605 8.90419 10.8605Z" />
@@ -253,6 +255,8 @@ function TreeComponent({
                 renameFile={setrenameState}
                 onDelete={handleDelete}
                 position={pos}
+                id={info.id}
+                owner={info.owner}
               />
             ))}
         </menu>

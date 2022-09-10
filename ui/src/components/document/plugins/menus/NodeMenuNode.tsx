@@ -41,7 +41,7 @@ function NodeMenu(props) {
             {suggestions[suggestion].icon()}
             <div className="flex flex-col ml-3">
               <div className="font-bold">{suggestions[suggestion].display}</div>
-              <div style={{ opacity: ".8" }}>
+              <div style={{ opacity: ".6" }}>
                 {suggestions[suggestion].description}
               </div>
             </div>

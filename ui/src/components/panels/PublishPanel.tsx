@@ -72,7 +72,7 @@ function PublishPanel(props: { path: DocumentId; show: boolean }) {
           <div className="py-1 flex-shrink-0">Shareable Link:</div>
           <div
             className="px-2 py-1 rounded-2 border overflow-auto scrollbar-none flex-1 whitespace-nowrap"
-            style={{ borderColor: "var(--trim-color)" }}
+            style={{ borderColor: "var(--type-color)" }}
           >
             {(window as any).ship}/{props.path.id}/{props.path.timestamp}
           </div>
@@ -103,7 +103,8 @@ function PublishPanel(props: { path: DocumentId; show: boolean }) {
               <div className="flex-grow"></div>
               {owner == (window as any).ship && "~" + owner != member && (
                 <div
-                  className="border rounded-1 clickable border-accent px-2 rounded-2"
+                  className="border clickable px-2 rounded-2"
+                  style={{ borderColor: "var(--type-color)" }}
                   onClick={() => {
                     removeMember(i);
                   }}
