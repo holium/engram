@@ -108,6 +108,7 @@ function TreeComponent({
             info.id,
             event.dataTransfer.getData("parent")
           );
+          event.dataTransfer.clearData();
           console.log(data);
         }
       }}
