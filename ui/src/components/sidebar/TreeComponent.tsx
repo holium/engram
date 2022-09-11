@@ -86,6 +86,8 @@ function TreeComponent({
       draggable="true"
       dropzone
       onDragStart={(e) => {
+        e.dataTransfer.clearData("id");
+        e.dataTransfer.clearData("parent")
         e.dataTransfer.clearData()
         e.stopPropagation();
         setExpand(false);
@@ -112,8 +114,6 @@ function TreeComponent({
           );
           console.log(getChildren(info.children))
           setChildren(getChildren(info.children))
-          event.dataTransfer.clearData("id");
-          event.dataTransfer.clearData("parent")
           console.log("bitches");
         }
       }}

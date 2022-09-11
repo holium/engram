@@ -209,11 +209,6 @@ function Sidebar() {
       info.push(addTo);
     }
     
-    if(to == null || parent == null){
-      console.log("hey")
-      
-      sendData()
-    }
     sendData();
   }
 
