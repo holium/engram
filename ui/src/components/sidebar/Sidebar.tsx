@@ -300,8 +300,6 @@ function Sidebar() {
           event.preventDefault();
           console.log("dropped: ", event);
           console.log(event.dataTransfer.getData("id"));
-            console.log(info.id);
-            console.log(info.id.id);
             moveToFrom(
               event.dataTransfer.getData("id"),
               null,
@@ -309,6 +307,8 @@ function Sidebar() {
             );
           event.dataTransfer.clearData("id");
           event.dataTransfer.clearData("parent")
+          event.dataTransfer.clearData();
+          console.log(event.dataTransfer.items)
         }}
       >
         <div className="flex flex-col overflow-auto">
