@@ -190,7 +190,8 @@ function Sidebar() {
     console.log("to: ", to);
     if (to != null) {
       const addTo = info.find((folder) => folder.id == to);
-      console.log("target: ", addTo);
+      console.log("addTo: ", addTo);
+      console.log("target: id")
       addTo.children.push(target.id);
       info.splice(
         info.findIndex((item) => item.id == to),

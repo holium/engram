@@ -86,15 +86,15 @@ function TreeComponent({
       draggable="true"
       dropzone
       onDragStart={(e) => {
-        e.dataTransfer.clearData("id");
-        e.dataTransfer.clearData("parent")
-        e.dataTransfer.clearData()
         e.stopPropagation();
         setExpand(false);
+        e.dataTransfer.clearData("id");
+        e.dataTransfer.clearData("parent")
         e.dataTransfer.setData("id", info.id);
+        console.log("drag started id: ", e.dataTransfer.getData("id"))
         e.dataTransfer.setData("parent", folder);
         //e.dataTransfer.setData("text/plain", folder)
-        console.log("drag started:", e.dataTransfer.getData("parent"));
+        console.log("drag started parent:", e.dataTransfer.getData("parent"));
       }}
       onDragOver={(event) => {
         event.stopPropagation()
