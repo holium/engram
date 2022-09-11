@@ -76,6 +76,7 @@ function TreeComponent({
         setExpand(false);
         e.dataTransfer.clearData("id");
         e.dataTransfer.clearData("parent")
+        e.dataTransfer.clearData();
         if (info.id.id) {
         e.dataTransfer.setData("id", info.id.id);
         } else {
@@ -90,7 +91,7 @@ function TreeComponent({
       onDrop={
         !info.children
           ? (e) => {
-              /* */
+            e.stopPropagation();
             }
           : (event) => {
               event.stopPropagation();
