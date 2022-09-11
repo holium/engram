@@ -287,8 +287,8 @@ function Sidebar() {
               event.dataTransfer.getData("parent")
             );
           //event.dataTransfer.clearData("id");
-          event.dataTransfer.clearData("parent")
-          event.dataTransfer.clearData();
+          //event.dataTransfer.clearData("parent")
+          //event.dataTransfer.clearData();
           console.log("Items:", event.dataTransfer.items)
         }}
       >
