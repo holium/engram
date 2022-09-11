@@ -90,8 +90,12 @@ function TreeComponent({
         setExpand(false);
         e.dataTransfer.clearData("id");
         e.dataTransfer.clearData("parent")
-        console.log(info.id);
-        e.dataTransfer.setData("id", info.id);
+        console.log(info.id.id);
+        if (info.id.id) {
+        e.dataTransfer.setData("id", info.id.id);
+        } else {
+          e.dataTransfer.setData("id", info.id); 
+        }
         console.log("drag started id: ", e.dataTransfer.getData("id"))
         e.dataTransfer.setData("parent", folder);
         //e.dataTransfer.setData("text/plain", folder)
