@@ -162,6 +162,7 @@ function Sidebar() {
     if (typeof id == "string") target = info.find((tar) => tar.id == id);
     else target = id;
     console.log(target, id);
+
     let parent;
     if (typeof from == "string") parent = info.find((tar) => tar.id == from);
     else if (from === "null") parent = null;
@@ -173,7 +174,7 @@ function Sidebar() {
       const removeFrom = info.find((folder) => folder.id == parent.id);
       removeFrom.children.splice(removeFrom.children.indexOf(target.id), 1);
       info.splice(
-        info.findIndex((item) => item.id == from),
+        info.findIndex((item) => item.id == parent.id),
         1
       );
       removeFromFolder(
@@ -189,7 +190,7 @@ function Sidebar() {
       console.log("target: ", addTo);
       addTo.children.push(target.id);
       info.splice(
-        info.findIndex((item) => item.id == to),
+        info.findIndex((item) => item.id == target.id),
         1
       );
       console.log("AddTo ID: ", addTo.id);
