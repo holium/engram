@@ -210,7 +210,6 @@ function Sidebar() {
       );
       info.push(addTo);
     }
-    
     sendData();
   }
 
