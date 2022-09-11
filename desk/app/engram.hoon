@@ -144,7 +144,8 @@
       %update-live
     =/  li  /updates/(scot %ud id.dmeta.action)/(scot %da timestamp.dmeta.action)
     :_  this
-    :~  [%give %fact ~[li] %noun !>(updt.action)]
+    :~  %-  fact:agentio
+      [update+!>(`update:engram`[%update [dmeta.action updt.action]]) ~[li]]
     ==
     ::
     :: {Documentation Here}

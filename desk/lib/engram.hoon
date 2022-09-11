@@ -25,6 +25,7 @@
     [%dsnap (ot ~[dmeta+(ot ~[id+so timestamp+di])])]
     [%sub (ot ~[dmeta+(ot ~[id+so timestamp+di]) ship+(se %p)])]
     [%unsub (ot ~[ship+(se %p)])]
+    [%update-live (ot ~[dmeta+(ot ~[id+so timestamp+di]) update+(ot ~[author+(se %p) content+sa time+di])])]
   ==
 ++  enjs-docinfo
   =,  enjs:format
