@@ -6,19 +6,26 @@ function ConfigPanel(props: { show: boolean; view: EditorView }) {
   const [config, setConfig] = useState({});
 
   useEffect(() => {
-    console.log(props.view);
-    const view = props.view;
-    if (view) {
-      const configState = ConfigPluginKey.getState(view.state);
-      console.log(configState);
-      const res = {};
-      Object.keys(configState.config).forEach((term: string) => {
-        res[term] = configState.config[term].value;
-      });
-      setConfig(res);
-      console.log(config);
+    loadConfig();
+  }, [props.show, props.view]);
+
+  function loadConfig() {
+    if (props.view) {
+      const configState = ConfigPluginKey.getState(props.view.state);
+      if (typeof configState == "undefined") {
+        setTimeout(() => {
+          loadConfig();
+        }, 500);
+      } else {
+        const res = {};
+        console.log(configState);
+        Object.keys(configState.config).forEach((term: string) => {
+          res[term] = configState.config[term].value;
+        });
+        setConfig(res);
+      }
     }
-  }, [props.show]);
+  }
 
   function handleChange(term: string) {
     return (event) => {

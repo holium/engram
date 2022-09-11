@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import { SlideContext } from "./SlideContext";
-import { getDocumentSettings } from "../urbit/index";
+import { getDocumentSettings, renameDocument } from "../urbit/index";
 
 function Navbar(props: {
   path: DocumentId;
@@ -17,12 +17,6 @@ function Navbar(props: {
       setName(stg.name);
     });
   }, [props.path]);
-
-  function updateDocumentName(event: any) {
-    console.log("update document name to:", event.target.value);
-    // urbit call
-    setName(event.target.value);
-  }
 
   const { slide, setSlide } = useContext(SlideContext);
   function toggleSidebar() {
@@ -41,22 +35,11 @@ function Navbar(props: {
         <path fill="none" d="M0 0h24v24H0z" />
         <path d="M3 4h18v2H3V4zm0 7h18v2H3v-2zm0 7h18v2H3v-2z" />
       </svg>
-      <div className="azimuth mx-2">{owner}</div>
-      <div
-        className="mx-2 cursor-default"
-        style={{ color: "var(--type-glass-color)" }}
-      >
+      <div className="azimuth mx-2">~{owner}</div>
+      <div className="mx-2 cursor-default" style={{ opacity: ".8" }}>
         /
       </div>
-      <input
-        className="flex-grow px-3 py-1 bg-none focus:outline rounded-1"
-        value={name}
-        onChange={(event) => {
-          setName(event.target.value);
-        }}
-        style={{ outlineColor: "var(--type-color)" }}
-        onBlur={updateDocumentName}
-      />
+      <div className="flex-grow ">{name}</div>
       {/* Sharing */}
       <svg
         xmlns="http://www.w3.org/2000/svg"

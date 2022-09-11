@@ -17,12 +17,13 @@ import {
 import * as Y from "yjs";
 import TreeComponent from "./TreeComponent";
 import { UrbitContext } from "../urbit/UrbitProvider";
+
 function Sidebar() {
   const [type, setType] = useState("");
 
   const [ids, setIds] = useState([]);
 
-  const [info, setInfo] = useState([{id: 1, name: "folder1", children: [2]}, {id:2, name: "folder2", children:[]}]);
+  const [info, setInfo] = useState([]);
 
   const urbitStatus = useContext(UrbitContext);
   const [newDoc, setNewDoc] = useState(false);
@@ -42,7 +43,6 @@ function Sidebar() {
 
             setInfo([
               ...Object.values(docRes).map((doc) => {
-                console.log(doc);
                 return {
                   id: doc.id,
                   owner: doc.owner,
@@ -64,7 +64,7 @@ function Sidebar() {
           });
       })
       .catch((err) => {
-        console.log("no urbit :(");
+        console.warn("no urbit :(");
         setInfo([
           { owner: "~zod", id: "null", name: "error getting documents" },
         ]);
@@ -85,7 +85,6 @@ function Sidebar() {
   };
 
   const getChildren = (identifier) => {
-    console.log("getting children: ", identifier, " from ", info);
     const content = [...info].filter((child) => {
       return (
         0 <=
@@ -104,13 +103,9 @@ function Sidebar() {
       return (doc.id.id ? doc.id.id : doc.id) == (id.id ? id.id : id);
     });
     if (id.id) {
-      renameDocument(id, newName).then((res) => {
-        console.log("rename document result:", res);
-      });
+      renameDocument(id, newName);
     } else {
-      renameFolder(info[toRename], newName).then((res) => {
-        console.log("rename folder result: ", res);
-      });
+      renameFolder(info[toRename], newName);
     }
     info[toRename].name = newName;
   }
@@ -124,7 +119,6 @@ function Sidebar() {
     if (item.id) {
       deleteDocument(info[toDelete].id);
     } else {
-      console.log(info[toDelete].children);
       children = info[toDelete].children;
       deleteFolder(info[toDelete]);
     }
@@ -138,7 +132,6 @@ function Sidebar() {
   }
 
   async function handleAdd(id, name, type) {
-    console.log("adding: ", name);
     let res;
     if (type === "folder") {
       res = await createFold(name);
@@ -152,28 +145,34 @@ function Sidebar() {
       id,
       null
     );
-
-    sendData();
   }
 
   function moveToFrom(id, to, from) {
+    console.log("move doc: ", id, " ;;; to: ", to, " ;;; from: ", from);
     // null for root
     let target;
     if (typeof id == "string") target = info.find((tar) => tar.id == id);
     else target = id;
+    if (target===undefined) target = info.find((tar) => tar.id.id == id);
     console.log(target, id);
+
     let parent;
     if (typeof from == "string") parent = info.find((tar) => tar.id == from);
     else if (from === "null") parent = null;
     else parent = from;
 
-    console.log(parent);
+    if (parent === undefined) {
+      parent = null;
+    }
+    console.log("hey",parent);
 
     if (parent != null) {
       const removeFrom = info.find((folder) => folder.id == parent.id);
+      console.log("Children Array: ", removeFrom)
       removeFrom.children.splice(removeFrom.children.indexOf(target.id), 1);
+      console.log("Children Array check: ", removeFrom)
       info.splice(
-        info.findIndex((item) => item.id == from),
+        info.findIndex((item) => item.id == parent.id),
         1
       );
       removeFromFolder(
@@ -183,20 +182,13 @@ function Sidebar() {
       );
       info.push(removeFrom);
     }
-    console.log("to: ", to);
     if (to != null) {
       const addTo = info.find((folder) => folder.id == to);
-      console.log("target: ", addTo);
       addTo.children.push(target.id);
       info.splice(
         info.findIndex((item) => item.id == to),
         1
       );
-      console.log("AddTo ID: ", addTo.id);
-      console.log("target Name: ", addTo.name);
-      console.log("target ID: ", target.id);
-      console.log("target owner: ", target.owner);
-      console.log("target owner true/false: ", target.owner ? true : false);
       addToFolder(
         { id: addTo.id, name: addTo.name },
         { id: target.id, name: target.name },
@@ -208,7 +200,6 @@ function Sidebar() {
   }
 
   async function createFold(name) {
-    console.log("create folder");
     checkUrbitWindow();
     const meta = await createFolder({
       id: `~${window.ship}-${crypto.randomUUID()}`,
@@ -232,9 +223,8 @@ function Sidebar() {
 
     const { id, settings } = await createDocument(name, {
       version: Array.from(version),
-      content: Array.from(encoding),
+      content: JSON.stringify(Array.from(encoding)),
     });
-    console.log("create document result", id, settings);
     info.push({ id: id, name: settings.name, owner: settings.owner });
     setInfo([...info]);
     closeCreateDoc();
@@ -242,7 +232,6 @@ function Sidebar() {
   }
 
   function addRemoteDoc(link) {
-    console.log("add remote doc");
     checkUrbitWindow();
     addRemoteDocument(link).then(({ meta, content }) => {
       info.push(meta);
@@ -253,7 +242,6 @@ function Sidebar() {
   }
 
   function closeCreateDoc() {
-    console.log("closing create doc");
     setNewDoc(false);
     setNewDocName("");
     setType("");
@@ -283,7 +271,7 @@ function Sidebar() {
         </svg>
       </div>
       <div
-      className=" flex-grow"
+        className=" flex-grow"
         dropzone
         onDragOver={(event) => {
           event.preventDefault();
@@ -293,14 +281,15 @@ function Sidebar() {
           event.preventDefault();
           console.log("dropped: ", event);
           console.log(event.dataTransfer.getData("id"));
-          if (event.dataTransfer.getData("id") != info.id) {
-            console.log(info.id);
             moveToFrom(
               event.dataTransfer.getData("id"),
               null,
               event.dataTransfer.getData("parent")
             );
-          }
+          //event.dataTransfer.clearData("id");
+          //event.dataTransfer.clearData("parent")
+          //event.dataTransfer.clearData();
+          console.log("Items:", event.dataTransfer.items)
         }}
       >
         <div className="flex flex-col overflow-auto">
@@ -365,7 +354,13 @@ function Sidebar() {
                   outlineOffset: "0",
                   minWidth: "0",
                 }}
-                placeholder={type == "remote" ? "document link" : "name"}
+                placeholder={
+                  type == "remote"
+                    ? "~zod/..."
+                    : type == "folder"
+                    ? "Folder-Path"
+                    : "Document Name"
+                }
                 value={newDocName}
                 onChange={(event) => {
                   setNewDocName(event.target.value);
@@ -419,7 +414,6 @@ function Sidebar() {
             })
 
             .map((childData, index, arr) => {
-              console.log(arr);
               return (
                 <div>
                   <TreeComponent
@@ -438,6 +432,7 @@ function Sidebar() {
             })}
         </div>
       </div>
+      <div className="pb-3"></div>
     </div>
   );
 }

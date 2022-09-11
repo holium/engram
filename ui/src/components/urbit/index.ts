@@ -125,7 +125,7 @@ export function getSnapshots(meta: DocumentId) {
 
 export function createDocument(
   name: string,
-  doc: { version: Array<number>; content: Array<number> },
+  doc: { version: Array<number>; content: string },
   owner?: Patp
 ): Promise<{ id: DocumentId; settings: DocumentSettings }> {
   return new Promise(async (resolve, reject) => {
@@ -194,14 +194,20 @@ export function createDocument(
 
 export function saveDocument(
   meta: DocumentId,
-  doc: { version: Array<number>; content: Array<number> }
+  doc: { version: Array<number>; content: string }
 ) {
   return new Promise<void>((resolve, reject) => {
+    console.log("saving: ", doc);
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
       app: "engram",
       mark: "post",
-      json: { save: { dmeta: meta, doc: doc } },
+      json: {
+        save: {
+          dmeta: meta,
+          doc: doc,
+        },
+      },
       onSuccess: () => {
         resolve();
       },
@@ -221,7 +227,7 @@ export function deleteDocument(id: DocumentId) {
       mark: "post",
       json: { delete: { dmeta: id } },
       onSuccess: () => {
-        //delete document settings
+        //delete document
         resolve();
       },
       onError: (e: any) => {
@@ -242,13 +248,12 @@ export function deleteDocument(id: DocumentId) {
         reject("Error deleting document settings");
       },
     });
-    /*
     (window as any).urbit.poke({
       app: "engram",
       mark: "post",
       json: { dupdates: { dmeta: id } },
       onSuccess: () => {
-        //delete document settings
+        //delete document updates
         resolve();
       },
       onError: (e: any) => {
@@ -256,7 +261,19 @@ export function deleteDocument(id: DocumentId) {
         reject("Error deleting document");
       },
     });
-    */
+    (window as any).urbit.poke({
+      app: "engram",
+      mark: "post",
+      json: { dsnaps: { dmeta: id } },
+      onSuccess: () => {
+        //delete document snapshots
+        resolve();
+      },
+      onError: (e: any) => {
+        console.error("Error deleting document: ", id, e);
+        reject("Error deleting document");
+      },
+    });
   });
 }
 
@@ -379,8 +396,8 @@ export function addToFolder(
   doc: FolderMeta | DocumentId,
   isDoc: boolean
 ) {
-  if(isDoc) doc = doc.id;
-  
+  if (isDoc) doc = doc.id;
+
   return new Promise<void>((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
@@ -408,7 +425,7 @@ export function removeFromFolder(
   doc: FolderMeta | DocumentId,
   isDoc: boolean
 ) {
-  if(isDoc) doc = doc.id;
+  if (isDoc) doc = doc.id;
   return new Promise<void>((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
@@ -437,7 +454,16 @@ export function recordSnapshot(
     (window as any).urbit.poke({
       app: "engram",
       mark: "post",
-      json: { snap: { dmeta: meta, snap: snap } },
+      json: {
+        snap: {
+          dmeta: meta,
+          snap: {
+            date: snap.date,
+            ship: snap.ship,
+            data: Array.from(snap.data),
+          },
+        },
+      },
       onSuccess: () => {
         resolve();
       },
@@ -455,31 +481,7 @@ export function recordSnapshot(
   });
 }
 
-export function sendUpdate(doc: string, update: DocumentUpdate) {
-  return new Promise<void>((resolve, reject) => {
-    checkUrbitWindow(reject);
-    (window as any).urbit.poke({
-      app: "engram",
-      mark: "post",
-      json: { sendUpdate: { doc: doc, update: update } },
-      onSuccess: () => {
-        resolve();
-      },
-      onError: (e: any) => {
-        console.error(
-          "Error sending update ",
-          update,
-          " for document: ",
-          doc,
-          e
-        );
-        reject("Error sending update");
-      },
-    });
-  });
-}
-
-export function recordUpdate(doc: string, update: DocumentUpdate) {
+export function recordUpdate(doc: DocumentId, update: DocumentUpdate) {
   return new Promise<void>((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
@@ -498,6 +500,30 @@ export function recordUpdate(doc: string, update: DocumentUpdate) {
           e
         );
         reject("Error recording update");
+      },
+    });
+  });
+}
+
+export function sendUpdate(doc: DocumentId, update: DocumentUpdate) {
+  return new Promise<void>((resolve, reject) => {
+    checkUrbitWindow(reject);
+    (window as any).urbit.poke({
+      app: "engram",
+      mark: "post",
+      json: { "update-live": { dmeta: doc, update: update } },
+      onSuccess: () => {
+        resolve();
+      },
+      onError: (e: any) => {
+        console.error(
+          "Error pushing update ",
+          update,
+          " for document: ",
+          doc,
+          e
+        );
+        reject("Error pushing update");
       },
     });
   });

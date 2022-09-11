@@ -56,7 +56,6 @@ export const config = new Plugin({
         if (node.type.name === "header") return true;
         if (node.type.name === "config") return true;
         if (node.type.spec.group === "configterm") {
-          console.log(node);
           config[node.type.name] = node.attrs["value"];
         }
         return false;

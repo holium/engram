@@ -8,6 +8,7 @@ module.exports = {
     },
     fontFamily: {
       azimuth: "IBM Plex Mono, monospace",
+      mono: "IBM Plex Mono, monospace",
     },
     spacing: {
       before: "1em",

@@ -10,7 +10,6 @@ function App() {
 
   useEffect(() => {
     document.addEventListener("open-document", (event) => {
-      console.log("open document: ", event);
       const parsed = (event as CustomEvent).detail.match(pathParser);
       console.log("parsed:", parsed);
       openDoc({

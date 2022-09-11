@@ -222,7 +222,7 @@ aside li textarea {
   overflow: hidden;
   position: absolute;
   display: flex-col;
-  width: 180px;
+  width: 280px;
   font-size: 16px;
   line-height: 1.26em;
 }

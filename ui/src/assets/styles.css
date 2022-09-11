@@ -86,7 +86,7 @@
 **/
 
 .context-menu {
-  @apply rounded-2 shadow-menu;
+  @apply rounded-2 shadow-menu outline-none;
   overflow: hidden;
   z-index: 2;
   background-color: var(--paper-color);
