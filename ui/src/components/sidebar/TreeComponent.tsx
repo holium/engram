@@ -73,7 +73,15 @@ function TreeComponent({
       dropzone
       onDragStart={(e) => {
         e.stopPropagation();
-        e.dataTransfer.setData("id", info.id);
+        setExpand(false);
+        e.dataTransfer.clearData("id");
+        e.dataTransfer.clearData("parent")
+        e.dataTransfer.clearData();
+        if (info.id.id) {
+        e.dataTransfer.setData("id", info.id.id);
+        } else {
+          e.dataTransfer.setData("id", info.id); 
+        }
         e.dataTransfer.setData("parent", folder);
       }}
       onDragOver={(event) => {
@@ -83,7 +91,7 @@ function TreeComponent({
       onDrop={
         !info.children
           ? (e) => {
-              /* */
+            e.stopPropagation();
             }
           : (event) => {
               event.stopPropagation();
