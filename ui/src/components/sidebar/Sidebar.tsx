@@ -159,6 +159,7 @@ function Sidebar() {
     let target;
     if (typeof id == "string") target = info.find((tar) => tar.id == id);
     else target = id;
+    if (target===undefined) target = info.find((tar) => tar.id.id == id);
     console.log(target, id);
 
     let parent;
