@@ -286,10 +286,10 @@ function Sidebar() {
               null,
               event.dataTransfer.getData("parent")
             );
-          event.dataTransfer.clearData("id");
+          //event.dataTransfer.clearData("id");
           event.dataTransfer.clearData("parent")
           event.dataTransfer.clearData();
-          console.log(event.dataTransfer.items)
+          console.log("Items:", event.dataTransfer.items)
         }}
       >
         <div className="flex flex-col overflow-auto">
