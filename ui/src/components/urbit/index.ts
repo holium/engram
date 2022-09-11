@@ -125,7 +125,7 @@ export function getSnapshots(meta: DocumentId) {
 
 export function createDocument(
   name: string,
-  doc: { version: Array<number>; content: Array<number> },
+  doc: { version: Array<number>; content: string },
   owner?: Patp
 ): Promise<{ id: DocumentId; settings: DocumentSettings }> {
   return new Promise(async (resolve, reject) => {
@@ -194,7 +194,7 @@ export function createDocument(
 
 export function saveDocument(
   meta: DocumentId,
-  doc: { version: Array<number>; content: Array<number> }
+  doc: { version: Array<number>; content: string }
 ) {
   return new Promise<void>((resolve, reject) => {
     console.log("saving: ", doc);
@@ -207,7 +207,7 @@ export function saveDocument(
           dmeta: meta,
           doc: {
             version: Array.from(doc.version),
-            content: Array.from(doc.content),
+            content: string,
           },
         },
       },

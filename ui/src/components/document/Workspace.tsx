@@ -74,11 +74,7 @@ function Document(props: { path: DocumentId }) {
     doc.clientID = 0; //(window as any).ship;
     doc.gc = false;
     getDocument(props.path).then((res: any) => {
-      const content = new Uint8Array(
-        Object.keys(res.content).map((index: any) => {
-          return res.content[index];
-        })
-      );
+      const content = new Uint8Array(JSON.parse(res.content));
       Y.applyUpdate(doc, content);
       const version = Y.createDocFromSnapshot(doc, snapshot);
       const rendering = yDocToProsemirror(schema, version);
@@ -122,11 +118,7 @@ function Document(props: { path: DocumentId }) {
           return res.version[index];
         })
       );
-      const content = new Uint8Array(
-        Object.keys(res.content).map((index: any) => {
-          return res.content[index];
-        })
-      );
+      const content = new Uint8Array(JSON.parse(res.content));
       const type = doc.getXmlFragment("prosemirror");
       const saveDoc = () => {
         const version = Y.encodeStateVector(doc);
@@ -134,7 +126,7 @@ function Document(props: { path: DocumentId }) {
 
         saveDocument(meta, {
           version: Array.from(version),
-          content: Array.from(content),
+          content: JSON.stringify(content),
         });
       };
       const state = EditorState.create({

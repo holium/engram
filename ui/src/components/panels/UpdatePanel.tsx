@@ -49,7 +49,7 @@ function UpdatePanel(props: {
           return {
             author: update.author,
             timestamp: new Date(update.timestamp),
-            content: new Uint8Array(Object.values(update.content)),
+            content: new Uint8Array(JSON.parse(update.content)),
           };
         }),
       ]);
