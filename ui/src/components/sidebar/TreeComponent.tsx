@@ -110,8 +110,10 @@ function TreeComponent({
             info.id,
             event.dataTransfer.getData("parent")
           );
+          console.log(getChildren(info.children))
+          setChildren(getChildren(info.children))
           event.dataTransfer.clearData();
-          console.log(data);
+          console.log("bitches");
         }
       }}
     >

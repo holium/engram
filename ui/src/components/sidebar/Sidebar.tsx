@@ -152,8 +152,6 @@ function Sidebar() {
       id,
       null
     );
-
-    sendData();
   }
 
   function moveToFrom(id, to, from) {
@@ -168,11 +166,16 @@ function Sidebar() {
     else if (from === "null") parent = null;
     else parent = from;
 
-    console.log(parent);
+    if (parent === undefined) {
+      parent = null;
+    }
+    console.log("hey",parent);
 
     if (parent != null) {
       const removeFrom = info.find((folder) => folder.id == parent.id);
+      console.log("Children Array: ", removeFrom)
       removeFrom.children.splice(removeFrom.children.indexOf(target.id), 1);
+      console.log("Children Array check: ", removeFrom)
       info.splice(
         info.findIndex((item) => item.id == parent.id),
         1
@@ -205,7 +208,12 @@ function Sidebar() {
       );
       info.push(addTo);
     }
-
+    
+    if(to == null || parent == null){
+      console.log("hey")
+      
+      sendData()
+    }
     sendData();
   }
 
