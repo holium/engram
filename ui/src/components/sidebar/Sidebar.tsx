@@ -311,7 +311,8 @@ function Sidebar() {
               event.dataTransfer.getData("parent")
             );
           }
-          event.dataTransfer.clearData();
+          event.dataTransfer.clearData("id");
+          event.dataTransfer.clearData("parent")
         }}
       >
         <div className="flex flex-col overflow-auto">

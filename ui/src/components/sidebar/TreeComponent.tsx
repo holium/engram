@@ -112,7 +112,8 @@ function TreeComponent({
           );
           console.log(getChildren(info.children))
           setChildren(getChildren(info.children))
-          event.dataTransfer.clearData();
+          event.dataTransfer.clearData("id");
+          event.dataTransfer.clearData("parent")
           console.log("bitches");
         }
       }}
