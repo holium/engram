@@ -55,14 +55,11 @@
     ::
     ::
       %snap
-    ~&  "adding snap"
-    ~&  action
-    ~&  su
     `this(su (~(add ja su) dmeta.action snap.action))
     ::
     ::
     ::
-      %dnsap
+      %dsnap
     ?>  (~(has by su) dmeta.action)
     `this(su (~(del by su) dmeta.action))
     ::
@@ -118,12 +115,8 @@
     :: {Documentation Here}
     ::
       %renamefolder
-    ~&  old.action
-    ~&  new.action
     =/  data=(set fldr:engram)  (~(get ja f) old.action)
-    ~&  data
     =/  new-folder=fldrs:engram  (~(del by f) old.action)
-    ~&  new-folder
     `this(f (~(put by new-folder) new.action data))
     ::
     :: remove the merged update from the update list (as updates aren't implemented this will just log)
@@ -150,9 +143,9 @@
     ::
       %update-live
     =/  li  /updates/(scot %ud id.dmeta.action)/(scot %da timestamp.dmeta.action)
-    ~&  updt.action
     :_  this
-    :~  [%give %fact ~[li] %noun !>(updt.action)]
+    :~  %-  fact:agentio
+      [update+!>(`update:engram`[%update [dmeta.action updt.action]]) ~[li]]
     ==
     ::
     :: {Documentation Here}
@@ -165,6 +158,10 @@
 ++  on-watch
   |=  =path
   ^-  (quip card _this)
+  ~&  "ship:"
+  ~&  src.bowl
+  ~&  "is watching path:"
+  ~&  path
   ?+    path  (on-watch:def path)
       [%updates @ @ ~]
     =/  id=@  (slav %ud i.t.path)
@@ -173,11 +170,9 @@
     =/  stg=[perms=(list @p) owner=@p name=@t]  (need (~(get by s) meta))
     ?~  (find [src.bowl]~ perms.stg)
       !!
-    ~&  "passed perms check"
     :_  this
     =/  stg  (need (~(get by s) meta))
     =/  docu  (need (~(get by d) meta))
-    ~&  docu
     =/  li  /updates/(scot %ud id.meta)/(scot %da timestamp.meta)
     :~  %-  fact-init:agentio
       update+!>(`update:engram`[%init meta docu stg])
@@ -187,21 +182,18 @@
 ++  on-leave  on-leave:def
 ++  on-peek
   |=  =path
+  ~&  "peek on path:"
+  ~&  path
   ^-  (unit (unit cage))
   ?+    path  (on-peek:def path)
       [%x %docinfo ~]
     ``noun+!>((enjs-docinfo:engram s))
   ::
       [%x %gdoc @ @ ~]
-    ~&  "get doc"
     =/  id=@  (crip (trip i.t.t.path))
     =/  timestamp=@d  (di:dejs:format [%n p=i.t.t.t.path])
-    ~&  (di:dejs:format [%n p=i.t.t.t.path])
-    ~&  timestamp
     =/  meta  [id=id timestamp=timestamp]
-    ~&  meta
-    =/  doc=[version=(list @ud) cont=(list @ud)]  (need (~(get by d) meta))
-    ~&  doc
+    =/  doc  (need (~(get by d) meta))
     ``noun+!>((enjs-gdoc:engram doc))
   ::
       [%x %gsetting @ @ ~]
@@ -209,33 +201,23 @@
     =/  timestamp=@d  (di:dejs:format [%n p=i.t.t.t.path])
     =/  meta  [id=id timestamp=timestamp]
     =/  stg=[perms=(list @p) owner=@p name=@t]  (need (~(get by s) meta))
-    ~&  stg
     ``noun+!>((enjs-gsetting:engram stg))
   ::
       [%x %gfolders ~]
     ``noun+!>((enjs-gfolders:engram f))
   ::
       [%x %getsnaps @ @ ~]
-    ~&  "getting snaps"
     =/  id=@  (crip (trip i.t.t.path))
     =/  timestamp=@d  (di:dejs:format [%n p=i.t.t.t.path])
     =/  meta  [id=id timestamp=timestamp]
     =/  snap=(list snap:engram)  (need (~(get by su) meta))
-    ~&  snap
     ``noun+!>((enjs-getsnaps:engram snap))
   ::
       [%x %gupdates @ @ ~]
-   ~&  "getting updates"
     =/  id=@  (crip (trip i.t.t.path))
-    ~&  id
     =/  timestamp=@d  (di:dejs:format [%n p=i.t.t.t.path])
-    ~&  timestamp
     =/  meta  [id=id timestamp=timestamp]
-    ~&  meta
     =/  upd  (~(get ju u) meta)
-    ~&  u
-    ~&  "---"
-    ~&  upd
     ``noun+!>((enjs-gupdates:engram upd))
   ==
 ::
@@ -243,7 +225,6 @@
   |=  [=wire =sign:agent:gall]
     ^-  (quip card _this)
     ~&  "Reached agent"
-    ~&  sign
     ?+    wire  (on-agent:def wire sign)
         [%engram ~]
       ?+    -.sign  (on-agent:def wire sign)
@@ -261,18 +242,13 @@
           %fact
         ?+    p.cage.sign  (on-agent:def wire sign)
             %noun
-          ~&  'logging'
-          ~&  q.cage.sign
           `this
             %update
-          ~&  "reached update"
-          ~&  q.cage.sign
           =/  update  !<(update:engram q.cage.sign)
+          ~&  update
           ?-  -.update
             %init
-          ~&  update
           =/  up=updt:engram  [author=owner.stg.update cont=cont.doc.update time=timestamp.dmeta.update]
-          ~&  (~(put ju u) dmeta.update up)
           :_  this
           :~  [%pass /settings %agent [our.bowl %engram] %poke %post !>([%settings dmeta.update stg.update])]
               [%pass /update %agent [our.bowl %engram] %poke %post !>([%update dmeta.update up])]
