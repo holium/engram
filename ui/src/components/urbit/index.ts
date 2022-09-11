@@ -207,7 +207,7 @@ export function saveDocument(
           dmeta: meta,
           doc: {
             version: Array.from(doc.version),
-            content: string,
+            content: doc,
           },
         },
       },

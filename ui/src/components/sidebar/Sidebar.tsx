@@ -17,6 +17,7 @@ import {
 import * as Y from "yjs";
 import TreeComponent from "./TreeComponent";
 import { UrbitContext } from "../urbit/UrbitProvider";
+
 function Sidebar() {
   const [type, setType] = useState("");
 
@@ -149,6 +150,7 @@ function Sidebar() {
   }
 
   function moveToFrom(id, to, from) {
+    console.log("move doc: ", id, " ;;; to: ", to, " ;;; from: ", from);
     // null for root
     let target;
     if (typeof id == "string") target = info.find((tar) => tar.id == id);
