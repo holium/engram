@@ -145,8 +145,6 @@ function Sidebar() {
       id,
       null
     );
-
-    sendData();
   }
 
   function moveToFrom(id, to, from) {
@@ -155,16 +153,26 @@ function Sidebar() {
     let target;
     if (typeof id == "string") target = info.find((tar) => tar.id == id);
     else target = id;
+    if (target===undefined) target = info.find((tar) => tar.id.id == id);
+    console.log(target, id);
+
     let parent;
     if (typeof from == "string") parent = info.find((tar) => tar.id == from);
     else if (from === "null") parent = null;
     else parent = from;
 
+    if (parent === undefined) {
+      parent = null;
+    }
+    console.log("hey",parent);
+
     if (parent != null) {
       const removeFrom = info.find((folder) => folder.id == parent.id);
+      console.log("Children Array: ", removeFrom)
       removeFrom.children.splice(removeFrom.children.indexOf(target.id), 1);
+      console.log("Children Array check: ", removeFrom)
       info.splice(
-        info.findIndex((item) => item.id == from),
+        info.findIndex((item) => item.id == parent.id),
         1
       );
       removeFromFolder(
@@ -271,13 +279,17 @@ function Sidebar() {
         onDrop={(event) => {
           event.stopPropagation();
           event.preventDefault();
-          if (event.dataTransfer.getData("id") != info.id) {
+          console.log("dropped: ", event);
+          console.log(event.dataTransfer.getData("id"));
             moveToFrom(
               event.dataTransfer.getData("id"),
               null,
               event.dataTransfer.getData("parent")
             );
-          }
+          event.dataTransfer.clearData("id");
+          event.dataTransfer.clearData("parent")
+          event.dataTransfer.clearData();
+          console.log(event.dataTransfer.items)
         }}
       >
         <div className="flex flex-col overflow-auto">
