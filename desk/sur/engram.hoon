@@ -16,7 +16,7 @@
 ::
 +$  id  @
 +$  athr  @p
-+$  dcont  (list @ud)
++$  dcont  (list @tD)
 +$  updt  [author=athr cont=dcont time=@da]
 +$  ver  (list @ud)
 +$  doc  [version=ver cont=dcont]

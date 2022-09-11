@@ -192,7 +192,7 @@
     =/  id=@  (crip (trip i.t.t.path))
     =/  timestamp=@d  (di:dejs:format [%n p=i.t.t.t.path])
     =/  meta  [id=id timestamp=timestamp]
-    =/  doc=[version=(list @ud) cont=(list @ud)]  (need (~(get by d) meta))
+    =/  doc  (need (~(get by d) meta))
     ``noun+!>((enjs-gdoc:engram doc))
   ::
       [%x %gsetting @ @ ~]

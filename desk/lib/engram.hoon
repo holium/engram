@@ -9,9 +9,9 @@
   %.  jon
   %-  of
   :~
-    [%make (ot ~[dmeta+(ot ~[id+so timestamp+di]) doc+(ot ~[version+(ar ni) content+(ar ni)])])]
+    [%make (ot ~[dmeta+(ot ~[id+so timestamp+di]) doc+(ot ~[version+(ar ni) content+sa])])]
     [%delete (ot ~[dmeta+(ot ~[id+so timestamp+di])])]
-    [%save (ot ~[dmeta+(ot ~[id+so timestamp+di]) doc+(ot ~[version+(ar ni) content+(ar ni)])])]
+    [%save (ot ~[dmeta+(ot ~[id+so timestamp+di]) doc+(ot ~[version+(ar ni) content+sa])])]
     [%settings (ot ~[dmeta+(ot ~[id+so timestamp+di]) stg+(ot ~[perms+(ar (se %p)) owner+(se %p) name+so])])]
     [%dsettings (ot ~[dmeta+(ot ~[id+so timestamp+di])])]
     [%mfolder (ot ~[fmeta+(ot ~[id+so name+so])])]
@@ -20,7 +20,7 @@
     [%foldoc (ot ~[fmeta+(ot ~[id+so name+so]) fldr+(of ~[[[%doc] (ot ~[id+so timestamp+di])] [[%folder] (ot ~[id+so name+so])]])])]
     [%remfoldoc (ot ~[fmeta+(ot ~[id+so name+so]) fldr+(of ~[[[%doc] (ot ~[id+so timestamp+di])] [[%folder] (ot ~[id+so name+so])]])])]
     [%createsnap (ot ~[dmeta+(ot ~[id+so timestamp+di])])]
-    [%merge (ot ~[dmeta+(ot ~[id+so timestamp+di]) update+(ot ~[author+(se %p) content+(ar ni) time+di])])]
+    [%merge (ot ~[dmeta+(ot ~[id+so timestamp+di]) update+(ot ~[author+(se %p) content+sa time+di])])]
     [%snap (ot ~[dmeta+(ot ~[id+so timestamp+di]) snap+(ot ~[date+di ship+(se %p) data+(ar ni)])])]
     [%dsnap (ot ~[dmeta+(ot ~[id+so timestamp+di])])]
     [%sub (ot ~[dmeta+(ot ~[id+so timestamp+di]) ship+(se %p)])]
@@ -56,17 +56,7 @@
     version-counter  (add version-counter 1)
     version-result  (snoc version-result [(crip "{<version-counter>}") (numb:enjs:format (snag version-counter version:document))])
   ==
-  =/  content-result  *(list [@t json])
-  =/  content-counter  0
-  =/  assembled-content
-  |-
-  ?:  =(content-counter (lent cont:document))
-    content-result
-  %=  $
-    content-counter  (add content-counter 1)
-    content-result  (snoc content-result [(crip "{<content-counter>}") (numb:enjs:format (snag content-counter cont:document))])
-  ==
-  (pairs:enjs:format ~[['version' (pairs:enjs:format assembled-version)] ['content' (pairs:enjs:format assembled-content)]])
+  (pairs:enjs:format ~[['version' (pairs:enjs:format assembled-version)] ['content' (tape:enjs:format cont:document)]])
 ++  enjs-gsetting
   =,  enjs:format
   |=  settings=stg
@@ -132,20 +122,9 @@
     ?:  =(counter (lent lupdts))
       results
     =/  curr  (snag counter lupdts)
-    =/  cont  cont:curr
-    =/  cont-counter  0
-    =/  cont-results  *(list [@t json])
-    =/  cont-assembled
-    |-
-    ?:  =(cont-counter (lent cont))
-      cont-results
-    %=  $
-      cont-counter  (add cont-counter 1)
-      cont-results  (snoc cont-results [(crip "{<cont-counter>}") (numb (snag cont-counter cont))])
-    ==
   %=  $
     counter  (add counter 1)
-    results  (snoc results [(crip "{<counter>}") (pairs ~[['timestamp' (time time:curr)] ['author' (ship author:curr)] ['content' (pairs cont-assembled)]])])
+    results  (snoc results [(crip "{<counter>}") (pairs ~[['timestamp' (time time:curr)] ['author' (ship author:curr)] ['content' (tape cont:curr)]])])
   ==
   (pairs assembled)
 ++  enjs-getsnaps
