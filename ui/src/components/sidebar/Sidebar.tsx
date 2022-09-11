@@ -22,7 +22,7 @@ function Sidebar() {
 
   const [ids, setIds] = useState([]);
 
-  const [info, setInfo] = useState([{id: 1, name: "folder1", children: [2]}, {id:2, name: "folder2", children:[]}]);
+  const [info, setInfo] = useState([{id: 1, name: "folder1", children: [2]}, {id:2, name: "folder2", children:[4]}, {id:3, name: "File3", owner: "zod", timestamp: Date.now()},{id:4, name: "File4", owner: "zod", timestamp: Date.now()}]);
 
   const urbitStatus = useContext(UrbitContext);
   const [newDoc, setNewDoc] = useState(false);
@@ -190,11 +190,11 @@ function Sidebar() {
       console.log("target: ", addTo);
       addTo.children.push(target.id);
       info.splice(
-        info.findIndex((item) => item.id == target.id),
+        info.findIndex((item) => item.id == to),
         1
       );
       console.log("AddTo ID: ", addTo.id);
-      console.log("target Name: ", addTo.name);
+      console.log("AddTo Name: ", addTo.name);
       console.log("target ID: ", target.id);
       console.log("target owner: ", target.owner);
       console.log("target owner true/false: ", target.owner ? true : false);
@@ -205,6 +205,7 @@ function Sidebar() {
       );
       info.push(addTo);
     }
+
     sendData();
   }
 

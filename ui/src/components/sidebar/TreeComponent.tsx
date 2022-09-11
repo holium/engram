@@ -86,6 +86,8 @@ function TreeComponent({
       draggable="true"
       dropzone
       onDragStart={(e) => {
+        e.dataTransfer.clearData()
+        setAppear(false);
         e.stopPropagation();
         e.dataTransfer.setData("id", info.id);
         e.dataTransfer.setData("parent", folder);
