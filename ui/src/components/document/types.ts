@@ -64,12 +64,6 @@ export interface Version {
   snapshot: Snapshot;
 }
 
-export interface Update {
-  author: Patp;
-  content: Uint8Array;
-  time: Date;
-}
-
 export interface DocumentId {
   id: string;
   timestamp: number;
@@ -83,7 +77,7 @@ export interface DocumentSettings {
 
 export interface DocumentUpdate {
   author: Patp;
-  content: Array<number>;
+  content: string;
   time: Date;
 }
 

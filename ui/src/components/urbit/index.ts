@@ -205,10 +205,7 @@ export function saveDocument(
       json: {
         save: {
           dmeta: meta,
-          doc: {
-            version: Array.from(doc.version),
-            content: doc,
-          },
+          doc: doc,
         },
       },
       onSuccess: () => {
@@ -484,31 +481,7 @@ export function recordSnapshot(
   });
 }
 
-export function sendUpdate(doc: string, update: DocumentUpdate) {
-  return new Promise<void>((resolve, reject) => {
-    checkUrbitWindow(reject);
-    (window as any).urbit.poke({
-      app: "engram",
-      mark: "post",
-      json: { sendUpdate: { doc: doc, update: update } },
-      onSuccess: () => {
-        resolve();
-      },
-      onError: (e: any) => {
-        console.error(
-          "Error sending update ",
-          update,
-          " for document: ",
-          doc,
-          e
-        );
-        reject("Error sending update");
-      },
-    });
-  });
-}
-
-export function recordUpdate(doc: string, update: DocumentUpdate) {
+export function recordUpdate(doc: DocumentId, update: DocumentUpdate) {
   return new Promise<void>((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
@@ -527,6 +500,30 @@ export function recordUpdate(doc: string, update: DocumentUpdate) {
           e
         );
         reject("Error recording update");
+      },
+    });
+  });
+}
+
+export function sendUpdate(doc: DocumentId, update: DocumentUpdate) {
+  return new Promise<void>((resolve, reject) => {
+    checkUrbitWindow(reject);
+    (window as any).urbit.poke({
+      app: "engram",
+      mark: "post",
+      json: { "update-live": { dmeta: doc, update: update } },
+      onSuccess: () => {
+        resolve();
+      },
+      onError: (e: any) => {
+        console.error(
+          "Error pushing update ",
+          update,
+          " for document: ",
+          doc,
+          e
+        );
+        reject("Error pushing update");
       },
     });
   });

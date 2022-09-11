@@ -215,7 +215,7 @@ function Sidebar() {
 
     const { id, settings } = await createDocument(name, {
       version: Array.from(version),
-      content: JSON.stringify(encoding),
+      content: JSON.stringify(Array.from(encoding)),
     });
     info.push({ id: id, name: settings.name, owner: settings.owner });
     setInfo([...info]);

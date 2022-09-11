@@ -3,7 +3,12 @@ import { useEffect, useState, useContext } from "react";
 import { EditorState, Plugin } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
 import { keymap } from "prosemirror-keymap";
-import { getDocument, saveDocument, recordSnapshot } from "../urbit/index";
+import {
+  getDocument,
+  saveDocument,
+  recordSnapshot,
+  sendUpdate,
+} from "../urbit/index";
 // Build
 import * as Y from "yjs";
 import schema from "./build/schema";
@@ -151,12 +156,20 @@ function Document(props: { path: DocumentId }) {
 
             saveDocument(props.path, {
               version: Array.from(version),
-              content: Array.from(content),
+              content: JSON.stringify(Array.from(content)),
             });
             recordSnapshot(props.path, {
               date: Date.now(),
               ship: `~${(window as any).ship}`,
               data: snapshot,
+            });
+            getDocument(props.path).then((res) => {
+              const update = Y.encodeStateAsUpdate(doc, res.version);
+              sendUpdate(props.path, {
+                author: "~" + (window as any).ship,
+                content: JSON.stringify(Array.from(update)),
+                time: Date.now(),
+              });
             });
           }),
         ],
