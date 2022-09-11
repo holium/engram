@@ -197,11 +197,20 @@ export function saveDocument(
   doc: { version: Array<number>; content: Array<number> }
 ) {
   return new Promise<void>((resolve, reject) => {
+    console.log("saving: ", doc);
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
       app: "engram",
       mark: "post",
-      json: { save: { dmeta: meta, doc: doc } },
+      json: {
+        save: {
+          dmeta: meta,
+          doc: {
+            version: Array.from(doc.version),
+            content: Array.from(doc.content),
+          },
+        },
+      },
       onSuccess: () => {
         resolve();
       },
@@ -448,7 +457,16 @@ export function recordSnapshot(
     (window as any).urbit.poke({
       app: "engram",
       mark: "post",
-      json: { snap: { dmeta: meta, snap: snap } },
+      json: {
+        snap: {
+          dmeta: meta,
+          snap: {
+            date: snap.date,
+            ship: snap.ship,
+            data: Array.from(snap.data),
+          },
+        },
+      },
       onSuccess: () => {
         resolve();
       },
