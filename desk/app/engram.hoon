@@ -38,7 +38,7 @@
   ?+    mark  (on-poke:def mark vase)
       %post
     =/  action  !<(?(action:engram) vase)
-    ?-    -.action
+    ?+    -.action  !!
     ::
     :: initialize a new document with a blank document as passed by the frontend
     ::
@@ -156,11 +156,10 @@
       %extend
     ~&  action
     =/  data  (~(get ju u) dmeta.action)
-    =/  save  ~(tap in +.+.action)  
+    =/  save  ~(tap in +.+.action)
     `this(u (~(put ju u) dmeta.action (~(gas in data) save)))
     ==
-  ==
-
+  ::==
 ++  on-watch
   |=  =path
   ^-  (quip card _this)
@@ -252,6 +251,7 @@
           `this
             %update
           =/  update  !<(update:engram q.cage.sign)
+          ~&  "Update"
           ~&  update
           ?-  -.update
             %init
@@ -259,7 +259,7 @@
           :_  this
           :~  [%pass /settings %agent [our.bowl %engram] %poke %post !>([%settings dmeta.update stg.update])]
               [%pass /update %agent [our.bowl %engram] %poke %post !>([%update dmeta.update up])]
-              [%pass /update %agent [our.bowl %engram] %poke %post !>([%extend dmeta.update setupt.update])]
+              [%pass /extend %agent [our.bowl %engram] %poke %post !>([%extend dmeta.update setupt.update])]
           ==
             %update
           :_  this
