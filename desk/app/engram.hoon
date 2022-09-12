@@ -153,6 +153,12 @@
       %update
     `this(u (~(put ju u) dmeta.action updt.action))
     ==
+      %extend
+    ~&  action
+    =/  data  (~(get ju u) dmeta.action)
+    =/  save  ~(tap in +.+.action)  
+    `this(u (~(put ju u) dmeta.action (~(gas in data) save)))
+    ==
   ==
 
 ++  on-watch
@@ -173,9 +179,10 @@
     :_  this
     =/  stg  (need (~(get by s) meta))
     =/  docu  (need (~(get by d) meta))
+    =/  ups  (need (~(get ju u) meta))
     =/  li  /updates/(scot %ud id.meta)/(scot %da timestamp.meta)
     :~  %-  fact-init:agentio
-      update+!>(`update:engram`[%init meta docu stg])
+      update+!>(`update:engram`[%init meta docu stg ups])
       [%pass /engram %agent [src.bowl %engram] %watch li]
     ==
 ==
@@ -252,6 +259,7 @@
           :_  this
           :~  [%pass /settings %agent [our.bowl %engram] %poke %post !>([%settings dmeta.update stg.update])]
               [%pass /update %agent [our.bowl %engram] %poke %post !>([%update dmeta.update up])]
+              [%pass /update %agent [our.bowl %engram] %poke %post !>([%extend dmeta.update setupt.update])]
           ==
             %update
           :_  this
