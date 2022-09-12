@@ -91,3 +91,8 @@ export interface Snap {
   ship: Patp;
   data: Array<number>;
 }
+
+export interface Folder {
+  meta: FolderMeta;
+  contents: Array<FolderMeta | DocumentMeta>;
+}

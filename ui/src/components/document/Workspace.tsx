@@ -183,12 +183,16 @@ function Document(props: { path: DocumentId }) {
       const newView = new EditorView(document.querySelector("#document"), {
         state: state,
       });
-      setView(newView);
-      setDoc(doc);
+      console.log("built view");
+      Y.applyUpdate(doc, content);
+      console.log("applied update");
+      setView(view);
+      console.log("set view");
     });
   }
 
   useEffect(() => {
+    console.log("setting up");
     setup();
   }, [props.path]);
 
@@ -264,7 +268,6 @@ function Document(props: { path: DocumentId }) {
         }}
         setNotifStatus={/* setNotifStatus */ () => {}}
       />
-
       <VersionPanel
         show={panel == "version"}
         path={props.path}
@@ -272,9 +275,7 @@ function Document(props: { path: DocumentId }) {
         closeSnapshot={closeSnapshot}
       />
       <ConfigPanel show={panel == "config"} view={view} />
-
       <div id="document-wrapper">
-        {/* Document --------------------------------------------------------- */}
         <main
           id="document"
           onMouseLeave={() => {
