@@ -16,13 +16,13 @@
 ::
 +$  id  @
 +$  athr  @p
-+$  dcont  (list @ud)
++$  dcont  (list @tD)
 +$  updt  [author=athr cont=dcont time=@da]
 +$  ver  (list @ud)
 +$  doc  [version=ver cont=dcont]
-+$  dmeta  [owner=athr id=id name=@t]
++$  dmeta  [id=id timestamp=@d]
 +$  whtlst  (list @p)
-+$  stg  [perms=whtlst]
++$  stg  [perms=whtlst owner=@p name=@t]
 +$  fmeta  [id=id name=@t]
 +$  snap  [date=@d ship=@p data=(list @ud)]
 +$  fldr
@@ -58,19 +58,26 @@
 +$  action
   $%  [%make =dmeta =doc]
       [%createsnap =dmeta]
+      [%snap =dmeta =snap]
+      [%dsnap =dmeta]
       [%save =dmeta =doc]
       [%delete =dmeta]
       [%settings =dmeta =stg]
+      [%dsettings =dmeta]
       [%mfolder =fmeta]
       [%dfolder =fmeta]
       [%foldoc =fmeta =fldr]
       [%remfoldoc =fmeta =fldr]
-      [%merge =dmeta =@ud]
-      [%snap =dmeta =snap]
-      ::[%sub =@p]
-      ::[%unsub =@p]
+      [%renamefolder old=fmeta new=fmeta]
+      [%merge =dmeta =updt]
+      [%sub =dmeta owner=@p]
+      [%unsub owner=@p]
+      [%update =dmeta =updt]
+      [%update-live =dmeta =updt]
+      [%extend =dmeta =(set updt)]
   ==
 +$  update
-  $%  [%sub =dmeta]
+  $%  [%init =dmeta =doc =stg setupt=(set updt)]
+      [%update =dmeta =updt]
   ==
 --
