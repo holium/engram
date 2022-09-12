@@ -10,6 +10,7 @@ function TreeComponent({
   getChildren,
   handleAdd,
   handleRename,
+  moveToFrom,
 }) {
   const [expand, setExpand] = useState(false);
 
@@ -29,24 +30,16 @@ function TreeComponent({
 
   const [info, setInfo] = useState(data);
 
-  const [type, setType] = useState("");
-
   const [children, setChildren] = useState([]);
 
   useEffect(() => {
     if (!data.owner) {
-      console.log(
-        "getting children: ",
-        info.children,
-        " => ",
-        getChildren(info.children)
-      );
       setChildren(getChildren(info.children));
     }
   }, [info.children ? info.children.length : info.id]);
 
   const toggleAdd = (name, type) => {
-    handleAdd(info.name, name, type);
+    handleAdd(info.id, name, type);
     setChildren(getChildren(info.children));
     setExpand(true);
   };
@@ -57,12 +50,7 @@ function TreeComponent({
   }
 
   const handleDelete = () => {
-    onDelete(info.id, folder);
-    /*
-    setInfo({ id: null, name: null, children: [] });
-    setChildren([]);
-    setAppear(false);
-    */
+    onDelete(info.id, folder, false);
   };
 
   function ToggleFolderMenu(event) {
@@ -73,17 +61,51 @@ function TreeComponent({
   function renameFolder(event) {
     event.stopPropagation();
     setrenameState(false);
-    console.log("rename");
-    //middleware
   }
 
   function openDocument() {
-    console.log("opening doc:", info.id);
-    document.dispatchEvent(OpenDocumentEvent(info));
+    document.dispatchEvent(OpenDocumentEvent(info.id));
   }
 
   return (
-    <div>
+    <div
+      draggable="true"
+      dropzone
+      onDragStart={(e) => {
+        e.stopPropagation();
+        setExpand(false);
+        e.dataTransfer.clearData("id");
+        e.dataTransfer.clearData("parent")
+        e.dataTransfer.clearData();
+        if (info.id.id) {
+        e.dataTransfer.setData("id", info.id.id);
+        } else {
+          e.dataTransfer.setData("id", info.id); 
+        }
+        e.dataTransfer.setData("parent", folder);
+      }}
+      onDragOver={(event) => {
+        event.stopPropagation();
+        event.preventDefault();
+      }}
+      onDrop={
+        !info.children
+          ? (e) => {
+            e.stopPropagation();
+            }
+          : (event) => {
+              event.stopPropagation();
+              event.preventDefault();
+              if (event.dataTransfer.getData("id") != info.id) {
+                moveToFrom(
+                  event.dataTransfer.getData("id"),
+                  info.id,
+                  event.dataTransfer.getData("parent")
+                );
+              }
+            }
+      }
+    >
       <div
         className="tree-item"
         onClick={(e) => {
@@ -94,11 +116,12 @@ function TreeComponent({
         }}
       >
         {info.owner ? (
-          info.owner == "~" + window.ship ? (
+          info.owner == window.ship ? (
             // a dot if this ship is the origin
             <svg
               viewBox="0 0 25 25"
-              fill="var(--trim-color)"
+              fill="var(--type-color)"
+              style={{ opacity: ".8" }}
               className="icon"
               xmlns="http://www.w3.org/2000/svg"
             >
@@ -108,8 +131,9 @@ function TreeComponent({
             // a tilde if the origin is remote
             <svg
               viewBox="0 0 25 25"
-              fill="var(--trim-color)"
+              fill="var(--type-color)"
               className="icon"
+              style={{ opacity: ".8" }}
               xmlns="http://www.w3.org/2000/svg"
             >
               <path d="M8.90419 10.8605C8.32859 10.8605 7.86054 11.3286 7.86054 11.9042V14.5816C7.86054 15.0962 7.44483 15.5119 6.93027 15.5119C6.41572 15.5119 6 15.0962 6 14.5816V11.9042C6 10.2995 7.29947 9 8.90419 9C9.67457 9 10.413 9.30525 10.9566 9.85178L15.3812 14.2764C15.576 14.4712 15.8434 14.5816 16.1196 14.5816C16.6952 14.5816 17.1633 14.1136 17.1633 13.538V10.8605C17.1633 10.346 17.579 9.93027 18.0935 9.93027C18.6081 9.93027 19.0238 10.346 19.0238 10.8605V13.538C19.0238 15.1427 17.7243 16.4422 16.1196 16.4422C15.3492 16.4422 14.6108 16.1369 14.0672 15.5904L9.6426 11.1658C9.44782 10.971 9.18037 10.8605 8.90419 10.8605Z" />
@@ -179,16 +203,24 @@ function TreeComponent({
             }}
             autoFocus
             onBlur={(e) => {
-              handleRename(info.id, e.target.value);
+              handleRename(
+                info.id,
+                e.target.value,
+                typeof info.owner != "undefined"
+              );
               setrenameState(false);
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                handleRename(info.id, e.target.value);
+                handleRename(
+                  info.id,
+                  e.target.value,
+                  typeof info.owner != "undefined"
+                );
                 setrenameState(false);
-                e.stopPropagation();
               } else if (e.key == "Escape") {
                 setrenameState(false);
+                setNewName("");
               }
             }}
           />
@@ -212,7 +244,7 @@ function TreeComponent({
             <path d="M4.5 10.5c-.825 0-1.5.675-1.5 1.5s.675 1.5 1.5 1.5S6 12.825 6 12s-.675-1.5-1.5-1.5zm15 0c-.825 0-1.5.675-1.5 1.5s.675 1.5 1.5 1.5S21 12.825 21 12s-.675-1.5-1.5-1.5zm-7.5 0c-.825 0-1.5.675-1.5 1.5s.675 1.5 1.5 1.5 1.5-.675 1.5-1.5-.675-1.5-1.5-1.5z" />
           </svg>
         )}
-        <menu onMouseLeave={hideMenu}>
+        <menu>
           {appear &&
             (info.children ? (
               <FolderMenu
@@ -227,9 +259,12 @@ function TreeComponent({
             ) : (
               <FileMenu
                 ToggleFolderMenu={ToggleFolderMenu}
-                renameFolder={setrenameState}
+                canRename={info.owner == (window as any).ship}
+                renameFile={setrenameState}
                 onDelete={handleDelete}
                 position={pos}
+                id={info.id}
+                owner={info.owner}
               />
             ))}
         </menu>
@@ -307,13 +342,14 @@ function TreeComponent({
             .map((child) => (
               <div>
                 <TreeComponent
-                  key={child.id}
+                  key={child.owner ? child.id.id : child.id}
                   folder={info.id}
                   onDelete={onDelete}
                   data={child}
                   getChildren={getChildren}
                   handleAdd={handleAdd}
                   handleRename={handleRename}
+                  moveToFrom={moveToFrom}
                 />
               </div>
             ))}

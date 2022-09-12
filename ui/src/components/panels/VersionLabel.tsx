@@ -25,9 +25,15 @@ function VersionLabel(props: {
   ];
 
   function formatTimestamp(timestamp: Date) {
-    return `${timestamp.getHours()}:${timestamp.getMinutes()} ${
+    return `${timestamp
+      .getHours()
+      .toString()
+      .padStart(2, 0)}:${timestamp.getMinutes().toString().padStart(2, 0)} ${
       months[timestamp.getMonth()]
-    } ${timestamp.getDate()}, ${timestamp.getFullYear()}`;
+    } ${timestamp
+      .getDate()
+      .toString()
+      .padStart(2, 0)}, ${timestamp.getFullYear()}`;
   }
 
   return (
@@ -142,7 +148,7 @@ function VersionLabel(props: {
           </svg>
         );
       })}
-      <div className="flex items-center text-right flex-grow">
+      <div className="flex items-center text-right flex-grow font-mono">
         {formatTimestamp(props.version.timestamp)}
       </div>
     </div>

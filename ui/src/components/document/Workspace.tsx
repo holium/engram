@@ -7,7 +7,7 @@ import {
   getDocument,
   saveDocument,
   recordSnapshot,
-  pathParser,
+  sendUpdate,
 } from "../urbit/index";
 // Build
 import * as Y from "yjs";
@@ -29,7 +29,7 @@ import {
   yDocToProsemirror,
 } from "y-prosemirror";
 import { handleImage } from "./plugins/handleImage";
-import save from "./plugins/save";
+import { save, SavePluginKey } from "./plugins/save";
 
 // Menus
 import sidemenu from "./plugins/menus/sidemenu";
@@ -48,7 +48,7 @@ import ConfigPanel from "../panels/ConfigPanel";
 import { NotifStatus } from "./types";
 import { SlideContext } from "../toolbar/SlideContext";
 
-function Document(props: { path: string }) {
+function Document(props: { path: DocumentId }) {
   /* Periphery -------------------------------------------------------------- */
 
   // Menus
@@ -65,31 +65,30 @@ function Document(props: { path: string }) {
 
   // Snapshots
   const [snapshot, setSnapshot] = useState(null);
+
+  // Document
+  const [view, setView] = useState(null);
+  const [doc, setDoc] = useState(null);
+
   function renderSnapshot(snapshot: Y.Snapshot) {
     if (props.path == null) return;
+    console.log(view, "should destroy view: ", view != null);
     if (view != null) view.destroy();
-    const parsed = props.path.match(pathParser);
-    console.log("parsed path:", parsed);
-    const meta = {
-      owner: parsed.groups.owner,
-      id: parsed.groups.id,
-      name: parsed.groups.name,
-    };
 
     const doc = new Y.Doc();
     doc.clientID = 0; //(window as any).ship;
     doc.gc = false;
-    getDocument(meta).then((res: any) => {
-      const content = new Uint8Array(
-        Object.keys(res.content).map((index: any) => {
-          return res.content[index];
-        })
-      );
+    getDocument(props.path).then((res: any) => {
+      const content = new Uint8Array(JSON.parse(res.content));
       Y.applyUpdate(doc, content);
       const version = Y.createDocFromSnapshot(doc, snapshot);
       const rendering = yDocToProsemirror(schema, version);
 
-      const state = EditorState.create({ schema: schema, doc: rendering });
+      const state = EditorState.create({
+        schema: schema,
+        doc: rendering,
+        plugins: [config],
+      });
       if (view != null) view.destroy();
       setView(
         new EditorView(document.querySelector("#document"), {
@@ -111,34 +110,20 @@ function Document(props: { path: string }) {
     setup();
   }
 
-  /* Document --------------------------------------------------------------- */
-  const [view, setView] = useState(null);
-
   // Setup
   function setup() {
     if (props.path == null) return;
-    if (view != null) view.destroy();
-    const parsed = props.path.match(pathParser);
-    console.log("parsed path:", parsed);
-    const meta = {
-      owner: parsed.groups.owner,
-      id: parsed.groups.id,
-      name: parsed.groups.name,
-    };
+
     const doc = new Y.Doc();
     doc.clientID = 0; //(window as any).ship;
     doc.gc = false;
-    getDocument(meta).then((res: any) => {
+    getDocument(props.path).then((res: any) => {
       const version = new Uint8Array(
         Object.keys(res.version).map((index: any) => {
           return res.version[index];
         })
       );
-      const content = new Uint8Array(
-        Object.keys(res.content).map((index: any) => {
-          return res.content[index];
-        })
-      );
+      const content = new Uint8Array(JSON.parse(res.content));
       const type = doc.getXmlFragment("prosemirror");
       const saveDoc = () => {
         const version = Y.encodeStateVector(doc);
@@ -146,7 +131,7 @@ function Document(props: { path: string }) {
 
         saveDocument(meta, {
           version: Array.from(version),
-          content: Array.from(content),
+          content: JSON.stringify(content),
         });
       };
       const state = EditorState.create({
@@ -167,24 +152,35 @@ function Document(props: { path: string }) {
           save(() => {
             const version = Y.encodeStateVector(doc);
             const content = Y.encodeStateAsUpdate(doc);
-            console.log(Y.snapshot(doc));
-            console.log(Y.encodeSnapshotV2(Y.snapshot(doc)));
-            console.log(Array.from(Y.encodeSnapshotV2(Y.snapshot(doc))));
             const snapshot = Array.from(Y.encodeSnapshotV2(Y.snapshot(doc)));
 
-            saveDocument(meta, {
+            saveDocument(props.path, {
               version: Array.from(version),
-              content: Array.from(content),
+              content: JSON.stringify(Array.from(content)),
             });
-            recordSnapshot(meta, {
+            recordSnapshot(props.path, {
               date: Date.now(),
               ship: `~${(window as any).ship}`,
               data: snapshot,
             });
+            getDocument(props.path).then((res) => {
+              const update = Y.encodeStateAsUpdate(doc, res.version);
+              sendUpdate(props.path, {
+                author: "~" + (window as any).ship,
+                content: JSON.stringify(Array.from(update)),
+                time: Date.now(),
+              });
+            });
           }),
         ],
       });
-      const view = new EditorView(document.querySelector("#document"), {
+      Y.applyUpdate(doc, content);
+      const collection = document.getElementsByClassName("ProseMirror");
+      console.log("prosemirrors: ", collection);
+      Array.from(collection).forEach((element) => {
+        element.remove();
+      });
+      const newView = new EditorView(document.querySelector("#document"), {
         state: state,
       });
       console.log("built view");
@@ -239,17 +235,38 @@ function Document(props: { path: string }) {
         panel={panel}
         notifs={notifStatus}
       />
-
-      <PublishPanel show={panel == "publish"} />
+      <PublishPanel show={panel == "publish"} path={props.path} />
       <UpdatePanel
         path={props.path}
         show={panel == "update"}
-        save={() => {}}
-        getStage={() => {
-          return 0;
+        save={() => {
+          console.log(view.state);
         }}
-        applyUpdate={() => {}}
-        setNotifStatus={() => {}}
+        getStage={
+          /* getStage */ () => {
+            return 0;
+          }
+        }
+        applyUpdate={(update: Uint8Array, from: string) => {
+          console.log("applying update:", update);
+          Y.applyUpdate(doc, update);
+
+          const version = Y.encodeStateVector(doc);
+          const content = Y.encodeStateAsUpdate(doc);
+          const snapshot = Array.from(Y.encodeSnapshotV2(Y.snapshot(doc)));
+
+          saveDocument(props.path, {
+            version: Array.from(version),
+            content: Array.from(content),
+          });
+          recordSnapshot(props.path, {
+            date: Date.now(),
+            ship: `~${from}`,
+            data: snapshot,
+          });
+          return doc;
+        }}
+        setNotifStatus={/* setNotifStatus */ () => {}}
       />
       <VersionPanel
         show={panel == "version"}

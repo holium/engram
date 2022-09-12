@@ -2,11 +2,14 @@ import { Patp } from "@urbit/http-api";
 import { Snapshot } from "yjs";
 
 /* App ---------------------------------------------------------------------- */
-export function OpenDocumentEvent(meta: DocumentMeta): Event {
+export function OpenDocumentEvent(id: DocumentId): Event {
+  console.log("opening document: ", id);
   return new CustomEvent("open-document", {
-    detail: `${meta.owner}/${meta.id}/${meta.name}`,
+    detail: `${id.id}/${id.timestamp}`,
   });
 }
+
+export const pathParser = new RegExp("(?<id>[^/]+)/(?<timestamp>[^/]+)");
 
 export function getShipPallet(ship: Patp): string {
   let sum = 0;
@@ -61,29 +64,26 @@ export interface Version {
   snapshot: Snapshot;
 }
 
-export interface Update {
-  author: Patp;
-  content: Uint8Array;
-  time: Date;
+export interface DocumentId {
+  id: string;
+  timestamp: number;
 }
 
-export interface DocumentMeta {
-  owner: Patp;
-  id: string;
+export interface DocumentSettings {
   name: string;
-  isFolder: string;
+  owner: Patp;
+  perms?: Array<Patp>;
 }
 
 export interface DocumentUpdate {
   author: Patp;
-  content: Array<number>;
+  content: string;
   time: Date;
 }
 
 export interface FolderMeta {
   id: any;
   name: string;
-  isFolder: string;
 }
 
 export interface Snap {

@@ -222,7 +222,7 @@ aside li textarea {
   overflow: hidden;
   position: absolute;
   display: flex-col;
-  width: 180px;
+  width: 280px;
   font-size: 16px;
   line-height: 1.26em;
 }
@@ -290,6 +290,7 @@ main ::selection {
 }
 
 main {
+  @apply mt-3;
   flex-grow: 1;
   padding: 0 calc(28px + calc(32px * 1.26));
   max-width: calc(var(--document-width) + 8ch);
@@ -300,9 +301,10 @@ main {
 
 main .ProseMirror {
   min-height: 100%;
-  border-radius: 16px 0 0;
+  border-radius: 16px 16px 0 0;
   background-color: var(--paper-color);
   padding: var(--h2) 4ch var(--title);
+  box-shadow: 0 0px 16px -8px var(--trim-color);
 }
 
 #document-wrapper::-webkit-scrollbar {
