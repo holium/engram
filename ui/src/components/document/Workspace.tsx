@@ -183,11 +183,8 @@ function Document(props: { path: DocumentId }) {
       const newView = new EditorView(document.querySelector("#document"), {
         state: state,
       });
-      console.log("built view");
       Y.applyUpdate(doc, content);
-      console.log("applied update");
-      setView(view);
-      console.log("set view");
+      setView(newView);
     });
   }
 

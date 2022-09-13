@@ -74,7 +74,7 @@
       [%unsub owner=@p]
       [%update =dmeta =updt]
       [%update-live =dmeta =updt]
-      [%extend =dmeta =(set updt)]
+      [%extend dmeta=dmeta updts=(set updt)]
   ==
 +$  update
   $%  [%init =dmeta =doc =stg setupt=(set updt)]

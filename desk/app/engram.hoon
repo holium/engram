@@ -38,7 +38,7 @@
   ?+    mark  (on-poke:def mark vase)
       %post
     =/  action  !<(?(action:engram) vase)
-    ?+    -.action  !!
+    ?-   -.action
     ::
     :: initialize a new document with a blank document as passed by the frontend
     ::
@@ -152,14 +152,19 @@
     ::
       %update
     `this(u (~(put ju u) dmeta.action updt.action))
-    ==
+    ::
       %extend
     ~&  action
-    =/  data  (~(get ju u) dmeta.action)
-    =/  save  ~(tap in +.+.action)
-    `this(u (~(put ju u) dmeta.action (~(gas in data) save)))
-    ==
-  ::==
+    ::=/  data  (~(get ju u) dmeta.action)
+    =/  mut  |=  a=updt:engram  [dmeta:action a]
+    =/  save  (turn ~(tap in updts.action) mut)
+    ::=/  save  ~(tap in `(set dmeta:engram updt:engram)`(~(run in updts:action) mut))
+    ::`this(u (~(gas ju u) {}))
+    ::`this(u (~(gas ju u) dmeta.action (~(gas in data) save)))
+    ::`this(u (~(gas ju u) ~(tap in (~(run in updts.action) mut))))
+    `this(u (~(gas ju u) save))
+  ==
+==
 ++  on-watch
   |=  =path
   ^-  (quip card _this)
@@ -178,7 +183,7 @@
     :_  this
     =/  stg  (need (~(get by s) meta))
     =/  docu  (need (~(get by d) meta))
-    =/  ups  (need (~(get ju u) meta))
+    =/  ups  (~(get ju u) meta)
     =/  li  /updates/(scot %ud id.meta)/(scot %da timestamp.meta)
     :~  %-  fact-init:agentio
       update+!>(`update:engram`[%init meta docu stg ups])

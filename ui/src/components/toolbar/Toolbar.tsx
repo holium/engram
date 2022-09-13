@@ -50,7 +50,7 @@ function Navbar(props: {
             ? { backgroundColor: "var(--type-glass-color)" }
             : {}
         }
-        className="icon clickable mx-2 hidden"
+        className="icon clickable mx-2"
         onClick={() => {
           props.panel == "publish"
             ? props.openPanel(null)
@@ -64,7 +64,7 @@ function Navbar(props: {
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
-          className="icon clickable mx-2 hidden"
+          className="icon clickable mx-2"
           fill="var(--type-color)"
           onClick={() => {
             props.panel == "update"
@@ -84,7 +84,7 @@ function Navbar(props: {
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
-          className="icon clickable mx-2 hidden"
+          className="icon clickable mx-2"
           fill="var(--type-color)"
           onClick={() => {
             props.panel == "update"
