@@ -113,7 +113,6 @@ function Document(props: { path: DocumentId }) {
   // Setup
   function setup() {
     if (props.path == null) return;
-
     const doc = new Y.Doc();
     doc.clientID = 0; //(window as any).ship;
     doc.gc = false;

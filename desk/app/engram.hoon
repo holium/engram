@@ -155,13 +155,9 @@
     ::
       %extend
     ~&  action
-    ::=/  data  (~(get ju u) dmeta.action)
     =/  mut  |=  a=updt:engram  [dmeta:action a]
     =/  save  (turn ~(tap in updts.action) mut)
     ::=/  save  ~(tap in `(set dmeta:engram updt:engram)`(~(run in updts:action) mut))
-    ::`this(u (~(gas ju u) {}))
-    ::`this(u (~(gas ju u) dmeta.action (~(gas in data) save)))
-    ::`this(u (~(gas ju u) ~(tap in (~(run in updts.action) mut))))
     `this(u (~(gas ju u) save))
   ==
 ==
