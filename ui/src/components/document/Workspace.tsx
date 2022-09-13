@@ -69,6 +69,7 @@ function Document(props: { path: DocumentId }) {
   // Document
   const [view, setView] = useState(null);
   const [doc, setDoc] = useState(null);
+  const [sub, setSub] = useState(null);
 
   function renderSnapshot(snapshot: Y.Snapshot) {
     if (props.path == null) return;
@@ -104,6 +105,7 @@ function Document(props: { path: DocumentId }) {
           ],
         })
       );
+      setDoc(doc);
     });
   }
   function closeSnapshot() {
@@ -130,7 +132,7 @@ function Document(props: { path: DocumentId }) {
 
         saveDocument(meta, {
           version: Array.from(version),
-          content: JSON.stringify(content),
+          content: JSON.stringify(Array.from(content)),
         });
       };
       const state = EditorState.create({
@@ -184,6 +186,7 @@ function Document(props: { path: DocumentId }) {
       });
       Y.applyUpdate(doc, content);
       setView(newView);
+      setDoc(doc);
     });
   }
 
@@ -244,7 +247,7 @@ function Document(props: { path: DocumentId }) {
           }
         }
         applyUpdate={(update: Uint8Array, from: string) => {
-          console.log("applying update:", update);
+          console.log("applying update:", update, " to doc: ", doc);
           Y.applyUpdate(doc, update);
 
           const version = Y.encodeStateVector(doc);
@@ -253,7 +256,7 @@ function Document(props: { path: DocumentId }) {
 
           saveDocument(props.path, {
             version: Array.from(version),
-            content: Array.from(content),
+            content: JSON.stringify(Array.from(content)),
           });
           recordSnapshot(props.path, {
             date: Date.now(),

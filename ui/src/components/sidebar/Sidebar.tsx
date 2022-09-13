@@ -153,7 +153,7 @@ function Sidebar() {
     let target;
     if (typeof id == "string") target = info.find((tar) => tar.id == id);
     else target = id;
-    if (target===undefined) target = info.find((tar) => tar.id.id == id);
+    if (target === undefined) target = info.find((tar) => tar.id.id == id);
     console.log(target, id);
 
     let parent;
@@ -164,13 +164,13 @@ function Sidebar() {
     if (parent === undefined) {
       parent = null;
     }
-    console.log("hey",parent);
+    console.log("hey", parent);
 
     if (parent != null) {
       const removeFrom = info.find((folder) => folder.id == parent.id);
-      console.log("Children Array: ", removeFrom)
+      console.log("Children Array: ", removeFrom);
       removeFrom.children.splice(removeFrom.children.indexOf(target.id), 1);
-      console.log("Children Array check: ", removeFrom)
+      console.log("Children Array check: ", removeFrom);
       info.splice(
         info.findIndex((item) => item.id == parent.id),
         1
@@ -219,7 +219,7 @@ function Sidebar() {
     doc.gc = false;
     const type = doc.getXmlFragment("prosemirror");
     const version = Y.encodeStateVector(doc);
-    const encoding = Y.encodeStateAsUpdateV2(doc);
+    const encoding = Y.encodeStateAsUpdate(doc);
 
     const { id, settings } = await createDocument(name, {
       version: Array.from(version),
@@ -281,15 +281,15 @@ function Sidebar() {
           event.preventDefault();
           console.log("dropped: ", event);
           console.log(event.dataTransfer.getData("id"));
-            moveToFrom(
-              event.dataTransfer.getData("id"),
-              null,
-              event.dataTransfer.getData("parent")
-            );
+          moveToFrom(
+            event.dataTransfer.getData("id"),
+            null,
+            event.dataTransfer.getData("parent")
+          );
           //event.dataTransfer.clearData("id");
           //event.dataTransfer.clearData("parent")
           //event.dataTransfer.clearData();
-          console.log("Items:", event.dataTransfer.items)
+          console.log("Items:", event.dataTransfer.items);
         }}
       >
         <div className="flex flex-col overflow-auto">

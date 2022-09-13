@@ -540,7 +540,7 @@ export function acknowledgeUpdate(dmeta: DocumentId, update: any) {
           dmeta: dmeta,
           update: {
             author: "~" + update.author,
-            content: Array.from(update.content),
+            content: JSON.stringify(Array.from(update.content)),
             time: update.timestamp.getTime(),
           },
         },
@@ -592,7 +592,7 @@ export function addRemoteDocument(path: string): Promise<DocumentMeta> {
               dmeta: docId,
               doc: {
                 version: Array.from(version),
-                content: Array.from(encoding),
+                content: JSON.stringify(Array.from(encoding)),
               },
             },
           },
@@ -689,10 +689,27 @@ export function subscribeToRemoteDocument(
     (window as any).urbit.poke({
       app: "engram",
       mark: "post",
-      json: { sub: { dmeta: id, ship: "~" + from } },
+      json: { unsub: { ship: "~" + from } },
       onSuccess: () => {
-        subs.push(from);
-        resolve(from);
+        (window as any).urbit.poke({
+          app: "engram",
+          mark: "post",
+          json: { sub: { dmeta: id, ship: "~" + from } },
+          onSuccess: () => {
+            subs.push(from);
+            resolve(from);
+          },
+          onError: (e: any) => {
+            console.warn(
+              "Error subscribing to document ",
+              id,
+              " from ship: ",
+              from,
+              e
+            );
+            reject("Error acknowleding update");
+          },
+        });
       },
       onError: (e: any) => {
         console.warn(
@@ -728,7 +745,7 @@ export function unsubscribeFromRemoteDocument(from: Patp): Promise<string> {
   });
 }
 
-export function unsubscribeFromAl() {
+export function clearSubscriptions() {
   subs.forEach((ship) => {
     unsubscribeFromRemoteDocument(ship);
   });

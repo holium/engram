@@ -46,13 +46,21 @@ function UpdatePanel(props: {
       console.log("get document updates result", res);
 
       setUpdates([
-        ...Object.values(res).map((update) => {
-          return {
-            author: update.author,
-            timestamp: new Date(update.timestamp),
-            content: new Uint8Array(JSON.parse(update.content)),
-          };
-        }),
+        ...Object.values(res)
+          .map((update) => {
+            return {
+              author: update.author,
+              timestamp: new Date(update.timestamp),
+              content: new Uint8Array(JSON.parse(update.content)),
+            };
+          })
+          .filter((update, acc) => {
+            if (update.author == (window as any).ship) {
+              acknowledgeUpdate(props.path, update);
+              return false;
+            }
+            return true;
+          }),
       ]);
     });
   }, [props.show]);
@@ -78,7 +86,8 @@ function UpdatePanel(props: {
     acknowledgeUpdate(props.path, updates[index]);
 
     // correct the local state
-    setUpdates(updates.filter((update, i) => i != index));
+    updates.splice(index, 1);
+    setUpdates([...updates]);
   }
 
   return (
