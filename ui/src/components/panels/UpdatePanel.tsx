@@ -44,6 +44,7 @@ function UpdatePanel(props: {
 
     getDocumentUpdates(props.path).then((res) => {
       console.log("get document updates result", res);
+
       setUpdates([
         ...Object.values(res).map((update) => {
           return {

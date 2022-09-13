@@ -113,7 +113,6 @@ function Document(props: { path: DocumentId }) {
   // Setup
   function setup() {
     if (props.path == null) return;
-
     const doc = new Y.Doc();
     doc.clientID = 0; //(window as any).ship;
     doc.gc = false;
@@ -183,11 +182,8 @@ function Document(props: { path: DocumentId }) {
       const newView = new EditorView(document.querySelector("#document"), {
         state: state,
       });
-      console.log("built view");
       Y.applyUpdate(doc, content);
-      console.log("applied update");
-      setView(view);
-      console.log("set view");
+      setView(newView);
     });
   }
 
