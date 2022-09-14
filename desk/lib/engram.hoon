@@ -10,6 +10,7 @@
   %-  of
   :~
     [%make (ot ~[dmeta+(ot ~[id+so timestamp+di]) doc+(ot ~[version+(ar ni) content+sa])])]
+    [%docsetup (ot ~[dmeta+(ot ~[id+so timestamp+di]) doc+(ot ~[version+(ar ni) content+sa]) stg+(ot ~[perms+(ar (se %p)) owner+(se %p) name+so])])]
     [%delete (ot ~[dmeta+(ot ~[id+so timestamp+di])])]
     [%save (ot ~[dmeta+(ot ~[id+so timestamp+di]) doc+(ot ~[version+(ar ni) content+sa])])]
     [%settings (ot ~[dmeta+(ot ~[id+so timestamp+di]) stg+(ot ~[perms+(ar (se %p)) owner+(se %p) name+so])])]

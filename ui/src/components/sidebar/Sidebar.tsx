@@ -3,6 +3,7 @@ import { SlideContext } from "../toolbar/SlideContext";
 import {
   listDocuments,
   listFolders,
+  getDocumentSettings,
   renameDocument,
   renameFolder,
   createDocument,
@@ -231,13 +232,42 @@ function Sidebar() {
     return { id, settings };
   }
 
-  function addRemoteDoc(link) {
+  function addRemoteDoc(link): Promise {
     checkUrbitWindow();
-    addRemoteDocument(link).then(({ meta, content }) => {
-      info.push(meta);
-      setInfo([...info]);
-      closeCreateDoc();
-      return meta;
+    return new Promise((resolve, reject) => {
+      addRemoteDocument(link).then((meta) => {
+        setTimeout(() => {
+          pingRemoteDoc(meta).then((res) => {
+            info.push(res);
+            setInfo([...info]);
+            closeCreateDoc();
+            return meta;
+          });
+        }, 12000);
+      });
+    });
+  }
+
+  function pingRemoteDoc(meta): Promise {
+    return new Promise((resolve, reject) => {
+      try {
+        console.log("pinging if the doc has been created yet");
+        /*
+        getDocumentSettings(meta).then((settings) => {
+          resolve({
+            id: meta,
+            name: settings.name,
+            owner: "~" + settings.owner,
+          });
+        });
+        */
+      } catch (err) {
+        setTimeout(() => {
+          pingRemoteDoc(meta).then((res) => {
+            resolve(res);
+          });
+        }, 1000);
+      }
     });
   }
 

@@ -78,6 +78,8 @@
     :: modify document settings
     ::
       %settings
+    ~&  "modifying settings"
+    ~&  action
     `this(s (~(put by s) dmeta.action stg.action))
     ::
     :: {Documentation Here}
@@ -128,6 +130,8 @@
     ::
       %sub
     =/  li  /updates/(scot %ud id.dmeta.action)/(scot %da timestamp.dmeta.action)
+    ~&  "subbing"
+    ~&  action
     :_  this
     :~  [%pass `path`[(wood 'engram') (wood (crip "{<our.bowl>}")) (wood (crip "{<owner.action>}")) ~] %agent [owner.action %engram] %watch li]
     ==
@@ -148,6 +152,8 @@
       [update+!>(`update:engram`[%update [dmeta.action updt.action]]) ~[li]]
     ==
       %docsetup
+    ~&  "setting up document"
+    ~&  action
     :_  this
     :~  [%pass /settings %agent [our.bowl %engram] %poke %post !>([%settings dmeta.action stg.action])]
         [%pass /createsnap %agent [our.bowl %engram] %poke %post !>([%createsnap dmeta.action])]
@@ -239,7 +245,7 @@
     ^-  (quip card _this)
     ~&  "Reached agent on wire"
     ~&  wire
-    ?+    wire  (on-agent:def wire sign)
+    ?+    wire  ~&  "bad wire"  (on-agent:def wire sign)
         [%engram @ @ ~]
       ?+    -.sign  (on-agent:def wire sign)
           %watch-ack
@@ -264,7 +270,14 @@
           ?-  -.update
             %init
           =/  up=updt:engram  [author=src.bowl cont=cont.doc.update time=timestamp.dmeta.update]
+
           :_  this
+          ?:  (~(has by s) dmeta.update)
+            ~&  "setting up docuent"
+            :~  [%pass /setup %agent [our.bowl %engram] %poke %post !>([%docsetup dmeta.update doc.update stg.update])]
+                [%pass /extend %agent [our.bowl %engram] %poke %post !>([%extend dmeta.update setupt.update])]
+            ==
+          ~&  "starting subscription connection"
           :~  [%pass /settings %agent [our.bowl %engram] %poke %post !>([%settings dmeta.update stg.update])]
               [%pass /update %agent [our.bowl %engram] %poke %post !>([%update dmeta.update up])]
               [%pass /extend %agent [our.bowl %engram] %poke %post !>([%extend dmeta.update setupt.update])]

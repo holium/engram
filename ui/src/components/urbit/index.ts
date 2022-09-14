@@ -157,29 +157,19 @@ export function createDocument(
         app: "engram",
         mark: "post",
         json: {
-          make: {
+          docsetup: {
             dmeta: id,
             doc: doc,
+            stg: settings,
           },
         },
         onSuccess: () => {
-          (window as any).urbit.poke({
-            app: "engram",
-            mark: "post",
-            json: { createsnap: { dmeta: id } },
-            onSuccess: () => {
-              resolve({
-                id: id,
-                settings: {
-                  name: settings.name,
-                  owner: owner ? owner : (window as any).ship,
-                  perms: settings.perms,
-                },
-              });
-            },
-            onError: (e: any) => {
-              console.error("Error initializing version history: ", meta, e);
-              reject("Error initializing version history");
+          resolve({
+            id: id,
+            settings: {
+              name: settings.name,
+              owner: settings.owner,
+              perms: settings.perms,
             },
           });
         },
@@ -573,63 +563,12 @@ export function addRemoteDocument(path: string): Promise<DocumentMeta> {
       id: parsedId.groups.id,
       timestamp: parseInt(parsedId.groups.timestamp),
     };
-    await unsubscribeFromRemoteDocument(parsed.groups.from);
     subscribeToRemoteDocument(parsed.groups.from, docId).then((res) => {
       console.log("adding remote doc, path:", path);
-
-      const ydoc = new Y.Doc();
-      const type = ydoc.getXmlFragment("prosemirror");
-      const version = Y.encodeStateVector(ydoc);
-      const encoding = Y.encodeStateAsUpdateV2(ydoc);
-
-      getDocumentSettings(docId).then((settings) => {
-        console.log("got settings of new doc");
-        (window as any).urbit.poke({
-          app: "engram",
-          mark: "post",
-          json: {
-            make: {
-              dmeta: docId,
-              doc: {
-                version: Array.from(version),
-                content: JSON.stringify(Array.from(encoding)),
-              },
-            },
-          },
-          onSuccess: () => {
-            console.log("initiating snpashots of new doc");
-            (window as any).urbit.poke({
-              app: "engram",
-              mark: "post",
-              json: { createsnap: { dmeta: docId } },
-              onSuccess: () => {
-                resolve({
-                  id: docId,
-                  settings: {
-                    name: settings.name,
-                    owner: settings.owner,
-                    whitelist: settings.whitelist,
-                  },
-                });
-              },
-              onError: (e: any) => {
-                console.error(
-                  "Error initializing version history for remote document: ",
-                  docId,
-                  e
-                );
-                reject(
-                  "Error initializing version history for remote document"
-                );
-              },
-            });
-          },
-          onError: (e: any) => {
-            console.error("Error creating remote document: ", path, e);
-            reject("Error creating remote document");
-          },
-        });
-      });
+      setTimeout(() => {
+        unsubscribeFromRemoteDocument(parsed.groups.from);
+      }, 12000);
+      resolve(docId);
     });
   });
 }
@@ -659,21 +598,6 @@ export function setWhitelist(
       },
     });
   });
-}
-
-// simply a caller function
-export async function collectUpdates() {
-  /*
-  (await listDocuments()).forEach(async (doc) => {
-    const members = await getDocumentSettings(doc);
-    members.forEach((member) => {
-      const subId = subscribeToRemoteDocument(member, doc, (event) => {
-        recordUpdate(doc, event);
-        subId.then((id) => unsubscribe(id))
-    });
-    })
-  });
-  */
 }
 
 /* Subscriptions */
