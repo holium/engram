@@ -183,6 +183,7 @@
     =/  li  /updates/(scot %ud id.meta)/(scot %da timestamp.meta)
     :~  %-  fact-init:agentio
       update+!>(`update:engram`[%init meta docu stg ups])
+      [%pass `path`[(wood 'engram') (wood (crip "{<our.bowl>}")) (wood (crip "{<src.bowl>}")) ~] %agent [owner.action %engram] %watch li]
     ==
 ==
 ++  on-leave  on-leave:def
