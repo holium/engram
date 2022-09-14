@@ -155,17 +155,21 @@ function Document(props: { path: DocumentId }) {
             const content = Y.encodeStateAsUpdate(doc);
             const snapshot = Array.from(Y.encodeSnapshotV2(Y.snapshot(doc)));
 
-            saveDocument(props.path, {
-              version: Array.from(version),
-              content: JSON.stringify(Array.from(content)),
-            });
-            recordSnapshot(props.path, {
-              date: Date.now(),
-              ship: `~${(window as any).ship}`,
-              data: snapshot,
-            });
             getDocument(props.path).then((res) => {
-              const update = Y.encodeStateAsUpdate(doc, res.version);
+              const update = Y.encodeStateAsUpdate(
+                doc,
+                new Uint8Array(Object.values(res.version))
+              );
+              saveDocument(props.path, {
+                version: Array.from(version),
+                content: JSON.stringify(Array.from(content)),
+              });
+              recordSnapshot(props.path, {
+                date: Date.now(),
+                ship: `~${(window as any).ship}`,
+                data: snapshot,
+              });
+
               sendUpdate(props.path, {
                 author: "~" + (window as any).ship,
                 content: JSON.stringify(Array.from(update)),

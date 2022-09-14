@@ -129,14 +129,14 @@
       %sub
     =/  li  /updates/(scot %ud id.dmeta.action)/(scot %da timestamp.dmeta.action)
     :_  this
-    :~  [%pass /engram %agent [owner.action %engram] %watch li]
+    :~  [%pass `path`[(wood 'engram') (wood (crip "{<our.bowl>}")) (wood (crip "{<owner.action>}")) ~] %agent [owner.action %engram] %watch li]
     ==
     ::
     :: {Documentation Here}
     ::
       %unsub
     :_  this
-    :~  [%pass /engram %agent [owner.action %engram] %leave ~]
+    :~  [%pass `path`[(wood 'engram') (wood (crip "{<our.bowl>}")) (wood (crip "{<owner.action>}")) ~] %agent [owner.action %engram] %leave ~]
     ==
     ::
     :: {Documentation Here}
@@ -183,7 +183,6 @@
     =/  li  /updates/(scot %ud id.meta)/(scot %da timestamp.meta)
     :~  %-  fact-init:agentio
       update+!>(`update:engram`[%init meta docu stg ups])
-      [%pass /engram %agent [src.bowl %engram] %watch li]
     ==
 ==
 ++  on-leave  on-leave:def
@@ -231,9 +230,10 @@
 ++  on-agent
   |=  [=wire =sign:agent:gall]
     ^-  (quip card _this)
-    ~&  "Reached agent"
+    ~&  "Reached agent on wire"
+    ~&  wire
     ?+    wire  (on-agent:def wire sign)
-        [%engram ~]
+        [%engram @ @ ~]
       ?+    -.sign  (on-agent:def wire sign)
           %watch-ack
         ?~  p.sign
@@ -243,7 +243,7 @@
           %kick
         %-  (slog '%engram: Got kick, resubscribing...' ~)
         :_  this
-        :~  [%pass /subs %agent [src.bowl %engram] %watch /updates]
+        :~  [%pass `path`[(wood 'engram') (wood (crip "{<our.bowl>}")) (wood (crip "{<src.bowl>}")) ~] %agent [src.bowl %engram] %watch /updates]
         ==
       ::
           %fact
@@ -256,7 +256,7 @@
           ~&  update
           ?-  -.update
             %init
-          =/  up=updt:engram  [author=owner.stg.update cont=cont.doc.update time=timestamp.dmeta.update]
+          =/  up=updt:engram  [author=src.bowl cont=cont.doc.update time=timestamp.dmeta.update]
           :_  this
           :~  [%pass /settings %agent [our.bowl %engram] %poke %post !>([%settings dmeta.update stg.update])]
               [%pass /update %agent [our.bowl %engram] %poke %post !>([%update dmeta.update up])]
