@@ -147,6 +147,12 @@
     :~  %-  fact:agentio
       [update+!>(`update:engram`[%update [dmeta.action updt.action]]) ~[li]]
     ==
+      %docsetup
+    :_  this
+    :~  [%pass /settings %agent [our.bowl %engram] %poke %post !>([%settings dmeta.action stg.action])]
+        [%pass /createsnap %agent [our.bowl %engram] %poke %post !>([%createsnap dmeta.action])]
+        [%pass /make %agent [our.bowl %engram] %poke %post !>([%make dmeta.action doc.action])]
+    ==
     ::
     :: {Documentation Here}
     ::
@@ -183,7 +189,7 @@
     =/  li  /updates/(scot %ud id.meta)/(scot %da timestamp.meta)
     :~  %-  fact-init:agentio
       update+!>(`update:engram`[%init meta docu stg ups])
-      [%pass `path`[(wood 'engram') (wood (crip "{<our.bowl>}")) (wood (crip "{<src.bowl>}")) ~] %agent [owner.action %engram] %watch li]
+      [%pass `(list @ta)`[(wood 'engram') (wood (crip "{<our.bowl>}")) (wood (crip "{<src.bowl>}")) ~] %agent [owner.stg %engram] %watch li]
     ==
 ==
 ++  on-leave  on-leave:def
