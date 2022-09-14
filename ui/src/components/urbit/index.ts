@@ -54,9 +54,10 @@ export function listFolders(): Promise<Array<FolderMeta>> {
 }
 
 export function getDocument(meta: DocumentId): Promise<Document> {
+  console.log("calling get document", meta);
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
-    console.log("calling get document", meta);
+
     (window as any).urbit
       .scry({
         app: "engram",
@@ -70,6 +71,7 @@ export function getDocument(meta: DocumentId): Promise<Document> {
 }
 
 export function getDocumentSettings(meta: DocumentId): Promise<Document> {
+  console.log("calling get document settings");
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit

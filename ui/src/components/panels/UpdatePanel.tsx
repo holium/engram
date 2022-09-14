@@ -24,7 +24,7 @@ function UpdatePanel(props: {
   const [updates, setUpdates] = useState([]);
 
   useEffect(() => {
-    clearSubscriptions();
+    //clearSubscriptions();
     Object.values(props.settings.whitelist).map((member) => {
       if (member != (window as any).ship) {
         subscribeToRemoteDocument(member, props.path);

@@ -11,7 +11,7 @@ function PublishPanel(props: {
 
   useEffect(() => {
     setMembers(
-      Object.values(props.settings.whitelist).map((ship) => "~" + ship)
+      ...Object.values(props.settings.whitelist).map((ship) => "~" + ship)
     );
   }, [props.path]);
 
