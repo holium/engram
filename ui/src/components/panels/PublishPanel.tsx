@@ -10,9 +10,9 @@ function PublishPanel(props: {
   const [newMember, setNewMember] = useState("");
 
   useEffect(() => {
-    setMembers(
-      ...Object.values(props.settings.whitelist).map((ship) => "~" + ship)
-    );
+    setMembers([
+      ...Object.values(props.settings.whitelist).map((ship) => "~" + ship),
+    ]);
   }, [props.path]);
 
   function addMember() {
