@@ -5,7 +5,7 @@ import {
   getDocumentSettings,
   getDocumentUpdates,
   subscribeToRemoteDocument,
-  unsubscribeFromRemoteDocument,
+  clearSubscriptions,
   acknowledgeUpdate,
   recordSnapshot,
 } from "../urbit/index";
@@ -13,6 +13,7 @@ import {
 function UpdatePanel(props: {
   show: boolean;
   path: DocumentId;
+  settings: DocumentSettings;
   getStage: () => number;
   save: () => void;
   setNotifStatus: (status: NotifStatus) => void;
@@ -21,21 +22,13 @@ function UpdatePanel(props: {
   // Staging
   const [changes, setChanges] = useState({ size: 0, mag: "b" });
   const [updates, setUpdates] = useState([]);
-  const [activeSubs, setActiveSubs] = useState([]);
 
   useEffect(() => {
-    activeSubs.forEach((sub) => {
-      unsubscribeFromRemoteDocument(sub);
-    });
-    setActiveSubs([]);
-    getDocumentSettings(props.path).then((res) => {
-      console.log("Get document settings result: ", res);
-      Object.values(res.whitelist).map((member) => {
-        if (member != (window as any).ship) {
-          subscribeToRemoteDocument(member, props.path);
-          setActiveSubs([...activeSubs, member]);
-        }
-      });
+    clearSubscriptions();
+    Object.values(props.settings.whitelist).map((member) => {
+      if (member != (window as any).ship) {
+        subscribeToRemoteDocument(member, props.path);
+      }
     });
   }, [props.path]);
 

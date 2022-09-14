@@ -1,33 +1,32 @@
 import { useState, useEffect } from "react";
 import { getDocumentSettings, setDocumentSettings } from "../urbit/index";
 
-function PublishPanel(props: { path: DocumentId; show: boolean }) {
+function PublishPanel(props: {
+  path: DocumentId;
+  show: boolean;
+  settings: DocumentSettings;
+}) {
   const [members, setMembers] = useState([]);
-  const [owner, setOwner] = useState("");
-  const [name, setName] = useState("");
   const [newMember, setNewMember] = useState("");
 
   useEffect(() => {
-    getDocumentSettings(props.path).then((res) => {
-      console.log("get settings result", res);
-      setOwner(res.owner);
-      setName(res.name);
-      setMembers(Object.values(res.whitelist).map((ship) => "~" + ship));
-    });
+    setMembers(
+      Object.values(props.settings.whitelist).map((ship) => "~" + ship)
+    );
   }, [props.path]);
 
   function addMember() {
     // poke
     console.log("Add member: ", newMember);
     if (
-      (window as any).ship == owner &&
+      (window as any).ship == props.settings.owner &&
       newMember.charCodeAt(0) == "~".charCodeAt(0)
     ) {
       const whitelist = [newMember, ...members];
       setNewMember("");
       setDocumentSettings(props.path, {
-        name: name,
-        owner: "~" + owner,
+        name: props.settings.name,
+        owner: "~" + props.settings.owner,
         perms: whitelist,
       })
         .then((res) => {
@@ -42,13 +41,13 @@ function PublishPanel(props: { path: DocumentId; show: boolean }) {
 
   function removeMember(index) {
     console.log("Remove member: ", index);
-    if ((window as any).ship == owner) {
+    if ((window as any).ship == props.settings.owner) {
       const whitelist = members;
       whitelist.splice(index, 1);
       setNewMember("");
       setDocumentSettings(props.path, {
-        name: name,
-        owner: "~" + owner,
+        name: props.settings.name,
+        owner: "~" + props.settings.owner,
         perms: whitelist,
       })
         .then((res) => {
@@ -66,7 +65,7 @@ function PublishPanel(props: { path: DocumentId; show: boolean }) {
       <div className="">
         <div className="flex gap-3 py-2">
           <div className="flex-grow">Owner:</div>
-          <div className="azimuth">~{owner}</div>
+          <div className="azimuth">~{props.settings.owner}</div>
         </div>
         <div className="flex gap-3 py-1">
           <div className="py-1 flex-shrink-0">Shareable Link:</div>
@@ -101,21 +100,22 @@ function PublishPanel(props: { path: DocumentId; show: boolean }) {
             <div className="flex gap-3 py-1 items-center">
               <div className="azimuth">{member}</div>
               <div className="flex-grow"></div>
-              {owner == (window as any).ship && "~" + owner != member && (
-                <div
-                  className="border clickable px-2 rounded-2"
-                  style={{ borderColor: "var(--type-color)" }}
-                  onClick={() => {
-                    removeMember(i);
-                  }}
-                >
-                  remove
-                </div>
-              )}
+              {props.settings.owner == (window as any).ship &&
+                "~" + props.settings.owner != member && (
+                  <div
+                    className="border clickable px-2 rounded-2"
+                    style={{ borderColor: "var(--type-color)" }}
+                    onClick={() => {
+                      removeMember(i);
+                    }}
+                  >
+                    remove
+                  </div>
+                )}
             </div>
           );
         })}
-        {owner == (window as any).ship && (
+        {props.settings.owner == (window as any).ship && (
           <div className="flex gap-3 py-1">
             <input
               type="text"

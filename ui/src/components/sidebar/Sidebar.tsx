@@ -226,7 +226,7 @@ function Sidebar() {
       version: Array.from(version),
       content: JSON.stringify(Array.from(encoding)),
     });
-    info.push({ id: id, name: settings.name, owner: settings.owner });
+    info.push({ id: id, name: settings.name, owner: (window as any).ship });
     setInfo([...info]);
     closeCreateDoc();
     return { id, settings };
