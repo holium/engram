@@ -30,7 +30,7 @@ function UpdatePanel(props: {
         subscribeToRemoteDocument(member, props.path);
       }
     });
-  }, [props.path]);
+  }, [props.settings]);
 
   useEffect(() => {
     setChanges(getMag(props.getStage()));
@@ -94,10 +94,7 @@ function UpdatePanel(props: {
       )}
       {updates.map((update: Update, i: number) => {
         return (
-          <div
-            className="flex gap-3 items-center"
-            key={update.timestamp.toString()}
-          >
+          <div className="flex gap-3 items-center" key={update.timestamp}>
             <div className="flex-grow">
               <span className="azimuth">~{update.author}</span>
             </div>

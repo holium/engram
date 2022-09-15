@@ -252,7 +252,6 @@ function Sidebar() {
     return new Promise((resolve, reject) => {
       try {
         console.log("pinging if the doc has been created yet");
-        /*
         getDocumentSettings(meta).then((settings) => {
           resolve({
             id: meta,
@@ -260,7 +259,6 @@ function Sidebar() {
             owner: "~" + settings.owner,
           });
         });
-        */
       } catch (err) {
         setTimeout(() => {
           pingRemoteDoc(meta).then((res) => {
