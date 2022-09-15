@@ -7,17 +7,8 @@ function Navbar(props: {
   panel: string;
   openPanel: (panel: any) => void;
   notifs: boolean;
+  settings: DocumentSettings;
 }) {
-  const [owner, setOwner] = useState("");
-  const [name, setName] = useState("");
-
-  useEffect(() => {
-    getDocumentSettings(props.path).then((stg) => {
-      setOwner(stg.owner);
-      setName(stg.name);
-    });
-  }, [props.path]);
-
   const { slide, setSlide } = useContext(SlideContext);
   function toggleSidebar() {
     setSlide(!slide);
@@ -35,11 +26,11 @@ function Navbar(props: {
         <path fill="none" d="M0 0h24v24H0z" />
         <path d="M3 4h18v2H3V4zm0 7h18v2H3v-2zm0 7h18v2H3v-2z" />
       </svg>
-      <div className="azimuth mx-2">~{owner}</div>
+      <div className="azimuth mx-2">~{props.settings.owner}</div>
       <div className="mx-2 cursor-default" style={{ opacity: ".8" }}>
         /
       </div>
-      <div className="flex-grow ">{name}</div>
+      <div className="flex-grow ">{props.settings.name}</div>
       {/* Sharing */}
       <svg
         xmlns="http://www.w3.org/2000/svg"

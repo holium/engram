@@ -5,7 +5,7 @@ import {
   getDocumentSettings,
   getDocumentUpdates,
   subscribeToRemoteDocument,
-  unsubscribeFromRemoteDocument,
+  clearSubscriptions,
   acknowledgeUpdate,
   recordSnapshot,
 } from "../urbit/index";
@@ -13,6 +13,7 @@ import {
 function UpdatePanel(props: {
   show: boolean;
   path: DocumentId;
+  settings: DocumentSettings;
   getStage: () => number;
   save: () => void;
   setNotifStatus: (status: NotifStatus) => void;
@@ -21,23 +22,15 @@ function UpdatePanel(props: {
   // Staging
   const [changes, setChanges] = useState({ size: 0, mag: "b" });
   const [updates, setUpdates] = useState([]);
-  const [activeSubs, setActiveSubs] = useState([]);
 
   useEffect(() => {
-    activeSubs.forEach((sub) => {
-      unsubscribeFromRemoteDocument(sub);
+    clearSubscriptions();
+    Object.values(props.settings.whitelist).map((member) => {
+      if (member != (window as any).ship) {
+        subscribeToRemoteDocument(member, props.path);
+      }
     });
-    setActiveSubs([]);
-    getDocumentSettings(props.path).then((res) => {
-      console.log("Get document settings result: ", res);
-      Object.values(res.whitelist).map((member) => {
-        if (member != (window as any).ship) {
-          subscribeToRemoteDocument(member, props.path);
-          setActiveSubs([...activeSubs, member]);
-        }
-      });
-    });
-  }, [props.path]);
+  }, [props.settings]);
 
   useEffect(() => {
     setChanges(getMag(props.getStage()));
@@ -46,13 +39,21 @@ function UpdatePanel(props: {
       console.log("get document updates result", res);
 
       setUpdates([
-        ...Object.values(res).map((update) => {
-          return {
-            author: update.author,
-            timestamp: new Date(update.timestamp),
-            content: new Uint8Array(JSON.parse(update.content)),
-          };
-        }),
+        ...Object.values(res)
+          .map((update) => {
+            return {
+              author: update.author,
+              timestamp: new Date(update.timestamp),
+              content: new Uint8Array(JSON.parse(update.content)),
+            };
+          })
+          .filter((update, acc) => {
+            if (update.author == (window as any).ship) {
+              acknowledgeUpdate(props.path, update);
+              return false;
+            }
+            return true;
+          }),
       ]);
     });
   }, [props.show]);
@@ -78,7 +79,8 @@ function UpdatePanel(props: {
     acknowledgeUpdate(props.path, updates[index]);
 
     // correct the local state
-    setUpdates(updates.filter((update, i) => i != index));
+    updates.splice(index, 1);
+    setUpdates([...updates]);
   }
 
   return (
@@ -92,10 +94,7 @@ function UpdatePanel(props: {
       )}
       {updates.map((update: Update, i: number) => {
         return (
-          <div
-            className="flex gap-3 items-center"
-            key={update.timestamp.toString()}
-          >
+          <div className="flex gap-3 items-center" key={update.timestamp}>
             <div className="flex-grow">
               <span className="azimuth">~{update.author}</span>
             </div>

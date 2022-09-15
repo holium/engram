@@ -16,7 +16,7 @@
 ::
 +$  id  @
 +$  athr  @p
-+$  dcont  (list @tD)
++$  dcont  (list @t)
 +$  updt  [author=athr cont=dcont time=@da]
 +$  ver  (list @ud)
 +$  doc  [version=ver cont=dcont]
@@ -57,6 +57,7 @@
 ::
 +$  action
   $%  [%make =dmeta =doc]
+      [%docsetup =dmeta =doc =stg]
       [%createsnap =dmeta]
       [%snap =dmeta =snap]
       [%dsnap =dmeta]

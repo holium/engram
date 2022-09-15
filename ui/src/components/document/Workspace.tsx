@@ -5,6 +5,7 @@ import { EditorView } from "prosemirror-view";
 import { keymap } from "prosemirror-keymap";
 import {
   getDocument,
+  getDocumentSettings,
   saveDocument,
   recordSnapshot,
   sendUpdate,
@@ -69,6 +70,12 @@ function Document(props: { path: DocumentId }) {
   // Document
   const [view, setView] = useState(null);
   const [doc, setDoc] = useState(null);
+  const [sub, setSub] = useState(null);
+  const [settings, setSettings] = useState({
+    name: "",
+    owner: "",
+    whitelist: [],
+  });
 
   function renderSnapshot(snapshot: Y.Snapshot) {
     if (props.path == null) return;
@@ -104,6 +111,7 @@ function Document(props: { path: DocumentId }) {
           ],
         })
       );
+      setDoc(doc);
     });
   }
   function closeSnapshot() {
@@ -116,6 +124,9 @@ function Document(props: { path: DocumentId }) {
     const doc = new Y.Doc();
     doc.clientID = 0; //(window as any).ship;
     doc.gc = false;
+    getDocumentSettings(props.path).then((stg) => {
+      setSettings(stg);
+    });
     getDocument(props.path).then((res: any) => {
       const version = new Uint8Array(
         Object.keys(res.version).map((index: any) => {
@@ -130,7 +141,7 @@ function Document(props: { path: DocumentId }) {
 
         saveDocument(meta, {
           version: Array.from(version),
-          content: JSON.stringify(content),
+          content: JSON.stringify(Array.from(content)),
         });
       };
       const state = EditorState.create({
@@ -153,17 +164,21 @@ function Document(props: { path: DocumentId }) {
             const content = Y.encodeStateAsUpdate(doc);
             const snapshot = Array.from(Y.encodeSnapshotV2(Y.snapshot(doc)));
 
-            saveDocument(props.path, {
-              version: Array.from(version),
-              content: JSON.stringify(Array.from(content)),
-            });
-            recordSnapshot(props.path, {
-              date: Date.now(),
-              ship: `~${(window as any).ship}`,
-              data: snapshot,
-            });
             getDocument(props.path).then((res) => {
-              const update = Y.encodeStateAsUpdate(doc, res.version);
+              const update = Y.encodeStateAsUpdate(
+                doc,
+                new Uint8Array(Object.values(res.version))
+              );
+              saveDocument(props.path, {
+                version: Array.from(version),
+                content: JSON.stringify(Array.from(content)),
+              });
+              recordSnapshot(props.path, {
+                date: Date.now(),
+                ship: `~${(window as any).ship}`,
+                data: snapshot,
+              });
+
               sendUpdate(props.path, {
                 author: "~" + (window as any).ship,
                 content: JSON.stringify(Array.from(update)),
@@ -184,6 +199,7 @@ function Document(props: { path: DocumentId }) {
       });
       Y.applyUpdate(doc, content);
       setView(newView);
+      setDoc(doc);
     });
   }
 
@@ -230,11 +246,17 @@ function Document(props: { path: DocumentId }) {
         openPanel={setPanel}
         panel={panel}
         notifs={notifStatus}
+        settings={settings}
       />
-      <PublishPanel show={panel == "publish"} path={props.path} />
+      <PublishPanel
+        show={panel == "publish"}
+        path={props.path}
+        settings={settings}
+      />
       <UpdatePanel
         path={props.path}
         show={panel == "update"}
+        settings={settings}
         save={() => {
           console.log(view.state);
         }}
@@ -244,7 +266,7 @@ function Document(props: { path: DocumentId }) {
           }
         }
         applyUpdate={(update: Uint8Array, from: string) => {
-          console.log("applying update:", update);
+          console.log("applying update:", update, " to doc: ", doc);
           Y.applyUpdate(doc, update);
 
           const version = Y.encodeStateVector(doc);
@@ -253,7 +275,7 @@ function Document(props: { path: DocumentId }) {
 
           saveDocument(props.path, {
             version: Array.from(version),
-            content: Array.from(content),
+            content: JSON.stringify(Array.from(content)),
           });
           recordSnapshot(props.path, {
             date: Date.now(),
@@ -267,10 +289,11 @@ function Document(props: { path: DocumentId }) {
       <VersionPanel
         show={panel == "version"}
         path={props.path}
+        settings={settings}
         renderSnapshot={renderSnapshot}
         closeSnapshot={closeSnapshot}
       />
-      <ConfigPanel show={panel == "config"} view={view} />
+      <ConfigPanel show={panel == "config"} view={view} settings={settings} />
       <div id="document-wrapper">
         <main
           id="document"

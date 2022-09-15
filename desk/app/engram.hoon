@@ -35,6 +35,8 @@
 ++  on-poke
   |=  [=mark =vase]
   ^-  (quip card _this)
+  ~&  "poking"
+  ~&  !<(?(action:engram) vase)
   ?+    mark  (on-poke:def mark vase)
       %post
     =/  action  !<(?(action:engram) vase)
@@ -78,6 +80,8 @@
     :: modify document settings
     ::
       %settings
+    ~&  "modifying settings"
+    ~&  action
     `this(s (~(put by s) dmeta.action stg.action))
     ::
     :: {Documentation Here}
@@ -128,15 +132,18 @@
     ::
       %sub
     =/  li  /updates/(scot %ud id.dmeta.action)/(scot %da timestamp.dmeta.action)
+    ~&  "subbing"
+    ~&  action
+    ~&  li
     :_  this
-    :~  [%pass /engram %agent [owner.action %engram] %watch li]
+    :~  [%pass `(list @ta)`[(wood 'engram') (wood (crip "{<our.bowl>}")) (wood (crip "{<owner.action>}")) ~] %agent [owner.action %engram] %watch li]
     ==
     ::
     :: {Documentation Here}
     ::
       %unsub
     :_  this
-    :~  [%pass /engram %agent [owner.action %engram] %leave ~]
+    :~  [%pass `(list @ta)`[(wood 'engram') (wood (crip "{<our.bowl>}")) (wood (crip "{<owner.action>}")) ~] %agent [owner.action %engram] %leave ~]
     ==
     ::
     :: {Documentation Here}
@@ -146,6 +153,14 @@
     :_  this
     :~  %-  fact:agentio
       [update+!>(`update:engram`[%update [dmeta.action updt.action]]) ~[li]]
+    ==
+      %docsetup
+    ~&  "setting up document"
+    ~&  action
+    :_  this
+    :~  [%pass /settings %agent [our.bowl %engram] %poke %post !>([%settings dmeta.action stg.action])]
+        [%pass /createsnap %agent [our.bowl %engram] %poke %post !>([%createsnap dmeta.action])]
+        [%pass /make %agent [our.bowl %engram] %poke %post !>([%make dmeta.action doc.action])]
     ==
     ::
     :: {Documentation Here}
@@ -183,7 +198,7 @@
     =/  li  /updates/(scot %ud id.meta)/(scot %da timestamp.meta)
     :~  %-  fact-init:agentio
       update+!>(`update:engram`[%init meta docu stg ups])
-      [%pass /engram %agent [src.bowl %engram] %watch li]
+      ::[%pass `(list @ta)`[(wood 'engram') (wood (crip "{<our.bowl>}")) (wood (crip "{<src.bowl>}")) ~] %agent [owner.stg %engram] %watch li]
     ==
 ==
 ++  on-leave  on-leave:def
@@ -192,7 +207,7 @@
   ~&  "peek on path:"
   ~&  path
   ^-  (unit (unit cage))
-  ?+    path  (on-peek:def path)
+  ?+    path  ~&  "poke failed"  (on-peek:def path)
       [%x %docinfo ~]
     ``noun+!>((enjs-docinfo:engram s))
   ::
@@ -231,9 +246,10 @@
 ++  on-agent
   |=  [=wire =sign:agent:gall]
     ^-  (quip card _this)
-    ~&  "Reached agent"
-    ?+    wire  (on-agent:def wire sign)
-        [%engram ~]
+    ~&  "Reached agent on wire"
+    ~&  wire
+    ?+    wire  ~&  "passing to poke"  (on-agent:def wire sign)
+        [%engram @ @ ~]
       ?+    -.sign  (on-agent:def wire sign)
           %watch-ack
         ?~  p.sign
@@ -243,7 +259,7 @@
           %kick
         %-  (slog '%engram: Got kick, resubscribing...' ~)
         :_  this
-        :~  [%pass /subs %agent [src.bowl %engram] %watch /updates]
+        :~  [%pass `(list @ta)`[(wood 'engram') (wood (crip "{<our.bowl>}")) (wood (crip "{<src.bowl>}")) ~] %agent [src.bowl %engram] %watch /updates]
         ==
       ::
           %fact
@@ -256,16 +272,26 @@
           ~&  update
           ?-  -.update
             %init
-          =/  up=updt:engram  [author=owner.stg.update cont=cont.doc.update time=timestamp.dmeta.update]
+          =/  up=updt:engram  [author=src.bowl cont=cont.doc.update time=timestamp.dmeta.update]
+          ~&  "need to create doc?"
+          ~&  (~(has by s) dmeta.update)
           :_  this
-          :~  [%pass /settings %agent [our.bowl %engram] %poke %post !>([%settings dmeta.update stg.update])]
-              [%pass /update %agent [our.bowl %engram] %poke %post !>([%update dmeta.update up])]
+          ?:  (~(has by s) dmeta.update)
+            ~&  "starting subscription connection"
+            :~  [%pass /settings %agent [our.bowl %engram] %poke %post !>([%settings dmeta.update stg.update])]
+                [%pass /update %agent [our.bowl %engram] %poke %post !>([%update dmeta.update up])]
+                [%pass /extend %agent [our.bowl %engram] %poke %post !>([%extend dmeta.update setupt.update])]
+            ==
+          ~&  "setting up docuent"
+          :~  [%pass /setup %agent [our.bowl %engram] %poke %post !>([%docsetup dmeta.update doc.update stg.update])]
               [%pass /extend %agent [our.bowl %engram] %poke %post !>([%extend dmeta.update setupt.update])]
           ==
+
             %update
           :_  this
           :~  [%pass /update %agent [our.bowl %engram] %poke %post !>([%update dmeta.update updt.update])]
           ==
+
           ==
         ==
       ==

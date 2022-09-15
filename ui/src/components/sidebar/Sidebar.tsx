@@ -3,6 +3,7 @@ import { SlideContext } from "../toolbar/SlideContext";
 import {
   listDocuments,
   listFolders,
+  getDocumentSettings,
   renameDocument,
   renameFolder,
   createDocument,
@@ -153,7 +154,7 @@ function Sidebar() {
     let target;
     if (typeof id == "string") target = info.find((tar) => tar.id == id);
     else target = id;
-    if (target===undefined) target = info.find((tar) => tar.id.id == id);
+    if (target === undefined) target = info.find((tar) => tar.id.id == id);
     console.log(target, id);
 
     let parent;
@@ -164,13 +165,13 @@ function Sidebar() {
     if (parent === undefined) {
       parent = null;
     }
-    console.log("hey",parent);
+    console.log("hey", parent);
 
     if (parent != null) {
       const removeFrom = info.find((folder) => folder.id == parent.id);
-      console.log("Children Array: ", removeFrom)
+      console.log("Children Array: ", removeFrom);
       removeFrom.children.splice(removeFrom.children.indexOf(target.id), 1);
-      console.log("Children Array check: ", removeFrom)
+      console.log("Children Array check: ", removeFrom);
       info.splice(
         info.findIndex((item) => item.id == parent.id),
         1
@@ -219,25 +220,52 @@ function Sidebar() {
     doc.gc = false;
     const type = doc.getXmlFragment("prosemirror");
     const version = Y.encodeStateVector(doc);
-    const encoding = Y.encodeStateAsUpdateV2(doc);
+    const encoding = Y.encodeStateAsUpdate(doc);
 
     const { id, settings } = await createDocument(name, {
       version: Array.from(version),
       content: JSON.stringify(Array.from(encoding)),
     });
-    info.push({ id: id, name: settings.name, owner: settings.owner });
+    info.push({ id: id, name: settings.name, owner: (window as any).ship });
     setInfo([...info]);
     closeCreateDoc();
     return { id, settings };
   }
 
-  function addRemoteDoc(link) {
+  function addRemoteDoc(link): Promise {
     checkUrbitWindow();
-    addRemoteDocument(link).then(({ meta, content }) => {
-      info.push(meta);
-      setInfo([...info]);
-      closeCreateDoc();
-      return meta;
+    return new Promise((resolve, reject) => {
+      addRemoteDocument(link).then((meta) => {
+        setTimeout(() => {
+          pingRemoteDoc(meta).then((res) => {
+            info.push(res);
+            setInfo([...info]);
+            closeCreateDoc();
+            return meta;
+          });
+        }, 12000);
+      });
+    });
+  }
+
+  function pingRemoteDoc(meta): Promise {
+    return new Promise((resolve, reject) => {
+      try {
+        console.log("pinging if the doc has been created yet");
+        getDocumentSettings(meta).then((settings) => {
+          resolve({
+            id: meta,
+            name: settings.name,
+            owner: "~" + settings.owner,
+          });
+        });
+      } catch (err) {
+        setTimeout(() => {
+          pingRemoteDoc(meta).then((res) => {
+            resolve(res);
+          });
+        }, 1000);
+      }
     });
   }
 
@@ -281,15 +309,15 @@ function Sidebar() {
           event.preventDefault();
           console.log("dropped: ", event);
           console.log(event.dataTransfer.getData("id"));
-            moveToFrom(
-              event.dataTransfer.getData("id"),
-              null,
-              event.dataTransfer.getData("parent")
-            );
+          moveToFrom(
+            event.dataTransfer.getData("id"),
+            null,
+            event.dataTransfer.getData("parent")
+          );
           //event.dataTransfer.clearData("id");
           //event.dataTransfer.clearData("parent")
           //event.dataTransfer.clearData();
-          console.log("Items:", event.dataTransfer.items)
+          console.log("Items:", event.dataTransfer.items);
         }}
       >
         <div className="flex flex-col overflow-auto">
