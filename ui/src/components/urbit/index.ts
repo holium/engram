@@ -573,11 +573,11 @@ export function addRemoteDocument(path: string): Promise<DocumentMeta> {
 
     subscribeToRemoteDocument(parsed.groups.from, docId).then((res) => {
       console.log("adding remote doc, path:", path);
-      /*
+
       setTimeout(() => {
         unsubscribeFromRemoteDocument(parsed.groups.from);
       }, 12000);
-      */
+
       resolve(docId);
     });
   });
@@ -665,7 +665,7 @@ export function unsubscribeFromRemoteDocument(from: Patp): Promise<string> {
     checkUrbitWindow(reject);
     console.log("unsubing from ship: ", from);
     subs.splice(subs.indexOf(from), 1);
-    /*
+
     (window as any).urbit.poke({
       app: "engram",
       mark: "post",
@@ -678,7 +678,6 @@ export function unsubscribeFromRemoteDocument(from: Patp): Promise<string> {
         reject("Error acknowleding update");
       },
     });
-    */
   });
 }
 
