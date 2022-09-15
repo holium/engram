@@ -68,7 +68,7 @@ export function getDocument(meta: DocumentId): Promise<Document> {
         resolve(response);
       })
       .catch((err) => {
-        console.log("failed to get document");
+        console.log("failed to get document", err);
       });
   });
 }
@@ -570,6 +570,7 @@ export function addRemoteDocument(path: string): Promise<DocumentMeta> {
       id: parsedId.groups.id,
       timestamp: parseInt(parsedId.groups.timestamp),
     };
+
     subscribeToRemoteDocument(parsed.groups.from, docId).then((res) => {
       console.log("adding remote doc, path:", path);
       /*
@@ -619,20 +620,31 @@ export function subscribeToRemoteDocument(
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
     console.log("subing to remote document: ", id, " from ship: ", from);
-    /*
+
     (window as any).urbit.poke({
       app: "engram",
       mark: "post",
       json: { unsub: { ship: "~" + from } },
       onSuccess: () => {
-      */
-    (window as any).urbit.poke({
-      app: "engram",
-      mark: "post",
-      json: { sub: { dmeta: id, ship: "~" + from } },
-      onSuccess: () => {
-        subs.push(from);
-        resolve(from);
+        (window as any).urbit.poke({
+          app: "engram",
+          mark: "post",
+          json: { sub: { dmeta: id, ship: "~" + from } },
+          onSuccess: () => {
+            subs.push(from);
+            resolve(from);
+          },
+          onError: (e: any) => {
+            console.warn(
+              "Error subscribing to document ",
+              id,
+              " from ship: ",
+              from,
+              e
+            );
+            reject("Error acknowleding update");
+          },
+        });
       },
       onError: (e: any) => {
         console.warn(
@@ -645,21 +657,6 @@ export function subscribeToRemoteDocument(
         reject("Error acknowleding update");
       },
     });
-    /*
-      },
-      onError: (e: any) => {
-        console.warn(
-          "Error subscribing to document ",
-          id,
-          " from ship: ",
-          from,
-          e
-        );
-        reject("Error acknowleding update");
-      },
-
-    });
-    */
   });
 }
 
