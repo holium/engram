@@ -663,6 +663,7 @@ export function unsubscribeFromRemoteDocument(from: Patp): Promise<string> {
     checkUrbitWindow(reject);
     console.log("unsubing from ship: ", from);
     subs.splice(subs.indexOf(from), 1);
+    /*
     (window as any).urbit.poke({
       app: "engram",
       mark: "post",
@@ -675,6 +676,7 @@ export function unsubscribeFromRemoteDocument(from: Patp): Promise<string> {
         reject("Error acknowleding update");
       },
     });
+    */
   });
 }
 
