@@ -57,7 +57,7 @@ export function getDocument(meta: DocumentId): Promise<Document> {
   console.log("calling get document", meta);
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
-
+    console.log("passed the urbit check, moving onto scry");
     (window as any).urbit
       .scry({
         app: "engram",
@@ -272,14 +272,16 @@ export function deleteDocument(id: DocumentId) {
 export function setDocumentSettings(
   id: DocumentId,
   settings: DocumentSettings
-) {
+): Promise {
   return new Promise<void>((resolve, reject) => {
     checkUrbitWindow(reject);
+    console.log("setting document settings");
     (window as any).urbit.poke({
       app: "engram",
       mark: "post",
       json: { settings: { dmeta: id, stg: settings } },
       onSuccess: () => {
+        console.log("set document settings");
         resolve();
       },
       onError: (e: any) => {

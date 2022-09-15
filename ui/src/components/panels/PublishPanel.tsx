@@ -13,7 +13,7 @@ function PublishPanel(props: {
     setMembers([
       ...Object.values(props.settings.whitelist).map((ship) => "~" + ship),
     ]);
-  }, [props.path]);
+  }, [props.settings]);
 
   function addMember() {
     // poke
