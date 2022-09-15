@@ -619,30 +619,20 @@ export function subscribeToRemoteDocument(
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
     console.log("subing to remote document: ", id, " from ship: ", from);
+    /*
     (window as any).urbit.poke({
       app: "engram",
       mark: "post",
       json: { unsub: { ship: "~" + from } },
       onSuccess: () => {
-        (window as any).urbit.poke({
-          app: "engram",
-          mark: "post",
-          json: { sub: { dmeta: id, ship: "~" + from } },
-          onSuccess: () => {
-            subs.push(from);
-            resolve(from);
-          },
-          onError: (e: any) => {
-            console.warn(
-              "Error subscribing to document ",
-              id,
-              " from ship: ",
-              from,
-              e
-            );
-            reject("Error acknowleding update");
-          },
-        });
+      */
+    (window as any).urbit.poke({
+      app: "engram",
+      mark: "post",
+      json: { sub: { dmeta: id, ship: "~" + from } },
+      onSuccess: () => {
+        subs.push(from);
+        resolve(from);
       },
       onError: (e: any) => {
         console.warn(
@@ -655,6 +645,21 @@ export function subscribeToRemoteDocument(
         reject("Error acknowleding update");
       },
     });
+    /*
+      },
+      onError: (e: any) => {
+        console.warn(
+          "Error subscribing to document ",
+          id,
+          " from ship: ",
+          from,
+          e
+        );
+        reject("Error acknowleding update");
+      },
+
+    });
+    */
   });
 }
 
