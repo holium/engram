@@ -66,6 +66,9 @@ export function getDocument(meta: DocumentId): Promise<Document> {
       .then((response: any) => {
         console.log(response);
         resolve(response);
+      })
+      .catch((err) => {
+        console.log("failed to get document");
       });
   });
 }
