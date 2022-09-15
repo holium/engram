@@ -23,9 +23,7 @@ function VersionPanel(props: {
 
   useEffect(() => {
     if (props.show) {
-      console.log("getting snapshots from path:", props.path);
       getSnapshots(props.path).then((res) => {
-        console.log("getting snapshots result:", res);
         setVersions(
           res
             .sort((a, b) => {

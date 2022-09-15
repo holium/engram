@@ -91,16 +91,12 @@ function HighlightMenu(props: any) {
       schema.marks["hyperlink"].create({ href: link })
     );
     props.view.dispatch(tr);
-    console.log(res);
   }
 
   // manage comments
   function addComment() {
     const sel = props.view.state.selection;
     const range = new NodeRange(sel.$anchor, sel.$head, 1);
-    console.log(schema.nodes["paragraph"]);
-    console.log(schema.nodes["comment"]);
-    console.log(findWrapping(range, schema.nodes["comment"]));
     const tr = props.view.state.tr.addMark(
       sel.from,
       sel.to,
@@ -109,7 +105,6 @@ function HighlightMenu(props: any) {
       })
     );
 
-    console.log(tr);
     props.view.dispatch(tr);
     props.view.focus();
   }

@@ -258,10 +258,8 @@ export class ProsemirrorBinding {
     const fragmentContent = this.type
       .toArray()
       .map((t: any) => {
-	console.log("trying to create node: ", t);
-        return createNodeIfNotExists(t, this.view.state.schema, this.mapping)
-      }
-      )
+        return createNodeIfNotExists(t, this.view.state.schema, this.mapping);
+      })
       .filter((n: any) => n !== null);
 
     let tr = this.view.state.tr

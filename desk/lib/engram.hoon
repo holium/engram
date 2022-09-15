@@ -4,8 +4,6 @@
   =,  dejs:format
   |=  jon=json
   ^-  action
-  ~&  "Parsing json:"
-  ~&  jon
   %.  jon
   %-  of
   :~

@@ -18,16 +18,11 @@ export const handleImage = new Plugin({
         } else {
           window.event.returnValue = false;
         }
-
-        console.log(files);
         Array.from(files).forEach((file) => {
           if (["image/png", "image/jpg", "image/jpeg"].includes(file.type)) {
-            console.log("dropping", file);
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = (res) => {
-              console.log(res);
-              console.log(reader.result);
               const tr = view.state.tr.insert(
                 sel.anchor,
                 schema.nodes["image"].create({ src: reader.result })
@@ -56,10 +51,8 @@ export const handleImage = new Plugin({
           dom.appendChild(img);
 
           dom.addEventListener("mouseup", (event) => {
-            console.log(event);
             const box = (event.target as any).getBoundingClientRect();
             if (box) {
-              console.log(box);
               const tr = view.state.tr.setNodeMarkup(
                 getPos(),
                 schema.nodes["image"],
@@ -90,7 +83,6 @@ export const handleImage = new Plugin({
                 Array.from(files)[0].type
               )
             ) {
-              console.log("dropping", Array.from(files)[0]);
               const reader = new FileReader();
               reader.readAsDataURL(Array.from(files)[0]);
               reader.onload = (res) => {

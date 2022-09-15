@@ -79,7 +79,6 @@ function Document(props: { path: DocumentId }) {
 
   function renderSnapshot(snapshot: Y.Snapshot) {
     if (props.path == null) return;
-    console.log(view, "should destroy view: ", view != null);
     if (view != null) view.destroy();
 
     const doc = new Y.Doc();
@@ -190,7 +189,6 @@ function Document(props: { path: DocumentId }) {
       });
       Y.applyUpdate(doc, content);
       const collection = document.getElementsByClassName("ProseMirror");
-      console.log("prosemirrors: ", collection);
       Array.from(collection).forEach((element) => {
         element.remove();
       });
@@ -204,7 +202,6 @@ function Document(props: { path: DocumentId }) {
   }
 
   useEffect(() => {
-    console.log("setting up");
     setup();
   }, [props.path]);
 
@@ -257,16 +254,7 @@ function Document(props: { path: DocumentId }) {
         path={props.path}
         show={panel == "update"}
         settings={settings}
-        save={() => {
-          console.log(view.state);
-        }}
-        getStage={
-          /* getStage */ () => {
-            return 0;
-          }
-        }
         applyUpdate={(update: Uint8Array, from: string) => {
-          console.log("applying update:", update, " to doc: ", doc);
           Y.applyUpdate(doc, update);
 
           const version = Y.encodeStateVector(doc);

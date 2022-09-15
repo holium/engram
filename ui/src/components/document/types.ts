@@ -3,7 +3,6 @@ import { Snapshot } from "yjs";
 
 /* App ---------------------------------------------------------------------- */
 export function OpenDocumentEvent(id: DocumentId): Event {
-  console.log("opening document: ", id);
   return new CustomEvent("open-document", {
     detail: `${id.id}/${id.timestamp}`,
   });

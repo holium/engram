@@ -47,7 +47,6 @@ export const comments = new Plugin({
         view: EditorView,
         inline: boolean
       ): { dom: HTMLElement; contentDOM?: HTMLElement } => {
-        console.log(mark);
         const dom = document.createElement("span");
 
         const contentDOM = document.createElement("mark");
@@ -126,7 +125,6 @@ export const comments = new Plugin({
               timestamp: Date.now(),
               content: comment.value,
             };
-            console.log(view.state.doc.textBetween(sel.from - 1, sel.to));
 
             const res = extendMark(
               view.state,
@@ -171,7 +169,6 @@ export const comments = new Plugin({
               sel.to,
               schema.marks["comment"]
             );
-            console.log(res);
             if (res == null) return;
             const tr = view.state.tr.addMark(
               res.from,

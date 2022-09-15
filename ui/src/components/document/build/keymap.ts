@@ -135,7 +135,6 @@ export function buildKeymap(
       bind("Mod-]", sinkListItem(type));
     }
     if ((type = schema.nodes["listitem"])) {
-      console.log("list itme");
       bind("Enter", splitListItem(type));
       bind("Mod-[", liftListItem(type));
       bind("Mod-]", sinkListItem(type));

@@ -35,8 +35,6 @@
 ++  on-poke
   |=  [=mark =vase]
   ^-  (quip card _this)
-  ~&  "poking"
-  ~&  !<(?(action:engram) vase)
   ?+    mark  (on-poke:def mark vase)
       %post
     =/  action  !<(?(action:engram) vase)
@@ -80,8 +78,6 @@
     :: modify document settings
     ::
       %settings
-    ~&  "modifying settings"
-    ~&  action
     `this(s (~(put by s) dmeta.action stg.action))
     ::
     :: {Documentation Here}
@@ -132,9 +128,6 @@
     ::
       %sub
     =/  li  /updates/(scot %ud id.dmeta.action)/(scot %da timestamp.dmeta.action)
-    ~&  "subbing"
-    ~&  action
-    ~&  li
     :_  this
     :~  [%pass `(list @ta)`[(wood 'engram') (wood (crip "{<our.bowl>}")) (wood (crip "{<owner.action>}")) ~] %agent [owner.action %engram] %watch li]
     ==
@@ -155,8 +148,6 @@
       [update+!>(`update:engram`[%update [dmeta.action updt.action]]) ~[li]]
     ==
       %docsetup
-    ~&  "setting up document"
-    ~&  action
     :_  this
     :~  [%pass /settings %agent [our.bowl %engram] %poke %post !>([%settings dmeta.action stg.action])]
         [%pass /createsnap %agent [our.bowl %engram] %poke %post !>([%createsnap dmeta.action])]
@@ -169,7 +160,6 @@
     `this(u (~(put ju u) dmeta.action updt.action))
     ::
       %extend
-    ~&  action
     =/  mut  |=  a=updt:engram  [dmeta:action a]
     =/  save  (turn ~(tap in updts.action) mut)
     ::=/  save  ~(tap in `(set dmeta:engram updt:engram)`(~(run in updts:action) mut))
@@ -179,10 +169,6 @@
 ++  on-watch
   |=  =path
   ^-  (quip card _this)
-  ~&  "ship:"
-  ~&  src.bowl
-  ~&  "is watching path:"
-  ~&  path
   ?+    path  (on-watch:def path)
       [%updates @ @ ~]
     =/  id=@  (slav %ud i.t.path)
@@ -204,10 +190,8 @@
 ++  on-leave  on-leave:def
 ++  on-peek
   |=  =path
-  ~&  "peek on path:"
-  ~&  path
   ^-  (unit (unit cage))
-  ?+    path  ~&  "poke failed"  (on-peek:def path)
+  ?+    path  (on-peek:def path)
       [%x %docinfo ~]
     ``noun+!>((enjs-docinfo:engram s))
   ::
@@ -246,9 +230,7 @@
 ++  on-agent
   |=  [=wire =sign:agent:gall]
     ^-  (quip card _this)
-    ~&  "Reached agent on wire"
-    ~&  wire
-    ?+    wire  ~&  "passing to poke"  (on-agent:def wire sign)
+    ?+    wire  (on-agent:def wire sign)
         [%engram @ @ ~]
       ?+    -.sign  (on-agent:def wire sign)
           %watch-ack
@@ -268,21 +250,15 @@
           `this
             %update
           =/  update  !<(update:engram q.cage.sign)
-          ~&  "Update"
-          ~&  update
           ?-  -.update
             %init
           =/  up=updt:engram  [author=src.bowl cont=cont.doc.update time=timestamp.dmeta.update]
-          ~&  "need to create doc?"
-          ~&  (~(has by s) dmeta.update)
           :_  this
           ?:  (~(has by s) dmeta.update)
-            ~&  "starting subscription connection"
             :~  [%pass /settings %agent [our.bowl %engram] %poke %post !>([%settings dmeta.update stg.update])]
                 [%pass /update %agent [our.bowl %engram] %poke %post !>([%update dmeta.update up])]
                 [%pass /extend %agent [our.bowl %engram] %poke %post !>([%extend dmeta.update setupt.update])]
             ==
-          ~&  "setting up docuent"
           :~  [%pass /setup %agent [our.bowl %engram] %poke %post !>([%docsetup dmeta.update doc.update stg.update])]
               [%pass /extend %agent [our.bowl %engram] %poke %post !>([%extend dmeta.update setupt.update])]
           ==
