@@ -14,9 +14,6 @@ function UpdatePanel(props: {
   show: boolean;
   path: DocumentId;
   settings: DocumentSettings;
-  getStage: () => number;
-  save: () => void;
-  setNotifStatus: (status: NotifStatus) => void;
   applyUpdate: (index: number, update: Uint8Array) => Uint8Array;
 }) {
   // Staging
@@ -33,8 +30,6 @@ function UpdatePanel(props: {
 
   useEffect(() => {
     getDocumentUpdates(props.path).then((res) => {
-      console.log("get document updates result", res);
-
       setUpdates([
         ...Object.values(res)
           .map((update) => {
@@ -66,8 +61,6 @@ function UpdatePanel(props: {
   }
 
   function executeUpdate(index: number) {
-    console.log("Executing update: ", updates[index]);
-
     // apply the update in workspace
     const doc = props.applyUpdate(
       updates[index].content,

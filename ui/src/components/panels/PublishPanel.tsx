@@ -17,7 +17,6 @@ function PublishPanel(props: {
 
   function addMember() {
     // poke
-    console.log("Add member: ", newMember);
     if (
       (window as any).ship == props.settings.owner &&
       newMember.charCodeAt(0) == "~".charCodeAt(0)
@@ -30,7 +29,6 @@ function PublishPanel(props: {
         perms: whitelist,
       })
         .then((res) => {
-          console.log("set whitelist result: ", res);
           setMembers([...whitelist]);
         })
         .catch(() => {
@@ -40,7 +38,6 @@ function PublishPanel(props: {
   }
 
   function removeMember(index) {
-    console.log("Remove member: ", index);
     if ((window as any).ship == props.settings.owner) {
       const whitelist = members;
       whitelist.splice(index, 1);
@@ -51,7 +48,6 @@ function PublishPanel(props: {
         perms: whitelist,
       })
         .then((res) => {
-          console.log("set whitelist result: ", res);
           setMembers([...whitelist]);
         })
         .catch(() => {

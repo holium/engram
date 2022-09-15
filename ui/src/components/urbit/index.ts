@@ -28,11 +28,10 @@ export function listDocuments(): Promise<Array<DocumentMeta>> {
     checkUrbitWindow(reject);
     (window as any).urbit.scry({ app: "engram", path: "/docinfo" }).then(
       (response: any) => {
-        console.log(response);
         resolve(response);
       },
       (err: any) => {
-        console.log("list documents error: ", err);
+        console.warn("list documents error: ", err);
       }
     );
   });
@@ -43,38 +42,33 @@ export function listFolders(): Promise<Array<FolderMeta>> {
     checkUrbitWindow(reject);
     (window as any).urbit.scry({ app: "engram", path: "/gfolders" }).then(
       (response: any) => {
-        console.log(response);
         resolve(response);
       },
       (err: any) => {
-        console.log("list folders error: ", err);
+        console.warn("list folders error: ", err);
       }
     );
   });
 }
 
 export function getDocument(meta: DocumentId): Promise<Document> {
-  console.log("calling get document", meta);
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
-    console.log("passed the urbit check, moving onto scry");
     (window as any).urbit
       .scry({
         app: "engram",
         path: `/gdoc/${meta.id}/${meta.timestamp}`,
       })
       .then((response: any) => {
-        console.log(response);
         resolve(response);
       })
       .catch((err) => {
-        console.log("failed to get document", err);
+        console.warn("failed to get document", err);
       });
   });
 }
 
 export function getDocumentSettings(meta: DocumentId): Promise<Document> {
-  console.log("calling get document settings");
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit
@@ -192,7 +186,6 @@ export function saveDocument(
   doc: { version: Array<number>; content: string }
 ) {
   return new Promise<void>((resolve, reject) => {
-    console.log("saving: ", doc);
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
       app: "engram",
@@ -278,13 +271,11 @@ export function setDocumentSettings(
 ): Promise {
   return new Promise<void>((resolve, reject) => {
     checkUrbitWindow(reject);
-    console.log("setting document settings");
     (window as any).urbit.poke({
       app: "engram",
       mark: "post",
       json: { settings: { dmeta: id, stg: settings } },
       onSuccess: () => {
-        console.log("set document settings");
         resolve();
       },
       onError: (e: any) => {
@@ -303,16 +294,13 @@ export function setDocumentSettings(
 
 export function renameDocument(id: DocumentId, newName: string): Promise<void> {
   return new Promise<void>((resolve, reject) => {
-    console.log("renaming document: ", id, " to: ", newName);
     getDocumentSettings(id).then((stg) => {
       const newStg = {
         name: newName,
         owner: "~" + stg.owner,
         perms: Object.values(stg.whitelist).map((ship) => "~" + ship),
       };
-      console.log(newStg);
       setDocumentSettings(id, newStg).then((res) => {
-        console.log("rename document result: ", res);
         resolve();
       });
     });
@@ -572,8 +560,6 @@ export function addRemoteDocument(path: string): Promise<DocumentMeta> {
     };
 
     subscribeToRemoteDocument(parsed.groups.from, docId).then((res) => {
-      console.log("adding remote doc, path:", path);
-
       setTimeout(() => {
         unsubscribeFromRemoteDocument(parsed.groups.from);
       }, 12000);
@@ -619,8 +605,6 @@ export function subscribeToRemoteDocument(
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
-    console.log("subing to remote document: ", id, " from ship: ", from);
-
     (window as any).urbit.poke({
       app: "engram",
       mark: "post",
@@ -663,7 +647,6 @@ export function subscribeToRemoteDocument(
 export function unsubscribeFromRemoteDocument(from: Patp): Promise<string> {
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
-    console.log("unsubing from ship: ", from);
     subs.splice(subs.indexOf(from), 1);
 
     (window as any).urbit.poke({

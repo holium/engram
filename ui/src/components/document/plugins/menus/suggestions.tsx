@@ -57,7 +57,6 @@ const suggestions: { [key: string]: SuggestionItem } = {
       );
     },
     command: (view, pos?) => {
-      console.log(view.state.selection);
       if (pos) {
         const $pos = view.state.doc.resolve(pos);
         const tr = view.state.tr.setSelection(new TextSelection($pos));

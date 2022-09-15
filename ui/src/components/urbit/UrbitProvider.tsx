@@ -50,11 +50,11 @@ function UrbitProvider(props: any) {
     setConnectionStatus(ConnectionStatus.Connected);
   };
   win.urbit.onRetry = () => {
-    console.log("urbit connection retrying");
+    console.warn("urbit connection retrying");
     setConnectionStatus(ConnectionStatus.Retrying);
   };
   win.urbit.onError = () => {
-    console.log("urbit connection errored");
+    console.warn("urbit connection errored");
     setConnectionStatus(ConnectionStatus.Errored);
   };
 

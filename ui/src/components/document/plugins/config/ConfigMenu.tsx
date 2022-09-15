@@ -14,7 +14,6 @@ function ConfigMenu(props: any) {
   }
 
   useEffect(() => {
-    console.log(menuRef);
     (menuRef as any).current.focus();
   }, []);
 

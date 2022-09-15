@@ -37,11 +37,8 @@ function Sidebar() {
     sendData();
     listDocuments()
       .then((docRes) => {
-        console.log("list documents result: ", docRes);
         listFolders()
           .then((folRes) => {
-            console.log("list folders result: ", folRes);
-
             setInfo([
               ...Object.values(docRes).map((doc) => {
                 return {
@@ -149,13 +146,11 @@ function Sidebar() {
   }
 
   function moveToFrom(id, to, from) {
-    console.log("move doc: ", id, " ;;; to: ", to, " ;;; from: ", from);
     // null for root
     let target;
     if (typeof id == "string") target = info.find((tar) => tar.id == id);
     else target = id;
     if (target === undefined) target = info.find((tar) => tar.id.id == id);
-    console.log(target, id);
 
     let parent;
     if (typeof from == "string") parent = info.find((tar) => tar.id == from);
@@ -165,13 +160,10 @@ function Sidebar() {
     if (parent === undefined) {
       parent = null;
     }
-    console.log("hey", parent);
 
     if (parent != null) {
       const removeFrom = info.find((folder) => folder.id == parent.id);
-      console.log("Children Array: ", removeFrom);
       removeFrom.children.splice(removeFrom.children.indexOf(target.id), 1);
-      console.log("Children Array check: ", removeFrom);
       info.splice(
         info.findIndex((item) => item.id == parent.id),
         1
@@ -251,7 +243,7 @@ function Sidebar() {
   function pingRemoteDoc(meta): Promise {
     return new Promise((resolve, reject) => {
       try {
-        console.log("pinging if the doc has been created yet");
+        console.warn("pinging...");
         getDocumentSettings(meta).then((settings) => {
           resolve({
             id: meta,
@@ -307,17 +299,11 @@ function Sidebar() {
         onDrop={(event) => {
           event.stopPropagation();
           event.preventDefault();
-          console.log("dropped: ", event);
-          console.log(event.dataTransfer.getData("id"));
           moveToFrom(
             event.dataTransfer.getData("id"),
             null,
             event.dataTransfer.getData("parent")
           );
-          //event.dataTransfer.clearData("id");
-          //event.dataTransfer.clearData("parent")
-          //event.dataTransfer.clearData();
-          console.log("Items:", event.dataTransfer.items);
         }}
       >
         <div className="flex flex-col overflow-auto">

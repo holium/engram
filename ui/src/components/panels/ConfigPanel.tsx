@@ -18,7 +18,6 @@ function ConfigPanel(props: { show: boolean; view: EditorView }) {
         }, 500);
       } else {
         const res = {};
-        console.log(configState);
         Object.keys(configState.config).forEach((term: string) => {
           res[term] = configState.config[term].value;
         });
@@ -35,9 +34,7 @@ function ConfigPanel(props: { show: boolean; view: EditorView }) {
   }
 
   function setTerm(term: string, value: any) {
-    console.log(props.view);
     props.view.state.doc.descendants((node, pos, parent, index) => {
-      console.log(node);
       if (node.type.name === "header") return true;
       if (node.type.name === "config") return true;
       if (node.type.spec.group === "configterm" && node.type.name == term) {

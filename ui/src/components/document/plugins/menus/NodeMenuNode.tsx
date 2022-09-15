@@ -6,7 +6,6 @@ function NodeMenu(props) {
   const [results, setResults] = useState(Object.keys(suggestions));
 
   useEffect(() => {
-    console.log("search changed", props.search);
     setResults(
       Object.keys(suggestions).filter((suggestion) =>
         suggestion.match(props.search)

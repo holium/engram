@@ -31,14 +31,12 @@ function SideMenu(props) {
       left: event.clientX,
       top: event.clientY,
     });
-    console.log("drag ending at pos: ", cursor);
     if (cursor && cursor.pos != pos) {
       const move = insertAtNextPossible(
         props.view,
         cursor.pos,
         props.menu.node
       );
-      console.log("drag move: ", move);
       if (move != null) {
         const prev = move.tr.mapping.map(pos);
         //const cleanup = props.view.state.tr.setSelection(new TextSelection(props.view.state.doc.resolve(prev + 1), props.view.state.doc.resolve(prev + props.menu.node.nodeSize - 1)))
@@ -46,7 +44,6 @@ function SideMenu(props) {
           prev,
           prev + props.menu.node.nodeSize
         );
-        console.log("drag cleanup: ", cleanup);
         props.view.dispatch(cleanup);
         //toggleMark(schema.marks["strong"])(props.view.state, props.view.dispatch, props.view)
         setPos(move.pos);
@@ -65,7 +62,12 @@ function SideMenu(props) {
       onMouseLeave={props.hide}
     >
       {/* Plus */}
-      <div onClick={openNodeMenu} onMouseLeave={(event) => { event.stopPropagation(); }}>
+      <div
+        onClick={openNodeMenu}
+        onMouseLeave={(event) => {
+          event.stopPropagation();
+        }}
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
@@ -89,7 +91,14 @@ function SideMenu(props) {
         ""
       )}
       {/* Drag Handle */}
-      <div draggable="true" onDrag={handleDrag} onDragEnd={handleDragEnd} onMouseLeave={(event) => { event.stopPropagation(); }}>
+      <div
+        draggable="true"
+        onDrag={handleDrag}
+        onDragEnd={handleDragEnd}
+        onMouseLeave={(event) => {
+          event.stopPropagation();
+        }}
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"

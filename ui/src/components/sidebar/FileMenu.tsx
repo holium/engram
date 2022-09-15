@@ -28,7 +28,6 @@ function FileMenu(props) {
   const menuRef = useRef(null);
 
   useEffect(() => {
-    console.log("menu ref:", menuRef);
     if (menuRef.current && menuRef.current.focus) menuRef.current.focus();
   });
 

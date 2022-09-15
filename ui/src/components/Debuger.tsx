@@ -7,7 +7,6 @@ function Debuger() {
   function scry() {
     (window as any).urbit.scry({ app: app, path: path }).then((result) => {
       setResult(JSON.stringify(result));
-      console.log(result);
     });
   }
 
