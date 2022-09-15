@@ -20,7 +20,6 @@ function UpdatePanel(props: {
   applyUpdate: (index: number, update: Uint8Array) => Uint8Array;
 }) {
   // Staging
-  const [changes, setChanges] = useState({ size: 0, mag: "b" });
   const [updates, setUpdates] = useState([]);
 
   useEffect(() => {
@@ -33,8 +32,6 @@ function UpdatePanel(props: {
   }, [props.settings]);
 
   useEffect(() => {
-    setChanges(getMag(props.getStage()));
-
     getDocumentUpdates(props.path).then((res) => {
       console.log("get document updates result", res);
 
@@ -56,7 +53,7 @@ function UpdatePanel(props: {
           }),
       ]);
     });
-  }, [props.show]);
+  }, [props.show, props.settings]);
 
   function getMag(bytes: number): { size: number; mag: string } {
     const exp = Math.log10(bytes);
