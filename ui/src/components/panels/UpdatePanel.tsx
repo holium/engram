@@ -20,11 +20,12 @@ function UpdatePanel(props: {
   const [updates, setUpdates] = useState([]);
 
   useEffect(() => {
-    clearSubscriptions();
-    Object.values(props.settings.whitelist).map((member) => {
-      if (member != (window as any).ship) {
-        subscribeToRemoteDocument(member, props.path);
-      }
+    clearSubscriptions().then(() => {
+      Object.values(props.settings.whitelist).map((member) => {
+        if (member != (window as any).ship) {
+          subscribeToRemoteDocument(member, props.path);
+        }
+      });
     });
   }, [props.settings]);
 

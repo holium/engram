@@ -12,6 +12,7 @@ function App() {
     document.addEventListener("open-document", (event) => {
       const parsed = (event as CustomEvent).detail.match(pathParser);
       console.log("parsed:", parsed);
+      (window as any).urbit.reset();
       openDoc({
         id: parsed.groups.id,
         timestamp: parseInt(parsed.groups.timestamp),

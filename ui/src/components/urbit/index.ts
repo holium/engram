@@ -605,41 +605,26 @@ export function subscribeToRemoteDocument(
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
-    (window as any).urbit.poke({
-      app: "engram",
-      mark: "post",
-      json: { unsub: { ship: "~" + from } },
-      onSuccess: () => {
-        (window as any).urbit.poke({
-          app: "engram",
-          mark: "post",
-          json: { sub: { dmeta: id, ship: "~" + from } },
-          onSuccess: () => {
-            subs.push(from);
-            resolve(from);
-          },
-          onError: (e: any) => {
-            console.warn(
-              "Error subscribing to document ",
-              id,
-              " from ship: ",
-              from,
-              e
-            );
-            reject("Error acknowleding update");
-          },
-        });
-      },
-      onError: (e: any) => {
-        console.warn(
-          "Error subscribing to document ",
-          id,
-          " from ship: ",
-          from,
-          e
-        );
-        reject("Error acknowleding update");
-      },
+    unsubscribeFromRemoteDocument.then(() => {
+      (window as any).urbit.poke({
+        app: "engram",
+        mark: "post",
+        json: { sub: { dmeta: id, ship: "~" + from } },
+        onSuccess: () => {
+          subs.push(from);
+          resolve(from);
+        },
+        onError: (e: any) => {
+          console.warn(
+            "Error subscribing to document ",
+            id,
+            " from ship: ",
+            from,
+            e
+          );
+          reject("Error subscribing to document");
+        },
+      });
     });
   });
 }
@@ -665,7 +650,9 @@ export function unsubscribeFromRemoteDocument(from: Patp): Promise<string> {
 }
 
 export function clearSubscriptions() {
-  subs.forEach((ship) => {
-    unsubscribeFromRemoteDocument(ship);
-  });
+  return Promise.all(
+    subs.map((ship) => {
+      return unsubscribeFromRemoteDocument(ship);
+    })
+  );
 }
