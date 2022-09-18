@@ -75,7 +75,10 @@ function UpdatePanel(props: {
   }
 
   return (
-    <div className="panel gap-3" style={props.show ? {} : { display: "none" }}>
+    <div
+      className="panel gap-3 scrollbar-small"
+      style={props.show ? {} : { display: "none" }}
+    >
       {updates.length == 0 ? (
         <div className="flex gap-3 items-center">
           <div className="flex-grow">No Updates</div>

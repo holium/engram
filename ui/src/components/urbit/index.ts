@@ -605,7 +605,7 @@ export function subscribeToRemoteDocument(
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
-    unsubscribeFromRemoteDocument.then(() => {
+    unsubscribeFromRemoteDocument(from).then(() => {
       (window as any).urbit.poke({
         app: "engram",
         mark: "post",

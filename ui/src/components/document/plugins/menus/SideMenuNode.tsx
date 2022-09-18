@@ -9,6 +9,7 @@ function SideMenu(props) {
 
   useEffect(() => {
     setPos(props.menu.pos);
+    setNodeMenu(null);
   }, [props.menu.pos]);
 
   function openNodeMenu(event) {
@@ -83,6 +84,7 @@ function SideMenu(props) {
           menu={nodeMenu}
           view={props.view}
           pos={props.menu.pos}
+          hideOnBlur={true}
           hide={() => {
             setNodeMenu(null);
           }}
