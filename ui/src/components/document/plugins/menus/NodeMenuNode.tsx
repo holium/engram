@@ -8,7 +8,7 @@ function NodeMenu(props) {
   const menuRef = useRef(null);
 
   useEffect(() => {
-    menuRef.current.focus();
+    if (props.hideOnBlur) menuRef.current.focus();
   }, []);
 
   useEffect(() => {

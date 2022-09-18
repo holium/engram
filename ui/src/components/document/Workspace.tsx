@@ -310,6 +310,7 @@ function Document(props: { path: DocumentId }) {
             <NodeMenu
               menu={nodeMenu}
               search={nodeMenuSearch}
+              hideOnBlur={false}
               hide={() => {
                 setNodeMenu(null);
                 setNodeMenuSearch("");

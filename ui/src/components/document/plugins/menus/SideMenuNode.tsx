@@ -84,6 +84,7 @@ function SideMenu(props) {
           menu={nodeMenu}
           view={props.view}
           pos={props.menu.pos}
+          hideOnBlur={true}
           hide={() => {
             setNodeMenu(null);
           }}
