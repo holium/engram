@@ -57,7 +57,10 @@ function PublishPanel(props: {
   }
 
   return (
-    <div className="panel" style={props.show ? {} : { display: "none" }}>
+    <div
+      className="panel scrollbar-small"
+      style={props.show ? {} : { display: "none" }}
+    >
       <div className="">
         <div className="flex gap-3 py-2">
           <div className="flex-grow">Owner:</div>

@@ -58,6 +58,7 @@ pre {
 hr {
   margin: var(--margin-before) 0;
   border-top: 1px solid var(--type-color);
+  width: 100%;
 }
 
 /* List Nodes */
@@ -151,11 +152,20 @@ mark {
 }
 
 aside {
-  @apply inline-flex rounded-2 shadow-menu relative flex-col items-stretch mb-3;
+  @apply inline mb-3;
+  position: relative;
   float: right;
-  left: calc(280px + 6ch);
+  left: 6ch;
+  width: 0;
+  overflow: visible;
+  clear: both;
+}
+
+.comment {
+  @apply rounded-2 shadow-menu flex flex-col items-stretch;
   background: var(--paper-color);
   width: 280px;
+  min-width: 280px;
 }
 
 @media (max-width: 800px) {
@@ -292,8 +302,7 @@ main ::selection {
 main {
   @apply mt-3;
   flex-grow: 1;
-  padding: 0 calc(28px + calc(32px * 1.26));
-  max-width: calc(var(--document-width) + 8ch);
+  padding: 0 calc(280px + 6ch) 0 calc(28px + calc(32px * 1.26));
   position: relative;
   margin: 0 auto;
   font-size: var(--root-frequency);
@@ -301,6 +310,7 @@ main {
 
 main .ProseMirror {
   min-height: 100%;
+  max-width: calc(var(--document-width) + 8ch);
   border-radius: 16px 16px 0 0;
   background-color: var(--paper-color);
   padding: var(--h2) 4ch var(--title);

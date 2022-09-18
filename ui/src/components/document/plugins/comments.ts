@@ -6,38 +6,23 @@ import { extendMark } from "./shortcuts";
 
 export const CommentsPluginKey = new PluginKey("comment");
 
+function formatTimestamp(timestamp: Date) {
+  return `${timestamp
+    .getHours()
+    .toString()
+    .padStart(2, 0)}:${timestamp.getMinutes().toString().padStart(2, 0)}
+    ${timestamp.getDate().toString().padStart(2, 0)}/${(
+    timestamp.getMonth() + 1
+  )
+    .toString()
+    .padStart(2, 0)}`;
+}
+
 export interface Comment {
   author: string;
   timestamp: number;
   content: string;
 }
-
-const prettifyTimestamp = (timestamp: number) => {
-  const date = new Date(timestamp);
-  const now = Date.now();
-  if (timestamp / 1000 / 60 / 60 / 24 - now / 1000 / 60 / 60 / 24 > 7) {
-    return `${
-      [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ][date.getMonth()]
-    }, ${date.getDate()}`;
-  }
-  if (timestamp / 1000 / 60 / 60 - now / 1000 / 60 / 60 > 24) {
-    return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][date.getDay()];
-  }
-  return `${date.getHours()}:${date.getMinutes()}`;
-};
 
 export const comments = new Plugin({
   props: {
@@ -54,7 +39,6 @@ export const comments = new Plugin({
         let toolbar;
 
         const viewPortal = document.createElement("aside");
-        viewPortal.className = "context-menu";
         viewPortal.addEventListener("keydown", (event) => {
           event.stopPropagation();
         });
@@ -62,17 +46,24 @@ export const comments = new Plugin({
           event.stopPropagation();
         });
 
+        const portalContent = document.createElement("div");
+        portalContent.className = "context-menu comment";
+        viewPortal.appendChild(portalContent);
+
         // get existing conversation
         const comment = JSON.parse(mark.attrs.comment);
 
         // render existing comments
         const renderComment = (data: Comment) => {
+          console.log(data);
+          viewPortal.contentEditable = false;
           const commentHeading = document.createElement("li");
           const author = document.createElement("div");
           author.className = "azimuth";
-          author.innerHTML = data.author;
-          const timestamp = document.createElement("time");
-          timestamp.innerHTML = prettifyTimestamp(data.timestamp);
+          author.innerHTML = "~" + data.author;
+          const timestamp = document.createElement("div");
+          timestamp.style.textAlign = "right";
+          timestamp.innerHTML = formatTimestamp(new Date(data.timestamp));
           timestamp.style.flexGrow = "1";
           commentHeading.appendChild(author);
           commentHeading.appendChild(timestamp);
@@ -80,8 +71,8 @@ export const comments = new Plugin({
           const commentValue = document.createElement("blockquote");
           commentValue.textContent = data.content;
           commentContent.appendChild(commentValue);
-          viewPortal.appendChild(commentHeading);
-          viewPortal.appendChild(commentContent);
+          portalContent.appendChild(commentHeading);
+          portalContent.appendChild(commentContent);
         };
 
         // new comment
@@ -91,7 +82,7 @@ export const comments = new Plugin({
           const newCommentHeading = document.createElement("li");
           const author = document.createElement("div");
           author.className = "azimuth";
-          author.innerHTML = (window as any).ship;
+          author.innerHTML = "~" + (window as any).ship;
           const timestamp = document.createElement("time");
           timestamp.innerHTML = "editing...";
           timestamp.style.flexGrow = "1";
@@ -114,14 +105,14 @@ export const comments = new Plugin({
           const comment = document.createElement("textarea");
           commentContent.appendChild(comment);
 
-          viewPortal.insertBefore(newCommentHeading, toolbar);
-          viewPortal.insertBefore(commentContent, toolbar);
+          portalContent.insertBefore(newCommentHeading, toolbar);
+          portalContent.insertBefore(commentContent, toolbar);
 
           // Send the comment
           sendButton.addEventListener("click", () => {
             const sel = view.state.selection;
             const newComment = {
-              author: "~dalsyr-diglyn",
+              author: (window as any).ship,
               timestamp: Date.now(),
               content: comment.value,
             };
@@ -150,36 +141,6 @@ export const comments = new Plugin({
         const renderToolbar = () => {
           toolbar = document.createElement("li");
           toolbar.style.justifyContent = "end";
-          const add = document.createElement("div");
-          add.className = "icon clickable";
-          add.innerHTML = `
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 448 512"
-              style="fill: 'var(--type-color)'"
-            >
-              <path d="M200 344V280H136C122.7 280 112 269.3 112 256C112 242.7 122.7 232 136 232H200V168C200 154.7 210.7 144 224 144C237.3 144 248 154.7 248 168V232H312C325.3 232 336 242.7 336 256C336 269.3 325.3 280 312 280H248V344C248 357.3 237.3 368 224 368C210.7 368 200 357.3 200 344zM0 96C0 60.65 28.65 32 64 32H384C419.3 32 448 60.65 448 96V416C448 451.3 419.3 480 384 480H64C28.65 480 0 451.3 0 416V96zM48 96V416C48 424.8 55.16 432 64 432H384C392.8 432 400 424.8 400 416V96C400 87.16 392.8 80 384 80H64C55.16 80 48 87.16 48 96z"/>
-            </svg>
-          `;
-          add.addEventListener("click", () => {
-            const sel = view.state.selection;
-            const res = extendMark(
-              view.state,
-              sel.from - 1,
-              sel.to,
-              schema.marks["comment"]
-            );
-            if (res == null) return;
-            const tr = view.state.tr.addMark(
-              res.from,
-              res.to,
-              schema.marks["comment"].create({
-                comment: "{}",
-              })
-            );
-            view.dispatch(tr);
-          });
-          toolbar.appendChild(add);
 
           const resolve = document.createElement("div");
           resolve.className = "icon clickable";
@@ -205,7 +166,7 @@ export const comments = new Plugin({
             view.dispatch(tr);
           });
           toolbar.appendChild(resolve);
-          viewPortal.appendChild(toolbar);
+          portalContent.appendChild(toolbar);
         };
 
         if (comment.author) renderComment(comment);

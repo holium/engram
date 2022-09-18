@@ -56,7 +56,10 @@ function VersionPanel(props: {
   }, [versions]);
 
   return (
-    <div className="panel" style={props.show ? {} : { display: "none" }}>
+    <div
+      className="panel scrollbar-small"
+      style={props.show ? {} : { display: "none" }}
+    >
       <div>
         {ships.map((ship) => {
           return <ShipLabel ship={ship} ships={ships} />;
