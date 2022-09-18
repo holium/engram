@@ -317,14 +317,14 @@ main .ProseMirror {
   }
 }
 
-#document-wrapper::-webkit-scrollbar {
+.scrollbar-small::-webkit-scrollbar {
   width: 8px;
 }
-#document-wrapper::-webkit-scrollbar-track {
+.scrollbar-small::-webkit-scrollbar-track {
   @apply rounded-3;
   background: var(--off-color);
 }
-#document-wrapper::-webkit-scrollbar-thumb {
+.scrollbar-small::-webkit-scrollbar-thumb {
   @apply rounded-3;
   background: var(--type-color);
 }

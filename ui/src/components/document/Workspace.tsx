@@ -282,7 +282,7 @@ function Document(props: { path: DocumentId }) {
         closeSnapshot={closeSnapshot}
       />
       <ConfigPanel show={panel == "config"} view={view} settings={settings} />
-      <div id="document-wrapper">
+      <div id="document-wrapper" className="scrollbar-small">
         <main
           id="document"
           onMouseLeave={() => {

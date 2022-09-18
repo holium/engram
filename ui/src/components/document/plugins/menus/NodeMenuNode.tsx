@@ -1,9 +1,15 @@
 import suggestions from "./suggestions";
 import { SuggestionItem } from "./suggestions";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 function NodeMenu(props) {
   const [results, setResults] = useState(Object.keys(suggestions));
+
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    menuRef.current.focus();
+  }, []);
 
   useEffect(() => {
     setResults(
@@ -22,10 +28,19 @@ function NodeMenu(props) {
 
   return (
     <menu
-      className="slashmenu context-menu select"
+      className="slashmenu context-menu select scrollbar-small"
+      tabIndex="0"
+      ref={menuRef}
       style={{
+        overflowY: "auto",
+        maxHeight: `${window.innerHeight / 2 - 64}px`,
         left: `${props.menu.left}px`,
-        top: `${props.menu.top}px`,
+        ...(props.menu.top < window.innerHeight / 2
+          ? { top: `${props.menu.top}px` }
+          : { bottom: `${window.innerHeight - props.menu.top}px` }),
+      }}
+      onBlur={() => {
+        //props.hide();
       }}
     >
       {results.map((suggestion) => {

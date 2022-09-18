@@ -9,6 +9,7 @@ function SideMenu(props) {
 
   useEffect(() => {
     setPos(props.menu.pos);
+    setNodeMenu(null);
   }, [props.menu.pos]);
 
   function openNodeMenu(event) {
