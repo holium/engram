@@ -72,7 +72,7 @@ function PublishPanel(props: {
             className="px-2 py-1 rounded-2 border overflow-auto scrollbar-none flex-1 whitespace-nowrap"
             style={{ borderColor: "var(--type-color)" }}
           >
-            {(window as any).ship}/{props.path.id}/{props.path.timestamp}
+            ~{(window as any).ship}/{props.path.id}/{props.path.timestamp}
           </div>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -81,7 +81,7 @@ function PublishPanel(props: {
             fill="var(--type-color)"
             onClick={() => {
               navigator.clipboard.writeText(
-                `${(window as any).ship}/${props.path.id}/${
+                `~${(window as any).ship}/${props.path.id}/${
                   props.path.timestamp
                 }`
               );

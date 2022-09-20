@@ -20,6 +20,7 @@ import { config } from "./plugins/config/plugin";
 import placeholders from "./plugins/placeholders";
 import shortcuts from "./plugins/shortcuts";
 import { comments } from "./plugins/comments";
+import { urbitlink } from "./plugins/urbitlink";
 //import { sync } from "./plugins/crdt/sync";
 //import { localundo } from "./plugins/crdt/undo";
 import {
@@ -158,6 +159,7 @@ function Document(props: { path: DocumentId }) {
           yUndoPlugin(),
           comments,
           handleImage,
+          urbitlink,
           save(() => {
             const version = Y.encodeStateVector(doc);
             const content = Y.encodeStateAsUpdate(doc);

@@ -6,6 +6,7 @@ import {
   FolderMeta,
   DocumentUpdate,
   Snap,
+  pathParser,
 } from "../document/types";
 
 export type Folder = Array<DocumentMeta | FolderMeta>;
@@ -549,19 +550,15 @@ export function acknowledgeUpdate(dmeta: DocumentId, update: any) {
 
 export function addRemoteDocument(path: string): Promise<DocumentMeta> {
   return new Promise(async (resolve, reject) => {
-    const urlParser = new RegExp("(?<from>[^/]+)/(?<id>.+)");
-    const parsed = path.match(urlParser);
-    const parsedId = parsed.groups.id.match(
-      new RegExp("(?<id>[^/]+)/(?<timestamp>.+)")
-    );
+    const parsed = path.match(pathParser);
     const docId = {
-      id: parsedId.groups.id,
-      timestamp: parseInt(parsedId.groups.timestamp),
+      id: parsed.groups.id,
+      timestamp: parseInt(parsed.groups.timestamp),
     };
 
-    subscribeToRemoteDocument(parsed.groups.from, docId).then((res) => {
+    subscribeToRemoteDocument(parsed.groups.ship, docId).then((res) => {
       setTimeout(() => {
-        unsubscribeFromRemoteDocument(parsed.groups.from);
+        unsubscribeFromRemoteDocument(parsed.groups.ship);
       }, 12000);
 
       resolve(docId);

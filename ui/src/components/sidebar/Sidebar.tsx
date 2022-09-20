@@ -16,10 +16,13 @@ import {
   addRemoteDocument,
 } from "../urbit/index";
 import * as Y from "yjs";
+import { OpenDocumentEvent, pathParser } from "../document/types";
 import TreeComponent from "./TreeComponent";
 import { UrbitContext } from "../urbit/UrbitProvider";
 
-function Sidebar() {
+function Sidebar(props: {
+  addDoc: { ship: string; id: string; timestamp: number };
+}) {
   const [type, setType] = useState("");
 
   const [ids, setIds] = useState([]);
@@ -31,6 +34,32 @@ function Sidebar() {
   const [newDocName, setNewDocName] = useState("");
   const { slide, setSlide } = useContext(SlideContext);
   const [createChild, setCreateChild] = useState({});
+
+  useEffect(() => {
+    if (props.addDoc == null) return;
+    if (
+      info
+        .map((item) => (item.id.id ? item.id.id : item.id))
+        .includes(props.addDoc.id)
+    ) {
+      console.log("opening the added doc");
+      document.dispatchEvent(
+        OpenDocumentEvent(null, {
+          id: props.addDoc.id,
+          timestamp: props.addDoc.timestamp,
+        })
+      );
+    } else {
+      if (props.addDoc.ship) {
+        console.log("adding added doc");
+        setNewDoc(true);
+        setNewDocName(
+          `~${props.addDoc.ship}/${props.addDoc.id}/${props.addDoc.timestamp}`
+        );
+        setType("remote");
+      }
+    }
+  }, [props.addDoc]);
 
   useEffect(() => {
     checkUrbitWindow();

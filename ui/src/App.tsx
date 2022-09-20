@@ -7,16 +7,27 @@ import { pathParser } from "./components/document/types";
 
 function App() {
   const [path, openDoc] = useState(null);
+  const [addDoc, setAddDoc] = useState(null);
 
   useEffect(() => {
     document.addEventListener("open-document", (event) => {
+      console.log(event.detail);
       const parsed = (event as CustomEvent).detail.match(pathParser);
       console.log("parsed:", parsed);
       (window as any).urbit.reset();
-      openDoc({
-        id: parsed.groups.id,
-        timestamp: parseInt(parsed.groups.timestamp),
-      });
+      if (parsed.groups.ship.length > 0) {
+        console.log("adding doc");
+        setAddDoc({
+          ship: parsed.groups.ship,
+          id: parsed.groups.id,
+          timestamp: parseInt(parsed.groups.timestamp),
+        });
+      } else {
+        openDoc({
+          id: parsed.groups.id,
+          timestamp: parseInt(parsed.groups.timestamp),
+        });
+      }
     });
   }, []);
 
@@ -24,7 +35,7 @@ function App() {
     <UrbitProvider>
       <div id="app">
         <SlideProvider>
-          <Sidebar />
+          <Sidebar addDoc={addDoc} />
           <Workspace path={path} />
         </SlideProvider>
       </div>
