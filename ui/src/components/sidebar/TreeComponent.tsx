@@ -11,6 +11,7 @@ function TreeComponent({
   handleAdd,
   handleRename,
   moveToFrom,
+  addType,
 }) {
   const [expand, setExpand] = useState(false);
 
@@ -302,6 +303,13 @@ function TreeComponent({
               outlineOffset: "0",
               minWidth: "0",
             }}
+            placeholder={
+              addType == "remote"
+                ? "~zod/..."
+                : addType == "folder"
+                ? "Folder-Path"
+                : "Document Name"
+            }
             value={newDoc}
             onChange={(event) => {
               setNewDoc(event.target.value);

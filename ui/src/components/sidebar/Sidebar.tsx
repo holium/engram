@@ -168,7 +168,11 @@ function Sidebar(props: {
       res = await addRemoteDoc(name);
     }
     moveToFrom(
-      { id: res.id, name: res.settings.name, owner: res.settings.owner },
+      {
+        id: res.id,
+        name: res.settings ? res.settings.name : res.name,
+        owner: res.settings ? res.settings.owner : null,
+      },
       id,
       null
     );
@@ -463,6 +467,7 @@ function Sidebar(props: {
                     key={childData.owner ? childData.id.id : childData.id}
                     data={childData}
                     folder={null}
+                    addType={type}
                     onDelete={handleDelete}
                     getChildren={getChildren}
                     handleAdd={handleAdd}
