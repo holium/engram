@@ -1,7 +1,7 @@
 .ProseMirror {
   background-color: var(--paper-color);
   outline-style: none;
-  white-space: pre-wrap;
+  white-space: normal;
 }
 
 main {

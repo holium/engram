@@ -2,13 +2,15 @@ import { Patp } from "@urbit/http-api";
 import { Snapshot } from "yjs";
 
 /* App ---------------------------------------------------------------------- */
-export function OpenDocumentEvent(id: DocumentId): Event {
+export function OpenDocumentEvent(from: string | null, id: DocumentId): Event {
   return new CustomEvent("open-document", {
-    detail: `${id.id}/${id.timestamp}`,
+    detail: `~${from ? from : ""}/${id.id}/${id.timestamp}`,
   });
 }
 
-export const pathParser = new RegExp("(?<id>[^/]+)/(?<timestamp>[^/]+)");
+export const pathParser = new RegExp(
+  "~(?<ship>[^/]*)/(?<id>[^/]+)/(?<timestamp>[^/]+)"
+);
 
 export function getShipPallet(ship: Patp): string {
   let sum = 0;

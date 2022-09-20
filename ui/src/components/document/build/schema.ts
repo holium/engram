@@ -344,6 +344,26 @@ const schema = new Schema({
       },
     } as MarkSpec,
 
+    // Urbit Hyperlink
+    urbitlink: {
+      inclusive: false,
+      attrs: {
+        href: { default: "" },
+        "data-type": { default: "urbit" },
+      },
+      parseDOM: [{ tag: 'abbr[data-type="urbit"]' }],
+      toDOM(node) {
+        return [
+          "abbr",
+          {
+            href: node.attrs.href,
+            "data-type": "urbit",
+          },
+          0,
+        ];
+      },
+    } as MarkSpec,
+
     // Comment Link
     comment: {
       attrs: { comment: { default: "{}" } },
@@ -352,15 +372,6 @@ const schema = new Schema({
       parseDOM: [{ tag: "mark" }],
       toDOM() {
         return ["mark", 0];
-      },
-    } as MarkSpec,
-
-    // Engram Concept Link
-    concept: {
-      attrs: { concept: { default: "" } },
-      parseDOM: [{ tag: "abbr" }],
-      toDOM(node) {
-        return ["abbr", { title: node.attrs.concept }];
       },
     } as MarkSpec,
 

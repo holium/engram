@@ -81,7 +81,7 @@ function PublishPanel(props: {
             fill="var(--type-color)"
             onClick={() => {
               navigator.clipboard.writeText(
-                `${(window as any).ship}/${props.path.id}/${
+                `~${(window as any).ship}/${props.path.id}/${
                   props.path.timestamp
                 }`
               );

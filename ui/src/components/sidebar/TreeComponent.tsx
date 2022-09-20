@@ -64,7 +64,7 @@ function TreeComponent({
   }
 
   function openDocument() {
-    document.dispatchEvent(OpenDocumentEvent(info.id));
+    document.dispatchEvent(OpenDocumentEvent(null, info.id));
   }
 
   return (
@@ -75,12 +75,12 @@ function TreeComponent({
         e.stopPropagation();
         setExpand(false);
         e.dataTransfer.clearData("id");
-        e.dataTransfer.clearData("parent")
+        e.dataTransfer.clearData("parent");
         e.dataTransfer.clearData();
         if (info.id.id) {
-        e.dataTransfer.setData("id", info.id.id);
+          e.dataTransfer.setData("id", info.id.id);
         } else {
-          e.dataTransfer.setData("id", info.id); 
+          e.dataTransfer.setData("id", info.id);
         }
         e.dataTransfer.setData("parent", folder);
       }}
@@ -91,7 +91,7 @@ function TreeComponent({
       onDrop={
         !info.children
           ? (e) => {
-            e.stopPropagation();
+              e.stopPropagation();
             }
           : (event) => {
               event.stopPropagation();

@@ -54,41 +54,55 @@ function HighlightMenu(props: any) {
       .marks()
       .find((mark) => mark.type.name == "hyperlink");
     if (hyperlink) {
-      setLink(hyperlink.attrs.href);
+      setHyperLink(hyperlink.attrs.href);
+    }
+
+    const urbitlink = props.view.state.selection.$head
+      .marks()
+      .find((mark) => mark.type.name == "urbitlink");
+    if (urbitlink) {
+      setUrbitLink(urbitlink.attrs.href);
     }
   }, [props.menu.to, props.menu.from]);
 
-  function toggleLink() {
-    toggleMark(schema.marks["hyperlink"])(
+  function toggleLink(type) {
+    toggleMark(schema.marks[type])(
       props.view.state,
       props.view.dispatch,
       props.view
     );
     props.view.focus();
   }
-  const [link, setLink] = useState("");
+  const [hyperlink, setHyperLink] = useState("");
+  const [urbitlink, setUrbitLink] = useState("");
 
-  function handleLinkChange(event) {
-    setLink(event.target.value);
+  function handleLinkChange(type, event) {
+    if (type == "hyperlink") {
+      setHyperLink(event.target.value);
+    } else {
+      setUrbitLink(event.target.value);
+    }
   }
 
-  function implementLinkChange() {
+  function implementLinkChange(type) {
     const res = extendMark(
       props.view.state,
       props.view.state.selection.from,
       props.view.state.selection.to,
-      schema.marks["hyperlink"]
+      schema.marks[type]
     );
     if (res == null) return;
     const tr = props.view.state.tr.removeMark(
       res.from,
       res.to,
-      schema.marks["hyperlink"]
+      schema.marks[type]
     );
     tr.addMark(
       res.from,
       res.to,
-      schema.marks["hyperlink"].create({ href: link })
+      schema.marks[type].create({
+        href: type == "hyperlink" ? hyperlink : urbitlink,
+      })
     );
     props.view.dispatch(tr);
   }
@@ -126,17 +140,38 @@ function HighlightMenu(props: any) {
       style={{
         left: `${props.menu.left}px`,
         top: `calc(${props.menu.top}px - ${
-          hasMark("hyperlink") ? "4em - 6px" : "2em - 2px"
+          hasMark("hyperlink") || hasMark("urbitlink")
+            ? "4em - 6px"
+            : "2em - 2px"
         })`,
       }}
     >
       {hasMark("hyperlink") ? (
         <input
           type="text"
-          value={link}
-          onChange={handleLinkChange}
+          value={hyperlink}
+          onChange={(event) => {
+            handleLinkChange("hyperlink", event);
+          }}
           className="px-3 py-2"
-          onBlur={implementLinkChange}
+          onBlur={(event) => {
+            implementLinkChange("hyperlink", event);
+          }}
+        />
+      ) : (
+        ""
+      )}
+      {hasMark("urbitlink") ? (
+        <input
+          type="text"
+          value={urbitlink}
+          onChange={(event) => {
+            handleLinkChange("urbitlink", event);
+          }}
+          className="px-3 py-2"
+          onBlur={(event) => {
+            implementLinkChange("urbitlink", event);
+          }}
         />
       ) : (
         ""
@@ -232,7 +267,9 @@ function HighlightMenu(props: any) {
           </svg>
         </li>
         <li
-          onClick={toggleLink}
+          onClick={() => {
+            toggleLink("hyperlink");
+          }}
           style={
             hasMark("hyperlink")
               ? { backgroundColor: "var(--glass-color)" }
@@ -245,33 +282,28 @@ function HighlightMenu(props: any) {
             viewBox="0 0 640 512"
             width="16"
             height="16"
-            style={{ fill: "var(--type-color)" }}
+            fill="var(--type-color)"
           >
             <path d="M0 256C0 167.6 71.63 96 160 96H264C277.3 96 288 106.7 288 120C288 133.3 277.3 144 264 144H160C98.14 144 48 194.1 48 256C48 317.9 98.14 368 160 368H264C277.3 368 288 378.7 288 392C288 405.3 277.3 416 264 416H160C71.63 416 0 344.4 0 256zM480 416H376C362.7 416 352 405.3 352 392C352 378.7 362.7 368 376 368H480C541.9 368 592 317.9 592 256C592 194.1 541.9 144 480 144H376C362.7 144 352 133.3 352 120C352 106.7 362.7 96 376 96H480C568.4 96 640 167.6 640 256C640 344.4 568.4 416 480 416zM424 232C437.3 232 448 242.7 448 256C448 269.3 437.3 280 424 280H216C202.7 280 192 269.3 192 256C192 242.7 202.7 232 216 232H424z" />
           </svg>
         </li>
-        <li>
+        <li
+          onClick={() => toggleLink("urbitlink")}
+          style={
+            hasMark("urbitlink")
+              ? { backgroundColor: "var(--glass-color)" }
+              : {}
+          }
+        >
           {/* Urbit Link */}
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 513 224"
             width="16"
             height="16"
-            style={{ fill: "var(--glass-color)" }}
+            fill="var(--type-color)"
           >
             <path d="M361.77 223.848C453.641 223.848 493.899 127.848 512.48 25.6542L449.512 11.2026C434.028 74.1704 418.545 154.686 362.803 154.686C327.706 154.686 298.803 108.235 268.867 73.1381C237.899 35.9768 203.835 0.880005 151.19 0.880005C58.2864 0.880005 19.0606 96.88 0.47998 199.074L63.4477 213.525C78.9316 150.557 94.4155 70.0413 150.157 70.0413C185.254 70.0413 214.157 116.493 244.093 151.59C275.061 188.751 309.125 223.848 361.77 223.848Z" />
-          </svg>
-        </li>
-        <li>
-          {/* Label */}
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 448 512"
-            width="16"
-            height="16"
-            style={{ fill: "var(--glass-color)" }}
-          >
-            <path d="M417.1 368c-4.437 7.688-12.5 12-20.81 12c-4.062 0-8.188-1.031-11.97-3.219L248 297.6V456c0 13.25-10.75 24-23.1 24S200 469.3 200 456V297.6l-137.2 79.22C59 378.1 54.88 380 50.81 380c-8.312 0-16.37-4.312-20.81-12c-6.625-11.47-2.687-26.16 8.781-32.78L176 256l-137.2-79.22C27.31 170.2 23.38 155.5 29.1 144C36.59 132.6 51.28 128.5 62.78 135.2L200 214.4V56C200 42.75 210.8 32 224 32S248 42.75 248 56v158.4l137.2-79.22C396.8 128.5 411.4 132.6 417.1 144c6.625 11.47 2.688 26.16-8.781 32.78L271.1 256l137.2 79.22C420.7 341.8 424.6 356.5 417.1 368z" />
           </svg>
         </li>
         <li onClick={addComment}>

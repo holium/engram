@@ -127,6 +127,12 @@ a {
   text-decoration: underline;
 }
 
+abbr {
+  cursor: pointer;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
 /* Header */
 header {
   margin-bottom: calc(var(--h1) / 2);
