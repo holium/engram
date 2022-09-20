@@ -160,6 +160,9 @@ mark {
 aside {
   @apply inline mb-3;
   position: relative;
+  font-weight: normal;
+  font-style: normal;
+  text-decoration: none;
   float: right;
   left: 6ch;
   width: 0;
@@ -197,10 +200,6 @@ aside.context-menu li:hover {
 
 aside blockquote {
   @apply pl-3;
-}
-
-aside time {
-  opacity: 0.6;
 }
 
 aside li textarea {

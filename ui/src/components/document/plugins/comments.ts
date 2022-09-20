@@ -39,6 +39,9 @@ export const comments = new Plugin({
         let toolbar;
 
         const viewPortal = document.createElement("aside");
+        viewPortal.addEventListener("click", (event) => {
+          event.stopPropagation();
+        });
         viewPortal.addEventListener("keydown", (event) => {
           event.stopPropagation();
         });
@@ -65,6 +68,7 @@ export const comments = new Plugin({
           timestamp.style.textAlign = "right";
           timestamp.innerHTML = formatTimestamp(new Date(data.timestamp));
           timestamp.style.flexGrow = "1";
+          timestamp.style.opacity = ".6";
           commentHeading.appendChild(author);
           commentHeading.appendChild(timestamp);
           const commentContent = document.createElement("li");
@@ -83,9 +87,10 @@ export const comments = new Plugin({
           const author = document.createElement("div");
           author.className = "azimuth";
           author.innerHTML = "~" + (window as any).ship;
-          const timestamp = document.createElement("time");
+          const timestamp = document.createElement("div");
           timestamp.innerHTML = "editing...";
           timestamp.style.flexGrow = "1";
+          timestamp.style.opacity = ".6";
           const sendButton = document.createElement("div");
           sendButton.className = "icon clickable";
           sendButton.innerHTML = `
