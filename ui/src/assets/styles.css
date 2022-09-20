@@ -11,7 +11,7 @@
 
 /* Atoms -------------------------------------------------------------------- */
 .azimuth {
-  @apply font-azimuth px-2 shadow-sunk inline-block hover:underline cursor-pointer rounded-2;
+  @apply font-azimuth px-2 shadow-sunk inline-block hover:underline cursor-pointer rounded-2 whitespace-nowrap overflow-hidden overflow-ellipsis;
   font-size: 16px;
   line-height: 1.26em;
   background-color: var(--glass-color);
@@ -67,6 +67,7 @@
 /* File Tree Items */
 .tree-item {
   @apply flex px-4 py-2 gap-2 items-center;
+  background-color: #ffffff00;
 }
 
 .tree-item-hidden {

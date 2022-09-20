@@ -14,6 +14,7 @@ export const urbitlink = new Plugin({
           // open docuemtn | add document
           const parsed = mark.attrs.href.match(pathParser);
           if (
+            parsed &&
             parsed.groups.ship &&
             parsed.groups.id &&
             parsed.groups.timestamp

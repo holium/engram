@@ -551,18 +551,22 @@ export function acknowledgeUpdate(dmeta: DocumentId, update: any) {
 export function addRemoteDocument(path: string): Promise<DocumentMeta> {
   return new Promise(async (resolve, reject) => {
     const parsed = path.match(pathParser);
-    const docId = {
-      id: parsed.groups.id,
-      timestamp: parseInt(parsed.groups.timestamp),
-    };
+    if (parsed) {
+      const docId = {
+        id: parsed.groups.id,
+        timestamp: parseInt(parsed.groups.timestamp),
+      };
 
-    subscribeToRemoteDocument(parsed.groups.ship, docId).then((res) => {
-      setTimeout(() => {
-        unsubscribeFromRemoteDocument(parsed.groups.ship);
-      }, 12000);
+      subscribeToRemoteDocument(parsed.groups.ship, docId).then((res) => {
+        setTimeout(() => {
+          unsubscribeFromRemoteDocument(parsed.groups.ship);
+        }, 12000);
 
-      resolve(docId);
-    });
+        resolve(docId);
+      });
+    } else {
+      reject();
+    }
   });
 }
 

@@ -321,6 +321,8 @@ main .ProseMirror {
   padding: var(--h2) 4ch var(--title);
   box-shadow: 0 0px 16px -8px var(--trim-color);
   animation: fade-in ease-out 200ms;
+  word-break: break-word;
+  margin: 0 auto;
 }
 
 @keyframes fade-in {
