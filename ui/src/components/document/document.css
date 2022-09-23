@@ -153,6 +153,7 @@ header p {
 
 /* Comments */
 mark {
+  color: var(--type-color);
   background-color: var(--type-glass-color);
   text-decoration: underline;
 }
