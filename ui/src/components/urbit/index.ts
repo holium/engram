@@ -130,21 +130,29 @@ export function createDocument(
 ): Promise<{ id: DocumentId; settings: DocumentSettings }> {
   return new Promise(async (resolve, reject) => {
     checkUrbitWindow(reject);
-    const id: DocumentId = {
-      id: Array.from(
-        new Uint8Array(
-          await crypto.subtle.digest(
-            "SHA-256",
-            new TextEncoder().encode(`~${window.ship}-${crypto.randomUUID()}`)
+    let id: DocumentId;
+    if(crypto) {
+      id = {
+        id: Array.from(
+          new Uint8Array(
+            await crypto.subtle.digest(
+              "SHA-256",
+              new TextEncoder().encode(`~${window.ship}-${crypto.randomUUID()}`)
+            )
           )
         )
-      )
         .map((a) => {
           return a.toString(16).padStart(2, "0");
         })
         .join(""),
-      timestamp: Date.now(),
-    };
+        timestamp: Date.now(),
+      };
+    } else {
+      id = {
+        id: `~${window.ship}-${name.replaceAll("-", "")}-${Date.now()}`,
+	timestamp: Date.now()
+      }
+    }
     const settings: DocumentSettings = {
       name: name,
       owner: owner ? owner : "~" + (window as any).ship,
