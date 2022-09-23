@@ -18,8 +18,6 @@ import {
   ConnectionStatus,
   NotifStatus,
 } from "../document/types";
-import { regular } from "@fortawesome/fontawesome-svg-core/import.macro";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 /**
  * urbit: Urbit -- the Urbit object; used for sending pokes and scries, holds additional urbit information
