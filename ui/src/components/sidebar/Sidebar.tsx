@@ -227,10 +227,18 @@ function Sidebar(props: {
 
   async function createFold(name) {
     checkUrbitWindow();
-    const meta = await createFolder({
-      id: `~${window.ship}-${crypto.randomUUID()}`,
-      name: name,
-    });
+    let meta;
+    if(crypto) {
+      meta = await createFolder({
+        id: `~${window.ship}-${crypto.randomUUID()}`,
+        name: name,
+      });
+    } else {
+      meta = await createFolder({
+        id: `~${window.ship}-${name.replaceAll(" ", "-")}-${Date.now()}`,
+        name: name,
+      });
+    }
     info.push({ ...meta, children: [] });
     setInfo([...info]);
     closeCreateDoc();
