@@ -28,7 +28,6 @@ export default (
             top: start.bottom - parent.top,
           });
         } else if (event.key.match(/^\w$/)) {
-          console.log("key: ", event.key);
           search = search + event.key;
           updateMenu(search);
         } else {
