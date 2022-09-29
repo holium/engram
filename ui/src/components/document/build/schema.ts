@@ -171,44 +171,6 @@ const schema = new Schema({
     } as NodeSpec,
 
     // Check List Item
-    /*
-      TODO: Create a way for check state to propogate.
-      Using a mark seems to make the most sense, thought it would have to be designed in a wonky way
-    */
-    checklistitem: {
-      attrs: { checked: { default: false } },
-      parseDOM: [{ tag: `li[data-type="checklist"]` }],
-      toDOM(node) {
-        return [
-          "li",
-          { "data-type": "checklist" },
-          [
-            "label",
-            [
-              "input",
-              {
-                type: "checkbox",
-                value: node.attrs.checked,
-              },
-            ],
-            ["span"],
-          ],
-          ["div", 0],
-        ];
-      },
-      defining: true,
-      content: "paragraph block*",
-    } as NodeSpec,
-
-    //Unordered List
-    "check-list": {
-      group: "block",
-      content: "checklistitem+",
-      parseDOM: [{ tag: `ul[data-type="checklist"]` }],
-      toDOM() {
-        return ["ul", { "data-type": "checklist" }, 0];
-      },
-    } as NodeSpec,
 
     /* Inline =============================================================== */
     // Hard Bread
@@ -231,10 +193,34 @@ const schema = new Schema({
     // Image
     image: {
       group: "block",
-      attrs: { src: { default: "" }, height: { default: "" } },
-      parseDOM: [{ tag: "img" }],
+      attrs: {
+        src: { default: "" },
+        height: { default: "" },
+        title: { default: "" },
+        alt: { default: "" },
+      },
+      parseDOM: [
+        {
+          tag: "img[src]",
+          getAttrs(dom) {
+            return {
+              src: dom.getAttribute("src"),
+              title: dom.getAttribute("title"),
+              alt: dom.getAttribute("alt"),
+            };
+          },
+        },
+      ],
       toDOM(node) {
-        return ["img", { src: node.attrs.src, height: node.attrs.height }];
+        return [
+          "img",
+          {
+            src: node.attrs.src,
+            height: node.attrs.height,
+            title: node.attrs.title,
+            alt: node.attrs.alt,
+          },
+        ];
       },
     },
 

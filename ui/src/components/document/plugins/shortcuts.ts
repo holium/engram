@@ -68,6 +68,19 @@ const codeBlockRule = new InputRule(
   }
 );
 
+const UnorderedListRule = wrappingInputRule(
+  /^\s*([-+*])\s$/,
+  schema.nodes["unordered-list"]
+);
+
+const OrderedListRule = wrappingInputRule(
+  /^(\d+)\.\s$/,
+  schema.nodes["ordered-list"],
+  (match) => ({ order: +match[1] }),
+  (match, node) => node.childCount + node.attrs.order == +match[1]
+);
+
+/*
 const OrderedListRule = new InputRule(
   new RegExp("^1.\\s$"),
   (state, match, start, end) => {
@@ -95,23 +108,7 @@ const UnorderedListRule = new InputRule(
     );
   }
 );
-
-const CheckListRule = new InputRule(
-  /^(\[\]|\[\s\])\s$/,
-  (state, match, start, end) => {
-    return state.tr.replaceWith(
-      start - 1,
-      end,
-      schema.nodes["check-list"].create(
-        {},
-        schema.nodes["checklistitem"].create(
-          {},
-          schema.nodes["paragraph"].create()
-        )
-      )
-    );
-  }
-);
+*/
 
 const boldRule = markInputRule(
   /(?:^|\s)((?:\*\*)(?<content>(?:[^*]+))(?:\*\*))$/,
@@ -146,11 +143,16 @@ export default (schema: Schema) => {
   if (typeof schema.nodes["aside"] != undefined) rules.push(asideRule);
   if (typeof schema.nodes["horizontal-rule"] != undefined)
     rules.push(horizontalRuleRule);
-  if (typeof schema.nodes["ordered-list"] != undefined)
+  if (typeof schema.nodes["ordered-list"] != undefined) {
+    console.log("adding the ordered");
     rules.push(OrderedListRule);
-  if (typeof schema.nodes["unordered-list"] != undefined)
+  }
+  if (typeof schema.nodes["unordered-list"] != undefined) {
+    console.log("adding the unordered");
     rules.push(UnorderedListRule);
-  if (typeof schema.nodes["check-list"] != undefined) rules.push(CheckListRule);
+  }
+
+  //if (typeof schema.nodes["check-list"] != undefined) rules.push(CheckListRule);
   if (typeof schema.marks["strong"] != undefined) rules.push(boldRule);
   if (typeof schema.marks["italic"] != undefined) rules.push(italicRule);
   if (typeof schema.marks["strike"] != undefined) rules.push(strikeRule);

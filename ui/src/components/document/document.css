@@ -1,4 +1,8 @@
 /* Styles for strictly within the document */
+main ::selection {
+  background-color: var(--type-color);
+  color: var(--paper-color);
+}
 
 /* Element Styles */
 p,
@@ -6,7 +10,8 @@ h1,
 h2,
 h3,
 ul,
-ol {
+ol,
+pre {
   margin-top: var(--margin-before);
   margin-bottom: var(--margin-after);
 }
@@ -49,10 +54,9 @@ blockquote {
 }
 
 pre {
-  @apply px-4 py-5 rounded-1;
+  @apply px-3 py-4 rounded-2;
   font-family: JetBrains Mono, monospace;
   background-color: var(--type-glass-color);
-  margin: 0;
 }
 
 hr {
@@ -92,6 +96,10 @@ li[data-type="checklist"] label {
 /* Figures */
 img {
   resize: horizontal;
+}
+
+img::selection {
+  background-color: #00000000;
 }
 
 figcaption {
@@ -288,10 +296,6 @@ li p:first-child {
 }
 
 /* UX */
-main ::selection {
-  background-color: var(--type-color);
-  color: var(--paper-color);
-}
 
 /* Layout Styles */
 #document-wrapper {
