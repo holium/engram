@@ -9,7 +9,7 @@ import {
   pathParser,
 } from "../document/types";
 
-export type Folder = Array<DocumentMeta | FolderMeta>;
+export type Folder = Array<DocumentId | FolderMeta>;
 
 export function checkUrbitWindow(reject?: (message?: any) => void) {
   if (
@@ -24,7 +24,7 @@ export function checkUrbitWindow(reject?: (message?: any) => void) {
 
 /* Scries ------------------------------------------------------------------- */
 
-export function listDocuments(): Promise<Array<DocumentMeta>> {
+export function listDocuments(): Promise<Array<DocumentId>> {
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit.scry({ app: "engram", path: "/docinfo" }).then(
@@ -69,7 +69,9 @@ export function getDocument(meta: DocumentId): Promise<Document> {
   });
 }
 
-export function getDocumentSettings(meta: DocumentId): Promise<Document> {
+export function getDocumentSettings(
+  meta: DocumentId
+): Promise<DocumentSettings> {
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit
@@ -78,12 +80,19 @@ export function getDocumentSettings(meta: DocumentId): Promise<Document> {
         path: `/gsetting/${meta.id}/${meta.timestamp}`,
       })
       .then((response: any) => {
-        resolve(response);
+        console.log(response);
+        resolve({
+          name: response.name,
+          owner: response.owner,
+          perms: response.whitelist,
+        });
       });
   });
 }
 
-export function getDocumentUpdates(meta: DocumentId): Promise {
+export function getDocumentUpdates(
+  meta: DocumentId
+): Promise<Array<DocumentUpdate>> {
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit
@@ -92,12 +101,28 @@ export function getDocumentUpdates(meta: DocumentId): Promise {
         path: `/gupdates/${meta.id}/${meta.timestamp}`,
       })
       .then((response: any) => {
-        resolve(response);
+        resolve(
+          Object.values(response)
+            .map((update: any) => {
+              return {
+                author: update.author as Patp,
+                time: new Date(update.timestamp),
+                content: new Uint8Array(JSON.parse(update.content)),
+              };
+            })
+            .filter((update, acc) => {
+              if (update.author == (window as any).ship) {
+                acknowledgeUpdate(meta, update);
+                return false;
+              }
+              return true;
+            })
+        );
       });
   });
 }
 
-export function getSnapshots(meta: DocumentId) {
+export function getSnapshots(meta: DocumentId): Promise<Array<Snap>> {
   return new Promise((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit
@@ -109,7 +134,7 @@ export function getSnapshots(meta: DocumentId) {
         resolve(
           Object.values(response).map((snap: any) => {
             return {
-              timestamp: new Date(snap.date),
+              time: new Date(snap.date),
               ship: `~${snap.ship}`,
               snapshot: Y.decodeSnapshotV2(
                 Uint8Array.from(Object.values(snap.data))
@@ -131,27 +156,32 @@ export function createDocument(
   return new Promise(async (resolve, reject) => {
     checkUrbitWindow(reject);
     let id: DocumentId;
-    if(crypto) {
+    if (crypto) {
       id = {
         id: Array.from(
           new Uint8Array(
             await crypto.subtle.digest(
               "SHA-256",
-              new TextEncoder().encode(`~${window.ship}-${crypto.randomUUID()}`)
+              new TextEncoder().encode(
+                `~${(window as any).ship}-${crypto.randomUUID()}`
+              )
             )
           )
         )
-        .map((a) => {
-          return a.toString(16).padStart(2, "0");
-        })
-        .join(""),
+          .map((a) => {
+            return a.toString(16).padStart(2, "0");
+          })
+          .join(""),
         timestamp: Date.now(),
       };
     } else {
       id = {
-        id: `~${window.ship}-${name.replaceAll("-", "")}-${Date.now()}`,
-	timestamp: Date.now()
-      }
+        id: `~${(window as any).ship}-${(name as any).replaceAll(
+          "-",
+          ""
+        )}-${Date.now()}`,
+        timestamp: Date.now(),
+      };
     }
     const settings: DocumentSettings = {
       name: name,
@@ -182,7 +212,7 @@ export function createDocument(
           });
         },
         onError: (e: any) => {
-          console.error("Error creating document: ", meta, e);
+          console.error("Error creating document: ", id, e);
           reject("Error creating document");
         },
       });
@@ -277,7 +307,7 @@ export function deleteDocument(id: DocumentId) {
 export function setDocumentSettings(
   id: DocumentId,
   settings: DocumentSettings
-): Promise {
+): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
@@ -290,7 +320,7 @@ export function setDocumentSettings(
       onError: (e: any) => {
         console.error(
           "Error setting settings of doc: ",
-          doc,
+          id,
           " to: ",
           settings,
           e
@@ -307,7 +337,7 @@ export function renameDocument(id: DocumentId, newName: string): Promise<void> {
       const newStg = {
         name: newName,
         owner: "~" + stg.owner,
-        perms: Object.values(stg.whitelist).map((ship) => "~" + ship),
+        perms: Object.values(stg.perms).map((ship) => "~" + ship),
       };
       setDocumentSettings(id, newStg).then((res) => {
         resolve();
@@ -321,7 +351,7 @@ export function createFolder(folder: FolderMeta): Promise<FolderMeta> {
     checkUrbitWindow(reject);
     const fmeta = {
       id: folder.id,
-      name: folder.name.replaceAll(" ", "-"),
+      name: (folder.name as any).replaceAll(" ", "-"),
     };
     (window as any).urbit.poke({
       app: "engram",
@@ -361,7 +391,7 @@ export function renameFolder(
   return new Promise<void>((resolve, reject) => {
     const fmeta = {
       id: folder.id,
-      name: newName.replaceAll(" ", "-"),
+      name: (newName as any).replaceAll(" ", "-"),
     };
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
@@ -374,9 +404,9 @@ export function renameFolder(
       onError: (e: any) => {
         console.error(
           "Error setting settings of doc: ",
-          doc,
+          folder,
           " to: ",
-          settings,
+          fmeta,
           e
         );
         reject("Error setting settings");
@@ -440,7 +470,7 @@ export function removeFromFolder(
 }
 
 export function recordSnapshot(
-  meta: DocumentMeta,
+  meta: DocumentId,
   snap: { date: number; ship: Patp; data: Array<number> }
 ) {
   return new Promise<void>((resolve, reject) => {
@@ -505,7 +535,16 @@ export function sendUpdate(doc: DocumentId, update: DocumentUpdate) {
     (window as any).urbit.poke({
       app: "engram",
       mark: "post",
-      json: { "update-live": { dmeta: doc, update: update } },
+      json: {
+        "update-live": {
+          dmeta: doc,
+          update: {
+            author: update.author,
+            content: JSON.stringify(Array.from(update.content)),
+            time: update.time.getTime(),
+          },
+        },
+      },
       onSuccess: () => {
         resolve();
       },
@@ -547,7 +586,7 @@ export function acknowledgeUpdate(dmeta: DocumentId, update: any) {
           "Error acknowleding update ",
           update,
           " for document: ",
-          doc,
+          dmeta,
           e
         );
         reject("Error acknowleding update");
@@ -556,7 +595,7 @@ export function acknowledgeUpdate(dmeta: DocumentId, update: any) {
   });
 }
 
-export function addRemoteDocument(path: string): Promise<DocumentMeta> {
+export function addRemoteDocument(path: string): Promise<DocumentId> {
   return new Promise(async (resolve, reject) => {
     const parsed = path.match(pathParser);
     if (parsed) {
@@ -594,7 +633,7 @@ export function setWhitelist(
       onError: (e: any) => {
         console.error(
           "Error setting whitelist ",
-          update,
+          whitelist,
           " for document: ",
           id,
           e
@@ -638,8 +677,8 @@ export function subscribeToRemoteDocument(
   });
 }
 
-export function unsubscribeFromRemoteDocument(from: Patp): Promise<string> {
-  return new Promise((resolve, reject) => {
+export function unsubscribeFromRemoteDocument(from: Patp): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
     checkUrbitWindow(reject);
     subs.splice(subs.indexOf(from), 1);
 

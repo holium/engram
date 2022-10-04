@@ -2,13 +2,13 @@ import { useState, useEffect } from "react";
 import { getSnapshots } from "../urbit/index";
 import { Patp } from "@urbit/http-api";
 import * as Y from "yjs";
-import { Version } from "../document/types";
+import { Version, DocumentId } from "../document/types";
 import ShipLabel from "./ShipLabel";
 import VersionLabel from "./VersionLabel";
 
 function VersionPanel(props: {
   show: boolean;
-  path: string;
+  id: DocumentId;
   renderSnapshot: (snapshot: Y.Snapshot) => void;
   closeSnapshot: () => void;
 }) {
@@ -23,17 +23,16 @@ function VersionPanel(props: {
 
   useEffect(() => {
     if (props.show) {
-      getSnapshots(props.path).then((res) => {
+      getSnapshots(props.id).then((res) => {
         setVersions(
           res
             .sort((a, b) => {
-              return a.timestamp.getTime() < b.timestamp.getTime() ? 1 : -1;
+              return a.time.getTime() < b.time.getTime() ? 1 : -1;
             })
             .filter((snap, i, snaps) => {
               if (i === 0) return true;
               return (
-                snaps[i - 1].timestamp.getTime() - snap.timestamp.getTime() >
-                1000 * 60
+                snaps[i - 1].time.getTime() - snap.time.getTime() > 1000 * 60
               );
             })
         );
@@ -44,7 +43,7 @@ function VersionPanel(props: {
         setViewing(null);
       }
     }
-  }, [props.path, props.show]);
+  }, [props.id, props.show]);
 
   useEffect(() => {
     const addys = new Set();

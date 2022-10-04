@@ -1,8 +1,9 @@
 import { useEffect, useState, useContext } from "react";
 
+import { DocumentId } from "./types";
+
 import { EditorState, Plugin } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
-import { keymap } from "prosemirror-keymap";
 import {
   getDocument,
   getDocumentSettings,
@@ -12,26 +13,20 @@ import {
 } from "../urbit/index";
 // Build
 import * as Y from "yjs";
-import schema from "./build/schema";
-import { baseKeymap, buildKeymap } from "./build/keymap";
-import { config } from "./plugins/config/plugin";
+import schema from "./prosemirror/schema";
+import keymap from "./prosemirror/keymap";
+import config from "./prosemirror/config/plugin";
 
 //Plugins
-import placeholders from "./plugins/placeholders";
-import shortcuts from "./plugins/shortcuts";
-import { comments } from "./plugins/comments";
-import { urbitlink } from "./plugins/urbitlink";
-//import { sync } from "./plugins/crdt/sync";
-//import { localundo } from "./plugins/crdt/undo";
-import {
-  ySyncPlugin,
-  yUndoPlugin,
-  undo,
-  redo,
-  yDocToProsemirror,
-} from "y-prosemirror";
-import { handleImage } from "./plugins/handleImage";
-import { save, SavePluginKey } from "./plugins/save";
+import placeholders from "./prosemirror/placeholders";
+import shortcuts from "./prosemirror/shortcuts";
+import markup from "./prosemirror/markup";
+import imageView from "./prosemirror/imageView";
+import urbitlink from "./prosemirror/urbitlink";
+import { sync } from "./prosemirror/crdt/sync";
+import { localundo } from "./prosemirror/crdt/undo";
+import { redo, yDocToProsemirror } from "y-prosemirror";
+import { save, SavePluginKey } from "./prosemirror/save";
 
 // Menus
 import sidemenu from "./plugins/menus/sidemenu";
@@ -75,7 +70,7 @@ function Document(props: { path: DocumentId }) {
   const [settings, setSettings] = useState({
     name: "",
     owner: "",
-    whitelist: [],
+    perms: [],
   });
 
   function renderSnapshot(snapshot: Y.Snapshot) {
@@ -126,80 +121,79 @@ function Document(props: { path: DocumentId }) {
     doc.gc = false;
     getDocumentSettings(props.path).then((stg) => {
       setSettings(stg);
-    });
-    getDocument(props.path).then((res: any) => {
-      const version = new Uint8Array(
-        Object.keys(res.version).map((index: any) => {
-          return res.version[index];
-        })
-      );
-      const content = new Uint8Array(JSON.parse(res.content));
-      const type = doc.getXmlFragment("prosemirror");
-      const saveDoc = () => {
-        const version = Y.encodeStateVector(doc);
-        const content = Y.encodeStateAsUpdate(doc);
+      getDocument(props.path).then((res: any) => {
+        const version = new Uint8Array(
+          Object.keys(res.version).map((index: any) => {
+            return res.version[index];
+          })
+        );
+        const content = new Uint8Array(JSON.parse(res.content));
+        const type = doc.getXmlFragment("prosemirror");
+        const saveDoc = () => {
+          const version = Y.encodeStateVector(doc);
+          const content = Y.encodeStateAsUpdate(doc);
 
-        saveDocument(meta, {
-          version: Array.from(version),
-          content: JSON.stringify(Array.from(content)),
+          saveDocument(props.path, {
+            version: Array.from(version),
+            content: JSON.stringify(Array.from(content)),
+          });
+        };
+        const state = EditorState.create({
+          schema: schema,
+          plugins: [
+            keymap,
+            shortcuts,
+            config,
+            placeholders,
+            sidemenu(setSideMenu),
+            highlightmenu(setHighlightMenu),
+            slashmenu(setNodeMenu, setNodeMenuSearch),
+            sync(type),
+            localundo(),
+            markup,
+            imageView,
+            urbitlink,
+            save(() => {
+              const version = Y.encodeStateVector(doc);
+              const content = Y.encodeStateAsUpdate(doc);
+              const snapshot = Array.from(Y.encodeSnapshotV2(Y.snapshot(doc)));
+
+              getDocument(props.path).then((res) => {
+                const update = Y.encodeStateAsUpdate(
+                  doc,
+                  new Uint8Array(Object.values((res as any).version))
+                );
+                saveDocument(props.path, {
+                  version: Array.from(version),
+                  content: JSON.stringify(Array.from(content)),
+                });
+                recordSnapshot(props.path, {
+                  date: Date.now(),
+                  ship: `~${(window as any).ship}`,
+                  data: snapshot,
+                });
+
+                sendUpdate(props.path, {
+                  author: "~" + (window as any).ship,
+                  content: update,
+                  time: new Date(),
+                });
+              });
+            }),
+          ],
         });
-      };
-      const state = EditorState.create({
-        schema: schema,
-        plugins: [
-          buildKeymap(schema),
-          baseKeymap,
-          shortcuts(schema),
-          config,
-          placeholders,
-          sidemenu(setSideMenu),
-          highlightmenu(setHighlightMenu),
-          slashmenu(setNodeMenu, setNodeMenuSearch),
-          ySyncPlugin(type),
-          yUndoPlugin(),
-          comments,
-          handleImage,
-          urbitlink,
-          save(() => {
-            const version = Y.encodeStateVector(doc);
-            const content = Y.encodeStateAsUpdate(doc);
-            const snapshot = Array.from(Y.encodeSnapshotV2(Y.snapshot(doc)));
-
-            getDocument(props.path).then((res) => {
-              const update = Y.encodeStateAsUpdate(
-                doc,
-                new Uint8Array(Object.values(res.version))
-              );
-              saveDocument(props.path, {
-                version: Array.from(version),
-                content: JSON.stringify(Array.from(content)),
-              });
-              recordSnapshot(props.path, {
-                date: Date.now(),
-                ship: `~${(window as any).ship}`,
-                data: snapshot,
-              });
-
-              sendUpdate(props.path, {
-                author: "~" + (window as any).ship,
-                content: JSON.stringify(Array.from(update)),
-                time: Date.now(),
-              });
-            });
-          }),
-        ],
+        Y.applyUpdate(doc, content);
+        const collection = document.getElementsByClassName("ProseMirror");
+        Array.from(collection).forEach((element) => {
+          element.remove();
+        });
+        const newView = new EditorView(document.querySelector("#document"), {
+          state: state,
+        });
+        Y.applyUpdate(doc, content);
+        setView(newView);
+        setDoc(doc);
       });
-      Y.applyUpdate(doc, content);
-      const collection = document.getElementsByClassName("ProseMirror");
-      Array.from(collection).forEach((element) => {
-        element.remove();
-      });
-      const newView = new EditorView(document.querySelector("#document"), {
-        state: state,
-      });
-      Y.applyUpdate(doc, content);
-      setView(newView);
-      setDoc(doc);
     });
   }
 
@@ -274,16 +268,14 @@ function Document(props: { path: DocumentId }) {
           });
           return doc;
         }}
-        setNotifStatus={/* setNotifStatus */ () => {}}
       />
       <VersionPanel
         show={panel == "version"}
-        path={props.path}
-        settings={settings}
+        id={props.path}
         renderSnapshot={renderSnapshot}
         closeSnapshot={closeSnapshot}
       />
-      <ConfigPanel show={panel == "config"} view={view} settings={settings} />
+      <ConfigPanel show={panel == "config"} view={view} />
       <div id="document-wrapper" className="scrollbar-small">
         <main
           id="document"

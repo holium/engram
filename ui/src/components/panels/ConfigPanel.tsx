@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { EditorView } from "prosemirror-view";
-import { ConfigPluginKey } from "../document/plugins/config/plugin";
+import { ConfigPluginKey } from "../document/prosemirror/config/plugin";
 
 function ConfigPanel(props: { show: boolean; view: EditorView }) {
   const [config, setConfig] = useState({});

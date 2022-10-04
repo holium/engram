@@ -59,9 +59,16 @@ const schema = new Schema({
     paragraph: {
       content: "inline*",
       group: "block",
+      attrs: {
+        id: { default: null },
+      },
       parseDOM: [{ tag: "p" }],
-      toDOM() {
-        return ["p", 0] as DOMOutputSpec;
+      toDOM(node) {
+        return [
+          "p",
+          node.attrs.id ? { id: node.attrs.id } : {},
+          0,
+        ] as DOMOutputSpec;
       },
     } as NodeSpec,
 
@@ -69,7 +76,7 @@ const schema = new Schema({
     heading: {
       content: "inline*",
       group: "block",
-      attrs: { level: { default: 1 } },
+      attrs: { level: { default: 1 }, id: { default: null } },
       parseDOM: [
         { tag: "h1", attrs: { level: 1 } },
         { tag: "h2", attrs: { level: 2 } },
@@ -79,7 +86,11 @@ const schema = new Schema({
         { tag: "h6", attrs: { level: 6 } },
       ],
       toDOM(node) {
-        return [`h${node.attrs.level}`, 0] as DOMOutputSpec;
+        return [
+          `h${node.attrs.level}`,
+          node.attrs.id ? { id: node.attrs.id } : {},
+          0,
+        ] as DOMOutputSpec;
       },
       defining: true,
     } as NodeSpec,

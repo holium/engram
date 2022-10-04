@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
-import { Update, NotifStatus } from "../document/types";
+import {
+  DocumentUpdate,
+  DocumentId,
+  DocumentSettings,
+} from "../document/types";
 import * as Y from "yjs";
 import {
   getDocumentSettings,
@@ -14,14 +18,14 @@ function UpdatePanel(props: {
   show: boolean;
   path: DocumentId;
   settings: DocumentSettings;
-  applyUpdate: (index: number, update: Uint8Array) => Uint8Array;
+  applyUpdate: (update: Uint8Array, from: string) => Uint8Array;
 }) {
   // Staging
   const [updates, setUpdates] = useState([]);
 
   useEffect(() => {
     clearSubscriptions().then(() => {
-      Object.values(props.settings.whitelist).map((member) => {
+      Object.values(props.settings.perms).map((member) => {
         if (member != (window as any).ship) {
           subscribeToRemoteDocument(member, props.path);
         }
@@ -33,7 +37,7 @@ function UpdatePanel(props: {
     getDocumentUpdates(props.path).then((res) => {
       setUpdates([
         ...Object.values(res)
-          .map((update) => {
+          .map((update: any) => {
             return {
               author: update.author,
               timestamp: new Date(update.timestamp),
@@ -86,9 +90,9 @@ function UpdatePanel(props: {
       ) : (
         ""
       )}
-      {updates.map((update: Update, i: number) => {
+      {updates.map((update: DocumentUpdate, i: number) => {
         return (
-          <div className="flex gap-3 items-center" key={update.timestamp}>
+          <div className="flex gap-3 items-center" key={update.time}>
             <div className="flex-grow">
               <span className="azimuth">~{update.author}</span>
             </div>

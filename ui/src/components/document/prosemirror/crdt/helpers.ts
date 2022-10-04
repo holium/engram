@@ -203,6 +203,7 @@ export const createNodeFromYElement = (
   prevSnapshot?: Y.Snapshot,
   computeYChange?: any
 ) => {
+  console.log("creating node from CRDT element: ", el);
   const children: Array<any> = [];
   const createChildren = (type: any) => {
     if (type.constructor === Y.XmlElement) {
@@ -245,6 +246,7 @@ export const createNodeFromYElement = (
   }
   try {
     const attrs = el.getAttributes(snapshot);
+    attrs.id = `${el._item.id.client}/${el._item.id.clock}`;
     if (snapshot !== undefined) {
       if (!isVisible(el._item, snapshot)) {
         attrs.ychange = computeYChange
