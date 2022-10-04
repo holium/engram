@@ -1,7 +1,6 @@
 import { keymap } from "prosemirror-keymap";
-import { Plugin } from "prosemirror-state";
+import { Plugin, Command } from "prosemirror-state";
 import {
-  Command,
   chainCommands,
   createParagraphNear,
   liftEmptyBlock,
@@ -22,6 +21,7 @@ import {
   liftListItem,
   sinkListItem,
 } from "prosemirror-schema-list";
+import { undo, redo } from "./crdt/undo";
 import { hardBreak, stopTab } from "./commands";
 import schema from "./schema";
 
@@ -50,8 +50,8 @@ export default keymap({
   Tab: stopTab,
 
   // Undo / Redo
-  //"Mod-z": undo,
-  //"Mod-y": redo,
+  "Mod-z": undo,
+  "Mod-y": redo,
 
   // Nodes ---------------------------------------------------------------------
   "Mod->": wrapIn(schema.nodes["blockblockquote"]),

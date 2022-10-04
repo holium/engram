@@ -257,36 +257,6 @@ aside li textarea {
 
 /* Config */
 
-dl li {
-  list-style-type: none;
-  padding: 0;
-}
-
-dt {
-  width: calc(var(--document-width) / 2 - 1ch);
-  font-family: "IBM Plex Mono", monospace;
-  display: inline-block;
-  cursor: pointer;
-}
-dt:after {
-  content: ":";
-}
-
-dd {
-  display: inline-block;
-}
-
-dd input,
-dd select {
-  width: calc(var(--document-width) / 2 - 1ch);
-  height: 1.3em;
-  font-family: "IBM Plex Mono", monospace;
-  background: #ffffff00;
-  outline-style: none;
-  border: none;
-  font-size: var(--body);
-}
-
 /* Exceptions */
 li p:first-child {
   margin-top: 0;

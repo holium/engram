@@ -301,6 +301,7 @@ const schema = new Schema({
 
     // Inline ------------------------------------------------------------------
     // Hard Bread
+
     "hard-break": {
       inline: true,
       group: "inline",
