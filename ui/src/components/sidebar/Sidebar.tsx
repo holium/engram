@@ -22,6 +22,7 @@ import { UrbitContext } from "../urbit/UrbitProvider";
 
 function Sidebar(props: {
   addDoc: { ship: string; id: string; timestamp: number };
+  refresh: number;
 }) {
   const [type, setType] = useState("");
 
@@ -42,7 +43,6 @@ function Sidebar(props: {
         .map((item) => (item.id.id ? item.id.id : item.id))
         .includes(props.addDoc.id)
     ) {
-      console.log("opening the added doc");
       document.dispatchEvent(
         OpenDocumentEvent(null, {
           id: props.addDoc.id,
@@ -51,7 +51,6 @@ function Sidebar(props: {
       );
     } else {
       if (props.addDoc.ship) {
-        console.log("adding added doc");
         setNewDoc(true);
         setNewDocName(
           `~${props.addDoc.ship}/${props.addDoc.id}/${props.addDoc.timestamp}`
@@ -96,7 +95,7 @@ function Sidebar(props: {
           { owner: "~zod", id: "null", name: "error getting documents" },
         ]);
       });
-  }, []);
+  }, [props.refresh]);
 
   useEffect(() => {
     sendData();
@@ -228,7 +227,7 @@ function Sidebar(props: {
   async function createFold(name) {
     checkUrbitWindow();
     let meta;
-    if(crypto) {
+    if (crypto) {
       meta = await createFolder({
         id: `~${window.ship}-${crypto.randomUUID()}`,
         name: name,
@@ -349,7 +348,18 @@ function Sidebar(props: {
       >
         <div className="flex flex-col overflow-auto">
           <div className="mt-3 tree-item">
-            <div className="font-bold flex-grow py-1">Library</div>
+            <div
+              className="flex-grow py-1"
+              style={{
+                opacity: ".5",
+                fontVariant: "all-small-caps",
+                fontSize: "18px",
+                letterSpacing: "1px",
+                fontWeight: 500,
+              }}
+            >
+              workspace
+            </div>
             {
               //Add Remote Document
             }

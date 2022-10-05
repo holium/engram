@@ -54,7 +54,7 @@
 
 .clickable {
   background-color: #fbfbfb00;
-  transition: background-color 80ms ease-out;
+  transition: background-color 80ms ease;
 }
 
 .clickable:hover {
@@ -65,6 +65,7 @@
 /* Components --------------------------------------------------------------- */
 
 /* File Tree Items */
+
 .tree-item {
   @apply flex px-4 py-2 gap-2 items-center;
   background-color: #ffffff00;
@@ -124,6 +125,19 @@
 }
 
 /* Panels */
+
+.dim-icon {
+  opacity: 1;
+  transition: background-color 80ms ease-out, opacity 0.25s ease;
+}
+
+:has(.ProseMirror:focus) .dim-icon {
+  opacity: 0.5;
+}
+
+:has(.ProseMirror:focus) .dim-icon:hover {
+  opacity: 1;
+}
 
 /**
  * Panels are used to display more comprehensive information.

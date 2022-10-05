@@ -282,7 +282,7 @@ li p:first-child {
 main {
   @apply mt-3;
   flex-grow: 1;
-  padding: 0 calc(280px + 6ch) 0 calc(28px + calc(32px * 1.26));
+  padding: 16px calc(280px + 6ch) 0 calc(28px + calc(32px * 1.26));
   position: relative;
   margin: 0 auto;
   font-size: var(--root-frequency);

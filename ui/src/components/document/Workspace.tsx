@@ -1,6 +1,7 @@
 import { useEffect, useState, useContext } from "react";
-
+import { OpenDocumentEvent } from "../document/types";
 import { DocumentId } from "./types";
+import suggestions from "./plugins/menus/suggestions";
 
 import { EditorState, Plugin } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
@@ -10,11 +11,14 @@ import {
   saveDocument,
   recordSnapshot,
   sendUpdate,
+  createDocument,
+  checkUrbitWindow,
 } from "../urbit/index";
 // Build
 import * as Y from "yjs";
 import schema from "./prosemirror/schema";
 import keymap from "./prosemirror/keymap";
+import { keymap as pkeymap } from "prosemirror-keymap";
 import config from "./prosemirror/config/plugin";
 
 //Plugins
@@ -23,10 +27,19 @@ import shortcuts from "./prosemirror/shortcuts";
 import markup from "./prosemirror/markup";
 import imageView from "./prosemirror/imageView";
 import urbitlink from "./prosemirror/urbitlink";
+import { dropCursor } from "prosemirror-dropcursor";
 import { sync } from "./prosemirror/crdt/sync";
 import { localundo } from "./prosemirror/crdt/undo";
 import { redo, yDocToProsemirror } from "y-prosemirror";
 import { save, SavePluginKey } from "./prosemirror/save";
+import {
+  chainCommands,
+  newlineInCode,
+  createParagraphNear,
+  liftEmptyBlock,
+  splitBlock,
+} from "prosemirror-commands";
+import { splitListItem } from "prosemirror-schema-list";
 
 // Menus
 import sidemenu from "./plugins/menus/sidemenu";
@@ -45,7 +58,26 @@ import ConfigPanel from "../panels/ConfigPanel";
 import { NotifStatus } from "./types";
 import { SlideContext } from "../toolbar/SlideContext";
 
-function Document(props: { path: DocumentId }) {
+function Document(props: { path: DocumentId; refresh: () => void }) {
+  /* Create Doc ------------------------------------------------------------- */
+  async function createDoc() {
+    checkUrbitWindow();
+
+    const doc = new Y.Doc();
+    doc.clientID = (window as any).ship; // the ship
+    doc.gc = false;
+    const type = doc.getXmlFragment("prosemirror");
+    const version = Y.encodeStateVector(doc);
+    const encoding = Y.encodeStateAsUpdate(doc);
+
+    const { id, settings } = await createDocument("New Document", {
+      version: Array.from(version),
+      content: JSON.stringify(Array.from(encoding)),
+    });
+    props.refresh();
+    document.dispatchEvent(OpenDocumentEvent(null, id));
+  }
+
   /* Periphery -------------------------------------------------------------- */
 
   // Menus
@@ -53,6 +85,9 @@ function Document(props: { path: DocumentId }) {
   const [highlightMenu, setHighlightMenu] = useState(null);
   const [nodeMenu, setNodeMenu] = useState(null);
   const [nodeMenuSearch, setNodeMenuSearch] = useState("");
+  const [tabIndex, tabMenu] = useState(0);
+  const [runSelectNodeMenu, setRunSelectNodeMenu] = useState(0);
+  const [slashMenuEvent, reportSlashMenuEvent] = useState(null);
 
   // Panel
   const [panel, setPanel] = useState(null);
@@ -147,9 +182,15 @@ function Document(props: { path: DocumentId }) {
             placeholders,
             sidemenu(setSideMenu),
             highlightmenu(setHighlightMenu),
-            slashmenu(setNodeMenu, setNodeMenuSearch),
+            slashmenu(
+              setNodeMenu,
+              //setNodeMenuSearch,
+              //tabMenu,
+              reportSlashMenuEvent
+            ),
             sync(type),
             localundo(),
+            dropCursor({ width: 2, color: "var(--rlm-accent-color, #38bdf8)" }),
             markup,
             imageView,
             urbitlink,
@@ -223,10 +264,17 @@ function Document(props: { path: DocumentId }) {
           </svg>
         </div>
         <div
-          className="flex flex-grow items-center justify-center"
-          style={{ color: "var(--glass-color)" }}
+          className="flex flex-col gap-4 flex-grow items-center justify-center"
+          style={{ color: "var(--border-color)", fontWeight: "500" }}
         >
-          create a new document
+          No Open Document
+          <div
+            onClick={createDoc}
+            className="border rounded-2 clickable font-bold px-5 py-4"
+            style={{ borderColor: "var(--type-color)", fontSize: "20px" }}
+          >
+            Create One
+          </div>
         </div>
       </div>
     );
@@ -282,6 +330,17 @@ function Document(props: { path: DocumentId }) {
           onMouseLeave={() => {
             setSideMenu(null);
           }}
+          onKeyDown={(event) => {
+            if (event.key == "Enter" && nodeMenu == null) {
+              chainCommands(
+                newlineInCode,
+                splitListItem(schema.nodes["li"]),
+                createParagraphNear,
+                liftEmptyBlock,
+                splitBlock
+              )(view.state, view.dispatch, view);
+            }
+          }}
         >
           {sideMenu ? (
             <SideMenu
@@ -304,7 +363,10 @@ function Document(props: { path: DocumentId }) {
             <NodeMenu
               menu={nodeMenu}
               search={nodeMenuSearch}
+              tabIndex={tabIndex}
               hideOnBlur={false}
+              runSelect={runSelectNodeMenu}
+              slashEvent={slashMenuEvent}
               hide={() => {
                 setNodeMenu(null);
                 setNodeMenuSearch("");
