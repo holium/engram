@@ -23,6 +23,7 @@ import shortcuts from "./prosemirror/shortcuts";
 import markup from "./prosemirror/markup";
 import imageView from "./prosemirror/imageView";
 import urbitlink from "./prosemirror/urbitlink";
+import { dropCursor } from "prosemirror-dropcursor";
 import { sync } from "./prosemirror/crdt/sync";
 import { localundo } from "./prosemirror/crdt/undo";
 import { redo, yDocToProsemirror } from "y-prosemirror";
@@ -150,6 +151,7 @@ function Document(props: { path: DocumentId }) {
             slashmenu(setNodeMenu, setNodeMenuSearch),
             sync(type),
             localundo(),
+            dropCursor({ width: 2, color: "var(--rlm-accent-color, #38bdf8)" }),
             markup,
             imageView,
             urbitlink,

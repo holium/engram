@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from "react";
+import { dropPoint } from "prosemirror-transform";
 import NodeMenu from "./NodeMenuNode";
 
-import { insertAtNextPossible } from "../shortcuts";
+import { createNodeNear } from "../../prosemirror/commands";
 
 function SideMenu(props) {
   const [nodeMenu, setNodeMenu] = useState(null);
@@ -23,8 +24,13 @@ function SideMenu(props) {
     });
   }
 
-  function handleDrag() {
-    // drag
+  function handleDragStart(event: DragEvent) {
+    //(props.menu.el as HTMLElement).style.opacity = "0.5";
+    event.dataTransfer.setDragImage(props.menu.el, 0, 0);
+  }
+
+  function handleDrag(event: DragEvent) {
+    //
   }
 
   function handleDragEnd(event) {
@@ -33,13 +39,40 @@ function SideMenu(props) {
       top: event.clientY,
     });
     if (cursor && cursor.pos != pos) {
-      const move = insertAtNextPossible(
-        props.view,
+      const target = dropPoint(
+        props.view.state.doc,
         cursor.pos,
         props.menu.node
       );
-      if (move != null) {
-        const prev = move.tr.mapping.map(pos);
+      console.log(target, cursor.pos);
+
+      let inserted = false;
+      let finalPos;
+      let finalTr = null;
+      props.view.state.doc.descendants((childNode, childPos, parentNode) => {
+        if (!inserted && childPos >= target) {
+          const tr = props.view.state.tr.insert(childPos, props.menu.node);
+          if (tr.docChanged) {
+            inserted = true;
+            props.view.dispatch(tr);
+            finalPos = childPos;
+            finalTr = tr;
+          }
+        }
+        return false;
+      });
+      if (!inserted) {
+        const tr = props.view.state.tr.insert(
+          props.view.state.doc.nodeSize - 2,
+          props.menu.node
+        );
+        props.view.dispatch(tr);
+        finalPos = props.view.state.doc.nodeSize - 1;
+        finalTr = tr;
+      }
+
+      if (finalTr != null) {
+        const prev = finalTr.mapping.map(pos);
         //const cleanup = props.view.state.tr.setSelection(new TextSelection(props.view.state.doc.resolve(prev + 1), props.view.state.doc.resolve(prev + props.menu.node.nodeSize - 1)))
         const cleanup = props.view.state.tr.deleteRange(
           prev,
@@ -47,7 +80,7 @@ function SideMenu(props) {
         );
         props.view.dispatch(cleanup);
         //toggleMark(schema.marks["strong"])(props.view.state, props.view.dispatch, props.view)
-        setPos(move.pos);
+        setPos(finalPos);
       }
     }
   }
@@ -95,6 +128,7 @@ function SideMenu(props) {
       {/* Drag Handle */}
       <div
         draggable="true"
+        onDragStart={handleDragStart}
         onDrag={handleDrag}
         onDragEnd={handleDragEnd}
         onMouseLeave={(event) => {

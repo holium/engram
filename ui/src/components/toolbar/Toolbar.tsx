@@ -41,7 +41,7 @@ function Navbar(props: {
             ? { backgroundColor: "var(--type-glass-color)" }
             : {}
         }
-        className="icon clickable mx-2"
+        className="icon clickable mx-2 dim-icon"
         onClick={() => {
           props.panel == "publish"
             ? props.openPanel(null)
@@ -55,7 +55,7 @@ function Navbar(props: {
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
-          className="icon clickable mx-2"
+          className="icon clickable mx-2 dim-icon"
           fill="var(--type-color)"
           onClick={() => {
             props.panel == "update"
@@ -75,7 +75,7 @@ function Navbar(props: {
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
-          className="icon clickable mx-2"
+          className="icon clickable mx-2 dim-icon"
           fill="var(--type-color)"
           onClick={() => {
             props.panel == "update"
@@ -102,7 +102,7 @@ function Navbar(props: {
             ? { backgroundColor: "var(--type-glass-color)" }
             : {}
         }
-        className="icon clickable mx-2"
+        className="icon clickable mx-2 dim-icon"
         onClick={() => {
           props.panel == "version"
             ? props.openPanel(null)
@@ -122,7 +122,7 @@ function Navbar(props: {
             ? { backgroundColor: "var(--type-glass-color)" }
             : {}
         }
-        className="icon clickable mx-2"
+        className="icon clickable mx-2 dim-icon"
         onClick={() => {
           props.panel == "config"
             ? props.openPanel(null)
