@@ -1,12 +1,14 @@
 import { EditorView } from "prosemirror-view";
 import { TextSelection } from "prosemirror-state";
-import { Command, setBlockType, wrapIn } from "prosemirror-commands";
-import { insertAtNextPossible } from "../shortcuts.ts";
-import schema from "../../build/schema.ts";
+import { setBlockType, wrapIn } from "prosemirror-commands";
+import { createNodeNear } from "../../prosemirror/commands";
+import schema from "../../prosemirror/schema";
 
 export interface SuggestionItem {
   key: string;
   display: string;
+  description: string;
+  icon: any;
   command: (view: EditorView, pos?: number) => void;
 }
 
@@ -210,17 +212,15 @@ const suggestions: { [key: string]: SuggestionItem } = {
     },
     command: (view, pos?) => {
       if (pos) {
-        insertAtNextPossible(
-          view,
-          pos,
-          schema.nodes["horizontal-rule"].create()
+        createNodeNear(schema.nodes["horizontal-rule"], pos)(
+          view.state,
+          view.dispatch
         );
       } else {
         const sel = view.state.selection;
-        insertAtNextPossible(
-          view,
-          sel.head,
-          schema.nodes["horizontal-rule"].create()
+        createNodeNear(schema.nodes["horizontal-rule"], sel.head)(
+          view.state,
+          view.dispatch
         );
       }
     },
@@ -245,21 +245,12 @@ const suggestions: { [key: string]: SuggestionItem } = {
     },
     command: (view, pos?) => {
       if (pos) {
-        insertAtNextPossible(
-          view,
-          pos,
-          schema.nodes["image"].create({
-            src: "",
-          })
-        );
+        createNodeNear(schema.nodes["image"], pos)(view.state, view.dispatch);
       } else {
         const sel = view.state.selection;
-        insertAtNextPossible(
-          view,
-          sel.head,
-          schema.nodes["image"].create({
-            src: "",
-          })
+        createNodeNear(schema.nodes["image"], sel.head)(
+          view.state,
+          view.dispatch
         );
       }
     },

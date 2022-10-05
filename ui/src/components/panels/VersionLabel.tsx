@@ -6,6 +6,7 @@ function VersionLabel(props: {
   version: Version;
   present: Array<number>;
   view: () => void;
+  viewing: boolean;
 }) {
   const commitIndex = props.ships.indexOf(props.version.ship);
 
@@ -28,12 +29,15 @@ function VersionLabel(props: {
     return `${timestamp
       .getHours()
       .toString()
-      .padStart(2, 0)}:${timestamp.getMinutes().toString().padStart(2, 0)} ${
+      .padStart(2, "0")}:${timestamp
+      .getMinutes()
+      .toString()
+      .padStart(2, "0")} ${
       months[timestamp.getMonth()]
     } ${timestamp
       .getDate()
       .toString()
-      .padStart(2, 0)}, ${timestamp.getFullYear()}`;
+      .padStart(2, "0")}, ${timestamp.getFullYear()}`;
   }
 
   return (

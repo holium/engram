@@ -3,6 +3,7 @@ import { SuggestionItem } from "./suggestions";
 import { useState, useEffect, useRef } from "react";
 
 function NodeMenu(props) {
+  console.log(props.menu.node == null);
   const [results, setResults] = useState(Object.keys(suggestions));
 
   const menuRef = useRef(null);
@@ -20,6 +21,14 @@ function NodeMenu(props) {
   }, [props.search]);
 
   function runCommand(suggestion: string) {
+    if (props.menu.node == null) {
+      const tr = props.view.state.tr.replaceWith(
+        props.menu.from,
+        props.menu.from + props.search.length + 1,
+        ""
+      );
+      props.view.dispatch(tr);
+    }
     if (props.pos) suggestions[suggestion].command(props.view, props.pos + 1);
     else suggestions[suggestion].command(props.view);
     props.view.focus();

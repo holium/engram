@@ -1,7 +1,7 @@
 import { toggleMark, wrapIn } from "prosemirror-commands";
 import { MarkType, NodeRange } from "prosemirror-model";
 import { findWrapping } from "prosemirror-transform";
-import schema from "../../build/schema";
+import schema from "../../prosemirror/schema";
 import { extendMark } from "../shortcuts";
 import { useState, useEffect } from "react";
 
@@ -114,7 +114,7 @@ function HighlightMenu(props: any) {
     const tr = props.view.state.tr.addMark(
       sel.from,
       sel.to,
-      schema.marks["comment"].create({
+      schema.marks["markup"].create({
         conversation: "[]",
       })
     );
@@ -127,6 +127,7 @@ function HighlightMenu(props: any) {
 
   function hasMark(mark: string): boolean {
     const sel = props.view.state.selection;
+    console.log(mark);
     return props.view.state.doc.rangeHasMark(
       sel.from,
       sel.to,
@@ -155,7 +156,7 @@ function HighlightMenu(props: any) {
           }}
           className="px-3 py-2"
           onBlur={(event) => {
-            implementLinkChange("hyperlink", event);
+            implementLinkChange("hyperlink");
           }}
         />
       ) : (
@@ -170,7 +171,7 @@ function HighlightMenu(props: any) {
           }}
           className="px-3 py-2"
           onBlur={(event) => {
-            implementLinkChange("urbitlink", event);
+            implementLinkChange("urbitlink");
           }}
         />
       ) : (

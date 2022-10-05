@@ -1,4 +1,8 @@
 /* Styles for strictly within the document */
+main ::selection {
+  background-color: var(--type-color);
+  color: var(--paper-color);
+}
 
 /* Element Styles */
 p,
@@ -6,7 +10,8 @@ h1,
 h2,
 h3,
 ul,
-ol {
+ol,
+pre {
   margin-top: var(--margin-before);
   margin-bottom: var(--margin-after);
 }
@@ -49,10 +54,9 @@ blockquote {
 }
 
 pre {
-  @apply px-4 py-5 rounded-1;
+  @apply px-3 py-4 rounded-2;
   font-family: JetBrains Mono, monospace;
   background-color: var(--type-glass-color);
-  margin: 0;
 }
 
 hr {
@@ -92,6 +96,10 @@ li[data-type="checklist"] label {
 /* Figures */
 img {
   resize: horizontal;
+}
+
+img::selection {
+  background-color: #00000000;
 }
 
 figcaption {
@@ -249,36 +257,6 @@ aside li textarea {
 
 /* Config */
 
-dl li {
-  list-style-type: none;
-  padding: 0;
-}
-
-dt {
-  width: calc(var(--document-width) / 2 - 1ch);
-  font-family: "IBM Plex Mono", monospace;
-  display: inline-block;
-  cursor: pointer;
-}
-dt:after {
-  content: ":";
-}
-
-dd {
-  display: inline-block;
-}
-
-dd input,
-dd select {
-  width: calc(var(--document-width) / 2 - 1ch);
-  height: 1.3em;
-  font-family: "IBM Plex Mono", monospace;
-  background: #ffffff00;
-  outline-style: none;
-  border: none;
-  font-size: var(--body);
-}
-
 /* Exceptions */
 li p:first-child {
   margin-top: 0;
@@ -288,10 +266,6 @@ li p:first-child {
 }
 
 /* UX */
-main ::selection {
-  background-color: var(--type-color);
-  color: var(--paper-color);
-}
 
 /* Layout Styles */
 #document-wrapper {

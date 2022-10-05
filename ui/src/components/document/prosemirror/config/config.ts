@@ -106,16 +106,16 @@ export class DocumentConfig {
       display: "Heading Font Family",
       type: "select",
       options: {
-        sans: 0,
-        serif: 1,
-        mono: 2,
+        sans: "sans",
+        serif: "serif",
+        mono: "mono",
       },
-      value: 0,
+      value: null,
       styles: {
-        "--heading-font-family": (value: number) => {
-          if (value == 2) {
+        "--heading-font-family": (value: string) => {
+          if (value == "mono") {
             return "IBM Plex Mono, monospace";
-          } else if (value == 1) {
+          } else if (value == "serif") {
             return "serif";
           } else {
             return "Rubik, sans-serif";
@@ -128,16 +128,16 @@ export class DocumentConfig {
       display: "Body Font Family",
       type: "select",
       options: {
-        sans: 0,
-        serif: 1,
-        mono: 2,
+        sans: "sans",
+        serif: "serif",
+        mono: "mono",
       },
       value: null,
       styles: {
-        "--body-font-family": (value: number) => {
-          if (value == 2) {
+        "--body-font-family": (value: string) => {
+          if (value == "mono") {
             return "IBM Plex Mono, monospace";
-          } else if (value == 1) {
+          } else if (value == "serif") {
             return "serif";
           } else {
             return "Rubik, sans-serif";

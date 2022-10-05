@@ -65,6 +65,11 @@ export interface Version {
   snapshot: Snapshot;
 }
 
+export interface Document {
+  content: any;
+  version: any;
+}
+
 export interface DocumentId {
   id: string;
   timestamp: number;
@@ -78,7 +83,7 @@ export interface DocumentSettings {
 
 export interface DocumentUpdate {
   author: Patp;
-  content: string;
+  content: Uint8Array;
   time: Date;
 }
 
@@ -88,12 +93,12 @@ export interface FolderMeta {
 }
 
 export interface Snap {
-  time: number;
+  time: Date;
   ship: Patp;
-  data: Array<number>;
+  snapshot: Snapshot;
 }
 
 export interface Folder {
   meta: FolderMeta;
-  contents: Array<FolderMeta | DocumentMeta>;
+  contents: Array<FolderMeta | DocumentId>;
 }

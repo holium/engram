@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getDocumentSettings, setDocumentSettings } from "../urbit/index";
+import { DocumentId, DocumentSettings } from "../document/types";
 
 function PublishPanel(props: {
   path: DocumentId;
@@ -11,7 +12,7 @@ function PublishPanel(props: {
 
   useEffect(() => {
     setMembers([
-      ...Object.values(props.settings.whitelist).map((ship) => "~" + ship),
+      ...Object.values(props.settings.perms).map((ship) => "~" + ship),
     ]);
   }, [props.settings]);
 

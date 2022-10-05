@@ -18,9 +18,9 @@ export const ConfigTermSpec = (defaultValue: any): NodeSpec => {
   return {
     group: "configterm",
     attrs: { value: { default: defaultValue } },
-    parseDOM: [{ tag: "li" }],
+    parseDOM: [{ tag: "dt" }],
     toDOM(node) {
-      return ["li", node.attrs];
+      return ["dt", node.attrs];
     },
     selectable: false,
     atom: false,

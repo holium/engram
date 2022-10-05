@@ -15,6 +15,7 @@ export default (
       handleKeyDown(view: EditorView, event: KeyboardEvent) {
         const sel = view.state.selection;
         if (event.key === "/") {
+          search = "";
           const start = view.coordsAtPos(sel.from);
           const end = view.coordsAtPos(sel.to);
           const parent = document.querySelector("main").getBoundingClientRect();
@@ -28,7 +29,6 @@ export default (
             top: start.bottom - parent.top,
           });
         } else if (event.key.match(/^\w$/)) {
-          console.log("key: ", event.key);
           search = search + event.key;
           updateMenu(search);
         } else {
