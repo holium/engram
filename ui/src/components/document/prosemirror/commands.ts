@@ -3,10 +3,10 @@ import {
   Transaction,
   AllSelection,
   TextSelection,
+  Command,
 } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
 import { NodeType, ContentMatch } from "prosemirror-model";
-import { Command } from "prosemirror-commands";
 import schema from "./schema";
 
 export const hardBreak: Command = function (state, dispatch, view) {
@@ -19,33 +19,27 @@ export const hardBreak: Command = function (state, dispatch, view) {
   return false;
 };
 
-export const createNodeNear: (node: NodeType) => Command =
-  (node) => (state, dispatch?) => {
-    const sel = state.selection,
-      { $from, $to } = sel;
-    /*
-    if (
-      sel instanceof AllSelection ||
-      $from.parent.inlineContent ||
-      $to.parent.inlineContent
-    ) {
-      console.log("something about inline content");
-      return false;
-    }
-    */
+export const createNodeNear: (node: NodeType, pos?: number) => Command = (
+  node,
+  pos
+) => (state, dispatch?) => {
+  const sel = state.selection,
+    { $from, $to } = sel;
 
-    if (!node) return false;
-    console.log("here");
-    if (dispatch) {
-      const side = (
-        !$from.parentOffset && $to.index() < $to.parent.childCount ? $from : $to
-      ).pos;
-      const tr = state.tr.insert(side, node.createAndFill()!);
-      tr.setSelection(TextSelection.create(tr.doc, side + 1));
-      dispatch(tr.scrollIntoView());
-    }
-    return true;
-  };
+  if (!node) return false;
+  if (dispatch) {
+    const side = pos
+      ? pos
+      : (!$from.parentOffset && $to.index() < $to.parent.childCount
+          ? $from
+          : $to
+        ).pos;
+    const tr = state.tr.insert(side, node.createAndFill()!);
+    tr.setSelection(TextSelection.create(tr.doc, side + 1));
+    dispatch(tr.scrollIntoView());
+  }
+  return true;
+};
 
 export const stopTab: Command = function (state, dispatch, view) {
   /*
