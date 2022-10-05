@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from "react";
-
+import { OpenDocumentEvent } from "../document/types";
 import { DocumentId } from "./types";
 
 import { EditorState, Plugin } from "prosemirror-state";
@@ -10,6 +10,8 @@ import {
   saveDocument,
   recordSnapshot,
   sendUpdate,
+  createDocument,
+  checkUrbitWindow,
 } from "../urbit/index";
 // Build
 import * as Y from "yjs";
@@ -46,7 +48,26 @@ import ConfigPanel from "../panels/ConfigPanel";
 import { NotifStatus } from "./types";
 import { SlideContext } from "../toolbar/SlideContext";
 
-function Document(props: { path: DocumentId }) {
+function Document(props: { path: DocumentId; refresh: () => void }) {
+  /* Create Doc ------------------------------------------------------------- */
+  async function createDoc() {
+    checkUrbitWindow();
+
+    const doc = new Y.Doc();
+    doc.clientID = (window as any).ship; // the ship
+    doc.gc = false;
+    const type = doc.getXmlFragment("prosemirror");
+    const version = Y.encodeStateVector(doc);
+    const encoding = Y.encodeStateAsUpdate(doc);
+
+    const { id, settings } = await createDocument("New Document", {
+      version: Array.from(version),
+      content: JSON.stringify(Array.from(encoding)),
+    });
+    props.refresh();
+    document.dispatchEvent(OpenDocumentEvent(null, id));
+  }
+
   /* Periphery -------------------------------------------------------------- */
 
   // Menus
@@ -225,10 +246,17 @@ function Document(props: { path: DocumentId }) {
           </svg>
         </div>
         <div
-          className="flex flex-grow items-center justify-center"
-          style={{ color: "var(--glass-color)" }}
+          className="flex flex-col gap-4 flex-grow items-center justify-center"
+          style={{ color: "var(--border-color)", fontWeight: "500" }}
         >
-          create a new document
+          No Open Document
+          <div
+            onClick={createDoc}
+            className="border rounded-2 clickable font-bold px-4 py-2"
+            style={{ borderColor: "var(--type-color)", fontSize: "20px" }}
+          >
+            Create One
+          </div>
         </div>
       </div>
     );

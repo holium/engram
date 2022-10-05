@@ -9,6 +9,8 @@ function App() {
   const [path, openDoc] = useState(null);
   const [addDoc, setAddDoc] = useState(null);
 
+  const [refreshKey, setRefreshKey] = useState(0);
+
   useEffect(() => {
     document.addEventListener("open-document", (event) => {
       console.log(event.detail);
@@ -35,8 +37,13 @@ function App() {
     <UrbitProvider>
       <div id="app">
         <SlideProvider>
-          <Sidebar addDoc={addDoc} />
-          <Workspace path={path} />
+          <Sidebar addDoc={addDoc} refresh={refreshKey} />
+          <Workspace
+            path={path}
+            refresh={() => {
+              setRefreshKey(refreshKey + 1);
+            }}
+          />
         </SlideProvider>
       </div>
     </UrbitProvider>

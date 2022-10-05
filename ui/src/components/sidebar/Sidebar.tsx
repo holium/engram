@@ -22,6 +22,7 @@ import { UrbitContext } from "../urbit/UrbitProvider";
 
 function Sidebar(props: {
   addDoc: { ship: string; id: string; timestamp: number };
+  refresh: number;
 }) {
   const [type, setType] = useState("");
 
@@ -94,7 +95,7 @@ function Sidebar(props: {
           { owner: "~zod", id: "null", name: "error getting documents" },
         ]);
       });
-  }, []);
+  }, [props.refresh]);
 
   useEffect(() => {
     sendData();
