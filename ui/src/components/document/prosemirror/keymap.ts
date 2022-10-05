@@ -28,6 +28,7 @@ import schema from "./schema";
 export default keymap({
   // Basic ---------------------------------------------------------------------
   // Enter
+  /*
   Enter: chainCommands(
     newlineInCode,
     splitListItem(schema.nodes["li"]),
@@ -35,6 +36,7 @@ export default keymap({
     liftEmptyBlock,
     splitBlock
   ),
+  */
   "Shift-Enter": hardBreak,
   "Mod-Enter": exitCode,
   // Delete

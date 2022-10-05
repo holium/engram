@@ -1,6 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 import { OpenDocumentEvent } from "../document/types";
 import { DocumentId } from "./types";
+import suggestions from "./plugins/menus/suggestions";
 
 import { EditorState, Plugin } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
@@ -17,6 +18,7 @@ import {
 import * as Y from "yjs";
 import schema from "./prosemirror/schema";
 import keymap from "./prosemirror/keymap";
+import { keymap as pkeymap } from "prosemirror-keymap";
 import config from "./prosemirror/config/plugin";
 
 //Plugins
@@ -30,6 +32,14 @@ import { sync } from "./prosemirror/crdt/sync";
 import { localundo } from "./prosemirror/crdt/undo";
 import { redo, yDocToProsemirror } from "y-prosemirror";
 import { save, SavePluginKey } from "./prosemirror/save";
+import {
+  chainCommands,
+  newlineInCode,
+  createParagraphNear,
+  liftEmptyBlock,
+  splitBlock,
+} from "prosemirror-commands";
+import { splitListItem } from "prosemirror-schema-list";
 
 // Menus
 import sidemenu from "./plugins/menus/sidemenu";
@@ -75,6 +85,9 @@ function Document(props: { path: DocumentId; refresh: () => void }) {
   const [highlightMenu, setHighlightMenu] = useState(null);
   const [nodeMenu, setNodeMenu] = useState(null);
   const [nodeMenuSearch, setNodeMenuSearch] = useState("");
+  const [tabIndex, tabMenu] = useState(0);
+  const [runSelectNodeMenu, setRunSelectNodeMenu] = useState(0);
+  const [slashMenuEvent, reportSlashMenuEvent] = useState(null);
 
   // Panel
   const [panel, setPanel] = useState(null);
@@ -169,7 +182,12 @@ function Document(props: { path: DocumentId; refresh: () => void }) {
             placeholders,
             sidemenu(setSideMenu),
             highlightmenu(setHighlightMenu),
-            slashmenu(setNodeMenu, setNodeMenuSearch),
+            slashmenu(
+              setNodeMenu,
+              //setNodeMenuSearch,
+              //tabMenu,
+              reportSlashMenuEvent
+            ),
             sync(type),
             localundo(),
             dropCursor({ width: 2, color: "var(--rlm-accent-color, #38bdf8)" }),
@@ -252,7 +270,7 @@ function Document(props: { path: DocumentId; refresh: () => void }) {
           No Open Document
           <div
             onClick={createDoc}
-            className="border rounded-2 clickable font-bold px-4 py-2"
+            className="border rounded-2 clickable font-bold px-5 py-4"
             style={{ borderColor: "var(--type-color)", fontSize: "20px" }}
           >
             Create One
@@ -312,6 +330,17 @@ function Document(props: { path: DocumentId; refresh: () => void }) {
           onMouseLeave={() => {
             setSideMenu(null);
           }}
+          onKeyDown={(event) => {
+            if (event.key == "Enter" && nodeMenu == null) {
+              chainCommands(
+                newlineInCode,
+                splitListItem(schema.nodes["li"]),
+                createParagraphNear,
+                liftEmptyBlock,
+                splitBlock
+              )(view.state, view.dispatch, view);
+            }
+          }}
         >
           {sideMenu ? (
             <SideMenu
@@ -334,7 +363,10 @@ function Document(props: { path: DocumentId; refresh: () => void }) {
             <NodeMenu
               menu={nodeMenu}
               search={nodeMenuSearch}
+              tabIndex={tabIndex}
               hideOnBlur={false}
+              runSelect={runSelectNodeMenu}
+              slashEvent={slashMenuEvent}
               hide={() => {
                 setNodeMenu(null);
                 setNodeMenuSearch("");
