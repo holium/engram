@@ -88,6 +88,7 @@ function Document(props: { path: DocumentId; refresh: () => void }) {
   const [tabIndex, tabMenu] = useState(0);
   const [runSelectNodeMenu, setRunSelectNodeMenu] = useState(0);
   const [slashMenuEvent, reportSlashMenuEvent] = useState(null);
+  const [showComments, setShowComments] = useState(false);
 
   // Panel
   const [panel, setPanel] = useState(null);
@@ -164,15 +165,6 @@ function Document(props: { path: DocumentId; refresh: () => void }) {
         );
         const content = new Uint8Array(JSON.parse(res.content));
         const type = doc.getXmlFragment("prosemirror");
-        const saveDoc = () => {
-          const version = Y.encodeStateVector(doc);
-          const content = Y.encodeStateAsUpdate(doc);
-
-          saveDocument(props.path, {
-            version: Array.from(version),
-            content: JSON.stringify(Array.from(content)),
-          });
-        };
         const state = EditorState.create({
           schema: schema,
           plugins: [
@@ -197,7 +189,7 @@ function Document(props: { path: DocumentId; refresh: () => void }) {
             save(() => {
               const version = Y.encodeStateVector(doc);
               const content = Y.encodeStateAsUpdate(doc);
-              const snapshot = Array.from(Y.encodeSnapshotV2(Y.snapshot(doc)));
+              const snapshot = Y.snapshot(doc);
 
               getDocument(props.path).then((res) => {
                 const update = Y.encodeStateAsUpdate(
@@ -209,9 +201,9 @@ function Document(props: { path: DocumentId; refresh: () => void }) {
                   content: JSON.stringify(Array.from(content)),
                 });
                 recordSnapshot(props.path, {
-                  date: Date.now(),
+                  time: new Date(),
                   ship: `~${(window as any).ship}`,
-                  data: snapshot,
+                  snapshot: snapshot,
                 });
 
                 sendUpdate(props.path, {
@@ -288,6 +280,8 @@ function Document(props: { path: DocumentId; refresh: () => void }) {
         panel={panel}
         notifs={notifStatus}
         settings={settings}
+        showComments={setShowComments}
+        showingComments={showComments}
       />
       <PublishPanel
         show={panel == "publish"}
@@ -303,16 +297,16 @@ function Document(props: { path: DocumentId; refresh: () => void }) {
 
           const version = Y.encodeStateVector(doc);
           const content = Y.encodeStateAsUpdate(doc);
-          const snapshot = Array.from(Y.encodeSnapshotV2(Y.snapshot(doc)));
+          const snapshot = Y.snapshot(doc);
 
           saveDocument(props.path, {
             version: Array.from(version),
             content: JSON.stringify(Array.from(content)),
           });
           recordSnapshot(props.path, {
-            date: Date.now(),
+            time: new Date(),
             ship: `~${from}`,
-            data: snapshot,
+            snapshot: snapshot,
           });
           return doc;
         }}
@@ -327,6 +321,7 @@ function Document(props: { path: DocumentId; refresh: () => void }) {
       <div id="document-wrapper" className="scrollbar-small">
         <main
           id="document"
+          className={showComments ? "" : "hide-comments"}
           onMouseLeave={() => {
             setSideMenu(null);
           }}

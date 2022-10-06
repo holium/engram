@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { getSnapshots } from "../urbit/index";
 import { Patp } from "@urbit/http-api";
 import * as Y from "yjs";
-import { Version, DocumentId } from "../document/types";
+import { Snap, DocumentId } from "../document/types";
 import ShipLabel from "./ShipLabel";
 import VersionLabel from "./VersionLabel";
 
@@ -47,7 +47,7 @@ function VersionPanel(props: {
 
   useEffect(() => {
     const addys = new Set();
-    versions.forEach((version: Version) => {
+    versions.forEach((version: Snap) => {
       addys.add(version.ship);
     });
     addys.delete((window as any).ship);
@@ -78,7 +78,7 @@ function VersionPanel(props: {
           />
         </svg>
         <div className="flex flex-col-reverse">
-          {versions.map((version: Version, i) => {
+          {versions.map((version: Snap, i) => {
             return (
               <VersionLabel
                 ships={ships}

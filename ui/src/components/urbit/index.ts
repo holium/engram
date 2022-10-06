@@ -133,6 +133,7 @@ export function getSnapshots(meta: DocumentId): Promise<Array<Snap>> {
       .then((response: any) => {
         resolve(
           Object.values(response).map((snap: any) => {
+            console.log(response);
             return {
               time: new Date(snap.date),
               ship: `~${snap.ship}`,
@@ -469,10 +470,7 @@ export function removeFromFolder(
   });
 }
 
-export function recordSnapshot(
-  meta: DocumentId,
-  snap: { date: number; ship: Patp; data: Array<number> }
-) {
+export function recordSnapshot(meta: DocumentId, snap: Snap) {
   return new Promise<void>((resolve, reject) => {
     checkUrbitWindow(reject);
     (window as any).urbit.poke({
@@ -482,9 +480,9 @@ export function recordSnapshot(
         snap: {
           dmeta: meta,
           snap: {
-            date: snap.date,
+            date: snap.time.getTime(),
             ship: snap.ship,
-            data: Array.from(snap.data),
+            data: Array.from(Y.encodeSnapshotV2(snap.snapshot)),
           },
         },
       },
@@ -574,7 +572,7 @@ export function acknowledgeUpdate(dmeta: DocumentId, update: any) {
           update: {
             author: "~" + update.author,
             content: JSON.stringify(Array.from(update.content)),
-            time: update.timestamp.getTime(),
+            time: update.time.getTime(),
           },
         },
       },

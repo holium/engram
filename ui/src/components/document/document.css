@@ -179,6 +179,10 @@ aside {
   clear: both;
 }
 
+.hide-comments aside {
+  display: none;
+}
+
 .comment {
   @apply rounded-2 shadow-menu flex flex-col items-stretch;
   background: var(--paper-color);
@@ -286,6 +290,10 @@ main {
   position: relative;
   margin: 0 auto;
   font-size: var(--root-frequency);
+}
+
+main.hide-comments {
+  padding: 16px calc(28px + calc(32px * 1.26)) 0 calc(28px + calc(32px * 1.26));
 }
 
 main .ProseMirror {
