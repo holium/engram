@@ -1,9 +1,9 @@
 import { Patp } from "@urbit/http-api";
-import { Version, getShipPallet } from "../document/types";
+import { Snap, getShipPallet } from "../document/types";
 
 function VersionLabel(props: {
   ships: Array<Patp>;
-  version: Version;
+  version: Snap;
   present: Array<number>;
   view: () => void;
   viewing: boolean;
@@ -153,7 +153,7 @@ function VersionLabel(props: {
         );
       })}
       <div className="flex items-center text-right flex-grow font-mono">
-        {formatTimestamp(props.version.timestamp)}
+        {formatTimestamp(props.version.time)}
       </div>
     </div>
   );

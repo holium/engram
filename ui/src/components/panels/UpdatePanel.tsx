@@ -35,23 +35,7 @@ function UpdatePanel(props: {
 
   useEffect(() => {
     getDocumentUpdates(props.path).then((res) => {
-      setUpdates([
-        ...Object.values(res)
-          .map((update: any) => {
-            return {
-              author: update.author,
-              timestamp: new Date(update.timestamp),
-              content: new Uint8Array(JSON.parse(update.content)),
-            };
-          })
-          .filter((update, acc) => {
-            if (update.author == (window as any).ship) {
-              acknowledgeUpdate(props.path, update);
-              return false;
-            }
-            return true;
-          }),
-      ]);
+      setUpdates([...res]);
     });
   }, [props.show, props.settings]);
 
