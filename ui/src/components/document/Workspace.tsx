@@ -255,7 +255,9 @@ function Document(props: { path: DocumentId; refresh: () => void }) {
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
-            className="icon clickable"
+            className={`icon clickable sidebar-toggle ${
+              slide ? "sidebar-toggle-hidden" : ""
+            }`}
             onClick={toggleSidebar}
             fill="var(--type-color)"
           >

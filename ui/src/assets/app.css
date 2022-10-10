@@ -22,9 +22,14 @@
 
 #sidebar {
   @apply flex flex-col;
+  overflow: hidden;
+  opacity: 1;
   z-index: 1;
   width: 18vw;
+  max-width: 18vw;
   min-width: 280px;
+  transition: min-width 200ms ease, width 200ms ease, max-width 200ms ease,
+    opacity 200ms ease;
 }
 
 @media (max-width: 800px) {
