@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { dropPoint } from "prosemirror-transform";
+import { Fragment, Slice } from "prosemirror-model";
 import NodeMenu from "./NodeMenuNode";
 
 import { createNodeNear } from "../../prosemirror/commands";
@@ -26,6 +27,7 @@ function SideMenu(props) {
 
   function handleDragStart(event: DragEvent) {
     //(props.menu.el as HTMLElement).style.opacity = "0.5";
+    console.log(props.menu);
     event.dataTransfer.setDragImage(props.menu.el, 0, 0);
   }
 
@@ -39,10 +41,12 @@ function SideMenu(props) {
       top: event.clientY,
     });
     if (cursor && cursor.pos != pos) {
+      console.log(cursor.pos);
+      console.log(props.menu.node);
       const target = dropPoint(
         props.view.state.doc,
         cursor.pos,
-        props.menu.node
+        new Slice(Fragment.from(props.menu.node), 0, 0)
       );
       console.log(target, cursor.pos);
 
@@ -51,8 +55,15 @@ function SideMenu(props) {
       let finalTr = null;
       props.view.state.doc.descendants((childNode, childPos, parentNode) => {
         if (!inserted && childPos >= target) {
+          console.log(
+            "trying to insert: ",
+            props.menu.node,
+            " into ",
+            childNode
+          );
           const tr = props.view.state.tr.insert(childPos, props.menu.node);
           if (tr.docChanged) {
+            console.log("inserting");
             inserted = true;
             props.view.dispatch(tr);
             finalPos = childPos;
@@ -85,13 +96,15 @@ function SideMenu(props) {
     }
   }
 
+  console.log(props.menu);
+
   return (
     <menu
       className="sidemenu"
       style={{
         top: `${props.menu.top - 2}px`,
-        left: 0,
-        position: "absolute",
+        left: `calc(${props.menu.left}px - 64px)`,
+        position: "fixed",
       }}
       onMouseLeave={props.hide}
     >

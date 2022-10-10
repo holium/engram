@@ -9,25 +9,30 @@ export default (renderMenu: (loc: BlockLocation | null) => void) => {
         mouseover: (view, event) => {
           if (event.target) {
             const box = (event.target as any).getBoundingClientRect();
-            const pos = view.posAtCoords(box);
+            const pos = view.posAtCoords({
+              left: event.clientX,
+              top: event.clientY,
+            });
             if (pos.inside > 0) {
               let rendered = false;
               let lastPos = 0;
               let lastNode = null;
               view.state.doc.descendants((node, nodePos) => {
-                if (!rendered && pos.pos < nodePos) {
+                if (!rendered && pos.pos <= nodePos) {
                   rendered = true;
                   const top = (view.domAtPos(lastPos + 1)
                     .node as any).getBoundingClientRect().top;
-                  if (lastNode.type.name !== "header") {
+                  if (lastNode && lastNode.type.name !== "header") {
                     const parent = document
-                      .querySelector("main")
-                      .getBoundingClientRect().top;
+                      .querySelector(".ProseMirror")
+                      .getBoundingClientRect();
+                    console.log("primary", lastNode);
                     const loc = {
                       node: lastNode,
                       el: view.domAtPos(lastPos + 1).node,
                       pos: lastPos,
-                      top: top - parent,
+                      top: top,
+                      left: parent.left,
                     };
                     renderMenu(loc);
                   }
@@ -41,13 +46,15 @@ export default (renderMenu: (loc: BlockLocation | null) => void) => {
                 const top = (view.domAtPos(lastPos + 1)
                   .node as any).getBoundingClientRect().top;
                 const parent = document
-                  .querySelector("main")
-                  .getBoundingClientRect().top;
+                  .querySelector(".ProseMirror")
+                  .getBoundingClientRect();
+                console.log("fallback", lastNode);
                 const loc = {
-                  node: lastNode.node,
-                  el: el,
+                  node: lastNode,
+                  el: view.domAtPos(lastPos + 1).node,
                   pos: lastPos,
-                  top: top - parent,
+                  top: top,
+                  left: parent.left,
                 };
                 renderMenu(loc);
               }
