@@ -64,7 +64,7 @@ function NodeMenu(props) {
     if (props.menu.node == null) {
       const tr = props.view.state.tr.replaceWith(
         props.menu.from,
-        props.menu.from + props.search.length + 1,
+        props.menu.from + search.length + 1,
         ""
       );
       props.view.dispatch(tr);
