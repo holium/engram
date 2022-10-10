@@ -308,12 +308,7 @@ function Sidebar(props: {
   }
 
   return (
-    <div
-      id="sidebar"
-      style={{
-        display: slide ? "none" : "flex",
-      }}
-    >
+    <div id="sidebar" className={slide ? "hide-sidebar" : ""}>
       <div className="px-4 py-3 flex items-center">
         <div className="azimuth">~{urbitStatus.ship}</div>
         <div className="flex-grow"> </div>
@@ -346,7 +341,7 @@ function Sidebar(props: {
           );
         }}
       >
-        <div className="flex flex-col overflow-auto">
+        <div className="flex flex-col overflow-y-auto overflow-x-hidden">
           <div className="mt-3 tree-item">
             <div
               className="flex-grow py-1"

@@ -66,9 +66,44 @@
 
 /* File Tree Items */
 
+#sidebar.hide-sidebar {
+  min-width: 0px;
+  width: 0px;
+  max-width: 0px;
+}
+
+.sidebar-toggle {
+  transform: rotate(0deg);
+  transition: transform 200ms ease;
+}
+
+.sidebar-toggle-hidden {
+  transform: rotate(-90deg);
+}
+
 .tree-item {
-  @apply flex px-4 py-2 gap-2 items-center;
+  @apply flex px-4 py-2 gap-2 items-center overflow-hidden;
   background-color: #ffffff00;
+  max-height: calc(1.26em + 12px);
+  opacity: 1;
+  transition: max-height 120ms 200ms ease, opacity 120ms 200ms ease;
+  animation: tree-item-drop 120ms ease;
+}
+
+@keyframes tree-item-drop {
+  from {
+    max-height: 0px;
+    opacity: 0;
+  }
+  to {
+    max-height: calc(1.26em + 12px);
+    opacity: 1;
+  }
+}
+
+.hide-sidebar .tree-item {
+  max-height: 0px;
+  opacity: 0;
 }
 
 .tree-item-hidden {
