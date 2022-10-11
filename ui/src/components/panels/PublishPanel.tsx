@@ -119,7 +119,7 @@ function PublishPanel(props: {
           <div className="flex gap-3 py-1">
             <input
               type="text"
-              className="py-1 px-2 flex-grow outline-none border-b"
+              className="py-1 px-2 flex-grow outline-none border-b realm-cursor-text-cursor"
               style={{ borderColor: "var(--type-color)" }}
               placeholder="add member"
               value={newMember}
