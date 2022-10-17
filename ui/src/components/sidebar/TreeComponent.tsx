@@ -190,7 +190,7 @@ function TreeComponent({
 
         {renameState ? (
           <input
-            className="outline-none bg-none min-w-0 outline rounded-1 px-2 py-1 flex-1"
+            className="outline-none bg-none min-w-0 outline rounded-1 px-2 py-1 flex-1 realm-cursor-text-cursor"
             style={{
               outlineColor: "var(--type-color)",
               outlineWidth: "1px",
@@ -296,7 +296,7 @@ function TreeComponent({
             </svg>
           )}
           <input
-            className="outline-none bg-none min-w-0 outline rounded-1 px-2 py-1 flex-1"
+            className="outline-none bg-none min-w-0 outline rounded-1 px-2 py-1 flex-1 realm-cursor-text-cursor"
             style={{
               outlineColor: "var(--type-color)",
               outlineWidth: "1px",

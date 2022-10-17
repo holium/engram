@@ -407,7 +407,7 @@ function Sidebar(props: {
           {newDoc && (
             <div className="flex px-4 py-1 gap-3">
               <input
-                className="outline-none bg-none flex-grow outline rounded-1 px-2 py-1"
+                className="outline-none bg-none flex-grow outline rounded-1 px-2 py-1 realm-cursor-text-cursor"
                 style={{
                   outlineColor: "var(--type-color)",
                   outlineWidth: "1px",

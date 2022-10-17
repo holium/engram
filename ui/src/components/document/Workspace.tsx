@@ -323,7 +323,9 @@ function Document(props: { path: DocumentId; refresh: () => void }) {
       <div id="document-wrapper" className="scrollbar-small">
         <main
           id="document"
-          className={showComments ? "" : "hide-comments"}
+          className={`${
+            showComments ? "" : "hide-comments"
+          } realm-cursor-text-cursor`}
           onMouseLeave={() => {
             setSideMenu(null);
           }}
