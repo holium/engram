@@ -11,6 +11,7 @@ h2,
 h3,
 ul,
 ol,
+blockquote,
 pre {
   margin-top: var(--margin-before);
   margin-bottom: var(--margin-after);

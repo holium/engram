@@ -157,11 +157,11 @@ const suggestions: { [key: string]: SuggestionItem } = {
         const tr = view.state.tr.setSelection(new TextSelection($pos));
         view.dispatch(tr);
       }
-      wrapIn(schema.nodes["blockquote"])(view.state, view.dispatch, view);
+      setBlockType(schema.nodes["blockquote"])(view.state, view.dispatch, view);
     },
   },
   "code-block": {
-    key: "code",
+    key: "code-block",
     display: "Code Block",
     description: "Display a section of code",
     icon: () => {
