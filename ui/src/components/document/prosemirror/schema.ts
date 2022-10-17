@@ -173,7 +173,7 @@ const schema = new Schema({
 
     // Blockquote
     blockquote: {
-      content: "block+",
+      content: "inline*",
       group: "block",
       attrs: { id: { default: null } },
       parseDOM: [{ tag: "blockquote" }],

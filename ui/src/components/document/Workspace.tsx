@@ -330,7 +330,7 @@ function Document(props: { path: DocumentId; refresh: () => void }) {
             setSideMenu(null);
           }}
           onKeyDown={(event) => {
-            if (event.key == "Enter" && nodeMenu == null) {
+            if (event.key == "Enter" && !event.shiftKey && nodeMenu == null) {
               chainCommands(
                 newlineInCode,
                 splitListItem(schema.nodes["li"]),
