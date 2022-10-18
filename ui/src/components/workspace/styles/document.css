@@ -1,0 +1,322 @@
+/* Styles for strictly within the document */
+main ::selection {
+  background-color: var(--type-color);
+  color: var(--paper-color);
+}
+
+/* Element Styles */
+p,
+h1,
+h2,
+h3,
+ul,
+ol,
+pre {
+  margin-top: var(--margin-before);
+  margin-bottom: var(--margin-after);
+}
+
+li {
+  margin-bottom: var(--margin-after);
+}
+
+/* Nodes */
+p {
+  font-family: var(--body-font-family);
+  line-height: var(--leading-body);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--heading-font-family);
+  font-weight: var(--heading-weight);
+  line-height: var(--leading-heading);
+}
+
+h1 {
+  font-size: var(--h1);
+}
+
+h2 {
+  font-size: var(--h2);
+}
+
+h3 {
+  font-size: var(--h3);
+}
+
+blockquote {
+  @apply pl-5;
+  border-left: 1px solid var(--type-color);
+  margin-left: 0;
+  margin-right: 0;
+}
+
+pre {
+  @apply px-3 py-4 rounded-2;
+  font-family: JetBrains Mono, monospace;
+  background-color: var(--type-glass-color);
+}
+
+hr {
+  margin: var(--margin-before) 0;
+  border-top: 1px solid var(--type-color);
+  width: 100%;
+}
+
+/* List Nodes */
+
+ul {
+  list-style-type: disc;
+  padding-left: 32px;
+  padding-right: 32px;
+}
+
+ol {
+  list-style-type: decimal;
+  padding-left: 32px;
+  padding-right: 32px;
+}
+
+ul[data-type="checklist"] {
+  /* Checklist */
+  list-style-type: none;
+}
+
+li[data-type="checklist"] {
+  position: relative;
+}
+
+li[data-type="checklist"] label {
+  position: absolute;
+  left: -24px;
+}
+
+/* Figures */
+img {
+  resize: horizontal;
+}
+
+img::selection {
+  background-color: #00000000;
+}
+
+figcaption {
+  font-size: var(--footer);
+  text-align: center;
+}
+
+/* Marks */
+strong {
+  font-weight: bold;
+}
+
+em {
+  font-style: italic;
+}
+
+u {
+  text-decoration: underline;
+}
+
+s {
+  text-decoration: line-through;
+}
+
+code {
+  @apply px-2 rounded-1;
+  font-family: JetBrains Mono, monospace;
+  background-color: var(--type-glass-color);
+}
+
+a {
+  color: var(--status-primary-color);
+  text-decoration: underline;
+}
+
+abbr {
+  cursor: pointer;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+/* Header */
+header {
+  margin-bottom: calc(var(--h1) / 2);
+}
+
+header * {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+header h1 {
+  position: relative;
+}
+
+header p {
+  opacity: 0.6;
+}
+
+/* Comments */
+mark {
+  color: var(--type-color);
+  background-color: var(--type-glass-color);
+  text-decoration: underline;
+}
+
+aside {
+  @apply inline mb-3;
+  position: relative;
+  font-weight: normal;
+  font-style: normal;
+  text-decoration: none;
+  float: right;
+  left: 6ch;
+  width: 0;
+  overflow: visible;
+  clear: both;
+}
+
+.comment {
+  @apply rounded-2 shadow-menu flex flex-col items-stretch;
+  background: var(--paper-color);
+  width: 280px;
+  min-width: 280px;
+}
+
+@media (max-width: 800px) {
+  aside {
+    position: absolute;
+    float: none;
+    left: 4ch;
+    top: auto;
+    margin-top: var(--leading-body);
+  }
+}
+
+aside li {
+  @apply px-3 py-2 gap-2 flex;
+  list-style-type: none;
+  margin: 0;
+}
+
+aside.context-menu li:hover {
+  background-color: var(--paper-color);
+  cursor: default;
+}
+
+aside blockquote {
+  @apply pl-3;
+}
+
+aside li textarea {
+  @apply px-3 py-2 flex-grow rounded-2;
+  outline: none;
+  background-color: var(--type-glass-color);
+  min-width: 0;
+}
+
+/* Menus */
+.sidemenu {
+  @apply gap-2 px-3;
+  position: absolute;
+  display: flex;
+  right: 100%;
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.26em;
+}
+
+.highlightmenu {
+  position: absolute;
+  display: flex;
+  flex-flow: column nowrap;
+  font-size: 16px;
+  line-height: 1.26em;
+}
+
+.highlightmenu li {
+  @apply py-3;
+  justify-content: center;
+}
+
+.slashmenu {
+  overflow: hidden;
+  position: absolute;
+  display: flex-col;
+  width: 280px;
+  font-size: 16px;
+  line-height: 1.26em;
+}
+
+.configmenu {
+  position: absolute;
+}
+
+/* Config */
+
+/* Exceptions */
+li p:first-child {
+  margin-top: 0;
+  margin-bottom: 0;
+  font-size: var(--body);
+  line-height: var(--h3);
+}
+
+/* UX */
+
+/* Layout Styles */
+#document-wrapper {
+  position: relative;
+  display: flex;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+#document-wrapper section {
+  position: relative;
+}
+
+main {
+  @apply mt-3;
+  flex-grow: 1;
+  padding: 16px calc(280px + 6ch) 0 calc(28px + calc(32px * 1.26));
+  position: relative;
+  margin: 0 auto;
+  font-size: var(--root-frequency);
+}
+
+main .ProseMirror {
+  min-height: 100%;
+  max-width: calc(var(--document-width) + 8ch);
+  border-radius: 16px 16px 0 0;
+  background-color: var(--paper-color);
+  padding: var(--h2) 4ch var(--title);
+  box-shadow: 0 0px 16px -8px var(--trim-color);
+  animation: fade-in ease-out 200ms;
+  word-break: break-word;
+  margin: 0 auto;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.scrollbar-small::-webkit-scrollbar {
+  width: 8px;
+}
+.scrollbar-small::-webkit-scrollbar-track {
+  @apply rounded-3;
+  background: var(--off-color);
+}
+.scrollbar-small::-webkit-scrollbar-thumb {
+  @apply rounded-3;
+  background: var(--type-color);
+}

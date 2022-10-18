@@ -1,0 +1,59 @@
+/*
+  f0 = 1em / 16px;
+  r = 2;
+  n = 3;
+  f(i) = f0 * r^(i/n)
+*/
+
+/* Variables */
+:root {
+  /*
+
+    IMPORTANT: PARAMETERS ARE PREFIXED WITH THREE DASHES
+
+    Parameters are commented out to allow for the natural css defaults to work.
+    They will take precedence when set by the document.
+  */
+
+  /* Parameters */
+  /*
+    ---root-size: 1em;
+    ---ratio: 1.2599;
+    ---document-width: 60ch;
+    ---document-margin: 4ch;
+
+    ---body-font-family: sans-serif;
+    ---heading-font-family: serif;
+    ---heading-weight: 800;
+  */
+
+  /* Parameters with defaults */
+  --root-size: var(---root-size, 1em);
+  --ratio: var(---ratio, 1.2599);
+  --document-width: var(---document-width, 60ch);
+  --document-margin: var(---document-margin, 4ch);
+  --body-font-family: var(---body-font-family, --rlm-font, sans-serif);
+  --heading-font-family: var(---heading-font-family, --rlm-font, serif);
+  --heading-weight: var(---heading-weight, 800);
+
+  /* Effects */
+  --body: 1rem;
+  --title: calc(
+    1rem * var(--ratio) * var(--ratio) * var(--ratio) * var(--ratio) *
+      var(--ratio)
+  );
+  --h1: calc(1rem * var(--ratio) * var(--ratio) * var(--ratio) * var(--ratio));
+  --h2: calc(1rem * var(--ratio) * var(--ratio) * var(--ratio));
+  --h3: calc(1rem * var(--ratio));
+  --footer: calc(1rem / var(--ratio));
+  --margin-before: 1em;
+  --margin-after: 0.5em;
+
+  /* Leading */
+  --leading-body: calc(var(--ratio) * 1em);
+  --leading-heading: calc(var(--ratio) * var(--ratio) * 1em);
+
+  /* Root Styles */
+  font-family: var(--rlm-font, Rubik, sans-serif);
+  font-size: var(--root-size);
+}

@@ -1,0 +1,11 @@
+/* Scrollbars */
+
+.scrollbar-small::-webkit-scrollbar {
+  width: 8px;
+}
+.scrollbar-small::-webkit-scrollbar-track {
+  @apply rounded-3 bg-border;
+}
+.scrollbar-small::-webkit-scrollbar-thumb {
+  @apply rounded-3 bg-type;
+}
