@@ -18,6 +18,20 @@ pre {
   margin-bottom: var(--margin-after);
 }
 
+/* Header */
+header {
+  margin-top: var(--margin-before);
+  margin-bottom: var(--h2);
+}
+header h1 {
+  margin: 0;
+}
+
+header p {
+  margin: 0;
+  font-style: italic;
+}
+
 /* Nodes */
 p {
   font-family: var(--body-font-family);

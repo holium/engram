@@ -18,7 +18,7 @@ const schema = new Schema({
   nodes: {
     // Fundemental -------------------------------------------------------------
     doc: {
-      content: "block+",
+      content: "header block+",
     },
 
     // Text
@@ -27,6 +27,54 @@ const schema = new Schema({
     },
 
     // Header -----------------------------------------------------------------
+    header: {
+      content: "cover{0, 1} title description{0, 1}",
+      group: "header",
+      attrs: { id: { default: null } },
+      parseDOM: [{ tag: "header" }],
+      toDOM(node) {
+        return ["header", 0];
+      },
+    },
+
+    title: {
+      content: "text*",
+      group: "meta",
+      attrs: { id: { default: null } },
+      parseDOM: [{ tag: `h1[name="title"]` }],
+      toDOM(node) {
+        return ["h1", { name: "title" }, 0];
+      },
+    },
+
+    cover: {
+      content: "text*",
+      group: "meta",
+      attrs: { id: { default: null }, src: { default: "" } },
+      parseDOM: [
+        {
+          tag: `img[name="title"]`,
+          getAttrs(dom: string | HTMLElement) {
+            return {
+              src: (dom as HTMLElement).getAttribute("src"),
+            };
+          },
+        },
+      ],
+      toDOM(node) {
+        return ["img", { name: "title", src: node.attrs.src }];
+      },
+    },
+
+    description: {
+      content: "inline*",
+      group: "meta",
+      attrs: { id: { default: null } },
+      parseDOM: [{ tag: `p[name="description"]` }],
+      toDOM(node) {
+        return ["p", { name: "description" }, 0];
+      },
+    },
 
     // Blocks ------------------------------------------------------------------
     // Paragraph
