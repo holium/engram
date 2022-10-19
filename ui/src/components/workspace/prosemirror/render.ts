@@ -5,10 +5,14 @@ import schema from "./schema";
 import keymap from "./keymap";
 import shortcuts from "./shortcuts";
 import save from "./save";
+import bauble from "./bauble";
+import type { BaubleUpdate } from "./bauble";
 
-export default function (workspace: any, place: HTMLElement): EditorView {
+export default function (
+  place: HTMLElement,
+  updateBauble: (bauble: BaubleUpdate) => void
+): EditorView {
   console.log(place);
-  console.log(workspace);
   const state = EditorState.create({
     schema: schema,
     plugins: [
@@ -17,6 +21,8 @@ export default function (workspace: any, place: HTMLElement): EditorView {
       save((view) => {
         console.log("Saving...");
       }),
+      // ux
+      bauble(updateBauble),
     ],
   });
   const view = new EditorView(place, {
