@@ -6,6 +6,11 @@
 }
 
 /* Element Styles */
+.ProseMirror > * {
+  padding-left: calc(var(--document-margin) / var(--ratio));
+  padding-right: calc(var(--document-margin) / var(--ratio));
+}
+
 p,
 h1,
 h2,
@@ -20,7 +25,7 @@ pre {
 
 /* Header */
 header {
-  margin-top: var(--margin-before);
+  padding-top: var(--document-margin);
   margin-bottom: var(--h2);
 }
 header h1 {

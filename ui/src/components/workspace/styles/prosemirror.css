@@ -8,7 +8,6 @@
   border-radius: calc(var(--document-margin) / var(--ratio) / var(--ratio))
     calc(var(--document-margin) / var(--ratio) / var(--ratio)) 0 0;
   min-height: calc(100% - var(--document-margin));
-  padding: calc(var(--document-margin) / var(--ratio)) var(--document-margin);
   margin: var(--document-margin) auto 0;
   box-shadow: 0 0px 16px -8px var(--border-color);
   animation: fade-in ease-out 200ms;

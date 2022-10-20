@@ -1,3 +1,19 @@
+/* UI */
+.clickable {
+  @apply cursor-pointer;
+}
+
+.clickable:hover {
+  @apply bg-border;
+}
+
+/* Icons */
+.icon {
+  @apply p-1 rounded-1;
+  width: calc(theme(lineHeight.base) + 2 * theme(spacing.1));
+  height: calc(theme(lineHeight.base) + 2 * theme(spacing.1));
+}
+
 /* Scrollbars */
 
 .scrollbar-small::-webkit-scrollbar {

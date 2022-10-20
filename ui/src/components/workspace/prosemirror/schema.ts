@@ -132,7 +132,8 @@ const schema = new Schema({
       group: "block",
       attrs: {
         id: { default: null },
-        direction: { default: "up", behavior: "scroll" },
+        direction: { default: "up" },
+        behavior: { default: "scroll" },
       },
       parseDOM: [{ tag: "marquee" }],
       toDOM(node) {
