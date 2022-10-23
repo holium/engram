@@ -14,7 +14,6 @@ export const bauble = (update: (bauble: BaubleUpdate) => void) =>
           });
           if (pos && pos.inside >= 0) {
             const dom = view.nodeDOM(pos.inside);
-            console.log(dom);
             if (dom) {
               const box = (dom as Element).getBoundingClientRect();
               update({

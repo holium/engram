@@ -28,7 +28,7 @@ const schema = new Schema({
 
     // Header -----------------------------------------------------------------
     header: {
-      content: "cover{0, 1} title description{0, 1}",
+      content: "cover styling title description{0, 1}",
       group: "header",
       attrs: { id: { default: null } },
       parseDOM: [{ tag: "header" }],
@@ -50,7 +50,7 @@ const schema = new Schema({
     cover: {
       content: "text*",
       group: "meta",
-      attrs: { id: { default: null }, src: { default: "" } },
+      attrs: { id: { default: null }, src: { default: "" }, xpositioning: { default: 50 }, ypositioning: { default: 50 } },
       parseDOM: [
         {
           tag: `img[name="title"]`,
@@ -73,6 +73,30 @@ const schema = new Schema({
       parseDOM: [{ tag: `p[name="description"]` }],
       toDOM(node) {
         return ["p", { name: "description" }, 0];
+      },
+    },
+
+    styling: {
+      content: "property*",
+      group: "meta",
+      attrs: { id: { default: null }},
+      parseDOM: [{ tag: `fieldset[name="styling"]` }],
+      toDOM(node) {
+        return ["fieldset", { name: "styling" }, 0];
+      },
+    },
+
+    property: {
+      group: "property",
+      attrs: { id: { default: null }, key: { default: "" }, value: { default: "" }},
+      parseDOM: [{ tag: "data", getAttrs(dom: string | HTMLElement) {
+        return {
+          key: (dom as HTMLElement).getAttribute("key"),
+          value: (dom as HTMLElement).getAttribute("value")
+        }
+      } }],
+      toDOM(node) {
+        return ["data", { key: node.attrs.key, value: node.attrs.value }];
       },
     },
 

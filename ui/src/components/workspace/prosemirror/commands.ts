@@ -8,6 +8,22 @@ import type { Command } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
 import type { NodeType, ContentMatch } from "prosemirror-model";
 import schema from "./schema";
+import { CoverPluginKey } from "./cover";
+import type { Cover } from "./cover";
+
+// Engram
+export const setCover: (newCover: Cover) => Command = (newCover: Cover) => (state, dispatch) => {
+  console.log("new cover: ", newCover, state.doc.nodeAt(newCover.pos))
+  const tr = state.tr.setNodeMarkup(newCover.pos, null, {src: newCover.src, xpositioning: newCover.xpositioning, ypositioning: newCover.ypositioning });
+  console.log("determined transaction: ", tr);
+  if(dispatch) {
+    dispatch(tr);
+    return true
+  }
+  return true;
+}
+
+// Prosemirror
 
 export const hardBreak: Command = function (state, dispatch, view) {
   if (dispatch) {
@@ -50,10 +66,35 @@ export const stopTab: Command = function (state, dispatch, view) {
 };
 
 // helpers
-function defaultBlockAt(match: ContentMatch) {
+export function defaultBlockAt(match: ContentMatch) {
   for (let i = 0; i < match.edgeCount; i++) {
     const { type } = match.edge(i);
     if (type.isTextblock && !type.hasRequiredAttrs()) return type;
   }
   return null;
+}
+
+export function handleImageDrop(event: DragEvent): Promise<any> {
+  return new Promise((resolve ,reject) => {
+    if (!event.dataTransfer) return;
+    const files = event.dataTransfer.files;
+    if (files.length == 0) {
+      reject();
+    } else {
+      event.preventDefault();
+
+      if (
+        ["image/png", "image/jpg", "image/jpeg"].includes(
+          Array.from(files)[0].type
+        )
+      ) {
+        const reader = new FileReader();
+        reader.readAsDataURL(Array.from(files)[0]);
+        reader.onload = (res) => {
+          resolve(reader.result);
+        };
+      }
+    }
+  })
+
 }

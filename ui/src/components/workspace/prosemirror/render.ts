@@ -7,10 +7,17 @@ import shortcuts from "./shortcuts";
 import save from "./save";
 import bauble from "./bauble";
 import type { BaubleUpdate } from "./bauble";
+import cover from "./cover";
+import type { CoverUpdate } from "./cover"
+import styling from "./styling";
+
+
+export let view: EditorView;
 
 export default function (
   place: HTMLElement,
-  updateBauble: (bauble: BaubleUpdate) => void
+  updateBauble: (bauble: BaubleUpdate) => void,
+  updateCover: (cover: CoverUpdate) => void
 ): EditorView {
   console.log(place);
   const state = EditorState.create({
@@ -21,11 +28,14 @@ export default function (
       save((view) => {
         console.log("Saving...");
       }),
+      // Views
+      cover(updateCover),
+      styling,
       // ux
       bauble(updateBauble),
     ],
   });
-  const view = new EditorView(place, {
+  view = new EditorView(place, {
     state,
   });
   return view;
