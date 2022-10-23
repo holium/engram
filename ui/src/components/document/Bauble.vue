@@ -55,6 +55,7 @@ export default defineComponent({
   @apply flex;
   position: fixed;
   opacity: 0;
+  z-index: 2;
   transition: opacity 80ms ease, top 80ms ease-out;
 }
 

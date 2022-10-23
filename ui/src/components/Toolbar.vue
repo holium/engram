@@ -11,4 +11,18 @@ export default defineComponent({
 });
 </script>
 
-<style lang="css" scoped></style>
+<style lang="css" scoped>
+#toolbar {
+  position: sticky;
+  height: 0;
+  top: 0;
+  width: 100%;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 80ms ease;
+}
+#toolbar:hover {
+  opacity: 1;
+}
+
+</style>

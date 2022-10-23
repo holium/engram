@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Workspace from "@/views/Workspace.vue";
+import Document from "@/components/document/Document.vue";
 import Empty from "@/views/Empty.vue";
 import Space from "@/views/Space.vue";
 
@@ -11,7 +11,7 @@ const router = createRouter({
       name: "Space",
       component: Space,
       children: [
-        { path: ":id", name: "Workspace", component: Workspace },
+        { path: ":id", name: "Document", component: Document },
         { path: "", name: "empty", component: Empty },
       ],
     },

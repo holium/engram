@@ -1,6 +1,5 @@
 <template>
-  <div class="relative" id="workspace" ref="workspace">
-    <Toolbar id="toolbar" />
+  <div class="relative items-center scrollbar-small" id="document" ref="document">
     <Bauble :bauble="bauble" />
     <Cover :cover="cover" />
   </div>
@@ -9,23 +8,21 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { EditorView } from "prosemirror-view";
-import render from "@/components/workspace/prosemirror/render";
-import Toolbar from "@/components/workspace/Toolbar.vue";
-import Bauble from "@/components/workspace/Bauble.vue";
+import render from "./prosemirror/render";
+import Bauble from "./Bauble.vue";
 import type {
   BaubleUpdate,
   Bauble as IBauble,
-} from "@/components/workspace/prosemirror/bauble";
-import Cover from "@/components/workspace/Cover.vue"
+} from "./prosemirror/bauble";
+import Cover from "./Cover.vue"
 import type {
   CoverUpdate,
   Cover as ICover,
-} from "@/components/workspace/prosemirror/cover";
+} from "./prosemirror/cover";
 
 export default defineComponent({
-  name: "Workspace",
+  name: "Document",
   components: {
-    Toolbar,
     Bauble,
     Cover,
   },
@@ -46,7 +43,7 @@ export default defineComponent({
   },
   mounted: function () {
     //render document
-    render(this.$refs["workspace"] as any, this.updateBauble, this.updateCover);
+    render(this.$refs["document"] as any, this.updateBauble, this.updateCover);
   },
   methods: {
     updateBauble: function (bauble: BaubleUpdate) {
@@ -60,20 +57,7 @@ export default defineComponent({
 </script>
 
 <style lang="css" scoped>
-#workspace {
-  @apply relative;
-  height: 100vh;
-}
-#toolbar {
-  position: sticky;
-  height: 0;
-  top: 0;
-  width: 100%;
-  z-index: 1;
-  opacity: 0;
-  transition: opacity 80ms ease;
-}
-#toolbar:hover {
-  opacity: 1;
+#document {
+  @apply relative flex flex-col overflow-auto;
 }
 </style>
