@@ -127,6 +127,25 @@ const schema = new Schema({
       defining: true,
     },
 
+    marquee: {
+      content: "inline*",
+      group: "block",
+      attrs: {
+        id: { default: null },
+        direction: { default: "up" },
+        behavior: { default: "scroll" },
+      },
+      parseDOM: [{ tag: "marquee" }],
+      toDOM(node) {
+        return [
+          "marquee",
+          { ...(node.attrs.id ? { id: node.attrs.id } : {}) },
+          0,
+        ];
+      },
+      defining: true,
+    },
+
     // Code Block
     "code-block": {
       content: "text*",

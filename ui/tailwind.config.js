@@ -22,6 +22,9 @@ module.exports = {
     fontSize: {
       base: "16px",
     },
+    lineHeight: {
+      base: "1.2599em",
+    },
     colors: {
       type: "var(--rlm-text-color, #261f1f)",
       paper: "var(--rlm-card-color, #FAFBFB)",

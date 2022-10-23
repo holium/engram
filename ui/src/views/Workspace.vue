@@ -1,7 +1,7 @@
 <template>
   <div class="relative" id="workspace" ref="workspace">
     <Toolbar id="toolbar" />
-    <Bauble :bauble="bauble" v-if="bauble" />
+    <Bauble :bauble="bauble" />
   </div>
 </template>
 
@@ -10,6 +10,11 @@ import { defineComponent } from "vue";
 import render from "@/components/workspace/prosemirror/render";
 import Toolbar from "@/components/workspace/Toolbar.vue";
 import Bauble from "@/components/workspace/Bauble.vue";
+import type {
+  BaubleUpdate,
+  Bauble as IBauble,
+} from "@/components/workspace/prosemirror/bauble";
+
 export default defineComponent({
   name: "Workspace",
   components: {
@@ -18,12 +23,21 @@ export default defineComponent({
   },
   data() {
     return {
-      bauble: null,
+      bauble: {
+        on: false,
+        top: 0,
+        node: null,
+      } as IBauble,
     };
   },
   mounted: function () {
     //render document
-    render(this, this.$refs["workspace"] as any);
+    render(this.$refs["workspace"] as any, this.updateBauble);
+  },
+  methods: {
+    updateBauble: function (bauble: BaubleUpdate) {
+      this.bauble = { ...this.bauble, ...bauble };
+    },
   },
 });
 </script>
