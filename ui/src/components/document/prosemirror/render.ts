@@ -10,6 +10,7 @@ import type { BaubleUpdate } from "./bauble";
 import cover from "./cover";
 import type { CoverUpdate } from "./cover"
 import styling from "./styling";
+import type { StylingUpdate } from "./styling"
 
 
 export let view: EditorView;
@@ -17,7 +18,8 @@ export let view: EditorView;
 export default function (
   place: HTMLElement,
   updateBauble: (bauble: BaubleUpdate) => void,
-  updateCover: (cover: CoverUpdate) => void
+  updateCover: (cover: CoverUpdate) => void,
+  updateStyling: (styling: StylingUpdate) => void
 ): EditorView {
   console.log(place);
   const state = EditorState.create({
@@ -30,7 +32,7 @@ export default function (
       }),
       // Views
       cover(updateCover),
-      styling,
+      styling(updateStyling),
       // ux
       bauble(updateBauble),
     ],

@@ -1,5 +1,5 @@
 <template>
-  <div class="">
+  <div class="text-body">
     <div class="flex px-3 py-2">toolbar</div>
   </div>
 </template>

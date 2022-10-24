@@ -23,6 +23,17 @@ export const setCover: (newCover: Cover) => Command = (newCover: Cover) => (stat
   return true;
 }
 
+export const setProperty: (pos: number, key: string, value: string) => Command = (pos:number, key: string, value: string) => (state, dispatch) => {
+  console.log()
+  const tr = state.tr.setNodeMarkup(pos, null, {key: key, value: value });
+  console.log("determined transaction: ", tr);
+  if(dispatch) {
+    dispatch(tr);
+    return true
+  }
+  return true;
+}
+
 // Prosemirror
 
 export const hardBreak: Command = function (state, dispatch, view) {
