@@ -26,6 +26,10 @@
   border-right: 1px solid;
 }
 
+.dock-label {
+  @apply flex-1 py-2 overflow-hidden whitespace-nowrap overflow-ellipsis;
+}
+
 /* Icons */
 .icon {
   @apply p-1 rounded-1;
