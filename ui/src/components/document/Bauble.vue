@@ -53,8 +53,9 @@ export default defineComponent({
 <style lang="css" scoped>
 .bauble {
   @apply flex;
-  position: fixed;
+  position: absolute;
   opacity: 0;
+  z-index: 2;
   transition: opacity 80ms ease, top 80ms ease-out;
 }
 

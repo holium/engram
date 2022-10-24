@@ -20,7 +20,7 @@ module.exports = {
       azimuth: "Source Code Pro",
     },
     fontSize: {
-      base: "16px",
+      body: "16px",
     },
     lineHeight: {
       base: "1.2599em",

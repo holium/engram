@@ -1,10 +1,29 @@
+/* Components */
+.toolbar {
+  @apply flex gap-3 px-4 py-3;
+}
+
 /* UI */
+.heading {
+  @apply font-bold text-base;
+  font-variant: small-caps;
+}
+
 .clickable {
   @apply cursor-pointer;
 }
 
 .clickable:hover {
   @apply bg-border;
+}
+
+.dock-grip {
+  @apply mx-2 border-border;
+  border-color: theme(colors.border);
+  cursor: col-resize;
+  width: 4px;
+  border-left: 1px solid;
+  border-right: 1px solid;
 }
 
 /* Icons */
