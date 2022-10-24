@@ -1,0 +1,216 @@
+/* Styles for strictly within the document */
+
+.ProseMirror ::selection {
+  background-color: theme(colors.type);
+  color: theme(colors.paper);
+}
+
+/* Element Styles */
+.ProseMirror > * {
+  padding-left: calc(var(--document-margin) / var(--ratio));
+  padding-right: calc(var(--document-margin) / var(--ratio));
+}
+
+p,
+h1,
+h2,
+h3,
+ul,
+ol,
+blockquote,
+pre {
+  margin-top: var(--margin-before);
+  margin-bottom: var(--margin-after);
+}
+
+/* Header */
+header {
+  padding-top: var(--document-margin);
+  margin-bottom: var(--h2);
+}
+header h1 {
+  margin: 0;
+}
+
+header p {
+  margin: 0;
+  font-style: italic;
+}
+
+/* Nodes */
+p {
+  font-family: var(--body-font-family);
+  line-height: var(--leading-body);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--heading-font-family);
+  font-weight: var(--heading-weight);
+  line-height: var(--leading-heading);
+}
+
+h1 {
+  font-size: var(--h1);
+}
+
+h2 {
+  font-size: var(--h2);
+}
+
+h3 {
+  font-size: var(--h3);
+}
+
+blockquote {
+  padding-left: theme(spacing.4);
+  border-left: 2px solid theme(colors.type);
+}
+
+pre {
+  padding: theme(spacing.4) theme(spacing.3);
+  border-radius: theme(spacing.2);
+  background-color: theme(colors.border);
+  font-family: JetBrains Mono, monospace;
+}
+
+hr {
+  border-top: 1px solid theme(colors.border);
+  margin: var(--margin-before) 0;
+  width: 100%;
+}
+
+/* List Nodes */
+
+ul {
+  padding-left: theme(spacing.4);
+  list-style-type: disc;
+}
+
+ol {
+  padding-left: theme(spacing.4);
+  list-style-type: decimal;
+}
+
+li {
+  margin-bottom: var(--margin-after);
+}
+
+li ol:nth-child(2),
+ul:nth-child(2) {
+  margin-bottom: var(--margin-after);
+}
+
+li p:first-child {
+  margin-top: 0;
+  margin-bottom: 0;
+  font-size: var(--body);
+  line-height: var(--h3);
+}
+
+/* Figures */
+img {
+  resize: horizontal;
+}
+
+img::selection {
+  background-color: #00000000;
+}
+
+/* Marks */
+strong {
+  font-weight: bold;
+}
+
+em {
+  font-style: italic;
+}
+
+u {
+  text-decoration: underline;
+}
+
+s {
+  text-decoration: line-through;
+}
+
+code {
+  padding: 0 theme(spacing.2);
+  border-radius: theme(spacing.1);
+  background-color: theme(colors.border);
+  font-family: JetBrains Mono, monospace;
+}
+
+a:not([href*="engram://"])
+{
+  color: theme(colors.accent);
+  text-decoration: underline;
+}
+
+a[href*="engram://"]
+{
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+/* Comments */
+/*
+    mark {
+      color: var(--type-color);
+      background-color: var(--type-glass-color);
+      text-decoration: underline;
+    }
+
+    aside {
+      @apply inline mb-3;
+      position: relative;
+      font-weight: normal;
+      font-style: normal;
+      text-decoration: none;
+      float: right;
+      left: 6ch;
+      width: 0;
+      overflow: visible;
+      clear: both;
+    }
+
+    .comment {
+      @apply rounded-2 shadow-menu flex flex-col items-stretch;
+      background: var(--paper-color);
+      width: 280px;
+      min-width: 280px;
+    }
+
+    @media (max-width: 800px) {
+      aside {
+        position: absolute;
+        float: none;
+        left: 4ch;
+        top: auto;
+        margin-top: var(--leading-body);
+      }
+    }
+
+    aside li {
+      @apply px-3 py-2 gap-2 flex;
+      list-style-type: none;
+      margin: 0;
+    }
+
+    aside.context-menu li:hover {
+      background-color: var(--paper-color);
+      cursor: default;
+    }
+
+    aside blockquote {
+      @apply pl-3;
+    }
+
+    aside li textarea {
+      @apply px-3 py-2 flex-grow rounded-2;
+      outline: none;
+      background-color: var(--type-glass-color);
+      min-width: 0;
+    }
+    */

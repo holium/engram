@@ -1,0 +1,62 @@
+.ProseMirror {
+  @apply bg-paper flex-grow;
+  outline-style: none;
+  white-space: normal;
+  line-height: var(--leading-body);
+  font-size: var(--body);
+  max-width: 100%;
+  width: calc(var(--document-width) + calc(2 * var(--document-margin)));
+  border-radius: calc(var(--document-margin) / var(--ratio) / var(--ratio))
+    calc(var(--document-margin) / var(--ratio) / var(--ratio)) 0 0;
+  /* min-height: calc(100% - 2 * var(--document-margin)); */
+  margin: calc(var(--document-margin) * 2) 0 0;
+  box-shadow: 0 0px 16px -8px var(--border-color);
+  animation: fade-in ease-out 200ms;
+  word-break: break-word;
+  z-index: 1;
+  position: relative;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+p.Prosemirror-placeholder:before {
+  cursor: text;
+  position: absolute;
+  content: "Start typing...";
+  opacity: 0.3;
+}
+
+/*
+
+header h1.Prosemirror-placeholder:before {
+  cursor: text;
+  position: absolute;
+  content: "Title";
+  opacity: 0.3;
+}
+
+header p.Prosemirror-placeholder:before {
+  cursor: text;
+  position: absolute;
+  content: "description";
+  opacity: 0.5;
+}
+
+.Prosemirror-config dl,
+.Prosemirror-config label {
+  display: none;
+}
+
+*/
+
+.ProseMirror-selectednode {
+  outline: 2px solid var(--type-color);
+  outline-offset: 2px;
+}
