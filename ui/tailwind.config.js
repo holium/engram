@@ -26,6 +26,7 @@ module.exports = {
       base: "1.2599em",
     },
     colors: {
+      none: "#00000000",
       type: "var(--rlm-text-color, #261f1f)",
       paper: "var(--rlm-card-color, #FAFBFB)",
       icon: "var(--rlm-icon-color, #333333)",

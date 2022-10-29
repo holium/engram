@@ -109,7 +109,18 @@ export default defineComponent({
 #dock {
   @apply flex flex-col;
   min-width: 180px;
-  max-width: 40vw;
+  max-width: 36vw;
+  transition: max-width 200ms ease;
+}
+
+.hide-dock #dock {
+  overflow: hidden;
+  min-width: 0;
+  max-width: 0;
+}
+
+.hide-dock .dock-grip {
+  opacity: 0;
 }
 
 </style>
