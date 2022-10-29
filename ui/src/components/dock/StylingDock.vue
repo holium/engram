@@ -6,7 +6,7 @@
     </div>
 
     <div class="px-3 flex gap-3">
-      <div class="flex-1 py-2">Font Size:</div>
+      <div class="dock-label">Font Size:</div>
       <input type="number" min="8" max="48" class="px-3 py-2 bg-window flex-1 min-w-0 outline-none" v-model="mirror['root-size']"
         @blur="(event) => {
           changeStyle('root-size', `${parseInt(event.target.value) / 16}em`)
@@ -14,7 +14,7 @@
       />
     </div>
     <div class="px-3 flex gap-3">
-      <div class="flex-1 py-2">Scale:</div>
+      <div class="dock-label">Scale:</div>
       <input type="number" min="1" max="4" step=".01" class="px-3 py-2 bg-window flex-1 min-w-0 outline-none" v-model="mirror['ratio']"
         @blur="(event) => {
           changeStyle('ratio', `${Math.pow(parseFloat(event.target.value), 1 / 3)}`)
@@ -23,7 +23,7 @@
     </div>
 
     <div class="px-3 flex gap-3">
-      <div class="flex-1 py-2">Body Font Family:</div>
+      <div class="dock-label">Body Font Family:</div>
       <select class="px-3 py-2 bg-window flex-1 min-w-0 outline-none mr-3" v-model="mirror['body-font-family']"
         @change="(event) => {
           changeStyle('body-font-family', `${event.target.value}`)
@@ -35,7 +35,7 @@
       </select>
     </div>
     <div class="px-3 flex gap-3">
-      <div class="flex-1 py-2">Heading Font Family:</div>
+      <div class="dock-label">Heading Font Family:</div>
       <select class="px-3 py-2 bg-window flex-1 min-w-0 outline-none mr-3" v-model="mirror['heading-font-family']"
         @change="(event) => {
           changeStyle('heading-font-family', `${event.target.value}`)
@@ -47,7 +47,7 @@
       </select>
     </div>
     <div class="px-3 flex gap-3">
-      <div class="flex-1 py-2">Heading Weight:</div>
+      <div class="dock-label">Heading Weight:</div>
       <input type="number" min="200" max="900" class="px-3 py-2 bg-window flex-1 min-w-0 outline-none" v-model="mirror['heading-weight']"
         @blur="(event) => {
           changeStyle('heading-weight', `${parseInt(event.target.value)}`)
@@ -61,7 +61,7 @@
 
     <!-- Document -->
     <div class="px-3 flex gap-3">
-      <div class="flex-1 py-2">Width:</div>
+      <div class="dock-label">Width:</div>
       <input type="number" min="40" max="120" class="px-3 py-2 bg-window flex-1 min-w-0 outline-none" v-model="mirror['document-width']"
         @blur="(event) => {
           changeStyle('document-width', `${event.target.value}ch`)
@@ -69,7 +69,7 @@
       />
     </div>
     <div class="px-3 flex gap-3">
-      <div class="flex-1 py-2">Margin:</div>
+      <div class="dock-label">Margin:</div>
       <input type="number" min="0" max="8" class="px-3 py-2 bg-window flex-1 min-w-0 outline-none" v-model="mirror['document-margin']"
         @blur="(event) => {
           changeStyle('document-margin', `${event.target.value}rem`)
@@ -135,4 +135,5 @@ export default defineComponent({
 </script>
 
 <style lang="css" scoped>
+
 </style>

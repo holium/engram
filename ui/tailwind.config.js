@@ -26,6 +26,7 @@ module.exports = {
       base: "1.2599em",
     },
     colors: {
+      none: "#00000000",
       type: "var(--rlm-text-color, #261f1f)",
       paper: "var(--rlm-card-color, #FAFBFB)",
       icon: "var(--rlm-icon-color, #333333)",
@@ -35,7 +36,10 @@ module.exports = {
       accent: "var(--rlm-accent-color, #4E9EFD)",
     },
     spacing: scale,
-    borderRadius: scale,
+    borderRadius: {
+      "full": "100%",
+      ...scale
+    },
     borderWidth: scale,
     outlineWidth: scale,
     boxShadow: {

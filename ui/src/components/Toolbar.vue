@@ -1,6 +1,37 @@
 <template>
-  <div class="text-body">
-    <div class="flex px-3 py-2">toolbar</div>
+  <div class="text-body flex">
+    <!-- Nav Show / hide -->
+    <div class="p-2">
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 16 16"
+        fill="var(--rlm-icon-color, #333333)"
+        class="icon clickable nav-toggle"
+        xmlns="http://www.w3.org/2000/svg"
+        @click="toggleNav"
+      >
+        <path d="M1 3.5C1 3.22375 1.22387 3 1.5 3H14.5C14.775 3 15 3.22375 15 3.5C15 3.77625 14.775 4 14.5 4H1.5C1.22387 4 1 3.77625 1 3.5ZM1 8.5C1 8.225 1.22387 8 1.5 8H14.5C14.775 8 15 8.225 15 8.5C15 8.775 14.775 9 14.5 9H1.5C1.22387 9 1 8.775 1 8.5ZM14.5 14H1.5C1.22387 14 1 13.775 1 13.5C1 13.225 1.22387 13 1.5 13H14.5C14.775 13 15 13.225 15 13.5C15 13.775 14.775 14 14.5 14Z" fill="#261F1F"/>
+      </svg>
+    </div>
+
+    <div class="flex px-3 py-2 flex-grow">toolbar</div>
+
+    <!-- Dock Show / hide -->
+    <div class="p-2">
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 16 16"
+        fill="var(--rlm-icon-color, #333333)"
+        class="icon clickable dock-toggle"
+        xmlns="http://www.w3.org/2000/svg"
+        @click="toggleDock"
+      >
+        <path d="M1 3.5C1 3.22375 1.22387 3 1.5 3H14.5C14.775 3 15 3.22375 15 3.5C15 3.77625 14.775 4 14.5 4H1.5C1.22387 4 1 3.77625 1 3.5ZM1 8.5C1 8.225 1.22387 8 1.5 8H14.5C14.775 8 15 8.225 15 8.5C15 8.775 14.775 9 14.5 9H1.5C1.22387 9 1 8.775 1 8.5ZM14.5 14H1.5C1.22387 14 1 13.775 1 13.5C1 13.225 1.22387 13 1.5 13H14.5C14.775 13 15 13.225 15 13.5C15 13.775 14.775 14 14.5 14Z" fill="#261F1F"/>
+      </svg>
+    </div>
+
   </div>
 </template>
 
@@ -8,6 +39,7 @@
 import { defineComponent } from "vue";
 export default defineComponent({
   name: "Toolbar",
+  inject: ["toggleNav", "toggleDock"]
 });
 </script>
 
@@ -23,6 +55,20 @@ export default defineComponent({
 }
 #toolbar:hover {
   opacity: 1;
+}
+
+.dock-toggle, .nav-toggle {
+  @apply bg-none;
+  transform: rotate(0);
+  transition: transform 200ms ease, background-color 80ms ease;
+}
+
+.hide-dock .dock-toggle {
+  transform: rotate(-90deg);
+}
+
+.hide-nav .nav-toggle {
+  transform: rotate(90deg);
 }
 
 </style>
