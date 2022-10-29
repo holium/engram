@@ -36,7 +36,10 @@ module.exports = {
       accent: "var(--rlm-accent-color, #4E9EFD)",
     },
     spacing: scale,
-    borderRadius: scale,
+    borderRadius: {
+      "full": "100%",
+      ...scale
+    },
     borderWidth: scale,
     outlineWidth: scale,
     boxShadow: {

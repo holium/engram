@@ -26,6 +26,9 @@
             viewBox="0 0 16 16"
             fill="var(--rlm-icon-color, #333333)"
             xmlns="http://www.w3.org/2000/svg"
+            @click="() => {
+              open = 'sharing'
+            }"
           >
             <g clip-path="url(#clip0_527_14779)">
               <path
@@ -60,17 +63,20 @@
       </div>
 
       <StylingDock :styling="styling" v-if="open == 'styling'" />
+      <SharingDock v-if="open == 'sharing'" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import StylingDock from "./StylingDock.vue"
+import StylingDock from "./StylingDock.vue";
+import SharingDock from "./SharingDock.vue";
 export default defineComponent({
   name: "Dock",
   components: {
-    StylingDock
+    StylingDock,
+    SharingDock,
   },
   props: {
     styling: {
