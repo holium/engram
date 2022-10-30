@@ -1,6 +1,7 @@
 <template>
   <div class="flex items-stretch text-body">
     <div id="nav" :style="{width: `${navWidth}px`}">
+      <SpaceHeading />
     navbar
     </div>
     <div class="dock-grip" draggable="true" @dragstart="handleDragStart">
@@ -11,8 +12,12 @@
 
 <script lang="ts">
 import { defineComponent } from "vue"
+import SpaceHeading from "./SpaceHeading.vue";
 export default defineComponent({
   name: "Navbar",
+  components: {
+    SpaceHeading
+  },
   data() {
     return {
       navWidth: 240,
@@ -20,7 +25,7 @@ export default defineComponent({
     }
   },
   methods: {
-    handleDragStart: function(event) {
+    handleDragStart: function(event: any) {
       this.dragStart = event.clientX;
       event.preventDefault();
       document.addEventListener("mousemove", this.handleDrag);

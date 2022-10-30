@@ -54,11 +54,11 @@ export default defineComponent({
     // prosemirror interactions
     changeCover: function(newSrc: string) {
       console.log("changing cover", newSrc);
-      setCover({ ...this.cover, src: newSrc})(view.state, view.dispatch);
+      setCover({ ...this.cover, src: newSrc} as ICover)(view.state, view.dispatch);
     },
     changePositioning: function() {
       console.log("changing positioning", view);
-      setCover({ ...this.cover, xpositioning: this.xpositioning, ypositioning: this.ypositioning})(view.state, view.dispatch);
+      setCover({ ...this.cover, xpositioning: this.xpositioning, ypositioning: this.ypositioning} as ICover)(view.state, view.dispatch);
     },
 
     // ux
@@ -72,7 +72,7 @@ export default defineComponent({
         this.newSrc = "";
       }
     },
-    handleDragStart: function(event) {
+    handleDragStart: function(event: any) {
       this.dragStartX = event.clientX;
       this.dragStartY = event.clientY;
       event.preventDefault();

@@ -7,8 +7,10 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import store from "@/store/index";
 import { RouterLink, RouterView } from "vue-router";
 import Navbar from "@/components/navbar/Navbar.vue";
+
 export default defineComponent({
   name: "Space",
   components: {
@@ -27,13 +29,20 @@ export default defineComponent({
       toggleDock: this.toggleDock,
     }
   },
+  created: function() {
+    this.loadSpace(this.$route.params.space as string);
+  },
+  beforeRouteUpdate: function(to) {
+    this.loadSpace(to.params.space as string);
+  },
   methods: {
+    loadSpace: function(to: string) {
+      store.dispatch('load', to);
+    },
     toggleNav: function() {
-      console.log("toggling nav");
       this.nav = !this.nav;
     },
     toggleDock: function() {
-      console.log("toggling dock");
       this.dock = !this.dock;
     }
   }

@@ -92,7 +92,7 @@ export default defineComponent({
     }
   },
   methods: {
-    handleDragStart: function(event) {
+    handleDragStart: function(event: any) {
       this.dragStart = event.clientX;
       event.preventDefault();
       document.addEventListener("mousemove", this.handleDrag);
