@@ -13,6 +13,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import store from "@/store/index";
 
 import Toolbar from "@/components/Toolbar.vue";
 import Dock from "@/components/dock/Dock.vue";
@@ -67,11 +68,20 @@ export default defineComponent({
       } as IStyling,
     };
   },
+  created: function() {
+    this.loadDocument(this.$route.params.document as string);
+  },
+  beforeRouteUpdate: function(to) {
+    this.loadDocument(to.params.document as string);
+  },
   mounted: function () {
     //render document
     render(this.$refs["document"] as any, this.updateBauble, this.updateCover, this.updateStyling);
   },
   methods: {
+    loadDocument: function(document: string) {
+      store.dispatch("workspace/load", document);
+    },
     updateBauble: function (bauble: BaubleUpdate) {
       this.bauble = { ...this.bauble, ...bauble };
     },

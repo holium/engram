@@ -7,6 +7,12 @@ export interface RootState {
   workspace: WorkspaceState
 }
 
+export interface Space {
+  path: string;
+  name: string;
+  color: string;
+}
+
 // File Management -------------------------------------------------------------
 
 export interface DocumentState {

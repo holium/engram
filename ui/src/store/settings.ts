@@ -31,6 +31,15 @@ const getters: GetterTree<SettingsState, RootState> = {
 }
 
 const mutations: MutationTree<SettingsState> = {
+  open(state, payload: SettingsState) {
+    state = payload;
+  },
+  close(state) {
+    state.autosync = false;
+    state.roleperms = {};
+    state.shipperms = {};
+  },
+
   setAutosync(state, payload: boolean) {
     state.autosync = payload;
   },
@@ -52,9 +61,25 @@ const mutations: MutationTree<SettingsState> = {
   },
 }
 
+const actions: ActionTree<SettingsState, RootState> = {
+  open({ commit }, payload: string) {
+    (window as any).urbit.scry({ app: "engram", path: ""}).then((response: any) => {
+      commit("open", {
+        autosync: response.autosync,
+        roleperms: response.roles,
+        shipperms: response.shipperms
+      })
+    })
+  },
+  close({ commit }) {
+    commit("close");
+  }
+}
+
 export default {
   namespace: true,
   state,
   getters,
   mutations,
+  actions,
 } as Module<SettingsState, RootState>

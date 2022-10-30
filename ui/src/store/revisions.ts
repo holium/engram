@@ -1,5 +1,6 @@
 import type { Module, GetterTree, MutationTree, ActionTree } from "vuex"
 import type { Patp } from "@urbit/http-api"
+import * as Y from "yjs"
 import type {
   RootState,
   RevisionState,
@@ -20,9 +21,14 @@ const getters: GetterTree<RevisionState, RootState> = {
 }
 
 const mutations: MutationTree<RevisionState> = {
-  load(state, payload: Array<DocumentVersion>) {
+  // Management
+  open(state, payload: Array<DocumentVersion>) {
     state = payload;
   },
+  close(state) {
+    state = [];
+  },
+
   add(state, payload: DocumentVersion) {
       state.push(payload);
       state.sort((a, b) => {
@@ -34,9 +40,28 @@ const mutations: MutationTree<RevisionState> = {
   },
 }
 
+const actions: ActionTree<RevisionState, RootState> = {
+  open({ commit }, payload: string) {
+    (window as any).urbit.scry({ app: "engram", path: ``}).then((response: any) => {
+      commit("open", response.map((version: any) => {
+        return {
+          author: version.author,
+          snapshot: Y.decodeSnapshot(Uint8Array.from(Object.keys(version.snapshot).map(key => version.snapshot[key]))),
+          timestamp: version.timestamp,
+          date: new Date(version.timestamp),
+        }
+      }))
+    })
+  },
+  close({ commit }) {
+    commit("close");
+  }
+}
+
 export default {
   namespace: true,
   state,
   getters,
-  mutations
+  mutations,
+  actions
 }
