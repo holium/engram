@@ -11,7 +11,7 @@ export default defineComponent({
   name: "Empty",
   methods: {
     openDocument: function () {
-      this.$router.push("/apps/engram/document");
+      this.$router.push(`/apps/engram/${this.$route.params.space}/document`);
     },
   },
 });

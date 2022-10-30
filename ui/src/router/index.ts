@@ -2,19 +2,24 @@ import { createRouter, createWebHistory } from "vue-router";
 import Document from "@/components/document/Document.vue";
 import Empty from "@/views/Empty.vue";
 import Space from "@/views/Space.vue";
+import Fallback from "@/views/Fallback.vue"
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
-      path: "/apps/engram",
+      path: "/apps/engram/:station/:space/",
       name: "Space",
       component: Space,
       children: [
-        { path: ":id", name: "Document", component: Document },
+        { path: ":document", name: "Document", component: Document },
         { path: "", name: "empty", component: Empty },
       ],
     },
+    {
+      path: "/:pathMatch(.*)*",
+      component: Fallback,
+    }
   ],
 });
 

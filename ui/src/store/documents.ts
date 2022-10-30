@@ -8,7 +8,7 @@ import type {
 import type { Module, GetterTree, MutationTree, ActionTree } from "vuex"
 
 const state: DocumentState = {
-  
+
 }
 
 const getters: GetterTree<DocumentState, RootState> = {
@@ -25,6 +25,9 @@ const getters: GetterTree<DocumentState, RootState> = {
 const mutations: MutationTree<DocumentState> = {
 
   // Management ----------------------------------------------------------------
+  clear(state) {
+    state = {};
+  },
   load(state, payload: Document) {
     state[payload.id] = payload;
   },
@@ -43,7 +46,23 @@ const mutations: MutationTree<DocumentState> = {
 }
 
 const actions: ActionTree<DocumentState, RootState> = {
-
+  load({ commit }, payload): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      commit("clear");
+      (window as any).urbit.scry({ app: "engram", path: ""}).then((response: any) => {
+        Object.keys(response).forEach((doc: any) => {
+          commit("load", {
+            id: doc,
+            name: response[doc].name,
+            owner: response[doc].owner,
+          })
+        })
+      })
+    })
+  },
+  clear({ commit }) {
+    commit("clear");
+  }
 }
 
 export default {

@@ -25,6 +25,7 @@ const mutations: MutationTree<WorkspaceState> = {
     state.content = payload.content;
   },
   close(state) {
+    state.snapshot = null;
     state.version = null;
     state.content = null;
   },
@@ -38,11 +39,44 @@ const mutations: MutationTree<WorkspaceState> = {
   }
 }
 
+const actions: ActionTree<WorkspaceState, RootState> = {
+  // Management
+  close({ commit, dispatch }): Promise<void> {
+    return new Promise((resolve, reject) => {
+      commit("close");
+      Promise.all([
+        dispatch("settings/close"),
+        dispatch("revisions/close")
+      ]).then(() => {
+        resolve();
+      }).catch(() => {
+        reject();
+      })
+    })
+
+  },
+
+  open({ commit, dispatch }, payload: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      (window as any).urbit.scry({ app: "engram", path: ""}).then((response: any) => {
+        commit('open', {
+          version: Object.keys(response.version).map(key => response.version[key]),
+          content: Uint8Array.from(JSON.parse(response.content))
+        })
+      }).then(() => {
+        dispatch("settings/open", payload);
+        dispatch("revisions/open", payload)
+      })
+    })
+  }
+}
+
 export default {
   namespace: true,
   state,
   getters,
   mutations,
+  actions,
   modules: {
     settings,
     revisions

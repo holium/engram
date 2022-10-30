@@ -9,7 +9,7 @@
         fill="var(--rlm-icon-color, #333333)"
         class="icon clickable nav-toggle"
         xmlns="http://www.w3.org/2000/svg"
-        @click="toggleNav"
+        @click="toggleHideNav"
       >
         <path d="M1 3.5C1 3.22375 1.22387 3 1.5 3H14.5C14.775 3 15 3.22375 15 3.5C15 3.77625 14.775 4 14.5 4H1.5C1.22387 4 1 3.77625 1 3.5ZM1 8.5C1 8.225 1.22387 8 1.5 8H14.5C14.775 8 15 8.225 15 8.5C15 8.775 14.775 9 14.5 9H1.5C1.22387 9 1 8.775 1 8.5ZM14.5 14H1.5C1.22387 14 1 13.775 1 13.5C1 13.225 1.22387 13 1.5 13H14.5C14.775 13 15 13.225 15 13.5C15 13.775 14.775 14 14.5 14Z" fill="#261F1F"/>
       </svg>
@@ -26,7 +26,7 @@
         fill="var(--rlm-icon-color, #333333)"
         class="icon clickable dock-toggle"
         xmlns="http://www.w3.org/2000/svg"
-        @click="toggleDock"
+        @click="toggleHideDock"
       >
         <path d="M1 3.5C1 3.22375 1.22387 3 1.5 3H14.5C14.775 3 15 3.22375 15 3.5C15 3.77625 14.775 4 14.5 4H1.5C1.22387 4 1 3.77625 1 3.5ZM1 8.5C1 8.225 1.22387 8 1.5 8H14.5C14.775 8 15 8.225 15 8.5C15 8.775 14.775 9 14.5 9H1.5C1.22387 9 1 8.775 1 8.5ZM14.5 14H1.5C1.22387 14 1 13.775 1 13.5C1 13.225 1.22387 13 1.5 13H14.5C14.775 13 15 13.225 15 13.5C15 13.775 14.775 14 14.5 14Z" fill="#261F1F"/>
       </svg>
@@ -39,7 +39,15 @@
 import { defineComponent } from "vue";
 export default defineComponent({
   name: "Toolbar",
-  inject: ["toggleNav", "toggleDock"]
+  inject: ["toggleNav", "toggleDock"],
+  methods: {
+    toggleHideNav: function() {
+      (this as any).toggleNav();
+    },
+    toggleHideDock: function() {
+      (this as any).toggleDock();
+    }
+  }
 });
 </script>
 

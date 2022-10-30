@@ -43,6 +43,10 @@ const mutations: MutationTree<FolderState> = {
       notRoot[folder] = true;
     })
   },
+  clear(state) {
+    state = {};
+  },
+
   delete(state, payload: string) {
     const docs = state[payload].documents;
     const folders = state[payload].folders;
@@ -57,6 +61,25 @@ const mutations: MutationTree<FolderState> = {
 
   setName(state, payload: { id: string, name: string }) {
     state[payload.id].name = payload.name;
+  }
+}
+
+const actions: ActionTree<FolderState, RootState> = {
+  load({ commit }, payload): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      commit("clear");
+      (window as any).urbit.scry({ app: "engram", path: ""}).then((response: any) => {
+        Object.keys(response).forEach((folder: any) => {
+          commit("load", {
+            id: folder,
+            name: response[folder].name,
+          })
+        })
+      })
+    })
+  },
+  clear({ commit }) {
+    commit("clear");
   }
 }
 
