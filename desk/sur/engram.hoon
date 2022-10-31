@@ -14,21 +14,39 @@
 :: snap: snapshot to be able to store fixed timestamp history
 :: fldr: contents of a folder, either a document index or a folder index
 ::
-+$  id  @
-+$  athr  @p
-+$  dcont  (list @t)
-+$  updt  [author=athr cont=dcont time=@da]
-+$  ver  (list @ud)
-+$  doc  [version=ver cont=dcont]
-+$  dmeta  [id=id timestamp=@d]
-+$  whtlst  (list @p)
-+$  stg  [perms=whtlst owner=@p name=@t]
 +$  fmeta  [id=id name=@t]
-+$  snap  [date=@d ship=@p data=(list @ud)]
 +$  fldr
   $%  [%doc =dmeta]
       [%folder =fmeta]
   ==
+::
+::  Basic Types
++$  id  [@p @u]
++$  clock  @u
++$  version (map @p clock)
+::
+::  Sharing Types
++$  access  $%(%read %write %admin)
+::
+::  Organisms
++$  type  $%(%document %folder)
++$  index  [version=version content=(map id [id type]) dels=(map id id)]
+::
+::  Documents
++$  dversion   (list @t)
++$  dcontent   (list @t)
++$  dsettings  [owner=@p name=@t roles=(map @tas access) ships=(map @p access)]
++$  dsnapshot  [timestamp=@da author=@p version=dversion]
++$  dupdate    [author=@p timestamp=@da content=dcontent]
++$  document   [id=id version=dversion content=dcontent settings=dsettings snapshots=(list dsnapshot)]
+::
+::  Folders
++$  folder  [id=id name=@t roles=(map @tas access) ships=(map @p access) content=index]
+::
+::  Spaces
++$  spath  [ship=ship space=name]
++$  space  [roles=(map @tas access) ships=(map @p access) content=index]
+
 ::
 :: State Data Types
 :: updts: a key-set storage for the staged updates ready to be merged into your current document
@@ -37,11 +55,12 @@
 :: dsnaps: a key-list store for snapshot containers
 ::
 ::
-+$  updts  (jug dmeta updt)
-+$  docs  (map dmeta doc)
-+$  fldrs  (jug fmeta fldr)
-+$  dstgs  (map dmeta stg)
-+$  dsnaps  (jar dmeta snap)
+
++$  clock  clock
++$  spaces  (map spath space)
++$  updates  (jug id dupdate)
++$  documents  (map id doc)
++$  folders  (jug id folder)
 ::
 :: Poke Actions
 :: [%make =dmeta] - Create a new document within the state
