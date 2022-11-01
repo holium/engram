@@ -30,6 +30,7 @@
 ::
 ::  Organisms
 +$  type  $%(%document %folder)
++$  iupdate  [content=(map @p (set [id type])) dels=(set [id id])]
 +$  index  [version=version content=(map id [id type]) dels=(map id id)]
 ::
 ::  Documents
