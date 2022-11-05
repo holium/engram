@@ -5,7 +5,7 @@
 +$  versioned-state
   $%  state-0
   ==
-+$  state-0  [%0 d=docs:engram f=fldrs:engram u=updts:engram s=dstgs:engram su=dsnaps:engram]
++$  state-0  [%0 localtime=localtime:engram s=spaces:engram d=documents:engram f=folders:engram u=updates:engram]
 +$  card  card:agent:gall
 --
 %-  agent:dbug
@@ -192,39 +192,40 @@
   |=  =path
   ^-  (unit (unit cage))
   ?+    path  (on-peek:def path)
-      [%x %docinfo ~]
-    ``noun+!>((enjs-docinfo:engram s))
+      [%x %document %list ~]
+    ``noun+!>((enjs-list:document:engram d))
   ::
-      [%x %gdoc @ @ ~]
+      [%x %document @ @ %get ~]
     =/  id=@  (crip (trip i.t.t.path))
     =/  timestamp=@d  (di:dejs:format [%n p=i.t.t.t.path])
     =/  meta  [id=id timestamp=timestamp]
     =/  doc  (need (~(get by d) meta))
-    ``noun+!>((enjs-gdoc:engram doc))
+    ``noun+!>((get:document:enjs-engram doc))
   ::
-      [%x %gsetting @ @ ~]
+      [%x %document @ @ %get %settings ~]
     =/  id=@  (crip (trip i.t.t.path))
     =/  timestamp=@d  (di:dejs:format [%n p=i.t.t.t.path])
     =/  meta  [id=id timestamp=timestamp]
     =/  stg=[perms=(list @p) owner=@p name=@t]  (need (~(get by s) meta))
-    ``noun+!>((enjs-gsetting:engram stg))
+    ``noun+!>((setting:document:enjs-engram stg))
   ::
-      [%x %gfolders ~]
-    ``noun+!>((enjs-gfolders:engram f))
-  ::
-      [%x %getsnaps @ @ ~]
+      [%x %document @ @ %get %snapshots ~]
     =/  id=@  (crip (trip i.t.t.path))
     =/  timestamp=@d  (di:dejs:format [%n p=i.t.t.t.path])
     =/  meta  [id=id timestamp=timestamp]
     =/  snap=(list snap:engram)  (need (~(get by su) meta))
-    ``noun+!>((enjs-getsnaps:engram snap))
+    ``noun+!>((snapshots:document:enjs-engram snap))
   ::
-      [%x %gupdates @ @ ~]
+      [%x %document @ @ %get %updates ~]
     =/  id=@  (crip (trip i.t.t.path))
     =/  timestamp=@d  (di:dejs:format [%n p=i.t.t.t.path])
     =/  meta  [id=id timestamp=timestamp]
     =/  upd  (~(get ju u) meta)
-    ``noun+!>((enjs-gupdates:engram upd))
+    ``noun+!>((updates:document:enjs-engram upd))
+  ::
+      [%x %folder %list ~]
+    ``noun+!>((list:folders:enjs-engram f))
+  ::
   ==
 ::
 ++  on-agent
