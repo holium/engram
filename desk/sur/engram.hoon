@@ -26,7 +26,7 @@
 +$  version  (map @p clock)
 ::
 ::  Sharing Types
-+$  access  $%(%read %write %admin)
+::+$  access  $%(%read %write %admin)
 ::
 ::  Organisms
 +$  type  $%(%document %folder)
@@ -36,17 +36,17 @@
 ::  Documents
 +$  dversion   tape
 +$  dcontent   tape
-+$  dsettings  [owner=@p name=@t roles=(map @tas access) ships=(map @p access)]
++$  dsettings  [owner=@p name=@t roles=(map @tas @tas) ships=(map @p @tas)]
 +$  dsnapshot  [timestamp=@da author=@p data=tape]
 +$  dupdate    [author=@p timestamp=@da content=dcontent]
-+$  document   [id=id version=dversion content=dcontent settings=dsettings snapshots=(list dsnapshot)]
++$  document   [id=id version=dversion content=dcontent settings=dsettings snapshots=(set dsnapshot)]
 ::
 ::  Folders
-+$  folder  [id=id name=@t roles=(map @tas access) ships=(map @p access) content=index]
++$  folder  [id=id name=@t roles=(map @tas @tas) ships=(map @p @tas) content=index]
 ::
 ::  Spaces
 +$  spath  [ship=ship space=@p]
-+$  space  [roles=(map @tas access) ships=(map @p access) content=index]
++$  space  [roles=(map @tas @tas) ships=(map @p @tas) content=index]
 
 ::
 :: State Data Types
@@ -78,7 +78,7 @@
 +$  action
   $%  
     $:  %document
-      $%  [%make =@t =dcontent =dversion =(map @tas @tas) =(map @p @tas)]
+      $%  [%make owner=@p name=@t version=dversion content=dcontent roles=(map @tas @tas) ships=(map @p @tas)]
           [%delete =path]
           [%save =path =dcontent =dversion]
           ::[%docsetup =dmeta =doc =stg]
@@ -94,21 +94,20 @@
           [%delete =path]
           [%add =path =path]
           [%remove =path =path]
-          ::[%renamefolder old=fmeta new=fmeta]
+          [%rename =path =@t]
       ==
     ==
     $:  %prop
       $%  [%accept =path =dupdate]
           [%sub =path to=@p]
           [%unsub from=@p]
-          ::[%update =id =dupdate]
+          [%update =id =dupdate]
           [%update-live =path =dupdate]
       ==
     ==
   ==
++$  update
+  $%  [%init id=id settings=dsettings updates=(set dupdate)]
+      [%update id=id update=dupdate]
+  ==
 --
-::+$  update
-::  $%  [%init =dmeta =doc =stg setupt=(set updt)]
-::      [%update =dmeta =updt]
-::  ==
-::--
