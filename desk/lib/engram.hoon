@@ -47,14 +47,14 @@
       %-  ~(run in ~(key by docs))
       |=  id=id:engram
       =/  doc  (~(got by docs) id)
-      :-  (spat ~[(wood (scot %p -.id)) (wood (scot %u +.id))])
+      :-  (spat ~[(scot %p -.id) (scot %u +.id)])
       (pairs ~[['name' (tape (trip name.settings.doc))] ['owner' (tape (scow %p owner.settings.doc))]])
     ++  get
       =,  enjs:format
       |=  doc=document:engram
       ^-  json
       %-  pairs  :~ 
-        ['id' (path ~[(wood (scot %p -.id.doc)) (wood (scot %u +.id.doc))])]
+        ['id' (path ~[(scot %p -.id.doc) (scot %u +.id.doc)])]
         ['version' (tape version.doc)]
         ['content' (tape content.doc)]
         ::['settings' (settings settings.doc)]
@@ -98,7 +98,7 @@
       %-  ~(run in ~(key by folds))
       |=  id=id:engram
       =/  fold  (~(got by folds) id)
-      :-  (spat ~[(wood (scot %p -.id)) (wood (scot %u +.id))])
+      :-  (spat ~[(scot %p -.id) (scot %u +.id)])
       (pairs ~[['name' (tape (trip name.fold))]])
     --
   --
