@@ -2,7 +2,7 @@
   <div class="flex items-stretch text-body">
     <div id="nav" :style="{width: `${navWidth}px`}">
       <SpaceHeading />
-      <FileSystem />
+      <FileSystem class="mt-4" />
     </div>
     <div class="dock-grip" draggable="true" @dragstart="handleDragStart">
 

@@ -12,7 +12,7 @@ const router = createRouter({
       name: "Space",
       component: Space,
       children: [
-        { path: ":document", name: "Document", component: Document },
+        { path: ":author/:clock", name: "Document", component: Document },
         { path: "", name: "empty", component: Empty },
       ],
     },
