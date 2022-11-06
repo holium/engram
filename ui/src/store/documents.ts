@@ -74,14 +74,16 @@ const actions: ActionTree<DocumentState, RootState> = {
       (window as any).urbit.poke({
         app: "engram",
         mark: "post",
-        json: { "make": { "document": {
-          owner: (window as any).ship,
+        json: { "document": { "make": {
+          owner: `~${(window as any).ship}`,
           name: payload.name,
+          content: "",
+          version: "",
           roles: {},
           ships: {},
         }}}
       }).then(() => {
-        (window as any).urbit.scry({ app: "engram", path: `/document/get/~${(window as any).ship}/${clock}`}).then((response: any) => {
+        (window as any).urbit.scry({ app: "engram", path: `/document/~${(window as any).ship}/${clock}/get`}).then((response: any) => {
           console.log("create response:", response);
           //commit("load", response)
           resolve(response);
