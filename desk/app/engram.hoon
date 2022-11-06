@@ -57,7 +57,7 @@
           (silt `(list dsnapshot)`[~])
         ==
         =/  state  this(d (~(put by d) [our.bowl t] doc))
-        `this(t (add t 1))
+        `state(t (add t 1))
         ::
         ::
         ::
@@ -136,7 +136,7 @@
           ^*  index
         ==
         =/  state  this(f (~(put by f) [our.bowl t] fold))
-        `this(t (add t 1))
+        `state(t (add t 1))
         ::
         :: delete an existing folder
         ::
