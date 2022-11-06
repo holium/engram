@@ -14,12 +14,15 @@ import SystemItem from "./SystemItem.vue";
 import type { DocumentMeta, FolderMeta } from "@/store/types";
 export default defineComponent({
     name: "FileSystem",
+    components: {
+        SystemItem,
+    },
     created: function() {
         store.dispatch("documents/load");
     },
     computed: {
         documents: function(): Array<DocumentMeta> {
-            return store.getters['documents/list']
+            return store.getters['documents/list'];
         },
         folders: function(): Array<FolderMeta> {
             //return store.getters['folder/list'];

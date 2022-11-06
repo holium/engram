@@ -17,7 +17,8 @@ import FileSystem from "./FileSystem.vue";
 export default defineComponent({
   name: "Navbar",
   components: {
-    SpaceHeading
+    SpaceHeading,
+    FileSystem,
   },
   data() {
     return {
