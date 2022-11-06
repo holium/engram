@@ -11,6 +11,9 @@ const getters: GetterTree<RootState, RootState> = {
       (window as any).urbit.scry({ app: "spaces", path: `/all` }).then((response: any) => {
         console.log("got spaces: ", response);
         resolve(response.spaces);
+      }).catch((err: any) => {
+        console.warn("spaces agent missing !!", err);
+        reject([]);
       })
     })
   },
@@ -18,6 +21,9 @@ const getters: GetterTree<RootState, RootState> = {
     return new Promise((resolve, reject) => {
       (window as any).urbit.scry({ app: "spaces", path: `/${id}` }).then((response: any) => {
         resolve(response.space);
+      }).catch((err: any) => {
+        console.warn("spaces agent missing!!", err);
+        reject({ path: "", name: "our", color: "#262626"});
       })
     })
   }

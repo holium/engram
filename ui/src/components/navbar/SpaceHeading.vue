@@ -61,25 +61,29 @@ export default defineComponent({
       this.expand = false;
     },
     loadSpaces: async function() {
-      const name = this.$route.params.station as string;
-      const type = this.$route.params.space as string;
-      const path = `${name}/${type}`;
+      const ship = this.$route.params.station as string;
+      const name = this.$route.params.space as string;
+      const path = `${ship}/${name}`;
+      if(path == "~/-") {
+        this.space = { path: "", name: "our", color: "#262626"}
+        this.spaces = [];
+      } else {
+        const spaceRes = await store.getters["space"](path);
+        this.space = {
+          path: path,
+          name: spaceRes.name,
+          color: spaceRes.color,
+        } as Space;
 
-      const spaceRes = await store.getters["space"](path);
-      this.space = {
-        path: path,
-        name: spaceRes.name,
-        color: spaceRes.color,
-      } as Space;
-
-      const spacesRes = await store.getters["spaces"];
-      this.spaces = Object.keys(spacesRes).map((space) => {
-        return {
-          path: space,
-          name: spacesRes[space].name,
-          color: spacesRes[space].color
-        }
-      })
+        const spacesRes = await store.getters["spaces"];
+        this.spaces = Object.keys(spacesRes).map((space) => {
+          return {
+            path: space,
+            name: spacesRes[space].name,
+            color: spacesRes[space].color
+          }
+        })
+      }
     },
   }
 });

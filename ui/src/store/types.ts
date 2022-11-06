@@ -35,6 +35,11 @@ export interface FolderState {
   [key: string]: Folder,
 }
 
+export interface FolderMeta {
+  id: string;
+  name: string;
+}
+
 export interface Folder {
   id: string,
   name: string,

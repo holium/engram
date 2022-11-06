@@ -46,10 +46,13 @@ const mutations: MutationTree<DocumentState> = {
 }
 
 const actions: ActionTree<DocumentState, RootState> = {
+
+  // Management
   load({ commit }, payload): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       commit("clear");
-      (window as any).urbit.scry({ app: "engram", path: ""}).then((response: any) => {
+      (window as any).urbit.scry({ app: "engram", path: "/document/list"}).then((response: any) => {
+        console.log("list response", response);
         Object.keys(response).forEach((doc: any) => {
           commit("load", {
             id: doc,
@@ -62,11 +65,34 @@ const actions: ActionTree<DocumentState, RootState> = {
   },
   clear({ commit }) {
     commit("clear");
-  }
+  },
+
+  make({ commit }, payload: { name: string }): Promise<Document> {
+    return new Promise((resolve, reject) => {
+      console.log("making document")
+      const clock = 0;
+      (window as any).urbit.poke({
+        app: "engram",
+        mark: "post",
+        json: { "make": { "document": {
+          owner: (window as any).ship,
+          name: payload.name,
+          roles: {},
+          ships: {},
+        }}}
+      }).then(() => {
+        (window as any).urbit.scry({ app: "engram", path: `/document/get/~${(window as any).ship}/${clock}`}).then((response: any) => {
+          console.log("create response:", response);
+          //commit("load", response)
+          resolve(response);
+        })
+      })
+    })
+  },
 }
 
 export default {
-    namespace: true,
+    namespaced: true,
     state,
     getters,
     mutations,

@@ -2,7 +2,7 @@
   <div class="flex items-stretch text-body">
     <div id="nav" :style="{width: `${navWidth}px`}">
       <SpaceHeading />
-    navbar
+      <FileSystem />
     </div>
     <div class="dock-grip" draggable="true" @dragstart="handleDragStart">
 
@@ -13,6 +13,7 @@
 <script lang="ts">
 import { defineComponent } from "vue"
 import SpaceHeading from "./SpaceHeading.vue";
+import FileSystem from "./FileSystem.vue";
 export default defineComponent({
   name: "Navbar",
   components: {
