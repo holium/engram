@@ -58,6 +58,9 @@
         ==
         =/  state  this(d (~(put by d) [our.bowl t] doc))
         `this(t (add t 1))
+        ::
+        ::
+        ::
           %delete
         =/  id  [(slav %p -.path.action) (slav %u -.+.path.action)]
         ?>  (~(has by d) id)
@@ -68,21 +71,39 @@
           %save
         =/  id  [(slav %p -.path.action) (slav %u -.+.path.action)]
         ?>  (~(has by d) id)
-        `this(d (~(put by d) id doc.action))
+        =/  old  (~(got by d) id)
+        =/  new  
+        =:  content.old  content.action
+            version.old  version.action
+          ==
+        old
+        `this(d (~(put by d) id new))
         ::
         ::
         ::
           %snap
         =/  id  [(slav %p -.path.action) (slav %u -.+.path.action)]
         ?>  (~(has by d) id)
-        `this(su (~(add ja su) id snap.action))
+        =/  old  (~(got by d) id)
+        =/  new
+        =.  snapshots.old  (~(put in snapshots.old) snapshot.action)
+        old
+        `this(d (~(put by d) id new))
         ::
         :: modify document settings
         ::
           %settings
         =/  id  [(slav %p -.path.action) (slav %u -.+.path.action)]
         ?>  (~(has by d) id)
-        `this(s (~(put by s) dmeta.action stg.action))
+        =/  old  (~(got by d) id)
+        =/  new
+        =:  owner.settings.old  owner.action
+            name.settings.old   name.action
+            roles.settings.old  roles.action
+            ships.settings.old  ships.action
+          ==
+        old
+        `this(d (~(put by d) id new))
         ::
         ::
         ::
@@ -107,36 +128,48 @@
         :: create a new folder
         ::
           %make
-        ?<  (~(has by f) fmeta.action)
-        `this(f (~(put by f) fmeta.action ~))
+        =/  fold  :*  
+          [our.bowl t]
+          name.action
+          roles.action
+          ships.action
+          ^*  index
+        ==
+        =/  state  this(f (~(put by f) [our.bowl t] fold))
+        `this(t (add t 1))
         ::
         :: delete an existing folder
         ::
           %delete
-        ?>  (~(has by f) fmeta.action)
-        `this(f (~(del by f) fmeta.action))
+        =/  id  [(slav %p -.path.action) (slav %u -.+.path.action)]
+        ?>  (~(has by f) id)
+        `this(f (~(del by f) id))
         ::
         :: add a document or folder to another folder
         ::
-          %add
-        ?>  (~(has by f) fmeta.action)
-        `this(f (~(put ju f) fmeta.action fldr.action))
+        ::  %add
+        ::?>  (~(has by f) fmeta.action)
+        ::`this(f (~(put ju f) fmeta.action fldr.action))
         ::
         :: remove a document or folder from a folder
         ::
-          %remove
-        ?>  (~(has by f) fmeta.action)
-        =/  a  (~(get ju f) fmeta.action)
-        ?:  =(~(wyt in a) 1)
-            `this(f (~(put by f) fmeta.action ~))
-        `this(f (~(del ju f) fmeta.action fldr.action))
+        ::  %remove
+        ::?>  (~(has by f) fmeta.action)
+        ::=/  a  (~(get ju f) fmeta.action)
+        ::?:  =(~(wyt in a) 1)
+        ::    `this(f (~(put by f) fmeta.action ~))
+        ::`this(f (~(del ju f) fmeta.action fldr.action))
         ::
         :: {Documentation Here}
         ::
           %rename
-        =/  data=(set fldr:engram)  (~(get ja f) old.action)
-        =/  new-folder=fldrs:engram  (~(del by f) old.action)
-        `this(f (~(put by new-folder) new.action data))
+        =/  id  [(slav %p -.path.action) (slav %u -.+.path.action)]
+        ?>  (~(has by f) id)
+        =/  old  (~(got by f) id)
+        =/  new
+        =.  name.old  name.action
+        old
+        `this(f (~(put by f) id new))
       ==
       %prop
         ?-  -.+.action
@@ -144,36 +177,39 @@
         :: remove the merged update from the update list (as updates aren't implemented this will just log)
         ::
           %accept
-        `this(u (~(del ju u) dmeta.action updt.action))
+        =/  id  [(slav %p -.path.action) (slav %u -.+.path.action)]
+        `this(u (~(del ju u) id update.action))
         ::
-        :: {Documentation Here}
+        :: subscribe to a remote document
         ::
           %sub
-        =/  li  /updates/(scot %ud id.dmeta.action)/(scot %da timestamp.dmeta.action)
+        =/  li  `path`(weld ~['updates'] path.action)
         :_  this
-        :~  [%pass `(list @ta)`[(wood 'engram') (wood (crip "{<our.bowl>}")) (wood (crip "{<owner.action>}")) ~] %agent [owner.action %engram] %watch li]
+        :~  [%pass `(list @ta)`[~.engram (wood (crip "{<our.bowl>}")) (wood (crip "{<to.action>}")) ~] %agent [to.action %engram] %watch li]
         ==
         ::
         :: {Documentation Here}
         ::
           %unsub
         :_  this
-        :~  [%pass `(list @ta)`[(wood 'engram') (wood (crip "{<our.bowl>}")) (wood (crip "{<owner.action>}")) ~] %agent [owner.action %engram] %leave ~]
+        :~  [%pass `(list @ta)`[~.engram (wood (crip "{<our.bowl>}")) (wood (crip "{<from.action>}")) ~] %agent [from.action %engram] %leave ~]
         ==
         ::
         :: {Documentation Here}
         ::
           %update
-        `this(u (~(put ju u) id.action update.action))
+        =/  id  [(slav %p -.path.action) (slav %u -.+.path.action)]
+        `this(u (~(put ju u) id update.action))
         ::
         ::
         :: {Documentation Here}
         ::
           %update-live
-        =/  li  /updates/(scot %ud id.dmeta.action)/(scot %da timestamp.dmeta.action)
+        =/  id  [(slav %p -.path.action) (slav %u -.+.path.action)]
+        =/  li  `path`(weld ~['updates'] path.action)
         :_  this
         :~  %-  fact:agentio
-          [update+!>(`update:engram`[%update [dmeta.action updt.action]]) ~[li]]
+          [update+!>(`update`[%update [path.action update.action]]) ~[li]]
         ==
         ::  %docsetup
         :::_  this
@@ -194,19 +230,14 @@
   ^-  (quip card _this)
   ?+    path  (on-watch:def path)
       [%updates @ @ ~]
-    =/  id=@  (slav %ud i.t.path)
-    =/  timestamp=@d  (slav %da i.t.t.path)
-    =/  meta  [id=id timestamp=timestamp]
-    =/  stg=[perms=(list @p) owner=@p name=@t]  (need (~(get by s) meta))
-    ?~  (find [src.bowl]~ perms.stg)
+    =/  id  [(slav %p i.t.path) (slav %u i.t.t.path)]
+    =/  doc  (~(got by d) id)
+    ?~  (find [src.bowl]~ ships.settings.doc)
       !!
     :_  this
-    =/  stg  (need (~(get by s) meta))
-    =/  docu  (need (~(get by d) meta))
-    =/  ups  (~(get ju u) meta)
-    =/  li  /updates/(scot %ud id.meta)/(scot %da timestamp.meta)
+    =/  li  /updates/(scot %p -.id)/(scot %u +.id)
     :~  %-  fact-init:agentio
-      update+!>(`update:engram`[%init meta docu stg ups])
+      update+!>(`update`[%init id settings.doc (~(get ju u) id)])
       ::[%pass `(list @ta)`[(wood 'engram') (wood (crip "{<our.bowl>}")) (wood (crip "{<src.bowl>}")) ~] %agent [owner.stg %engram] %watch li]
     ==
 ==

@@ -15,15 +15,15 @@
           [%save (ot ~[id+pa content+sa version+sa])]
           [%snap (ot ~[id+pa snapshot+(ot ~[timestamp+di author+(se %p) data+sa])])]
           ::[%dsnap (ot ~[dmeta+(ot ~[id+so timestamp+di])])]
-          [%settings (ot ~[id+pa name+so roles+(op sym (se %tas)) ships+(op fed:ag (se %tas))])]
+          [%settings (ot ~[id+pa owner+(se %p) name+so roles+(op sym (se %tas)) ships+(op fed:ag (se %tas))])]
           ::[%dsettings (ot ~[dmeta+(ot ~[id+so timestamp+di])])]
       ==
       :-  %folder  %-  of  :~
         [%make (ot ~[name+so roles+(op sym (se %tas)) ships+(op fed:ag (se %tas))])]
         [%delete (ot ~[id+pa])]
         ::[%renamefolder (ot ~[old+(ot ~[id+so name+so]) new+(ot ~[id+so name+so])])]
-        [%add (ot ~[to+pa id+pa])]
-        [%remove (ot ~[from+pa id+pa])]
+        ::[%add (ot ~[to+pa id+pa])]
+        ::[%remove (ot ~[from+pa id+pa])]
         ::[%createsnap (ot ~[dmeta+(ot ~[id+so timestamp+di])])]
       ==
       :-  %prop  %-  of  :~

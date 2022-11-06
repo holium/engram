@@ -79,35 +79,35 @@
   $%  
     $:  %document
       $%  [%make owner=@p name=@t version=dversion content=dcontent roles=(map @tas @tas) ships=(map @p @tas)]
-          [%delete =path]
-          [%save =path =dcontent =dversion]
+          [%delete path=path]
+          [%save path=path content=dcontent version=dversion]
           ::[%docsetup =dmeta =doc =stg]
           ::[%createsnap =dmeta]
-          [%snap =path =dsnapshot]
+          [%snap path=path snapshot=dsnapshot]
           ::[%dsnap =dmeta]
-          [%settings =path =@ta =(map @tas @tas) =(map @p @tas)]
+          [%settings path=path owner=@p name=@ta roles=(map @tas @tas) ships=(map @p @tas)]
           ::[%dsettings =dmeta]
       ==
     ==
     $:  %folder
-      $%  [%make =@t =(map @tas @tas) =(map @p @tas)]
-          [%delete =path]
-          [%add =path =path]
-          [%remove =path =path]
-          [%rename =path =@t]
+      $%  [%make name=@t roles=(map @tas @tas) ships=(map @p @tas)]
+          [%delete path=path]
+      ::    [%add to=path id=path]
+      ::    [%remove from=path id=path]
+          [%rename path=path name=@t]
       ==
     ==
     $:  %prop
-      $%  [%accept =path =dupdate]
-          [%sub =path to=@p]
+      $%  [%accept path=path update=dupdate]
+          [%sub path=path to=@p]
           [%unsub from=@p]
-          [%update =id =dupdate]
-          [%update-live =path =dupdate]
+          [%update path=path update=dupdate]
+          [%update-live path=path update=dupdate]
       ==
     ==
   ==
 +$  update
   $%  [%init id=id settings=dsettings updates=(set dupdate)]
-      [%update id=id update=dupdate]
+      [%update id=path update=dupdate]
   ==
 --
