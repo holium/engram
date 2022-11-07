@@ -50,16 +50,24 @@
 ++  insert
   |=  [state=index item=[id type] ship=@p]
   ^-  index
-  =:  content.state  (~(put by content.state) [ship (add (~(got by version.state) ship) 1)] item)
-      version.state  (~(put by version.state) ship (add (~(got by version.state) ship) 1))
+  =/  clock
+  ?:  (~(has by version.state) ship)
+    (add (~(got by version.state) ship) 1)
+  0
+  =:  content.state  (~(put by content.state) [ship clock] item)
+      version.state  (~(put by version.state) ship clock)
     ==  
   state
 ++  delete
   |=  [state=index item=id ship=@p] 
   ^-  index
-  =:  dels.state     (~(put by dels.state) [ship (add (~(got by version.state) ship) 1)] item)
+  =/  clock
+  ?:  (~(has by version.state) ship)
+    (add (~(got by version.state) ship) 1)
+  0
+  =:  dels.state     (~(put by dels.state) [ship clock] item)
       content.state  (~(del by content.state) item)
-      version.state  (~(put by version.state) ship (add (~(got by version.state) ship) 1))
+      version.state  (~(put by version.state) ship clock)
     ==  
   state
 --
