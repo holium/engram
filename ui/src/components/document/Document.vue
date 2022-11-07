@@ -76,11 +76,14 @@ export default defineComponent({
   beforeRouteUpdate: function(to) {
     this.loaded = store.dispatch("workspace/open", `${to.params.author}/${to.params.clock}`);
   },
-  mounted: async function () {
+  mounted: function () {
     //render document
-    console.log(this.loaded);
     if(this.loaded == null) console.warn("no document");
-    else render(this.$refs["document"] as any, (await this.loaded).content, this.updateBauble, this.updateCover, this.updateStyling);
+    else {
+      this.loaded.then((res: any) => {
+        render(this.$refs["document"] as any, res[0].content, this.updateBauble, this.updateCover, this.updateStyling);
+      })
+    }
   },
   methods: {
     loadDocument: function(document: string) {

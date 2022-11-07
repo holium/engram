@@ -28,8 +28,10 @@ export default function (
   updateStyling: (styling: StylingUpdate) => void
 ): EditorView {
   const doc = new Y.Doc();
+  doc.clientID = 0;
+  doc.gc = false;
   const type = doc.getXmlFragment("prosemirror");
-  Y.applyUpdate(doc, content);
+  console.log("applying update", content);
 
   const state = EditorState.create({
     schema: schema,
@@ -41,6 +43,7 @@ export default function (
         const version = Y.encodeStateVector(doc);
         const content = Y.encodeStateAsUpdate(doc);
         const snapshot = Y.snapshot(doc);
+        console.log("content: ", content);
         store.dispatch("document/save", {
           id: `${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`,
           version: version,
@@ -64,5 +67,6 @@ export default function (
   view = new EditorView(place, {
     state,
   });
+  //Y.applyUpdate(doc, content);
   return view;
 }

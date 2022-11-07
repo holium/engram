@@ -7,7 +7,7 @@ import type {
 } from "./types"
 import type { Module, GetterTree, MutationTree, ActionTree } from "vuex"
 import type { Snapshot } from "yjs"
-import { encodeSnapshot } from "yjs"
+import * as Y from "yjs"
 import { version } from "vue"
 
 const state: DocumentState = {
@@ -73,6 +73,12 @@ const actions: ActionTree<DocumentState, RootState> = {
   make({ commit }, payload: { name: string }): Promise<Document> {
     return new Promise((resolve, reject) => {
       console.log("making document")
+      const doc = new Y.Doc();
+      doc.clientID = 0;
+      doc.gc = false;
+      const type = doc.getXmlFragment("prosemirror");
+      const version = Y.encodeStateVector(doc);
+      const content = Y.encodeStateAsUpdate(doc);
       const clock = 0;
       (window as any).urbit.poke({
         app: "engram",
@@ -80,8 +86,8 @@ const actions: ActionTree<DocumentState, RootState> = {
         json: { "document": { "make": {
           owner: `~${(window as any).ship}`,
           name: payload.name,
-          content: "",
-          version: "",
+          content: JSON.stringify(Array.from(content)),
+          version: JSON.stringify(Array.from(version)),
           roles: {},
           ships: {},
         }}}
@@ -96,6 +102,7 @@ const actions: ActionTree<DocumentState, RootState> = {
   },
   save({}, payload: { id: string, content: string, version: string }): Promise<void> {
     return new Promise((resolve, reject) => {
+      console.log("saving content:", payload.content);
       (window as any).urbit.poke({
         app: "engram",
         mark: "post",
@@ -116,7 +123,7 @@ const actions: ActionTree<DocumentState, RootState> = {
         mark: "post",
         json: { "document": { "snap": {
           id: payload.id,
-          snapshot: JSON.stringify(Array.from(encodeSnapshot(payload.snapshot)))
+          snapshot: JSON.stringify(Array.from(Y.encodeSnapshot(payload.snapshot)))
         }}}
       }).then(() => {
         dispatch("revisions/snapshot", payload.snapshot, { root: true});

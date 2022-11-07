@@ -63,6 +63,7 @@ const mutations: MutationTree<SettingsState> = {
 
 const actions: ActionTree<SettingsState, RootState> = {
   open({ commit }, payload: string) {
+    /*
     (window as any).urbit.scry({ app: "engram", path: ""}).then((response: any) => {
       commit("open", {
         autosync: response.autosync,
@@ -70,6 +71,7 @@ const actions: ActionTree<SettingsState, RootState> = {
         shipperms: response.shipperms
       })
     })
+    */
   },
   close({ commit }) {
     commit("close");
