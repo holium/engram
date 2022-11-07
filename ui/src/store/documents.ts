@@ -102,7 +102,7 @@ const actions: ActionTree<DocumentState, RootState> = {
   },
   save({}, payload: { id: string, content: string, version: string }): Promise<void> {
     return new Promise((resolve, reject) => {
-      console.log("saving content:", payload.content);
+      console.log("saving content:", payload);
       (window as any).urbit.poke({
         app: "engram",
         mark: "post",

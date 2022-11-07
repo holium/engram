@@ -44,14 +44,14 @@ export default function (
         const content = Y.encodeStateAsUpdate(doc);
         const snapshot = Y.snapshot(doc);
         console.log("content: ", content);
-        store.dispatch("document/save", {
-          id: `${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`,
+        store.dispatch("documents/save", {
+          id: `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`,
           version: version,
           content: content
         });
 
-        store.dispatch("document/snapshot", {
-          id: `${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`,
+        store.dispatch("documents/snapshot", {
+          id: `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`,
           snapshot: snapshot
         });
       }),
