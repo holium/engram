@@ -250,22 +250,22 @@
     ``noun+!>((list:document:enjs:engram d))
   ::
       [%x %document @ @ %get ~]
-    =/  id=id  [(slav %p i.t.t.t.p) (slav %u i.t.t.t.t.p)]
+    =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
     =/  doc  (~(got by d) id)
     ``noun+!>((get:document:enjs:engram doc))
   ::
       [%x %document @ @ %get %settings ~]
-    =/  id=id  [(slav %p i.t.t.t.p) (slav %u i.t.t.t.t.p)]
+    =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
     =/  doc  (~(got by d) id)
     ``noun+!>((settings:document:enjs:engram settings.doc))
   ::
       [%x %document @ @ %get %snapshots ~]
-    =/  id=id  [(slav %p i.t.t.t.p) (slav %u i.t.t.t.t.p)]
+    =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
     =/  doc  (~(got by d) id)
     ``noun+!>((snapshots:document:enjs:engram snapshots.doc))
   ::
       [%x %document @ @ %get %updates ~]
-    =/  id=id  [(slav %p i.t.t.t.p) (slav %u i.t.t.t.t.p)]
+    =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
     =/  updts  (need (~(get by u) id))
     ``noun+!>((updates:document:enjs:engram updts))
   ::
