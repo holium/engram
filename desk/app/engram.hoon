@@ -62,14 +62,14 @@
         ::
         ::
           %delete
-        =/  id  [(slav %p -.path.action) (slav %u -.+.path.action)]
+        =/  id  [`@p`(slav %p -.path.action) `@u`(slav %ud -.+.path.action)]
         ?>  (~(has by d) id)
         `this(d (~(del by d) id))
         ::
         :: modify a document by changing the stored document state
         ::
           %save
-        =/  id  [(slav %p -.path.action) (slav %u -.+.path.action)]
+        =/  id  [`@p`(slav %p -.path.action) `@u`(slav %ud -.+.path.action)]
         ?>  (~(has by d) id)
         =/  old  (~(got by d) id)
         =/  new  
@@ -82,7 +82,7 @@
         ::
         ::
           %snap
-        =/  id  [(slav %p -.path.action) (slav %u -.+.path.action)]
+        =/  id  [`@p`(slav %p -.path.action) `@u`(slav %ud -.+.path.action)]
         ?>  (~(has by d) id)
         =/  old  (~(got by d) id)
         =/  new
@@ -93,7 +93,7 @@
         :: modify document settings
         ::
           %settings
-        =/  id  [(slav %p -.path.action) (slav %u -.+.path.action)]
+        =/  id  [`@p`(slav %p -.path.action) `@u`(slav %ud -.+.path.action)]
         ?>  (~(has by d) id)
         =/  old  (~(got by d) id)
         =/  new
