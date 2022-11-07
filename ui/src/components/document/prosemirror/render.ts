@@ -50,7 +50,7 @@ export default function (
           content: content
         });
 
-        store.dispatch("documents/snapshot", {
+        store.dispatch("workspace/revisions/snapshot", {
           id: `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`,
           snapshot: snapshot
         });

@@ -116,21 +116,6 @@ const actions: ActionTree<DocumentState, RootState> = {
       })
     })
   },
-  snapshot({ dispatch }, payload: { id: string, snapshot: Snapshot }): Promise<void> {
-    return new Promise((resolve, reject) => {
-      (window as any).urbit.poke({
-        app: "engram",
-        mark: "post",
-        json: { "document": { "snap": {
-          id: payload.id,
-          snapshot: JSON.stringify(Array.from(Y.encodeSnapshot(payload.snapshot)))
-        }}}
-      }).then(() => {
-        dispatch("revisions/snapshot", payload.snapshot, { root: true});
-        resolve();
-      })
-    })
-  }
 }
 
 export default {
