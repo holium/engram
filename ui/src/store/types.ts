@@ -25,6 +25,11 @@ export interface Document {
   owner: Patp;
 }
 
+export interface DocumentContent {
+  content: Uint8Array;
+  version: Uint8Array;
+}
+
 export interface DocumentMeta {
   id: string,
   name: string,

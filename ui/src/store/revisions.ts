@@ -1,6 +1,7 @@
 import type { Module, GetterTree, MutationTree, ActionTree } from "vuex"
 import type { Patp } from "@urbit/http-api"
 import * as Y from "yjs"
+import type { Snapshot } from "yjs"
 import type {
   RootState,
   RevisionState,
@@ -55,13 +56,34 @@ const actions: ActionTree<RevisionState, RootState> = {
   },
   close({ commit }) {
     commit("close");
+  },
+
+  snap({ commit }, payload: { id: string, snapshot: Snapshot }): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const version = {
+        author: (window as any).ship,
+        timestamp: Date.now(),
+        snpashot: payload.snapshot
+      }
+      commit("add", version);
+      (window as any).urbit.poke({
+        app: "engram",
+        mark: "post",
+        json: { "document": { "snap": {
+          id: payload.id,
+          author: version.author,
+          timestamp: version.timestamp,
+          snpashot: JSON.stringify(Array.from(Y.encodeSnapshot(payload.snapshot)))
+        }}}
+      })
+    })
   }
 }
 
 export default {
-  namespace: true,
+  namespaced: true,
   state,
   getters,
   mutations,
   actions
-}
+} as Module<RevisionState, RootState>

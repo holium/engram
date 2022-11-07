@@ -14,6 +14,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import store from "@/store/index";
+import type { DocumentContent } from "@/store/types"
 
 import Toolbar from "@/components/Toolbar.vue";
 import Dock from "@/components/dock/Dock.vue";
@@ -45,6 +46,7 @@ export default defineComponent({
   },
   data() {
     return {
+      loaded: null as null | Promise<DocumentContent>,
       bauble: {
         on: false,
         top: 0,
@@ -69,14 +71,16 @@ export default defineComponent({
     };
   },
   created: function() {
-    this.loadDocument(this.$route.params.document as string);
+    this.loaded = store.dispatch("workspace/open", `${this.$route.params.author}/${this.$route.params.clock}`);
   },
   beforeRouteUpdate: function(to) {
-    this.loadDocument(to.params.document as string);
+    this.loaded = store.dispatch("workspace/open", `${to.params.author}/${to.params.clock}`);
   },
-  mounted: function () {
+  mounted: async function () {
     //render document
-    render(this.$refs["document"] as any, this.updateBauble, this.updateCover, this.updateStyling);
+    console.log(this.loaded);
+    if(this.loaded == null) console.warn("no document");
+    else render(this.$refs["document"] as any, (await this.loaded).content, this.updateBauble, this.updateCover, this.updateStyling);
   },
   methods: {
     loadDocument: function(document: string) {

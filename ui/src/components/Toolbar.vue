@@ -15,7 +15,7 @@
       </svg>
     </div>
 
-    <div class="flex px-3 py-2 flex-grow">toolbar</div>
+    <div class="flex px-3 py-2 flex-grow">{{ $route.params.author }} / {{ $route.params.clock }}</div>
 
     <!-- Dock Show / hide -->
     <div class="p-2">

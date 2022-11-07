@@ -1,5 +1,10 @@
 import { EditorView } from "prosemirror-view";
 import { EditorState } from "prosemirror-state";
+import * as Y from "yjs"
+import { ySyncPlugin, undo, redo } from "y-prosemirror";
+
+import store from "@/store/index";
+import router from "@/router/index";
 
 import schema from "./schema";
 import keymap from "./keymap";
@@ -17,11 +22,15 @@ export let view: EditorView;
 
 export default function (
   place: HTMLElement,
+  content: Uint8Array,
   updateBauble: (bauble: BaubleUpdate) => void,
   updateCover: (cover: CoverUpdate) => void,
   updateStyling: (styling: StylingUpdate) => void
 ): EditorView {
-  console.log(place);
+  const doc = new Y.Doc();
+  const type = doc.getXmlFragment("prosemirror");
+  Y.applyUpdate(doc, content);
+
   const state = EditorState.create({
     schema: schema,
     plugins: [
@@ -29,7 +38,22 @@ export default function (
       shortcuts,
       save((view) => {
         console.log("Saving...");
+        const version = Y.encodeStateVector(doc);
+        const content = Y.encodeStateAsUpdate(doc);
+        const snapshot = Y.snapshot(doc);
+        store.dispatch("document/save", {
+          id: `${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`,
+          version: version,
+          content: content
+        });
+
+        store.dispatch("document/snapshot", {
+          id: `${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`,
+          snapshot: snapshot
+        });
       }),
+      // CRDT
+      ySyncPlugin(type),
       // Views
       cover(updateCover),
       styling(updateStyling),

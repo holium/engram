@@ -2,6 +2,7 @@ import type { Module, GetterTree, MutationTree, ActionTree } from "vuex"
 import type {
   RootState,
   WorkspaceState,
+  DocumentContent,
 } from "./types"
 import settings from "./settings";
 import revisions from "./revisions"
@@ -56,23 +57,26 @@ const actions: ActionTree<WorkspaceState, RootState> = {
 
   },
 
-  open({ commit, dispatch }, payload: string): Promise<void> {
+  open({ commit, dispatch }, payload: string): Promise<DocumentContent> {
+    console.log("opening document: ", payload);
     return new Promise((resolve, reject) => {
-      (window as any).urbit.scry({ app: "engram", path: ""}).then((response: any) => {
-        commit('open', {
-          version: Object.keys(response.version).map(key => response.version[key]),
+      (window as any).urbit.scry({ app: "engram", path: `/document/${payload}/get`}).then((response: any) => {
+        console.log("open workspace response:", response)
+        const content = {
+          version: Uint8Array.from(JSON.parse(response.version)),
           content: Uint8Array.from(JSON.parse(response.content))
-        })
-      }).then(() => {
-        dispatch("settings/open", payload);
-        dispatch("revisions/open", payload)
-      })
+        }
+        commit('open', content)
+        resolve(content);
+        //dispatch("settings/open", payload);
+        //dispatch("revisions/open", payload);
+      });
     })
   }
 }
 
 export default {
-  namespace: true,
+  namespaced: true,
   state,
   getters,
   mutations,
