@@ -55,7 +55,7 @@ const actions: ActionTree<DocumentState, RootState> = {
   load({ commit }, payload): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       commit("clear");
-      (window as any).urbit.scry({ app: "engram", path: "/document/list"}).then((response: any) => {
+      (window as any).urbit.scry({ app: "engram", path: `/space/${router.currentRoute.value.params.station}/${router.currentRoute.value.params.space}/list`}).then((response: any) => {
         console.log("list response", response);
         Object.keys(response).forEach((doc: any) => {
           commit("load", {
