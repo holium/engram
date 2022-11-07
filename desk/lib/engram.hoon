@@ -9,7 +9,7 @@
     %.  jon
     %-  of  
     :~  :-  %document  %-  of
-      :~  [%make (ot ~[owner+(se %p) name+so content+sa version+sa roles+(op sym (se %tas)) ships+(op fed:ag (se %tas))])]
+      :~  [%make (ot ~[owner+(se %p) name+so space+pa content+sa version+sa roles+(op sym (se %tas)) ships+(op fed:ag (se %tas))])]
           ::[%docsetup (ot ~[dmeta+(ot ~[id+so timestamp+di]) doc+(ot ~[version+(ar ni) content+sa]) stg+(ot ~[perms+(ar (se %p)) owner+(se %p) name+so])])]
           [%delete (ot ~[id+pa])]
           [%save (ot ~[id+pa content+sa version+sa])]
@@ -36,6 +36,20 @@
   --
 ++  enjs
   |%
+  ++  space
+    |%
+    ++  list
+      =,  enjs:format
+      |=  [docs=documents:engram ids=(set id:engram)]
+      ^-  json
+      %-  pairs  %~  tap  in  
+      ^-  (set [@t json])
+      %-  ~(run in ids)
+      |=  id=id:engram
+      =/  doc  (~(got by docs) id)
+      :-  (spat ~[(scot %p -.id) (scot %u +.id)])
+      (pairs ~[['name' (tape (trip name.settings.doc))] ['owner' (tape (scow %p owner.settings.doc))]])
+    --
   ++  document
     |%
     ++  list

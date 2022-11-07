@@ -45,7 +45,7 @@
 +$  folder  [id=id name=@t roles=(map @tas @tas) ships=(map @p @tas) content=index]
 ::
 ::  Spaces
-+$  spath  [ship=ship space=@p]
++$  spath  path
 +$  space  [roles=(map @tas @tas) ships=(map @p @tas) content=index]
 
 ::
@@ -76,9 +76,9 @@
 :: [%snap =dmeta =snap] - add a snapshot to a documents history
 ::
 +$  action
-  $%  
+  $% 
     $:  %document
-      $%  [%make owner=@p name=@t version=dversion content=dcontent roles=(map @tas @tas) ships=(map @p @tas)]
+      $%  [%make owner=@p name=@t space=path version=dversion content=dcontent roles=(map @tas @tas) ships=(map @p @tas)]
           [%delete path=path]
           [%save path=path content=dcontent version=dversion]
           ::[%docsetup =dmeta =doc =stg]
@@ -108,6 +108,6 @@
   ==
 +$  update
   $%  [%init id=id settings=dsettings updates=(set dupdate)]
-      [%update id=path update=dupdate]
+      [%update id=id update=dupdate]
   ==
 --

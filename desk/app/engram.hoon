@@ -1,5 +1,6 @@
 /-  *engram
 /+  engram
+/+  indexes
 /+  default-agent, dbug, agentio
 |%
 +$  versioned-state
@@ -56,8 +57,17 @@
           ==
           (silt `(list dsnapshot)`[~])
         ==
-        =/  state  this(d (~(put by d) [our.bowl t] doc))
-        `state(t (add t 1))
+        ::
+        =/  dstate  this(d (~(put by d) [our.bowl t] doc))
+        =/  oldspc
+        ?:  (~(has by s) space.action)
+          (~(got by s) space.action)
+        ^*  space
+        =/  newspc
+        =.  content.oldspc  (insert:indexes content.oldspc [[our.bowl t] %document] our.bowl)
+          oldspc
+        =/  sstate  dstate(s (~(put by s) space.action newspc))
+        `sstate(t (add t 1))
         ::
         ::
         ::
@@ -209,7 +219,7 @@
         =/  li  `path`(weld ~['updates'] path.action)
         :_  this
         :~  %-  fact:agentio
-          [update+!>(`update`[%update [path.action update.action]]) ~[li]]
+          [update+!>([%update [path.action update.action]]) ~[li]]
         ==
         ::  %docsetup
         :::_  this
@@ -246,6 +256,9 @@
   |=  p=path
   ^-  (unit (unit cage))
   ?+    p  (on-peek:def p)
+      [%x %space @ @ %list ~]
+    =/  spc  (~(got by s) ~[i.t.t.p i.t.t.t.p])
+    ``noun+!>((list:space:enjs:engram [d ~(key by content.content.spc)]))
       [%x %document %list ~]
     ``noun+!>((list:document:enjs:engram d))
   ::
@@ -297,24 +310,32 @@
           `this
             %update
           =/  update  !<(update q.cage.sign)
+          =/  doc  (~(got by d) id.update)
           ?-  -.update
             %init
-          `this
-          ::=/  up=dupdate:engram  [author=src.bowl timestamp=timestamp.update.update content=content.update.update]
-          :::_  this
-          ::?:  (~(has by s) id.update)
-          ::  :~  [%pass /settings %agent [our.bowl %engram] %poke %post !>([%settings dmeta.update stg.update])]
-          ::      [%pass /update %agent [our.bowl %engram] %poke %post !>([%update dmeta.update up])]
-          ::      [%pass /extend %agent [our.bowl %engram] %poke %post !>([%extend dmeta.update setupt.update])]
-          ::  ==
-          :::~  [%pass /setup %agent [our.bowl %engram] %poke %post !>([%docsetup dmeta.update doc.update stg.update])]
-          ::    [%pass /extend %agent [our.bowl %engram] %poke %post !>([%extend dmeta.update setupt.update])]
-          ::==
+          :_  this
+          ?:  =(src.bowl owner.settings.doc)
+            %+  weld  ~[[%pass /settings %agent [our.bowl %engram] %poke %post !>([%settings id.update settings.update])]]
+            %~  tap  in
+            ^-  (set card)
+            %-  ~(run in updates.update)  
+              |=  updt=dupdate  
+              [%pass /update %agent [our.bowl %engram] %poke %post !>([%update id.update updt])]
+          ?:  (~(has by ships.settings.doc) src.bowl)
+            ?:  ?|(=((~(got by ships.settings.doc) src.bowl) %admin) =((~(got by ships.settings.doc) src.bowl) %editor))
+              %~  tap  in
+              ^-  (set card)
+              %-  ~(run in updates.update)  
+                |=  updt=dupdate  
+                [%pass /update %agent [our.bowl %engram] %poke %post !>([%update id.update updt])]
+            !!
+          !!
             %update
           :_  this
-          :~  [%pass /update %agent [our.bowl %engram] %poke %post !>([%update id.update update.update])]
-          ==
-
+          ?:  ?|(=(owner.settings.doc src.bowl) =((~(got by ships.settings.doc) src.bowl) %admin) =((~(got by ships.settings.doc) src.bowl) %editor))
+            :~  [%pass /update %agent [our.bowl %engram] %poke %post !>([%update id.update update.update])]
+            ==
+          !!
           ==
         ==
       ==
