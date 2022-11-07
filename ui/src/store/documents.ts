@@ -8,6 +8,7 @@ import type {
 import type { Module, GetterTree, MutationTree, ActionTree } from "vuex"
 import type { Snapshot } from "yjs"
 import * as Y from "yjs"
+import router from "@/router/index";
 import { version } from "vue"
 
 const state: DocumentState = {
@@ -86,6 +87,7 @@ const actions: ActionTree<DocumentState, RootState> = {
         json: { "document": { "make": {
           owner: `~${(window as any).ship}`,
           name: payload.name,
+          space: `/${router.currentRoute.value.params.station}/${router.currentRoute.value.params.space}`,
           content: JSON.stringify(Array.from(content)),
           version: JSON.stringify(Array.from(version)),
           roles: {},
