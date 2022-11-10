@@ -33,14 +33,14 @@ const getters: GetterTree<FolderState, RootState> = {
     return Object.keys(state[id].content);
   },
   documents: (state) => (id: string): Array<string> => {
-    return Object.keys(state[id].content).filter((id) => (state[id].content[id] == "document"))
+    return Object.keys(state[id].content).filter((id) => (state[id].content[id].type == "document"))
   },
   folders: (state) => (id: string): Array<string> => {
-    return Object.keys(state[id].content).filter((id) => (state[id].content[id] == "folder"))
+    return Object.keys(state[id].content).filter((id) => (state[id].content[id].type == "folder"))
   },
 
   root: (state) => {
-    return Object.keys(state["."].content).map((id) => { return { id: id, type: state["."].content[id] }});
+    return Object.keys(state["."].content).map((id) => state["."].content[id]);
   },
 }
 
@@ -48,9 +48,9 @@ const mutations: MutationTree<FolderState> = {
   // Management ----------------------------------------------------------------
   load(state, payload: Folder) {
     state[payload.id] = payload;
-    state["."].content[payload.id] = "folder";
+    state["."].content[payload.id] = {id: payload.id, type: "folder" };
     Object.keys(payload.content).forEach((item) => {
-      delete state["."].content[item];
+      delete state["."].content[payload.content[item].id];
     })
   },
   clear(state) {
@@ -70,17 +70,17 @@ const mutations: MutationTree<FolderState> = {
   },
 
   // Moving -------------------------------------------------------------------
-  add(state, payload: { item: { id: string, type: string}, to: string }) {
-    state[payload.to].content[payload.item.id] = payload.item.type;
+  add(state, payload: { item: { index: string, id: string, type: string}, to: string }) {
+    state[payload.to].content[payload.item.index] = { id: payload.item.id, type: payload.item.type };
   },
-  remove(state, payload: { id: string, from: string }) {
-    delete state[payload.from].content[payload.id]
+  remove(state, payload: { index: string, from: string }) {
+    delete state[payload.from].content[payload.index]
   }
 }
 
 const actions: ActionTree<FolderState, RootState> = {
-  load({ commit }, payload): Promise<void> {
-    console.log("loading folder: ", payload);
+  load({ commit, state }, payload): Promise<void> {
+    console.log("loading folder: ", payload, state);
     return new Promise<void>((resolve, reject) => {
       commit("load", {
         id: payload.id,
@@ -114,10 +114,10 @@ const actions: ActionTree<FolderState, RootState> = {
     })
   },
 
-  add({ commit }, payload: { to: string, item: { id: string, type: string}}): Promise<void> {
+  add({ commit }, payload: { to: string, item: { index: string, id: string, type: string}}): Promise<void> {
     return new Promise((resolve, reject) => {
       console.log("adding item to folder: ", payload);
-      commit("add", payload);
+      if(payload.item.index) commit("add", payload);
       if(payload.to != ".") {
         (window as any).urbit.poke({
           app: "engram",
@@ -151,6 +151,8 @@ const actions: ActionTree<FolderState, RootState> = {
               }
             }
           }
+        }).then(() => {
+          resolve();
         })
       }
     })

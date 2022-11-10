@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col">
+    <div class="flex flex-col" @drop="handleDrop" @dragover="handleDragOver">
         <div class="heading px-3 py-2 flex" @contextmenu="openMenu">
             <div class="flex-grow">
                 workspace
@@ -56,6 +56,19 @@ export default defineComponent({
 
                 }
             ]))
+        },
+        handleDrop: function(event: DragEvent) {
+            event.preventDefault();
+            event.stopPropagation();
+            const raw = event.dataTransfer?.getData("text/plain");
+                if(raw) {
+                    const data = JSON.parse(raw);
+                    store.dispatch("folders/remove", { index: data.index, from: data.from });
+                    store.dispatch("folders/add", { item: { id: data.item.id, type: data.item.type, index: data.item.id }, to: "." });
+                }
+        }, 
+        handleDragOver: function(event: DragEvent) {
+            event.preventDefault();
         }
     }
 })

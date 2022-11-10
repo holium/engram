@@ -23,7 +23,7 @@ export interface ItemMeta {
   id: string;
   name: string;
   owner: string;
-  content?: { [key: string]: string }
+  content?: { [key: string]: {id: string, type: string} }
 }
 
 export interface Document {
@@ -56,7 +56,7 @@ export interface Folder {
   id: string,
   name: string,
   owner: string,
-  content: { [key:string]: string },
+  content: { [key:string]: { id: string, type: string } },
 }
 
 // Workspace ------------------------------------------------------------------

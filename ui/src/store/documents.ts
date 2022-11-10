@@ -61,14 +61,13 @@ const actions: ActionTree<DocumentState, RootState> = {
 
   // Management
   load({ commit, dispatch }, payload): Promise<void> {
-    console.log("loading folder: ", payload);
     return new Promise<void>((resolve, reject) => {
       commit("load", {
         id: payload.id,
         name: payload.name,
         owner: payload.owner,
       });
-      commit("folders/add", { item: { id: payload.id, type: "document" }, to: "." }, { root: true });
+      dispatch("folders/add", { item: { index: payload.id, id: payload.id, type: "document" }, to: "." }, { root: true });
       resolve();
     })
   },

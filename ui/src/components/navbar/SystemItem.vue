@@ -33,7 +33,15 @@
                 {{ meta.name }}
             </div>
         </div>
-        <SystemItem class="pl-2" :item="i" :type="(meta as any).content[i]" :key="i" v-for="i in expand ? Object.keys(meta.content == null ? {} : meta.content) : []"/>
+        <SystemItem 
+            class="pl-2" 
+            :parent="item"
+            :item="(meta as any).content[i].id" 
+            :index="i" 
+            :type="(meta as any).content[i].type" 
+            :key="i" 
+            v-for="i in expand ? Object.keys(meta.content == null ? {} : meta.content) : []"
+        />
     </div>
     
 </template>
@@ -48,6 +56,10 @@ export default defineComponent({
     name: "SystemItem",
     props: {
         parent: {
+            required: false,
+            type: String,
+        },
+        index: {
             required: false,
             type: String,
         },
@@ -106,7 +118,7 @@ export default defineComponent({
             ));
         },
         handleDragStart: function(event: DragEvent) {
-            event.dataTransfer?.setData("text/plain", JSON.stringify({ item: {id: this.item, type: this.type}, from: this.parent ? this.parent : "." }));
+            event.dataTransfer?.setData("text/plain", JSON.stringify({ item: {id: this.item, type: this.type}, index: this.index ? this.index : ".", from: this.parent ? this.parent : "." }));
         },
         handleDrop: function(event: DragEvent) {
             if(this.type == "folder") {
@@ -115,7 +127,7 @@ export default defineComponent({
                 const raw = event.dataTransfer?.getData("text/plain");
                 if(raw) {
                     const data = JSON.parse(raw);
-                    store.dispatch("folders/remove", { id: data.item.id, from: data.from });
+                    store.dispatch("folders/remove", { index: data.index, from: data.from });
                     store.dispatch("folders/add", { item: data.item, to: this.item });
                 }
             }

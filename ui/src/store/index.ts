@@ -32,15 +32,12 @@ const getters: GetterTree<RootState, RootState> = {
 
 const actions: ActionTree<RootState, RootState> = {
   load({ dispatch }, payload: string) {
-    console.log("load space: ", payload);
     dispatch("workspace/close", {}, { root: true });
-
     (window as any).urbit.scry({ app: "engram", path: `/space/${router.currentRoute.value.params.station}/${router.currentRoute.value.params.space}/list`}).then((response: any) => {
       dispatch("documents/clear", {}, { root: true });
       dispatch("folders/clear", {}, { root: true });
       Promise.all(Object.keys(response).map((item: any) => {
         return new Promise<void>((res) => {
-          console.log("loaded item: ", response[item]);
           if(response[item].type == "document") {
             dispatch("documents/load", {id: item, ...response[item]}, { root: true }).then(() => {
               res();
@@ -51,7 +48,6 @@ const actions: ActionTree<RootState, RootState> = {
         })
       }))
       Promise.all(Object.keys(response).map((item: any) => {
-        console.log(response[item]);
         return new Promise<void>((res) => {
           if(response[item].type == "folder") {
             dispatch("folders/load", {id: item, ...response[item]}, { root: true }).then(() => {
