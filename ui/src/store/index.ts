@@ -41,9 +41,9 @@ const actions: ActionTree<RootState, RootState> = {
       Object.keys(response).forEach((item: any) => {
         console.log("loaded item: ", response[item]);
         if(response[item].type == "document") {
-          dispatch("documents/load", response[item], { root: true });
+          dispatch("documents/load", {id: item, ...response[item]}, { root: true });
         } else if(response[item].type == "folder") {
-          dispatch("folders/load", response[item], { root: true });
+          dispatch("folders/load", {id: item, ...response[item]}, { root: true });
         }
       })
     })

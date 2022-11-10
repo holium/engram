@@ -4,6 +4,7 @@ import type {
   RootState,
   FolderState,
   Folder,
+  ItemMeta
 } from "./types"
 
 const notRoot: { [key: string]: true } = {
@@ -18,18 +19,29 @@ const getters: GetterTree<FolderState, RootState> = {
   name: (state) => (id: string): string => {
     return state[id].name;
   },
+  meta: (state) => (id: string): ItemMeta => {
+    return {
+      id: id,
+      name: state[id].name,
+      owner: state[id].owner,
+      content: state[id].content
+    }
+  },
+  content: (state) => (id: string): Array<string> => {
+    return Object.keys(state[id].content);
+  },
   documents: (state) => (id: string): Array<string> => {
-    return state[id].documents
+    return Object.keys(state[id].content).filter((id) => (state[id].content[id] == "document"))
   },
   folders: (state) => (id: string): Array<string> => {
-    return state[id].folders
+    return Object.keys(state[id].content).filter((id) => (state[id].content[id] == "folder"))
   },
 
-  rootFolders: (state, getters, rootState) => {
-    return Object.keys(rootState.documents).filter(key => notRoot[key] != true);
+  rootDocuments: (state, getters, rootState) => {
+    return Object.keys(rootState.documents).filter(key => !notRoot[key]);
   },
-  rootDocuments: (state) => {
-    Object.keys(state.folders).filter(key => notRoot[key] != true);
+  rootFolders: (state) => {
+    return Object.keys(state).filter(key => !notRoot[key]);
   }
 }
 
@@ -37,11 +49,8 @@ const mutations: MutationTree<FolderState> = {
   // Management ----------------------------------------------------------------
   load(state, payload: Folder) {
     state[payload.id] = payload;
-    payload.documents.forEach((doc) => {
-      notRoot[doc] = true;
-    })
-    payload.folders.forEach((folder) => {
-      notRoot[folder] = true;
+    Object.keys(payload.content).forEach((item) => {
+      notRoot[item] = true;
     })
   },
   clear(state) {
@@ -49,14 +58,10 @@ const mutations: MutationTree<FolderState> = {
   },
 
   delete(state, payload: string) {
-    const docs = state[payload].documents;
-    const folders = state[payload].folders;
+    const content = state[payload].content;
     delete state[payload];
-    docs.forEach((doc) => {
-      delete notRoot[doc]
-    });
-    folders.forEach((folder) => {
-      delete notRoot[folder]
+    Object.keys(content).forEach((item) => {
+      delete notRoot[item];
     })
   },
 
@@ -73,6 +78,7 @@ const actions: ActionTree<FolderState, RootState> = {
         id: payload.id,
         name: payload.name,
         owner: payload.owner,
+        content: payload.content
       });
       resolve();
     })
@@ -99,6 +105,17 @@ const actions: ActionTree<FolderState, RootState> = {
       })
     })
   },
+
+  add({ commit }, payload: { to: string, id: string}): Promise<void> {
+    return new Promise((resolve, reject) => {
+      console.log("adding item to folder: ", payload);
+    })
+  },
+  remove({ commit }, payload: { from: string, id: string}): Promise<void> {
+    return new Promise((resolve, reject) => {
+      console.log("removing item from folder: ", payload);
+    })
+  }
 }
 
 export default {

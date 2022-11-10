@@ -3,7 +3,8 @@ import type {
   DocumentState,
   Document,
   DocumentMeta,
-  DocumentVersion
+  DocumentVersion,
+  ItemMeta,
 } from "./types"
 import type { Module, GetterTree, MutationTree, ActionTree } from "vuex"
 import type { Snapshot } from "yjs"
@@ -20,6 +21,13 @@ const getters: GetterTree<DocumentState, RootState> = {
     return Object.keys(state).map((id: string) => {
       return {id: id, name: state[id].name, owner: state[id].owner}
     })
+  },
+  meta: (state) => (id: string): ItemMeta => {
+    return {
+      id: id,
+      name: state[id].name,
+      owner: state[id].owner,
+    }
   },
   document: (state) => (id: string): Document => {
     return state[id];

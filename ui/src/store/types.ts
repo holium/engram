@@ -19,6 +19,13 @@ export interface DocumentState {
   [key: string]: Document
 }
 
+export interface ItemMeta {
+  id: string;
+  name: string;
+  owner: string;
+  content?: { [key: string]: string }
+}
+
 export interface Document {
   id: string;
   name: string;
@@ -48,8 +55,8 @@ export interface FolderMeta {
 export interface Folder {
   id: string,
   name: string,
-  documents: Array<string>,
-  folders: Array<string>,
+  owner: string,
+  content: { [key:string]: string },
 }
 
 // Workspace ------------------------------------------------------------------
