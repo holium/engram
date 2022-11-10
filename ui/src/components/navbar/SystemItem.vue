@@ -128,7 +128,7 @@ export default defineComponent({
                 if(raw) {
                     const data = JSON.parse(raw);
                     store.dispatch("folders/remove", { index: data.index, from: data.from });
-                    store.dispatch("folders/add", { item: data.item, to: this.item });
+                    store.dispatch("folders/add", { item: { id: data.item.id, type: data.item.type }, to: this.item });
                 }
             }
         },
