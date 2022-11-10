@@ -60,7 +60,7 @@ const mutations: MutationTree<DocumentState> = {
 const actions: ActionTree<DocumentState, RootState> = {
 
   // Management
-  load({ commit }, payload): Promise<void> {
+  load({ commit, dispatch }, payload): Promise<void> {
     console.log("loading folder: ", payload);
     return new Promise<void>((resolve, reject) => {
       commit("load", {
@@ -68,6 +68,7 @@ const actions: ActionTree<DocumentState, RootState> = {
         name: payload.name,
         owner: payload.owner,
       });
+      dispatch("folders/add", { item: { id: payload.id, type: "document" }, to: "." }, { root: true });
       resolve();
     })
   },

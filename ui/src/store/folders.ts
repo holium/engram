@@ -6,13 +6,15 @@ import type {
   Folder,
   ItemMeta
 } from "./types"
-
-const notRoot: { [key: string]: true } = {
-
-}
+import { Item } from "yjs";
 
 const state: FolderState = {
-
+  ".": {
+    id: ".",
+    name: "root",
+    owner: "",
+    content: {}
+  }
 }
 
 const getters: GetterTree<FolderState, RootState> = {
@@ -37,20 +39,18 @@ const getters: GetterTree<FolderState, RootState> = {
     return Object.keys(state[id].content).filter((id) => (state[id].content[id] == "folder"))
   },
 
-  rootDocuments: (state, getters, rootState) => {
-    return Object.keys(rootState.documents).filter(key => !notRoot[key]);
+  root: (state) => {
+    return Object.keys(state["."].content).map((id) => { return { id: id, type: state["."].content[id] }});
   },
-  rootFolders: (state) => {
-    return Object.keys(state).filter(key => !notRoot[key]);
-  }
 }
 
 const mutations: MutationTree<FolderState> = {
   // Management ----------------------------------------------------------------
   load(state, payload: Folder) {
     state[payload.id] = payload;
+    state["."].content[payload.id] = "folder";
     Object.keys(payload.content).forEach((item) => {
-      notRoot[item] = true;
+      delete state["."].content[item];
     })
   },
   clear(state) {
@@ -61,12 +61,20 @@ const mutations: MutationTree<FolderState> = {
     const content = state[payload].content;
     delete state[payload];
     Object.keys(content).forEach((item) => {
-      delete notRoot[item];
+      state["."].content[item] = content[item];
     })
   },
 
   setName(state, payload: { id: string, name: string }) {
     state[payload.id].name = payload.name;
+  },
+
+  // Moving -------------------------------------------------------------------
+  add(state, payload: { item: { id: string, type: string}, to: string }) {
+    state[payload.to].content[payload.item.id] = payload.item.type;
+  },
+  remove(state, payload: { id: string, from: string }) {
+    delete state[payload.from].content[payload.id]
   }
 }
 
@@ -106,14 +114,16 @@ const actions: ActionTree<FolderState, RootState> = {
     })
   },
 
-  add({ commit }, payload: { to: string, id: string}): Promise<void> {
+  add({ commit }, payload: { to: string, item: { id: string, type: string}}): Promise<void> {
     return new Promise((resolve, reject) => {
       console.log("adding item to folder: ", payload);
+      commit("add", payload);
     })
   },
   remove({ commit }, payload: { from: string, id: string}): Promise<void> {
     return new Promise((resolve, reject) => {
       console.log("removing item from folder: ", payload);
+      commit("remove", payload);
     })
   }
 }
