@@ -51,10 +51,11 @@ const actions: ActionTree<RootState, RootState> = {
         })
       }))
       Promise.all(Object.keys(response).map((item: any) => {
+        console.log(response[item]);
         return new Promise<void>((res) => {
           if(response[item].type == "folder") {
             dispatch("folders/load", {id: item, ...response[item]}, { root: true }).then(() => {
-              res();
+              res()
             })
           } else {
             res();

@@ -68,7 +68,7 @@ const actions: ActionTree<DocumentState, RootState> = {
         name: payload.name,
         owner: payload.owner,
       });
-      dispatch("folders/add", { item: { id: payload.id, type: "document" }, to: "." }, { root: true });
+      commit("folders/add", { item: { id: payload.id, type: "document" }, to: "." }, { root: true });
       resolve();
     })
   },

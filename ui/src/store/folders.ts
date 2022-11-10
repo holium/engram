@@ -118,12 +118,41 @@ const actions: ActionTree<FolderState, RootState> = {
     return new Promise((resolve, reject) => {
       console.log("adding item to folder: ", payload);
       commit("add", payload);
+      if(payload.to != ".") {
+        (window as any).urbit.poke({
+          app: "engram",
+          mark: "post",
+          json: {
+            "folder": {
+              "add": {
+                to: payload.to,
+                id: payload.item.id,
+                type: payload.item.type
+              }
+            }
+          }
+        })
+      }
     })
   },
-  remove({ commit }, payload: { from: string, id: string}): Promise<void> {
+  remove({ commit }, payload: { from: string, index: string}): Promise<void> {
     return new Promise((resolve, reject) => {
       console.log("removing item from folder: ", payload);
       commit("remove", payload);
+      if(payload.from != ".") {
+        (window as any).urbit.poke({
+          app: "engram",
+          mark: "post",
+          json: {
+            "folder": {
+              "remove": {
+                from: payload.from,
+                id: payload.index,
+              }
+            }
+          }
+        })
+      }
     })
   }
 }
