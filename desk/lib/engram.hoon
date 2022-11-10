@@ -19,11 +19,11 @@
           ::[%dsettings (ot ~[dmeta+(ot ~[id+so timestamp+di])])]
       ==
       :-  %folder  %-  of  :~
-        [%make (ot ~[name+so roles+(op sym (se %tas)) ships+(op fed:ag (se %tas))])]
+        [%make (ot ~[owner+(se %p) name+so space+pa oles+(op sym (se %tas)) ships+(op fed:ag (se %tas))])]
         [%delete (ot ~[id+pa])]
-        ::[%renamefolder (ot ~[old+(ot ~[id+so name+so]) new+(ot ~[id+so name+so])])]
-        ::[%add (ot ~[to+pa id+pa])]
-        ::[%remove (ot ~[from+pa id+pa])]
+        [%rename (ot ~[id+pa name+so])]
+        [%add (ot ~[to+pa id+pa type+so])]
+        [%remove (ot ~[from+pa id+pa])]
         ::[%createsnap (ot ~[dmeta+(ot ~[id+so timestamp+di])])]
       ==
       :-  %prop  %-  of  :~

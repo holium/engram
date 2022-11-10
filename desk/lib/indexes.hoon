@@ -58,7 +58,7 @@
       version.state  (~(put by version.state) ship clock)
     ==  
   state
-++  delete
+++  remove
   |=  [state=index item=id ship=@p] 
   ^-  index
   =/  clock

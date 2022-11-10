@@ -29,7 +29,7 @@
 ::+$  access  $%(%read %write %admin)
 ::
 ::  Organisms
-+$  type  $%(%document %folder)
++$  type  @tas
 +$  iupdate  [content=(map @p (set [id type])) dels=(set [id id])]
 +$  index  [version=version content=(map id [id type]) dels=(map id id)]
 ::
@@ -42,7 +42,7 @@
 +$  document   [id=id version=dversion content=dcontent settings=dsettings snapshots=(set dsnapshot)]
 ::
 ::  Folders
-+$  folder  [id=id name=@t roles=(map @tas @tas) ships=(map @p @tas) content=index]
++$  folder  [id=id owner=@p name=@t roles=(map @tas @tas) ships=(map @p @tas) content=index]
 ::
 ::  Spaces
 +$  spath  path
@@ -90,10 +90,10 @@
       ==
     ==
     $:  %folder
-      $%  [%make name=@t roles=(map @tas @tas) ships=(map @p @tas)]
+      $%  [%make owner=@p name=@t space=path roles=(map @tas @tas) ships=(map @p @tas)]
           [%delete path=path]
-      ::    [%add to=path id=path]
-      ::    [%remove from=path id=path]
+          [%add to=path id=path type=@tas]
+          [%remove from=path id=path]
           [%rename path=path name=@t]
       ==
     ==

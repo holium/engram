@@ -58,7 +58,7 @@
           (silt `(list dsnapshot)`[~])
         ==
         ::
-        =/  dstate  this(d (~(put by d) [our.bowl t] doc))
+        =/  state  this(d (~(put by d) [our.bowl t] doc))
         =/  oldspc
         ?:  (~(has by s) space.action)
           (~(got by s) space.action)
@@ -66,7 +66,7 @@
         =/  newspc
         =.  content.oldspc  (insert:indexes content.oldspc [[our.bowl t] %document] our.bowl)
           oldspc
-        =/  sstate  dstate(s (~(put by s) space.action newspc))
+        =/  sstate  state(s (~(put by s) space.action newspc))
         `sstate(t (add t 1))
         ::
         ::
@@ -74,7 +74,22 @@
           %delete
         =/  id  [`@p`(slav %p -.path.action) `@u`(slav %ud -.+.path.action)]
         ?>  (~(has by d) id)
-        `this(d (~(del by d) id))
+        =/  nstate  this(d (~(del by d) id))
+        =/  spcs
+          %-  ~(run by s)  |=  spc=space
+          ?:  (~(has by content.content.spc) id)
+            =.  content.spc  (remove:indexes content.spc id our.bowl)
+            spc
+          spc
+        =/  sstate  nstate(s spcs)
+        =/  fldrs
+          %-  ~(run by f)  |=  fldr=folder
+          ?:  (~(has by content.content.fldr) id)
+            =.  content.fldr  (remove:indexes content.fldr id our.bowl)
+            fldr
+          fldr
+        =/  fstate  sstate(f fldrs)
+        `fstate
         ::
         :: modify a document by changing the stored document state
         ::
@@ -140,37 +155,70 @@
           %make
         =/  fold  :*  
           [our.bowl t]
+          owner.action
           name.action
           roles.action
           ships.action
           ^*  index
         ==
-        =/  state  this(f (~(put by f) [our.bowl t] fold))
-        `state(t (add t 1))
+        =/  fstate  this(f (~(put by f) [our.bowl t] fold))
+        =/  oldspc
+        ?:  (~(has by s) space.action)
+          (~(got by s) space.action)
+        ^*  space
+        =/  newspc
+        =.  content.oldspc  (insert:indexes content.oldspc [[our.bowl t] %folder] our.bowl)
+          oldspc
+        =/  sstate  fstate(s (~(put by s) space.action newspc))
+        `sstate(t (add t 1))
         ::
         :: delete an existing folder
         ::
           %delete
         =/  id  [(slav %p -.path.action) (slav %u -.+.path.action)]
         ?>  (~(has by f) id)
-        `this(f (~(del by f) id))
+        =/  nstate  this(f (~(del by f) id))
+        =/  spcs
+          %-  ~(run by s)  |=  spc=space
+          ?:  (~(has by content.content.spc) id)
+            =.  content.spc  (remove:indexes content.spc id our.bowl)
+            spc
+          spc
+        =/  sstate  nstate(s spcs)
+        =/  fldrs
+          %-  ~(run by f)  |=  fldr=folder
+          ?:  (~(has by content.content.fldr) id)
+            =.  content.fldr  (remove:indexes content.fldr id our.bowl)
+            fldr
+          fldr
+        =/  fstate  sstate(f fldrs)
+        `fstate
         ::
         :: add a document or folder to another folder
         ::
-        ::  %add
-        ::?>  (~(has by f) fmeta.action)
-        ::`this(f (~(put ju f) fmeta.action fldr.action))
+          %add
+        =/  id  [(slav %p -.id.action) (slav %u -.+.id.action)]
+        =/  to  [(slav %p -.to.action) (slav %u -.+.to.action)]
+        ?>  (~(has by f) to)
+        =/  tofldr  (~(got by f) to)
+        =/  nfldr
+        =.  content.tofldr  (insert:indexes content.tofldr [id type.action] our.bowl)
+        tofldr
+        `this(f (~(put by f) to nfldr))
         ::
         :: remove a document or folder from a folder
         ::
-        ::  %remove
-        ::?>  (~(has by f) fmeta.action)
-        ::=/  a  (~(get ju f) fmeta.action)
-        ::?:  =(~(wyt in a) 1)
-        ::    `this(f (~(put by f) fmeta.action ~))
-        ::`this(f (~(del ju f) fmeta.action fldr.action))
+          %remove
+        =/  id  [(slav %p -.id.action) (slav %u -.+.id.action)]
+        =/  from  [(slav %p -.from.action) (slav %u -.+.from.action)]
+        ?>  (~(has by f) from)
+        =/  fromfldr  (~(got by f) from)
+        =/  nfldr
+        =.  content.fromfldr  (remove:indexes content.fromfldr id our.bowl)
+        fromfldr
+        `this(f (~(put by f) from nfldr))
         ::
-        :: {Documentation Here}
+        :: Rename a folder
         ::
           %rename
         =/  id  [(slav %p -.path.action) (slav %u -.+.path.action)]
