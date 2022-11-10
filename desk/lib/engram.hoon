@@ -51,8 +51,9 @@
         :-  (spat ~[(scot %p -.id) (scot %u +.id)])
         (pairs ~[['type' (tape "document")] ['name' (tape (trip name.settings.doc))] ['owner' (tape (scow %p owner.settings.doc))]])
       =/  fol  (~(got by fols) id)
+      =/  folcont  %-  ~(run by content.content.fol)  |=  [id=id:engram type=type:engram]  [(spat ~[(scot %p -.id) (scot %u +.id)]) (tape (trip type))]
       :-  (spat ~[(scot %p -.id) (scot %u +.id)])
-      (pairs ~[['type' (tape "folder")] ['name' (tape (trip name.fol))] ['owner' (tape (scow %p owner.fol))]])
+      (pairs ~[['type' (tape "folder")] ['name' (tape (trip name.fol))] ['owner' (tape (scow %p owner.fol))] ['content' (pairs ~(val by folcont))]])
     --
   ++  document
     |%
