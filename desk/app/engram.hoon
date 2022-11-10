@@ -175,7 +175,7 @@
         :: delete an existing folder
         ::
           %delete
-        =/  id  [(slav %p -.path.action) (slav %u -.+.path.action)]
+        =/  id  [`@p`(slav %p -.path.action) `@u`(slav %ud -.+.path.action)]
         ?>  (~(has by f) id)
         =/  nstate  this(f (~(del by f) id))
         =/  spcs
@@ -197,8 +197,8 @@
         :: add a document or folder to another folder
         ::
           %add
-        =/  id  [(slav %p -.id.action) (slav %u -.+.id.action)]
-        =/  to  [(slav %p -.to.action) (slav %u -.+.to.action)]
+        =/  id  [`@p`(slav %p -.id.action) `@u`(slav %ud -.+.id.action)]
+        =/  to  [`@p`(slav %p -.to.action) `@u`(slav %ud -.+.to.action)]
         ?>  (~(has by f) to)
         =/  tofldr  (~(got by f) to)
         =/  nfldr
@@ -209,8 +209,8 @@
         :: remove a document or folder from a folder
         ::
           %remove
-        =/  id  [(slav %p -.id.action) (slav %u -.+.id.action)]
-        =/  from  [(slav %p -.from.action) (slav %u -.+.from.action)]
+        =/  id  [`@p`(slav %p -.id.action) `@u`(slav %ud -.+.id.action)]
+        =/  from  [`@p`(slav %p -.from.action) `@u`(slav %ud -.+.from.action)]
         ?>  (~(has by f) from)
         =/  fromfldr  (~(got by f) from)
         =/  nfldr
@@ -221,7 +221,7 @@
         :: Rename a folder
         ::
           %rename
-        =/  id  [(slav %p -.path.action) (slav %u -.+.path.action)]
+        =/  id  [`@p`(slav %p -.path.action) `@u`(slav %ud -.+.path.action)]
         ?>  (~(has by f) id)
         =/  old  (~(got by f) id)
         =/  new
@@ -235,7 +235,7 @@
         :: remove the merged update from the update list (as updates aren't implemented this will just log)
         ::
           %accept
-        =/  id  [(slav %p -.path.action) (slav %u -.+.path.action)]
+        =/  id  [`@p`(slav %p -.path.action) `@u`(slav %ud -.+.path.action)]
         `this(u (~(del ju u) id update.action))
         ::
         :: subscribe to a remote document
@@ -256,14 +256,14 @@
         :: {Documentation Here}
         ::
           %update
-        =/  id  [(slav %p -.path.action) (slav %u -.+.path.action)]
+        =/  id  [`@p`(slav %p -.path.action) `@u`(slav %ud -.+.path.action)]
         `this(u (~(put ju u) id update.action))
         ::
         ::
         :: {Documentation Here}
         ::
           %update-live
-        =/  id  [(slav %p -.path.action) (slav %u -.+.path.action)]
+        =/  id  [`@p`(slav %p -.path.action) `@u`(slav %ud -.+.path.action)]
         =/  li  `path`(weld ~['updates'] path.action)
         :_  this
         :~  %-  fact:agentio
@@ -288,7 +288,7 @@
   ^-  (quip card _this)
   ?+    path  (on-watch:def path)
       [%updates @ @ ~]
-    =/  id  [(slav %p i.t.path) (slav %u i.t.t.path)]
+    =/  id  [`@p`(slav %p i.t.path) `@u`(slav %ud i.t.t.path)]
     =/  doc  (~(got by d) id)
     ?~  (find [src.bowl]~ ships.settings.doc)
       !!
