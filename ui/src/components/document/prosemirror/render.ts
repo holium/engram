@@ -67,6 +67,6 @@ export default function (
   view = new EditorView(place, {
     state,
   });
-  Y.applyUpdate(doc, content);
+  if(content.length > 0) Y.applyUpdate(doc, content);
   return view;
 }

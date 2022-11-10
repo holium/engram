@@ -88,8 +88,8 @@ const actions: ActionTree<DocumentState, RootState> = {
           owner: `~${(window as any).ship}`,
           name: payload.name,
           space: `/${router.currentRoute.value.params.station}/${router.currentRoute.value.params.space}`,
-          content: JSON.stringify(Array.from(content)),
-          version: JSON.stringify(Array.from(version)),
+          content: "[]",
+          version: "[]",
           roles: {},
           ships: {},
         }}}

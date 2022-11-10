@@ -75,6 +75,9 @@ export default defineComponent({
   },
   beforeRouteUpdate: function(to) {
     this.loaded = store.dispatch("workspace/open", `${to.params.author}/${to.params.clock}`);
+    this.loaded.then((res: any) => {
+        render(this.$refs["document"] as any, res[0].content, this.updateBauble, this.updateCover, this.updateStyling);
+      })
   },
   mounted: function () {
     //render document

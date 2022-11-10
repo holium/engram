@@ -1,11 +1,14 @@
 export class Menu {
-    location: { top: number, left: number };
+    location: { top: string, left: string };
     items: Array<MenuItem>;
     
     horizontal: boolean;
 
     constructor(location: { top: number, left: number }, items: Array<MenuItem>, horizontal=false) {
-        this.location = location;
+        this.location = {
+            top: `${location.top}px`,
+            left: `${location.left}px`
+        };
         this.items = items;
         this.horizontal = horizontal;
     }

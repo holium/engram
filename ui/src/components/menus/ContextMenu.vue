@@ -1,8 +1,9 @@
 <template>
     <div 
         style="item.location"
-        class="bg-card flex absolute" 
+        class="bg-paper flex absolute" 
         :class="{'flex-col': !contextmenu.horizontal}"
+        :style="contextmenu.location"
     >
         <div :key="i" v-for="(item, i) in contextmenu.items" @click="item.run">
             {{ item.display }}
