@@ -1,11 +1,14 @@
 <template>
     <div 
+        ref="menu"
+        tabindex="0"
+        @blur="close"
         style="item.location"
-        class="bg-paper flex absolute" 
+        class="bg-paper flex absolute outline-none" 
         :class="{'flex-col': !contextmenu.horizontal}"
         :style="contextmenu.location"
     >
-        <div :key="i" v-for="(item, i) in contextmenu.items" @click="item.run">
+        <div :key="i" v-for="(item, i) in contextmenu.items" @click="() => { item.run(); close() }" class="px-3 py-1 clickable">
             {{ item.display }}
         </div>
     </div>
@@ -15,10 +18,19 @@
 import { defineComponent } from "vue"
 export default defineComponent({
     name: "ContextMenu",
+    inject: ["closeMenu"],
     props: {
         contextmenu: {
             required: true,
             type: Object
+        }
+    },
+    mounted: function() {
+        (this.$refs["menu"] as any).focus();
+    },
+    methods: {
+        close: function() {
+            (this as any).closeMenu();
         }
     }
 })

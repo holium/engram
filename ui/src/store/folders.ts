@@ -1,4 +1,5 @@
 import type { Module, GetterTree, MutationTree, ActionTree } from "vuex"
+import router from "@/router/index";
 import type {
   RootState,
   FolderState,
@@ -80,12 +81,32 @@ const actions: ActionTree<FolderState, RootState> = {
   },
   clear({ commit }) {
     commit("clear");
-  }
+  },
+
+  make({ commit }, payload: { name: string }): Promise<Document> {
+    return new Promise((resolve, reject) => {
+      console.log("making folder");
+      (window as any).urbit.poke({
+        app: "engram",
+        mark: "post",
+        json: { "folder": { "make": {
+          owner: `~${(window as any).ship}`,
+          name: payload.name,
+          space: `/${router.currentRoute.value.params.station}/${router.currentRoute.value.params.space}`,
+          roles: {},
+          ships: {},
+        }}}
+      }).then(() => {
+        //
+      })
+    })
+  },
 }
 
 export default {
-  namespace: true,
+  namespaced: true,
   state,
   getters,
   mutations,
+  actions,
 }

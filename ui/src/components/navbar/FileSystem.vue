@@ -6,7 +6,7 @@
             </div>
             <svg 
                 @click="openMenu"
-                class="icon clickable"
+                class="icon clickable new-item-button"
                 viewBox="0 0 16 16" 
                 fill="var(--rlm-icon-color, #333333)"
                 xmlns="http://www.w3.org/2000/svg"
@@ -44,16 +44,17 @@ export default defineComponent({
     },
     methods: {
         openMenu: function(event: MouseEvent) {
+            event.preventDefault();
             (this as any).pushMenu(new Menu({ top: event.clientY, left: event.clientX}, [
                 {
-                    display: "New Folder",
+                    display: "New Document",
                     icon: "",
                     run: () => {
                         store.dispatch("documents/make", { name: "Untitled Document" })
                     }
                 },
                 {
-                    display: "New Document",
+                    display: "New Folder",
                     icon: "",
                     run: () => {
                         store.dispatch("folders/make", { name: "Untitled Folder" })
@@ -65,3 +66,16 @@ export default defineComponent({
     }
 })
 </script>
+
+<style>
+
+.new-item-button {
+    opacity: 0;
+    transition: opacity 80ms ease;
+}
+
+.heading .new-item-button {
+    opacity: 1;
+}
+
+</style>
