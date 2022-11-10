@@ -305,8 +305,10 @@
   ^-  (unit (unit cage))
   ?+    p  (on-peek:def p)
       [%x %space @ @ %list ~]
-    =/  spc  (~(got by s) ~[i.t.t.p i.t.t.t.p])
-    ``noun+!>((list:space:enjs:engram [d ~(key by content.content.spc)]))
+    ?:  (~(has by s) ~[i.t.t.p i.t.t.t.p])
+      =/  spc  (~(got by s) ~[i.t.t.p i.t.t.t.p])
+      ``noun+!>((list:space:enjs:engram [d f content.content.spc]))
+    ~&  "No space of path: {<`path`~[i.t.t.p i.t.t.t.p]>}"  !!
       [%x %document %list ~]
     ``noun+!>((list:document:enjs:engram d))
   ::

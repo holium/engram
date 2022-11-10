@@ -19,7 +19,7 @@
           ::[%dsettings (ot ~[dmeta+(ot ~[id+so timestamp+di])])]
       ==
       :-  %folder  %-  of  :~
-        [%make (ot ~[owner+(se %p) name+so space+pa oles+(op sym (se %tas)) ships+(op fed:ag (se %tas))])]
+        [%make (ot ~[owner+(se %p) name+so space+pa roles+(op sym (se %tas)) ships+(op fed:ag (se %tas))])]
         [%delete (ot ~[id+pa])]
         [%rename (ot ~[id+pa name+so])]
         [%add (ot ~[to+pa id+pa type+so])]
@@ -40,15 +40,19 @@
     |%
     ++  list
       =,  enjs:format
-      |=  [docs=documents:engram ids=(set id:engram)]
+      |=  [docs=documents:engram fols=folders:engram items=(map id:engram [id:engram type:engram])]
       ^-  json
-      %-  pairs  %~  tap  in  
-      ^-  (set [@t json])
-      %-  ~(run in ids)
-      |=  id=id:engram
-      =/  doc  (~(got by docs) id)
+      %-  pairs  %~  val  by  
+      ^-  (map id:engram [@t json])
+      %-  ~(run by items)
+      |=  [id=id:engram type=type:engram]
+      ?:  =(type %document)
+        =/  doc  (~(got by docs) id)
+        :-  (spat ~[(scot %p -.id) (scot %u +.id)])
+        (pairs ~[['type' (tape "document")] ['name' (tape (trip name.settings.doc))] ['owner' (tape (scow %p owner.settings.doc))]])
+      =/  fol  (~(got by fols) id)
       :-  (spat ~[(scot %p -.id) (scot %u +.id)])
-      (pairs ~[['name' (tape (trip name.settings.doc))] ['owner' (tape (scow %p owner.settings.doc))]])
+      (pairs ~[['type' (tape "folder")] ['name' (tape (trip name.fol))] ['owner' (tape (scow %p owner.fol))]])
     --
   ++  document
     |%
