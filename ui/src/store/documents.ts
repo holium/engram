@@ -53,18 +53,14 @@ const actions: ActionTree<DocumentState, RootState> = {
 
   // Management
   load({ commit }, payload): Promise<void> {
+    console.log("loading folder: ", payload);
     return new Promise<void>((resolve, reject) => {
-      commit("clear");
-      (window as any).urbit.scry({ app: "engram", path: `/space/${router.currentRoute.value.params.station}/${router.currentRoute.value.params.space}/list`}).then((response: any) => {
-        console.log("list response", response);
-        Object.keys(response).forEach((doc: any) => {
-          commit("load", {
-            id: doc,
-            name: response[doc].name,
-            owner: response[doc].owner,
-          })
-        })
-      })
+      commit("load", {
+        id: payload.id,
+        name: payload.name,
+        owner: payload.owner,
+      });
+      resolve();
     })
   },
   clear({ commit }) {

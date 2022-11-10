@@ -67,16 +67,14 @@ const mutations: MutationTree<FolderState> = {
 
 const actions: ActionTree<FolderState, RootState> = {
   load({ commit }, payload): Promise<void> {
+    console.log("loading folder: ", payload);
     return new Promise<void>((resolve, reject) => {
-      commit("clear");
-      (window as any).urbit.scry({ app: "engram", path: ""}).then((response: any) => {
-        Object.keys(response).forEach((folder: any) => {
-          commit("load", {
-            id: folder,
-            name: response[folder].name,
-          })
-        })
-      })
+      commit("load", {
+        id: payload.id,
+        name: payload.name,
+        owner: payload.owner,
+      });
+      resolve();
     })
   },
   clear({ commit }) {

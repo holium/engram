@@ -30,16 +30,12 @@ export default defineComponent({
         SystemItem,
     },
     inject: ["pushMenu"],
-    created: function() {
-        store.dispatch("documents/load");
-    },
     computed: {
         documents: function(): Array<DocumentMeta> {
             return store.getters['documents/list'];
         },
         folders: function(): Array<FolderMeta> {
-            //return store.getters['folder/list'];
-            return [];
+            return store.getters['folders/list'];
         }
     },
     methods: {

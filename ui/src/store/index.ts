@@ -1,5 +1,6 @@
 import {createStore} from 'vuex'
 import type { GetterTree, ActionTree } from "vuex"
+import router from "@/router/index"
 import type { RootState, Space } from "./types"
 import documents from './documents';
 import folders from "./folders";
@@ -32,9 +33,20 @@ const getters: GetterTree<RootState, RootState> = {
 const actions: ActionTree<RootState, RootState> = {
   load({ dispatch }, payload: string) {
     console.log("load space: ", payload);
-    dispatch("workspace/close");
-    dispatch("documents/load", payload);
-    dispatch("folders/load", payload);
+    dispatch("workspace/close", {}, { root: true });
+
+    (window as any).urbit.scry({ app: "engram", path: `/space/${router.currentRoute.value.params.station}/${router.currentRoute.value.params.space}/list`}).then((response: any) => {
+      dispatch("documents/clear", {}, { root: true });
+      dispatch("folders/clear", {}, { root: true });
+      Object.keys(response).forEach((item: any) => {
+        console.log("loaded item: ", item);
+        if(item.type == "document") {
+          dispatch("documents/load", response[item]);
+        } else if(item.type == "folder") {
+          dispatch("folders/load", response[item]);
+        }
+      })
+    })
   }
 }
 
