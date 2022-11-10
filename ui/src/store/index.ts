@@ -39,11 +39,11 @@ const actions: ActionTree<RootState, RootState> = {
       dispatch("documents/clear", {}, { root: true });
       dispatch("folders/clear", {}, { root: true });
       Object.keys(response).forEach((item: any) => {
-        console.log("loaded item: ", item);
-        if(item.type == "document") {
-          dispatch("documents/load", response[item]);
-        } else if(item.type == "folder") {
-          dispatch("folders/load", response[item]);
+        console.log("loaded item: ", response[item]);
+        if(response[item].type == "document") {
+          dispatch("documents/load", response[item], { root: true });
+        } else if(response[item].type == "folder") {
+          dispatch("folders/load", response[item], { root: true });
         }
       })
     })
