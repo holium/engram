@@ -27,6 +27,9 @@ const getters: GetterTree<RootState, RootState> = {
         reject({ path: "", name: "our", color: "#262626"});
       })
     })
+  },
+  lastOrganism: () => (): Promise<string> => {
+    return (window as any).urbit.scry({ app: "engram", path: "/history"});
   }
 }
 

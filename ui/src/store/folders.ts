@@ -95,7 +95,7 @@ const actions: ActionTree<FolderState, RootState> = {
     commit("clear");
   },
 
-  make({ commit }, payload: { name: string }): Promise<Document> {
+  make({ commit, rootGetters }, payload: { name: string }): Promise<Document> {
     return new Promise((resolve, reject) => {
       console.log("making folder");
       (window as any).urbit.poke({
@@ -109,7 +109,15 @@ const actions: ActionTree<FolderState, RootState> = {
           ships: {},
         }}}
       }).then(() => {
-        //
+        rootGetters['lastOrganism']().then((path: string) => {
+          console.log("last organism: ", path);
+          commit("load", {
+            id: path,
+            name: payload.name,
+            owner: `~${(window as any).ship}`,
+            content: {},
+          });
+        });
       })
     })
   },

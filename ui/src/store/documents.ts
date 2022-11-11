@@ -75,7 +75,7 @@ const actions: ActionTree<DocumentState, RootState> = {
     commit("clear");
   },
 
-  make({ commit }, payload: { name: string }): Promise<Document> {
+  make({ commit, dispatch, rootGetters }, payload: { name: string }): Promise<Document> {
     return new Promise((resolve, reject) => {
       console.log("making document")
       const doc = new Y.Doc();
@@ -98,11 +98,15 @@ const actions: ActionTree<DocumentState, RootState> = {
           ships: {},
         }}}
       }).then(() => {
-        (window as any).urbit.scry({ app: "engram", path: `/document/~${(window as any).ship}/${clock}/get`}).then((response: any) => {
-          console.log("create response:", response);
-          //commit("load", response)
-          resolve(response);
-        })
+        rootGetters['lastOrganism']().then((path: string) => {
+          console.log("last organism: ", path);
+          commit("load", {
+            id: path,
+            name: payload.name,
+            owner: `~${(window as any).ship}`,
+          });
+          dispatch("folders/add", { item: { index: path, id: path, type: "document" }, to: "." }, { root: true });
+        });
       })
     })
   },
