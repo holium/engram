@@ -36,6 +36,11 @@
   --
 ++  enjs
   |%
+  ++  timestamp
+    =,  enjs:format
+    |=  timestamp=id:engram
+    ^-  json
+    (path ~[(scot %p -.timestamp) (scot %u +.timestamp)])
   ++  space
     |%
     ++  list

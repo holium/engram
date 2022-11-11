@@ -58,6 +58,7 @@
 ::
 
 +$  localtime  clock
++$  history  (list id)
 +$  spaces  (map spath space)
 +$  updates  (jug id dupdate)
 +$  documents  (map id document)

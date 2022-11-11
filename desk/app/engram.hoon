@@ -6,7 +6,7 @@
 +$  versioned-state
   $%  state-0
   ==
-+$  state-0  [%0 t=localtime s=spaces d=documents f=folders u=updates]
++$  state-0  [%0 t=localtime h=history s=spaces d=documents f=folders u=updates]
 +$  card  card:agent:gall
 --
 %-  agent:dbug
@@ -58,16 +58,18 @@
           (silt `(list dsnapshot)`[~])
         ==
         ::
-        =/  state  this(d (~(put by d) [our.bowl t] doc))
+        =/  id  [our.bowl t]
+        =/  state  this(d (~(put by d) id doc))
         =/  oldspc
         ?:  (~(has by s) space.action)
           (~(got by s) space.action)
         ^*  space
         =/  newspc
-        =.  content.oldspc  (insert:indexes content.oldspc [[our.bowl t] %document] our.bowl)
+        =.  content.oldspc  (insert:indexes content.oldspc [id %document] our.bowl)
           oldspc
         =/  sstate  state(s (~(put by s) space.action newspc))
-        `sstate(t (add t 1))
+        =/  hstate  sstate(h (snoc h id))
+        `hstate(t (add t 1))
         ::
         ::
         ::
@@ -161,16 +163,18 @@
           ships.action
           ^*  index
         ==
-        =/  fstate  this(f (~(put by f) [our.bowl t] fold))
+        =/  id  [our.bowl t]
+        =/  fstate  this(f (~(put by f) id fold))
         =/  oldspc
         ?:  (~(has by s) space.action)
           (~(got by s) space.action)
         ^*  space
         =/  newspc
-        =.  content.oldspc  (insert:indexes content.oldspc [[our.bowl t] %folder] our.bowl)
+        =.  content.oldspc  (insert:indexes content.oldspc [id %folder] our.bowl)
           oldspc
         =/  sstate  fstate(s (~(put by s) space.action newspc))
-        `sstate(t (add t 1))
+        =/  hstate  sstate(h (snoc h id))
+        `hstate(t (add t 1))
         ::
         :: delete an existing folder
         ::
@@ -304,6 +308,10 @@
   |=  p=path
   ^-  (unit (unit cage))
   ?+    p  (on-peek:def p)
+      [%x %history ~]
+    ~_  [%leaf "empty history"]
+    ``noun+!>((timestamp:enjs:engram (rear h)))
+    ::
       [%x %space @ @ %list ~]
     ?:  (~(has by s) ~[i.t.t.p i.t.t.t.p])
       =/  spc  (~(got by s) ~[i.t.t.p i.t.t.t.p])
