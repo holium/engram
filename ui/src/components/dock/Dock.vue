@@ -53,6 +53,9 @@
             viewBox="0 0 16 16"
             fill="var(--rlm-icon-color, #333333)"
             xmlns="http://www.w3.org/2000/svg"
+            @click="() => {
+              open = 'revisions'
+            }"
           >
             <path
               fill-rule="evenodd"
@@ -64,6 +67,7 @@
 
       <StylingDock :styling="styling" v-if="open == 'styling'" />
       <SharingDock v-if="open == 'sharing'" />
+      <VersionDock v-if="open == 'revisions'" />
     </div>
   </div>
 </template>
@@ -72,11 +76,13 @@
 import { defineComponent } from "vue";
 import StylingDock from "./StylingDock.vue";
 import SharingDock from "./SharingDock.vue";
+import VersionDock from "./VersionDock.vue";
 export default defineComponent({
   name: "Dock",
   components: {
     StylingDock,
     SharingDock,
+    VersionDock,
   },
   props: {
     styling: {
@@ -86,7 +92,7 @@ export default defineComponent({
   },
   data() {
     return {
-      open: "styling" as "styling" | "sharing" | "versions" | "updates",
+      open: "styling" as "styling" | "sharing" | "revisions" | "updates",
       dockWidth: 420,
       dragStart: 0,
     }

@@ -43,13 +43,14 @@ const mutations: MutationTree<RevisionState> = {
 
 const actions: ActionTree<RevisionState, RootState> = {
   open({ commit }, payload: string) {
-    (window as any).urbit.scry({ app: "engram", path: ``}).then((response: any) => {
-      commit("open", response.map((version: any) => {
+    (window as any).urbit.scry({ app: "engram", path: `/document/${payload}/get/snapshots`}).then((response: any) => {
+      console.log("versions response: ", response);
+      commit("open", Object.keys(response).map((timestamp: string) => {
         return {
-          author: version.author,
-          snapshot: Y.decodeSnapshot(Uint8Array.from(Object.keys(version.snapshot).map(key => version.snapshot[key]))),
-          timestamp: version.timestamp,
-          date: new Date(version.timestamp),
+          author: response[timestamp].author,
+          snapshot: Y.decodeSnapshot(Uint8Array.from(Object.keys(response[timestamp].snapshot).map(key => response[timestamp].snapshot[key]))),
+          timestamp: parseInt(timestamp),
+          date: new Date(response[timestamp].timestamp),
         }
       }))
     })
@@ -65,6 +66,7 @@ const actions: ActionTree<RevisionState, RootState> = {
         timestamp: Date.now(),
         snpashot: payload.snapshot
       }
+      console.log("saving snapshot: ", version);
       commit("add", version);
       (window as any).urbit.poke({
         app: "engram",
@@ -75,6 +77,8 @@ const actions: ActionTree<RevisionState, RootState> = {
           timestamp: version.timestamp,
           snpashot: JSON.stringify(Array.from(Y.encodeSnapshot(payload.snapshot)))
         }}}
+      }).then(() => {
+        resolve();
       })
     })
   }

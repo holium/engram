@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col">
 
-    <!-- Auto uUdate -->
+    <!-- Auto Update -->
     <div class="px-3 flex gap-3 items-center">
       <div class="dock-label">Auto-sync with other ships:</div>
       <!-- toggle -->

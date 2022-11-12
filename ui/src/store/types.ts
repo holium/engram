@@ -79,6 +79,11 @@ export type DocumnetPermission = 'write' | 'read'
 // Revisions
 export type RevisionState = Array<DocumentVersion>
 
+export interface VersionMeta {
+  author: Patp;
+  date: Date;
+}
+
 export interface DocumentVersion {
   timestamp: number;
   author: Patp;
