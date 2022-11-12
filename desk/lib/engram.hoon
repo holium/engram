@@ -15,6 +15,7 @@
           [%save (ot ~[id+pa content+sa version+sa])]
           [%snap (ot ~[id+pa snapshot+(ot ~[timestamp+di author+(se %p) data+sa])])]
           ::[%dsnap (ot ~[dmeta+(ot ~[id+so timestamp+di])])]
+          [%rename (ot ~[id+pa name+so])]
           [%settings (ot ~[id+pa owner+(se %p) name+so roles+(op sym (se %tas)) ships+(op fed:ag (se %tas))])]
           ::[%dsettings (ot ~[dmeta+(ot ~[id+so timestamp+di])])]
       ==
