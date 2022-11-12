@@ -104,7 +104,7 @@ const actions: ActionTree<FolderState, RootState> = {
         json: { "folder": { "make": {
           owner: `~${(window as any).ship}`,
           name: payload.name,
-          space: `/${router.currentRoute.value.params.station}/${router.currentRoute.value.params.space}`,
+          space: `${router.currentRoute.value.query.spaceId == null ? "/~/-" : router.currentRoute.value.query.spaceId}`,
           roles: {},
           ships: {},
         }}}

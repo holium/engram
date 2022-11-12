@@ -21,6 +21,7 @@ module.exports = {
     },
     fontSize: {
       body: "16px",
+      heading: "20px"
     },
     lineHeight: {
       base: "1.2599em",

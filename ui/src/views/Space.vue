@@ -30,10 +30,10 @@ export default defineComponent({
     }
   },
   created: function() {
-    this.loadSpace(this.$route.params.space as string);
+    this.loadSpace(this.$route.query.spaceId as string);
   },
   beforeRouteUpdate: function(to) {
-    this.loadSpace(to.params.space as string);
+    this.loadSpace(to.query.spaceId as string);
   },
   methods: {
     loadSpace: function(to: string) {

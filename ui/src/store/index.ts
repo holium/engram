@@ -18,9 +18,9 @@ const getters: GetterTree<RootState, RootState> = {
       })
     })
   },
-  space: () => (id: string): Promise<Space> => {
+  space: () => (path: string): Promise<Space> => {
     return new Promise((resolve, reject) => {
-      (window as any).urbit.scry({ app: "spaces", path: `/${id}` }).then((response: any) => {
+      (window as any).urbit.scry({ app: "spaces", path: `${path}` }).then((response: any) => {
         resolve(response.space);
       }).catch((err: any) => {
         console.warn("spaces agent missing!!", err);
@@ -36,7 +36,7 @@ const getters: GetterTree<RootState, RootState> = {
 const actions: ActionTree<RootState, RootState> = {
   load({ dispatch }, payload: string) {
     dispatch("workspace/close", {}, { root: true });
-    (window as any).urbit.scry({ app: "engram", path: `/space/${router.currentRoute.value.params.station}/${router.currentRoute.value.params.space}/list`}).then((response: any) => {
+    (window as any).urbit.scry({ app: "engram", path: `/space${router.currentRoute.value.query.spaceId == null ? "/~/-" : router.currentRoute.value.query.spaceId}/list`,}).then((response: any) => {
       dispatch("documents/clear", {}, { root: true });
       dispatch("folders/clear", {}, { root: true });
       Promise.all(Object.keys(response).map((item: any) => {

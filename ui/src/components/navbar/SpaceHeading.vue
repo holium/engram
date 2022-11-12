@@ -39,10 +39,10 @@ export default defineComponent({
     }
   },
   created: function() {
-    this.loadSpaces();
+    this.loadSpaces(this.$route);
   },
-  onRouteUpdate: function() {
-    this.loadSpaces();
+  onRouteUpdate: function(to: any) {
+    this.loadSpaces(to);
   },
   methods: {
     openSelection: function() {
@@ -60,12 +60,10 @@ export default defineComponent({
       this.$router.push(`apps/engram${path}`);
       this.expand = false;
     },
-    loadSpaces: async function() {
-      const ship = this.$route.params.station as string;
-      const name = this.$route.params.space as string;
-      const path = `${ship}/${name}`;
-      if(path == "~/-") {
-        this.space = { path: "", name: "our", color: "#262626"}
+    loadSpaces: async function(route: any) {
+      const path = route.query.spaceId;
+      if(path == null) {
+        this.space = { path: "", name: (window as any).ship, color: "#262626"}
         this.spaces = [];
       } else {
         const spaceRes = await store.getters["space"](path);

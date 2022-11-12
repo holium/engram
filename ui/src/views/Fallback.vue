@@ -3,6 +3,9 @@
     <div class="">
       engram...
     </div>
+    <div>
+      path: {{ $route.query }}
+    </div>
   </div>
 </template>
 
@@ -12,12 +15,7 @@ import store from "@/store/index"
 export default defineComponent({
   name: "Fallback",
   beforeRouteEnter: function(to, from, next) {
-    const spaces = store.getters['spaces'];
-    if(spaces.length > 0) {
-      next(`/apps/engram/~${(window as any).ship}/our`);
-    } else {
-      next(`/apps/engram/~/-`);
-    }
+    next(`/apps/engram?spaceId=${to.query.spaceId}`);
   }
 });
 </script>

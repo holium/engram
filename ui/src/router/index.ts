@@ -8,7 +8,7 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
-      path: "/apps/engram/:station/:space/",
+      path: "/apps/engram/",
       name: "Space",
       component: Space,
       children: [

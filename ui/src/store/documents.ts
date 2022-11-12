@@ -91,7 +91,7 @@ const actions: ActionTree<DocumentState, RootState> = {
         json: { "document": { "make": {
           owner: `~${(window as any).ship}`,
           name: payload.name,
-          space: `/${router.currentRoute.value.params.station}/${router.currentRoute.value.params.space}`,
+          space: `${router.currentRoute.value.query.spaceId == null ? "/~/-" : router.currentRoute.value.query.spaceId}`,
           content: "[]",
           version: "[]",
           roles: {},
