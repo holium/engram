@@ -24,10 +24,13 @@ const getters: GetterTree<RevisionState, RootState> = {
 const mutations: MutationTree<RevisionState> = {
   // Management
   open(state, payload: Array<DocumentVersion>) {
-    state = payload;
+    state.splice(0, state.length);
+    payload.forEach((version) => {
+      state.push(version);
+    })
   },
   close(state) {
-    state = [];
+    state.splice(0, state.length);
   },
 
   add(state, payload: DocumentVersion) {
@@ -48,9 +51,9 @@ const actions: ActionTree<RevisionState, RootState> = {
       commit("open", Object.keys(response).map((timestamp: string) => {
         return {
           author: response[timestamp].author,
-          snapshot: Y.decodeSnapshot(Uint8Array.from(Object.keys(response[timestamp].snapshot).map(key => response[timestamp].snapshot[key]))),
+          snapshot: Y.decodeSnapshot(new Uint8Array(JSON.parse(response[timestamp].content))),
           timestamp: parseInt(timestamp),
-          date: new Date(response[timestamp].timestamp),
+          date: new Date(parseInt(timestamp)),
         }
       }))
     })
@@ -73,9 +76,11 @@ const actions: ActionTree<RevisionState, RootState> = {
         mark: "post",
         json: { "document": { "snap": {
           id: payload.id,
-          author: version.author,
-          timestamp: version.timestamp,
-          snpashot: JSON.stringify(Array.from(Y.encodeSnapshot(payload.snapshot)))
+          snapshot: {
+            author: `~${version.author}`,
+            timestamp: version.timestamp,
+            data: JSON.stringify(Array.from(Y.encodeSnapshot(payload.snapshot)))
+          }
         }}}
       }).then(() => {
         resolve();
