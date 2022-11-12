@@ -122,7 +122,11 @@
           %rename
         =/  id  [`@p`(slav %p -.path.action) `@u`(slav %ud -.+.path.action)]
         ~_  [%leaf "Error renaming document of id: {<id>}"]
+        ?.  (~(has by d) id)
+          ~&  "Could not find document!"  !!
         =/  old  (~(got by d) id)
+        ?.  =(owner.settings.old our.bowl)
+          ~&  "You do not have the right to rename this document!"  !!
         =/  new
         =.  name.settings.old  name.action
         old
@@ -238,7 +242,11 @@
           %rename
         =/  id  [`@p`(slav %p -.path.action) `@u`(slav %ud -.+.path.action)]
         ~_  [%leaf "Error renaming folder of id: {<id>}"]
+        ?.  (~(has by f) id)
+          ~&  "Could not find folder!"  !!
         =/  old  (~(got by f) id)
+        ?.  =(owner.old our.bowl)
+          ~&  "You do not have the right to rename this flder!"  !!
         =/  new
         =.  name.old  name.action
         old
