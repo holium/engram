@@ -65,7 +65,7 @@ const mutations: MutationTree<FolderState> = {
     })
   },
 
-  setName(state, payload: { id: string, name: string }) {
+  rename(state, payload: { id: string, name: string }) {
     state[payload.id].name = payload.name;
   },
 
@@ -118,6 +118,23 @@ const actions: ActionTree<FolderState, RootState> = {
             content: {},
           });
         });
+      })
+    })
+  },
+  rename({ commit }, payload: { id: string, name: string}): Promise<void> {
+    return new Promise((resolve, reject) => {
+      commit("rename", payload);
+      (window as any).urbit.poke({
+        app: "engram",
+        mark: "post",
+        json: {
+          folder: {
+            rename: {
+              path: payload.id,
+              name: payload.name
+            }
+          }
+        }
       })
     })
   },

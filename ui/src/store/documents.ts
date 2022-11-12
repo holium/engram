@@ -49,7 +49,7 @@ const mutations: MutationTree<DocumentState> = {
 
 
   // Metadata
-  setName(state, payload: { id: string, name: string}) {
+  rename(state, payload: { id: string, name: string}) {
     state[payload.id].name = payload.name;
   },
   setOwner(state, payload: { id: string, owner: string }) {
@@ -126,6 +126,23 @@ const actions: ActionTree<DocumentState, RootState> = {
       })
     })
   },
+  rename({ commit }, payload: { id: string, name: string }): Promise<void> {
+    return new Promise((resolve, reject) => {
+      commit("rename", payload);
+      (window as any).urbit.poke({
+        app: "engram",
+        mark: "post",
+        json: {
+          document: {
+            rename: {
+              path: payload.id,
+              name: payload.name
+            }
+          }
+        }
+      })
+    })
+  }
 }
 
 export default {

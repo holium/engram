@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col" @drop="handleDrop" @dragover="handleDragOver">
         <div 
-            class="flex px-3 py-2 hover:underline cursor-pointer gap-3" 
+            class="flex px-3 hover:underline cursor-pointer items-center" 
             @click="open" 
             @contextmenu="openMenu" 
             draggable="true" 
@@ -29,7 +29,17 @@
             >
                 <path d="M6 3.99995L9.99998 7.99245L5.99997 11.9999C5.49995 12.4999 6.07812 13.2999 6.70718 12.6712L10.7072 8.69933C11.0978 8.3087 11.0978 7.67589 10.7072 7.28527L6.70718 3.31341C6.07812 2.65716 5.5 3.50005 6 3.99995Z" fill="#333333"/>
             </svg>
-            <div flex="">
+            <input 
+                type="text" 
+                v-if="rename" 
+                v-model="name" 
+                class="px-2 py-1 bg-none min-w-0 flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis outline-none border-type" 
+                :style="{'padding-top': '3px', 'border-bottom-width': '1px'}"
+                @blur="renameItem" 
+                @keydown="handleRenameKey"
+                ref="rename"
+            />
+            <div class="pl-2 py-2 flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis" v-else>
                 {{ meta.name }}
             </div>
         </div>
@@ -76,6 +86,8 @@ export default defineComponent({
     data() {
         return {
             expand: false,
+            rename: false,
+            name: "",
         }
     },
     computed: {
@@ -101,21 +113,43 @@ export default defineComponent({
             }, 
             [
                 { 
-                    display: "delete", 
+                    display: "Delete", 
                     icon: "", 
                     run: () => {
                         console.log("delete document")
                     }
                 },
                 { 
-                    display: "link", 
+                    display: "Link", 
                     icon: "", 
                     run: () => {
                         console.log("link document")
                     }
                 },
+                ...(`~${(window as any).ship}` == this.meta.owner ? [{
+                    display: "Rename",
+                    icon: "",
+                    run: () => {
+                        this.name = this.meta.name;
+                        this.rename = true;
+                        setTimeout(() => {
+                            (this.$refs["rename"] as any).focus();
+                        }, 10);
+                    }
+                }] : [])
             ]
             ));
+        },
+        handleRenameKey: function(event: KeyboardEvent) {
+            if(event.key == 'Enter') (event.target as any).blur();
+        },
+        renameItem: function(event: FocusEvent) {
+            if(this.type == "document") {
+                store.dispatch("documents/rename", { id: this.item, name: (event.target as any).value});
+            } else {
+                store.dispatch("folders/rename", { id: this.item, name: (event.target as any).value});
+            }
+            this.rename = false;
         },
         handleDragStart: function(event: DragEvent) {
             event.dataTransfer?.setData("text/plain", JSON.stringify({ item: {id: this.item, type: this.type}, index: this.index ? this.index : ".", from: this.parent ? this.parent : "." }));
