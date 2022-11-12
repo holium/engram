@@ -86,6 +86,7 @@
           ::[%createsnap =dmeta]
           [%snap path=path snapshot=dsnapshot]
           ::[%dsnap =dmeta]
+          [%rename path=path name=@t]
           [%settings path=path owner=@p name=@ta roles=(map @tas @tas) ships=(map @p @tas)]
           ::[%dsettings =dmeta]
       ==

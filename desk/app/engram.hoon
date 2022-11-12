@@ -117,6 +117,17 @@
         old
         `this(d (~(put by d) id new))
         ::
+        :: Rename a document
+        ::
+          %rename
+        =/  id  [`@p`(slav %p -.path.action) `@u`(slav %ud -.+.path.action)]
+        ~_  [%leaf "Error renaming document of id: {<id>}"]
+        =/  old  (~(got by d) id)
+        =/  new
+        =.  name.settings.old  name.action
+        old
+        `this(d (~(put by d) id new))
+        ::
         :: modify document settings
         ::
           %settings
@@ -226,7 +237,7 @@
         ::
           %rename
         =/  id  [`@p`(slav %p -.path.action) `@u`(slav %ud -.+.path.action)]
-        ?>  (~(has by f) id)
+        ~_  [%leaf "Error renaming folder of id: {<id>}"]
         =/  old  (~(got by f) id)
         =/  new
         =.  name.old  name.action
