@@ -11,8 +11,19 @@
     </div>
 
     <!-- Select -->
-    <div class="flex flex-col border-t border-border outline-none" :style="{top: '100%', width: '100%', display: expand ? 'flex' : 'none'}" ref="select-space" @blur="() => { expand = false }" tabindex="0">
-      <div class="flex gap-3 px-3 py-2" :key="option.path" v-for="option in spaces.filter(option => true || option.path != space.path)" @click="() => { openSpace(option.path) }">
+    <div 
+      class="flex flex-col border-t border-border outline-none" 
+      :style="{top: '100%', width: '100%', display: expand ? 'flex' : 'none'}" 
+      ref="select-space" 
+      @blur="() => { expand = false }" 
+      tabindex="0"
+    >
+      <div 
+        class="flex gap-3 px-3 py-2" 
+        :key="option.path" 
+        v-for="option in spaces.filter(option => true || option.path != space.path)" 
+        @click="() => { openSpace(option.path) }"
+      >
         <div class="rounded-2" :style="{ width: '32px', height: '32px', 'background-color': option.color }">
 
         </div>

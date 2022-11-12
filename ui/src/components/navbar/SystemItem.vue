@@ -90,7 +90,7 @@ export default defineComponent({
     methods: {
         open: function() {
             if(this.type == "folder") this.expand = !this.expand;
-            else this.$router.push(`/apps/engram/${this.$route.params.station}/${this.$route.params.space}${this.item}`); 
+            else this.$router.push(`/apps/engram${this.item}?spaceId=${this.$route.query.spaceId}`); 
         },
         openMenu: function(event: MouseEvent) {
             event.preventDefault();

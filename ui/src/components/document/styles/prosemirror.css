@@ -1,5 +1,6 @@
 .ProseMirror {
   @apply bg-paper flex-grow;
+  box-shadow: 0 0px 32px -16px var(--rlm-text-color, #261f1f);
   outline-style: none;
   white-space: normal;
   line-height: var(--leading-body);
@@ -10,7 +11,6 @@
     calc(var(--document-margin) / var(--ratio) / var(--ratio)) 0 0;
   /* min-height: calc(100% - 2 * var(--document-margin)); */
   margin: calc(var(--document-margin) * 2) 0 0;
-  box-shadow: 0 0px 16px -8px var(--border-color);
   animation: fade-in ease-out 200ms;
   word-break: break-word;
   z-index: 1;

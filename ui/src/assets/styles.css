@@ -3,7 +3,8 @@
   @apply flex gap-3 px-4 py-3;
 }
 
-/* UI */
+/* UI */ 
+
 .heading {
   @apply font-bold text-base text-heading;
   font-variant: small-caps;
