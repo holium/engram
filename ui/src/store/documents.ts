@@ -135,7 +135,7 @@ const actions: ActionTree<DocumentState, RootState> = {
         json: {
           document: {
             rename: {
-              path: payload.id,
+              id: payload.id,
               name: payload.name
             }
           }

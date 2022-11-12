@@ -33,10 +33,11 @@
                 type="text" 
                 v-if="rename" 
                 v-model="name" 
-                class="px-2 py-1 bg-none min-w-0 flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis outline-none border-type" 
-                :style="{'padding-top': '3px', 'border-bottom-width': '1px'}"
+                class="px-2 py-2 bg-none min-w-0 flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis outline-none border-type realm-cursor-text-cursor" 
+                :style="{'padding-bottom': '3px', 'border-bottom-width': '1px'}"
                 @blur="renameItem" 
                 @keydown="handleRenameKey"
+                @click.stop
                 ref="rename"
             />
             <div class="pl-2 py-2 flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis" v-else>
@@ -141,7 +142,14 @@ export default defineComponent({
             ));
         },
         handleRenameKey: function(event: KeyboardEvent) {
-            if(event.key == 'Enter') (event.target as any).blur();
+            if(event.key == 'Enter') {
+                (event.target as any).blur();
+            }
+            if(event.key == "Escape") {
+                this.name = this.meta.name;
+                (event.target as any).value = this.meta.name;
+                (event.target as any).blur();
+            }
         },
         renameItem: function(event: FocusEvent) {
             if(this.type == "document") {

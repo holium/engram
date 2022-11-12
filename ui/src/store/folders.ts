@@ -130,7 +130,7 @@ const actions: ActionTree<FolderState, RootState> = {
         json: {
           folder: {
             rename: {
-              path: payload.id,
+              id: payload.id,
               name: payload.name
             }
           }
