@@ -25,7 +25,9 @@ const mutations: MutationTree<RevisionState> = {
   // Management
   open(state, payload: Array<DocumentVersion>) {
     state.splice(0, state.length);
-    payload.forEach((version) => {
+    payload.sort((a, b) => {
+      return a.timestamp > b.timestamp ? -1 : 1;
+    }).forEach((version) => {
       state.push(version);
     })
   },
@@ -36,8 +38,8 @@ const mutations: MutationTree<RevisionState> = {
   add(state, payload: DocumentVersion) {
       state.push(payload);
       state.sort((a, b) => {
-        return a.timestamp > b.timestamp ? 1 : -1;
-      })
+        return a.timestamp > b.timestamp ? -1 : 1;
+      });
   },
   remove(state, payload: number) {
     state.splice(payload, 1);
@@ -52,8 +54,8 @@ const actions: ActionTree<RevisionState, RootState> = {
         return {
           author: response[timestamp].author,
           snapshot: Y.decodeSnapshot(new Uint8Array(JSON.parse(response[timestamp].content))),
-          timestamp: parseInt(timestamp),
-          date: new Date(parseInt(timestamp)),
+          timestamp: response[timestamp].timestamp,
+          date: new Date(response[timestamp].timestamp),
         }
       }))
     })
@@ -65,9 +67,10 @@ const actions: ActionTree<RevisionState, RootState> = {
   snap({ commit }, payload: { id: string, snapshot: Snapshot }): Promise<void> {
     return new Promise((resolve, reject) => {
       const version = {
-        author: (window as any).ship,
+        author: `~${(window as any).ship}`,
         timestamp: Date.now(),
-        snpashot: payload.snapshot
+        snpashot: payload.snapshot,
+        date: new Date()
       }
       console.log("saving snapshot: ", version);
       commit("add", version);
