@@ -112,7 +112,7 @@
         ^-  (set [@t json])
         %-  ~(run in snaps)
         |=  snap=dsnapshot:engram
-        [(scot %da timestamp.snap) (pairs ~[['author' (tape (scow %p author.snap))] ['content' (tape data.snap)]])]
+        [(scot %da timestamp.snap) (pairs ~[['author' (tape (scow %p author.snap))] ['timestamp' (time timestamp.snap)] ['content' (tape data.snap)]])]
     --
   ++  folder
     |%
