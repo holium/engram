@@ -33,7 +33,8 @@ const getters: GetterTree<SettingsState, RootState> = {
 
 const mutations: MutationTree<SettingsState> = {
   open(state, payload: SettingsState) {
-    state = payload;
+    state.autosync = payload.autosync;
+    state.shipperms = payload.shipperms
   },
   close(state) {
     state.autosync = false;
@@ -69,7 +70,7 @@ const actions: ActionTree<SettingsState, RootState> = {
       commit("open", {
         autosync: response.autosync,
         roleperms: response.roles,
-        shipperms: response.shipperms
+        shipperms: response.ships
       })
     })
   },

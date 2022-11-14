@@ -83,8 +83,10 @@ export default defineComponent({
     //render document
     if(this.loaded == null) console.warn("no document");
     else {
+      console.log("mounting document: ", this.$refs);
       this.loaded.then((res: any) => {
-        render(this.$refs["document"] as any, res[0].content, this.updateBauble, this.updateCover, this.updateStyling);
+        console.log("rending document: ", res);
+        render(this.$refs["document"] as any, res.content, this.updateBauble, this.updateCover, this.updateStyling);
       })
     }
   },
