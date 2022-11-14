@@ -13,7 +13,11 @@
       </svg>
     </div>
 
-    <div class="flex px-3 py-2 flex-grow">{{ $route.params.author }} / {{ $route.params.clock }}</div>
+    <div class="flex px-3 py-2 flex-grow gap-3 items-center">
+      <div class="azimuth">
+        {{ $route.params.author }} / {{ $route.params.clock }}
+      </div>
+    </div>
 
     <!-- Dock Show / hide -->
     <div class="p-2">

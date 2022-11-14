@@ -11,10 +11,9 @@
     <div class="px-3 heading">
       permissions
     </div>
-    <div class="flex flex-col px-3">
-      <div>
-        {{ ships }}
-      </div>
+    <div class="flex flex-col px-3 gap-1">
+      <ShipPermission :key="ship" :ship="ship" :level="ships[ship]" v-for="ship in Object.keys(ships)" />
+      <RolePermission :key="role" :role="role" :level="roles[role]" v-for="role in Object.keys(roles)" />
     </div>
     <div class="flex px-3">
       <input 
@@ -41,10 +40,14 @@ import { defineComponent } from "vue";
 import type { Patp } from "@urbit/http-api";
 import store from "@/store/index";
 import Toggle from "./Toggle.vue"
+import ShipPermission from "./ShipPermission.vue";
+import RolePermission from "./RolePermission.vue";
 export default defineComponent({
   name: "SharingDock",
   components: {
-    Toggle
+    Toggle,
+    ShipPermission,
+    RolePermission
   },
   data() {
     return {
@@ -55,8 +58,11 @@ export default defineComponent({
     }
   },
   computed: {
-    ships: function(): Array<Patp> {
+    ships: function(): { [key: string]: string } {
       return store.getters['workspace/settings/ships'];
+    },
+    roles: function(): { [key: string]: string } {
+      return store.getters['workspace/settings/roles'];
     }
   },
   methods: {

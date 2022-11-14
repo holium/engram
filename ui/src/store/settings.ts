@@ -18,7 +18,7 @@ const getters: GetterTree<SettingsState, RootState> = {
     return state.autosync;
   },
   roles(state) {
-    return Object.keys(state.roleperms);
+    return state.roleperms;
   },
   ships(state) {
     return state.shipperms;
@@ -34,7 +34,8 @@ const getters: GetterTree<SettingsState, RootState> = {
 const mutations: MutationTree<SettingsState> = {
   open(state, payload: SettingsState) {
     state.autosync = payload.autosync;
-    state.shipperms = payload.shipperms
+    state.shipperms = payload.shipperms;
+    state.roleperms = payload.roleperms;
   },
   close(state) {
     state.autosync = false;
@@ -47,8 +48,8 @@ const mutations: MutationTree<SettingsState> = {
   },
 
   // Role Management -----------------------------------------------------------
-  setRole(state, payload: { role: string, permissions: DocumnetPermission}) {
-    state.roleperms[payload.role] = payload.permissions;
+  setRole(state, payload: { role: string, level: DocumnetPermission}) {
+    state.roleperms[payload.role] = payload.level;
   },
   deleteRole(state, payload: string) {
     delete state.roleperms[payload];
@@ -88,6 +89,22 @@ const actions: ActionTree<SettingsState, RootState> = {
           document: { addship: {
             id: payload.id,
             ship: payload.ship,
+            level: payload.level,
+          }}
+        }
+      })
+    })
+  },
+  addrole({ commit }, payload: { id: string, role: string, level: string }): Promise<void> {
+    return new Promise((resolve, reject) => {
+      commit("setRole", payload);
+      (window as any).urbit.poke({
+        app: "engram",
+        mark: "post",
+        json: {
+          document: { addrole: {
+            id: payload.id,
+            role: payload.role,
             level: payload.level,
           }}
         }
