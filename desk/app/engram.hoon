@@ -141,6 +141,13 @@
         =.  ships.settings.todoc  (insert:index ships.settings.todoc [ship.action level.action] our.bowl)
         todoc
         `this(d (~(put by d) id ndoc))
+          %addrole
+        =/  id  [`@p`(slav %p -.path.action) `@u`(slav %ud -.+.path.action)]
+        =/  todoc  (~(got by d) id)
+        =/  ndoc
+        =.  roles.settings.todoc  (insert:index roles.settings.todoc [role.action level.action] our.bowl)
+        todoc
+        `this(d (~(put by d) id ndoc))
         ::
         :: modify document settings
         ::

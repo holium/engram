@@ -72,6 +72,7 @@
           [%snap path=path snapshot=dsnapshot]
           [%rename path=path name=@t]
           [%addship path=path ship=@p level=@tas]
+          [%addrole path=path role=@tas level=@tas]
           ::[%settings path=path owner=@p name=@ta roles=(map @tas @tas) ships=(map @p @tas)]
           [%gatherall path=path]
           [%gather path=path peer=@p]

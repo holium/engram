@@ -17,6 +17,7 @@
           [%snap (ot ~[id+pa snapshot+(ot ~[timestamp+di author+(se %p) data+sa])])]
           [%rename (ot ~[id+pa name+so])]
           [%addship (ot ~[id+pa ship+(se %p) level+(se %tas)])]
+          [%addrole (ot ~[id+pa role+(se %tas) level+(se %tas)])]
           ::[%settings (ot ~[id+pa owner+(se %p) name+so roles+(op sym (se %tas)) ships+(op fed:ag (se %tas))])]
       ==
       :-  %folder  %-  of  :~
@@ -99,6 +100,7 @@
         ['name' (tape (trip name.settings))]
         ['owner' (tape (scow %p owner.settings))]
         :-  'ships'  %-  pairs  %+  turn  ~(val by content.ships.settings)  |=  [ship=@p level=@tas]  [(scot %p ship) (tape (trip level))]
+        :-  'roles'  %-  pairs  %+  turn  ~(val by content.roles.settings)  |=  [role=@tas level=@tas]  [(crip (trip role)) (tape (trip level))]
       ==
     ++  updates
       =,  enjs:format
