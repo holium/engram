@@ -5,6 +5,7 @@ import type {
   DocumnetPermission
 } from "./types"
 import type { Module, GetterTree, MutationTree, ActionTree } from "vuex"
+import { ID } from "yjs";
 
 const state: SettingsState = {
   autosync: false,
@@ -20,7 +21,7 @@ const getters: GetterTree<SettingsState, RootState> = {
     return Object.keys(state.roleperms);
   },
   ships(state) {
-    return Object.keys(state.shipperms);
+    return state.shipperms;
   },
   "role-permission": (state) => (role: string) => {
     return state.roleperms[role];
@@ -53,8 +54,8 @@ const mutations: MutationTree<SettingsState> = {
   },
 
   // Ship Management -----------------------------------------------------------
-  setShip(state, payload: { ship: Patp, permissions: DocumnetPermission}) {
-    state.shipperms[payload.ship] = payload.permissions;
+  setShip(state, payload: { ship: Patp, level: DocumnetPermission}) {
+    state.shipperms[payload.ship] = payload.level;
   },
   deleteShip(state, payload: string) {
     delete state.shipperms[payload];
@@ -74,11 +75,28 @@ const actions: ActionTree<SettingsState, RootState> = {
   },
   close({ commit }) {
     commit("close");
+  },
+
+  addship({ commit }, payload: { id: string, ship: string, level: string }): Promise<void> {
+    return new Promise((resolve, reject) => {
+      commit("setShip", payload);
+      (window as any).urbit.poke({
+        app: "engram",
+        mark: "post",
+        json: {
+          document: { addship: {
+            id: payload.id,
+            ship: payload.ship,
+            level: payload.level,
+          }}
+        }
+      })
+    })
   }
 }
 
 export default {
-  namespace: true,
+  namespaced: true,
   state,
   getters,
   mutations,
