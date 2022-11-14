@@ -1,3 +1,5 @@
+/-  *index
+/+  *index
 |%
 ::
 :: Basic Data Types
@@ -14,39 +16,24 @@
 :: snap: snapshot to be able to store fixed timestamp history
 :: fldr: contents of a folder, either a document index or a folder index
 ::
-::+$  fmeta  [id=id name=@t]
-::+$  fldr
-::  $%  [%doc =dmeta]
-::      [%folder =fmeta]
-::  ==
-::
-::  Basic Types
-+$  id  [@p @u]
-+$  clock  @u
-+$  version  (map @p clock)
-::
 ::  Sharing Types
 ::+$  access  $%(%read %write %admin)
 ::
 ::  Organisms
-+$  type  @tas
-+$  iupdate  [content=(map @p (set [id type])) dels=(set [id id])]
-+$  index  [version=version content=(map id [id type]) dels=(map id id)]
-::
 ::  Documents
 +$  dversion   tape
 +$  dcontent   tape
-+$  dsettings  [owner=@p name=@t roles=(map @tas @tas) ships=(map @p @tas)]
++$  dsettings  [owner=@p name=@t roles=(index [@tas @tas]) ships=(index [@p @tas])]
 +$  dsnapshot  [timestamp=@da author=@p data=tape]
 +$  dupdate    [author=@p timestamp=@da content=dcontent]
 +$  document   [id=id version=dversion content=dcontent settings=dsettings snapshots=(set dsnapshot)]
 ::
 ::  Folders
-+$  folder  [id=id owner=@p name=@t roles=(map @tas @tas) ships=(map @p @tas) content=index]
++$  folder  [id=id owner=@p name=@t roles=(index [@tas @tas]) ships=(index [@p @tas]) content=(index [id @tas])]
 ::
 ::  Spaces
 +$  spath  path
-+$  space  [roles=(map @tas @tas) ships=(map @p @tas) content=index]
++$  space  [roles=(index @tas @tas) ships=(index [@p @tas]) content=(index [id @tas])]
 
 ::
 :: State Data Types
@@ -82,13 +69,15 @@
       $%  [%make owner=@p name=@t space=path version=dversion content=dcontent roles=(map @tas @tas) ships=(map @p @tas)]
           [%delete path=path]
           [%save path=path content=dcontent version=dversion]
-          ::[%docsetup =dmeta =doc =stg]
-          ::[%createsnap =dmeta]
           [%snap path=path snapshot=dsnapshot]
-          ::[%dsnap =dmeta]
           [%rename path=path name=@t]
-          [%settings path=path owner=@p name=@ta roles=(map @tas @tas) ships=(map @p @tas)]
-          ::[%dsettings =dmeta]
+          [%addship path=path ship=@p level=@tas]
+          ::[%settings path=path owner=@p name=@ta roles=(map @tas @tas) ships=(map @p @tas)]
+          [%gatherall path=path]
+          [%gather path=path peer=@p]
+          [%delta path=path]
+          [%sync path=path updates=(set dupdate)]
+          ::[%accept path=path update=dupdate]
       ==
     ==
     $:  %folder
@@ -97,16 +86,37 @@
           [%add to=path id=path type=@tas]
           [%remove from=path id=path]
           [%rename path=path name=@t]
+          ::[%gatherall path=path]
+          ::[%gather path=path peer=@p]
+          ::[%sync path=path update=(update:index [id type])]
       ==
     ==
-    $:  %prop
-      $%  [%accept path=path update=dupdate]
-          [%sub path=path to=@p]
-          [%unsub from=@p]
-          [%update path=path update=dupdate]
-          [%update-live path=path update=dupdate]
-      ==
-    ==
+    ::$:  %space
+    ::  $%  [%gatherall path=path]
+    ::      [%gather space=path peer=@p]
+    ::      [%sync space=path update=(update:index [id type])]
+    ::  Propogation will occur in three (ish) steps: 
+    ::    [spanning]      - across a space
+    ::    the gatherall   - a routing poke that sends gather for all the peers in a space
+    ::    the gather      - a poke is sent requesting updates from a peer for all the items indexed in a space 
+    ::    the sync        - a poke is send with updates for all items
+    ::    [specific]      - unique to an organism
+    ::    the gatherall   - a routing poke that sends gather for all the peers in a space
+    ::    the gather      - a poke is sent requesting updates from a peer, in the form of a sync poke
+    ::    the sync        - a poke is sent with updates; syncs may also be sent without request in the case of realtime updates
+    ::  ==
+    ::==
+    ::$:  %span
+    ::  $%  [%gatherall path=path]
+    ::      [%gather space=path]
+    ::      [%sync space=path space=(update:index [id type]) folders=(map id (update:index [id type])) documents=(jug id dupdate)]
+          ::
+          ::[%sub path=path to=@p]
+          ::[%unsub from=@p]
+          ::
+          ::[%update-live path=path update=dupdate]
+    ::  ==
+    ::==
   ==
 +$  update
   $%  [%init id=id settings=dsettings updates=(set dupdate)]

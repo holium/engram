@@ -1,6 +1,6 @@
 /-  *engram
 /+  engram
-/+  indexes
+/+  index
 /+  default-agent, dbug, agentio
 |%
 +$  versioned-state
@@ -52,8 +52,8 @@
           content.action
           :*  owner.action 
               name.action 
-              roles.action
-              ships.action
+              ^*  (index:index [@tas @tas])
+              ^*  (index:index [@p @tas])
           ==
           (silt `(list dsnapshot)`[~])
         ==
@@ -65,7 +65,7 @@
           (~(got by s) space.action)
         ^*  space
         =/  newspc
-        =.  content.oldspc  (insert:indexes content.oldspc [id %document] our.bowl)
+        =.  content.oldspc  (insert:index content.oldspc [id %document] our.bowl)
           oldspc
         =/  sstate  state(s (~(put by s) space.action newspc))
         =/  hstate  sstate(h (snoc h id))
@@ -80,14 +80,14 @@
         =/  spcs
           %-  ~(run by s)  |=  spc=space
           ?:  (~(has by content.content.spc) id)
-            =.  content.spc  (remove:indexes content.spc id our.bowl)
+            =.  content.spc  (remove:index content.spc id our.bowl)
             spc
           spc
         =/  sstate  nstate(s spcs)
         =/  fldrs
           %-  ~(run by f)  |=  fldr=folder
           ?:  (~(has by content.content.fldr) id)
-            =.  content.fldr  (remove:indexes content.fldr id our.bowl)
+            =.  content.fldr  (remove:index content.fldr id our.bowl)
             fldr
           fldr
         =/  fstate  sstate(f fldrs)
@@ -132,20 +132,69 @@
         old
         `this(d (~(put by d) id new))
         ::
+        :: give a ship permissions
+        ::
+          %addship
+        =/  id  [`@p`(slav %p -.path.action) `@u`(slav %ud -.+.path.action)]
+        =/  todoc  (~(got by d) id)
+        =/  ndoc
+        =.  ships.settings.todoc  (insert:index ships.settings.todoc [ship.action level.action] our.bowl)
+        todoc
+        `this(d (~(put by d) id ndoc))
+        ::
         :: modify document settings
         ::
-          %settings
+        ::  %settings
+        ::=/  id  [`@p`(slav %p -.path.action) `@u`(slav %ud -.+.path.action)]
+        ::?>  (~(has by d) id)
+        ::=/  old  (~(got by d) id)
+        ::=/  new
+        ::=:  owner.settings.old  owner.action
+        ::    name.settings.old   name.action
+        ::    roles.settings.old  roles.action
+        ::    ships.settings.old  ships.action
+        ::  ==
+        ::old
+        ::`this(d (~(put by d) id new))
+        ::
+        ::  A helper poke to gather updates from everyone who has access to a document
+        ::
+          %gatherall
         =/  id  [`@p`(slav %p -.path.action) `@u`(slav %ud -.+.path.action)]
-        ?>  (~(has by d) id)
-        =/  old  (~(got by d) id)
-        =/  new
-        =:  owner.settings.old  owner.action
-            name.settings.old   name.action
-            roles.settings.old  roles.action
-            ships.settings.old  ships.action
-          ==
-        old
-        `this(d (~(put by d) id new))
+        =/  doc  (~(got by d) id)
+        =/  peers  content.ships.settings.doc
+        :_  this
+        %+  turn  %+  skim  ~(val by content.ships.settings.doc)  
+        |=  [peer=@p level=@tas]  =(level %editor)
+        |=  [peer=@p @tas]        [%pass /engram/document/gather %agent [our.bowl %engram] %poke %noun !>([%gather path.action peer])]
+        ::
+        ::  Gather updates to a document from a peer (pokes their %delta)
+        ::
+          %gather
+        =/  id  [`@p`(slav %p -.path.action) `@u`(slav %ud -.+.path.action)]
+        :_  this
+        :~  [%pass /engram/document/delta %agent [peer.action %engram] %poke %noun !>(path.action)]
+        ==
+        ::
+        ::  Assemble and reply with updates (pokes their sync)
+        ::
+          %delta
+        =/  id  [`@p`(slav %p -.action) `@u`(slav %ud -.+.action)]
+        =/  doc  (~(got by d) id)
+        =/  update  [author=our.bowl timestamp=now.bowl content=content.doc]
+        :_  this
+        :~  [%pass /engram/document/sync %agent [src.bowl %engram] %poke %noun !>([path.action update])]
+        ==
+        ::
+        ::  Sync updates with current document
+        ::
+          %sync
+        =/  id  [`@p`(slav %p -.path.action) `@u`(slav %ud -.+.path.action)]
+        =/  updates
+        %+  turn  ~(tap in updates.action)
+        |=  a=dupdate  
+        [id a]
+        `this(u (~(gas ju u) updates))
         ::
         ::
         ::
@@ -174,9 +223,9 @@
           [our.bowl t]
           owner.action
           name.action
-          roles.action
-          ships.action
-          ^*  index
+          ^*  (index:index [@tas @tas])
+          ^*  (index:index [@p @tas])
+          ^*  (index:index [id @tas])
         ==
         =/  id  [our.bowl t]
         =/  fstate  this(f (~(put by f) id fold))
@@ -185,7 +234,7 @@
           (~(got by s) space.action)
         ^*  space
         =/  newspc
-        =.  content.oldspc  (insert:indexes content.oldspc [id %folder] our.bowl)
+        =.  content.oldspc  (insert:index content.oldspc [id %folder] our.bowl)
           oldspc
         =/  sstate  fstate(s (~(put by s) space.action newspc))
         =/  hstate  sstate(h (snoc h id))
@@ -200,14 +249,14 @@
         =/  spcs
           %-  ~(run by s)  |=  spc=space
           ?:  (~(has by content.content.spc) id)
-            =.  content.spc  (remove:indexes content.spc id our.bowl)
+            =.  content.spc  (remove:index content.spc id our.bowl)
             spc
           spc
         =/  sstate  nstate(s spcs)
         =/  fldrs
           %-  ~(run by f)  |=  fldr=folder
           ?:  (~(has by content.content.fldr) id)
-            =.  content.fldr  (remove:indexes content.fldr id our.bowl)
+            =.  content.fldr  (remove:index content.fldr id our.bowl)
             fldr
           fldr
         =/  fstate  sstate(f fldrs)
@@ -221,7 +270,7 @@
         ?>  (~(has by f) to)
         =/  tofldr  (~(got by f) to)
         =/  nfldr
-        =.  content.tofldr  (insert:indexes content.tofldr [id type.action] our.bowl)
+        =.  content.tofldr  (insert:index content.tofldr [id type.action] our.bowl)
         tofldr
         `this(f (~(put by f) to nfldr))
         ::
@@ -233,7 +282,7 @@
         ?>  (~(has by f) from)
         =/  fromfldr  (~(got by f) from)
         =/  nfldr
-        =.  content.fromfldr  (remove:indexes content.fromfldr id our.bowl)
+        =.  content.fromfldr  (remove:index content.fromfldr id our.bowl)
         fromfldr
         `this(f (~(put by f) from nfldr))
         ::
@@ -252,46 +301,46 @@
         old
         `this(f (~(put by f) id new))
       ==
-      %prop
-        ?-  -.+.action
+      ::%prop
+      ::  ?-  -.+.action
         ::
         :: remove the merged update from the update list (as updates aren't implemented this will just log)
         ::
-          %accept
-        =/  id  [`@p`(slav %p -.path.action) `@u`(slav %ud -.+.path.action)]
-        `this(u (~(del ju u) id update.action))
+      ::    %accept
+      ::  =/  id  [`@p`(slav %p -.path.action) `@u`(slav %ud -.+.path.action)]
+      ::  `this(u (~(del ju u) id update.action))
         ::
         :: subscribe to a remote document
         ::
-          %sub
-        =/  li  `path`(weld ~['updates'] path.action)
-        :_  this
-        :~  [%pass `(list @ta)`[~.engram (wood (crip "{<our.bowl>}")) (wood (crip "{<to.action>}")) ~] %agent [to.action %engram] %watch li]
-        ==
+      ::    %sub
+      ::  =/  li  `path`(weld ~['updates'] path.action)
+      ::  :_  this
+      ::  :~  [%pass `(list @ta)`[~.engram (wood (crip "{<our.bowl>}")) (wood (crip "{<to.action>}")) ~] %agent [to.action %engram] %watch li]
+      ::  ==
         ::
         :: {Documentation Here}
         ::
-          %unsub
-        :_  this
-        :~  [%pass `(list @ta)`[~.engram (wood (crip "{<our.bowl>}")) (wood (crip "{<from.action>}")) ~] %agent [from.action %engram] %leave ~]
-        ==
+      ::    %unsub
+      ::  :_  this
+      ::  :~  [%pass `(list @ta)`[~.engram (wood (crip "{<our.bowl>}")) (wood (crip "{<from.action>}")) ~] %agent [from.action %engram] %leave ~]
+      ::  ==
         ::
         :: {Documentation Here}
         ::
-          %update
-        =/  id  [`@p`(slav %p -.path.action) `@u`(slav %ud -.+.path.action)]
-        `this(u (~(put ju u) id update.action))
+      ::    %update
+      ::  =/  id  [`@p`(slav %p -.path.action) `@u`(slav %ud -.+.path.action)]
+      ::  `this(u (~(put ju u) id update.action))
         ::
         ::
         :: {Documentation Here}
         ::
-          %update-live
-        =/  id  [`@p`(slav %p -.path.action) `@u`(slav %ud -.+.path.action)]
-        =/  li  `path`(weld ~['updates'] path.action)
-        :_  this
-        :~  %-  fact:agentio
-          [update+!>([%update [path.action update.action]]) ~[li]]
-        ==
+      ::    %update-live
+      ::  =/  id  [`@p`(slav %p -.path.action) `@u`(slav %ud -.+.path.action)]
+      ::  =/  li  `path`(weld ~['updates'] path.action)
+      ::  :_  this
+      ::  :~  %-  fact:agentio
+      ::    [update+!>([%update [path.action update.action]]) ~[li]]
+      ::  ==
         ::  %docsetup
         :::_  this
         :::~  [%pass /settings %agent [our.bowl %engram] %poke %post !>([%settings dmeta.action stg.action])]
@@ -303,7 +352,7 @@
         ::=/  save  (turn ~(tap in updts.action) mut)
         ::=/  save  ~(tap in `(set dmeta:engram updt:engram)`(~(run in updts:action) mut))
         ::`this(u (~(gas ju u) save))
-      ==
+      ::==
   ==
 ==
 ++  on-watch
@@ -398,25 +447,23 @@
             %-  ~(run in updates.update)  
               |=  updt=dupdate  
               [%pass /update %agent [our.bowl %engram] %poke %post !>([%update id.update updt])]
-          ?:  (~(has by ships.settings.doc) src.bowl)
-            ?:  ?|(=((~(got by ships.settings.doc) src.bowl) %admin) =((~(got by ships.settings.doc) src.bowl) %editor))
-              %~  tap  in
-              ^-  (set card)
-              %-  ~(run in updates.update)  
-                |=  updt=dupdate  
-                [%pass /update %agent [our.bowl %engram] %poke %post !>([%update id.update updt])]
-            !!
-          !!
+          =/  perm
+          (need (find [[src.bowl %editor]]~ ~(val by content.ships.settings.doc)))
+          %~  tap  in
+          ^-  (set card)
+          %-  ~(run in updates.update)  
+            |=  updt=dupdate  
+            [%pass /update %agent [our.bowl %engram] %poke %post !>([%update id.update updt])]
             %update
+          =/  perm
+          (need (find [[src.bowl %editor]]~ ~(val by content.ships.settings.doc)))
           :_  this
-          ?:  ?|(=(owner.settings.doc src.bowl) =((~(got by ships.settings.doc) src.bowl) %admin) =((~(got by ships.settings.doc) src.bowl) %editor))
-            :~  [%pass /update %agent [our.bowl %engram] %poke %post !>([%update id.update update.update])]
-            ==
-          !!
+          :~  [%pass /update %agent [our.bowl %engram] %poke %post !>([%update id.update update.update])]
           ==
         ==
       ==
     ==
+  ==
 ++  on-arvo   on-arvo:def
 ++  on-fail   on-fail:def
 --
