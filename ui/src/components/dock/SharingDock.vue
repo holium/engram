@@ -18,15 +18,15 @@
     </div>
     <div class="flex px-3">
       <input 
-        @keydown="addShip"
+        @keydown="addPermission"
         type="text" 
-        placeholder="add ship"
-        v-model="newship"
+        placeholder="add role or ship"
+        v-model="newPermission"
         class="px-2 py-2 bg-none min-w-0 flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis outline-none border-type realm-cursor-text-cursor" 
       >
       <select 
-        v-model="newshiplevel"
-        class="px-2 py-2 bg-none min-w-0 flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis outline-none border-type realm-cursor-text-cursor" 
+        v-model="newPermissionLevel"
+        class="px-2 py-2 bg-none whitespace-nowrap overflow-hidden overflow-ellipsis outline-none border-type" 
       >
         <option value="editor">editor</option>
         <option value="viewer">viewer</option>
@@ -50,8 +50,8 @@ export default defineComponent({
     return {
       autoSync: false,
 
-      newship: "",
-      newshiplevel: "",
+      newPermission: "",
+      newPermissionLevel: "",
     }
   },
   computed: {
@@ -60,11 +60,23 @@ export default defineComponent({
     }
   },
   methods: {
-    addShip: function(event: KeyboardEvent) {
+    addPermission: function(event: KeyboardEvent) {
       if(event.key == "Enter") {
-        store.dispatch('workspace/settings/addship', { id: `/${this.$route.params.author}/${this.$route.params.clock}`, ship: this.newship, level: this.newshiplevel });
-        this.newship = "";
-        this.newshiplevel = "";
+        if(this.newPermission.charAt(0) == "~") {
+          store.dispatch('workspace/settings/addship', { 
+            id: `/${this.$route.params.author}/${this.$route.params.clock}`, 
+            ship: this.newPermission, 
+            level: this.newPermissionLevel 
+          });
+        } else {
+          store.dispatch('workspace/settings/addrole', { 
+            id: `/${this.$route.params.author}/${this.$route.params.clock}`, 
+            role: this.newPermission, 
+            level: this.newPermissionLevel 
+          });
+        }
+        this.newPermission = "";
+        this.newPermissionLevel = "";
       }
     }
   }

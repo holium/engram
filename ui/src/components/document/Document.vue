@@ -7,7 +7,7 @@
         <Cover :cover="cover" />
       </div>
     </div>
-    <Dock :styling="styling" />
+    <DocumentDock :styling="styling" />
   </div>
 </template>
 
@@ -17,7 +17,7 @@ import store from "@/store/index";
 import type { DocumentContent } from "@/store/types"
 
 import Toolbar from "@/components/Toolbar.vue";
-import Dock from "@/components/dock/Dock.vue";
+import DocumentDock from "@/components/dock/DocumentDock.vue";
 
 import { EditorView } from "prosemirror-view";
 import render from "./prosemirror/render";
@@ -40,9 +40,15 @@ export default defineComponent({
   name: "Document",
   components: {
     Toolbar,
-    Dock,
+    DocumentDock,
     Bauble,
     Cover,
+  },
+  props: {
+    allowDock: {
+      type: Boolean,
+      required: true,
+    }
   },
   data() {
     return {
