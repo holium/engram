@@ -73,7 +73,7 @@ export default defineComponent({
     },
     loadSpaces: async function(route: any) {
       const path = route.query.spaceId;
-      if(path == null) {
+      if(path == "/null/space") {
         this.space = { path: "", name: (window as any).ship, color: "#262626"}
         this.spaces = [];
       } else {

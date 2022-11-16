@@ -80,7 +80,7 @@ const actions: ActionTree<RevisionState, RootState> = {
         json: { "document": { "snap": {
           id: payload.id,
           snapshot: {
-            author: `~${version.author}`,
+            author: version.author,
             timestamp: version.timestamp,
             data: JSON.stringify(Array.from(Y.encodeSnapshot(payload.snapshot)))
           }

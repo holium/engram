@@ -15,7 +15,7 @@ import store from "@/store/index"
 export default defineComponent({
   name: "Fallback",
   beforeRouteEnter: function(to, from, next) {
-    next(`/apps/engram?spaceId=${to.query.spaceId}`);
+    next(`/apps/engram?spaceId=${to.query.spaceId ? to.query.spaceId : "/null/space"}`);
   }
 });
 </script>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ContextMenu :contextmenu="contextmenu" v-if="contextmenu != null"/>
+    <ContextMenu :contextmenu="contextmenu" v-if="contextmenu != null" style="z-index: 10"/>
     <router-view></router-view>
   </div>
 </template>

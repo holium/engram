@@ -27,6 +27,7 @@ export default function (
   updateCover: (cover: CoverUpdate) => void,
   updateStyling: (styling: StylingUpdate) => void
 ): EditorView {
+  if(view) view.destroy();
   const doc = new Y.Doc();
   doc.clientID = 0;
   doc.gc = false;
