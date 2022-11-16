@@ -1,3 +1,5 @@
+/-  *index
+/+  *index
 |%
 ::
 :: Basic Data Types
@@ -14,21 +16,25 @@
 :: snap: snapshot to be able to store fixed timestamp history
 :: fldr: contents of a folder, either a document index or a folder index
 ::
-+$  id  @
-+$  athr  @p
-+$  dcont  (list @t)
-+$  updt  [author=athr cont=dcont time=@da]
-+$  ver  (list @ud)
-+$  doc  [version=ver cont=dcont]
-+$  dmeta  [id=id timestamp=@d]
-+$  whtlst  (list @p)
-+$  stg  [perms=whtlst owner=@p name=@t]
-+$  fmeta  [id=id name=@t]
-+$  snap  [date=@d ship=@p data=(list @ud)]
-+$  fldr
-  $%  [%doc =dmeta]
-      [%folder =fmeta]
-  ==
+::  Sharing Types
+::+$  access  $%(%read %write %admin)
+::
+::  Organisms
+::  Documents
++$  dversion   tape
++$  dcontent   tape
++$  dsettings  [owner=@p name=@t roles=(index [@tas @tas]) ships=(index [@p @tas])]
++$  dsnapshot  [timestamp=@da author=@p data=tape]
++$  dupdate    [author=@p timestamp=@da content=dcontent]
++$  document   [id=id version=dversion content=dcontent settings=dsettings snapshots=(set dsnapshot)]
+::
+::  Folders
++$  folder  [id=id owner=@p name=@t roles=(index [@tas @tas]) ships=(index [@p @tas]) content=(index [id @tas])]
+::
+::  Spaces
++$  spath  path
++$  space  [roles=(index @tas @tas) ships=(index [@p @tas]) content=(index [id @tas])]
+
 ::
 :: State Data Types
 :: updts: a key-set storage for the staged updates ready to be merged into your current document
@@ -37,11 +43,13 @@
 :: dsnaps: a key-list store for snapshot containers
 ::
 ::
-+$  updts  (jug dmeta updt)
-+$  docs  (map dmeta doc)
-+$  fldrs  (jug fmeta fldr)
-+$  dstgs  (map dmeta stg)
-+$  dsnaps  (jar dmeta snap)
+
++$  localtime  clock
++$  history  (list id)
++$  spaces  (map spath space)
++$  updates  (jug id dupdate)
++$  documents  (map id document)
++$  folders  (map id folder)
 ::
 :: Poke Actions
 :: [%make =dmeta] - Create a new document within the state
@@ -56,29 +64,63 @@
 :: [%snap =dmeta =snap] - add a snapshot to a documents history
 ::
 +$  action
-  $%  [%make =dmeta =doc]
-      [%docsetup =dmeta =doc =stg]
-      [%createsnap =dmeta]
-      [%snap =dmeta =snap]
-      [%dsnap =dmeta]
-      [%save =dmeta =doc]
-      [%delete =dmeta]
-      [%settings =dmeta =stg]
-      [%dsettings =dmeta]
-      [%mfolder =fmeta]
-      [%dfolder =fmeta]
-      [%foldoc =fmeta =fldr]
-      [%remfoldoc =fmeta =fldr]
-      [%renamefolder old=fmeta new=fmeta]
-      [%merge =dmeta =updt]
-      [%sub =dmeta owner=@p]
-      [%unsub owner=@p]
-      [%update =dmeta =updt]
-      [%update-live =dmeta =updt]
-      [%extend dmeta=dmeta updts=(set updt)]
+  $% 
+    $:  %document
+      $%  [%make owner=@p name=@t space=path version=dversion content=dcontent roles=(map @tas @tas) ships=(map @p @tas)]
+          [%delete path=path]
+          [%save path=path content=dcontent version=dversion]
+          [%snap path=path snapshot=dsnapshot]
+          [%rename path=path name=@t]
+          [%addship path=path ship=@p level=@tas]
+          [%addrole path=path role=@tas level=@tas]
+          ::[%settings path=path owner=@p name=@ta roles=(map @tas @tas) ships=(map @p @tas)]
+          [%gatherall path=path]
+          [%gather path=path peer=@p]
+          [%delta path=path]
+          [%sync path=path updates=(set dupdate)]
+          ::[%accept path=path update=dupdate]
+      ==
+    ==
+    $:  %folder
+      $%  [%make owner=@p name=@t space=path roles=(map @tas @tas) ships=(map @p @tas)]
+          [%delete path=path]
+          [%add to=path id=path type=@tas]
+          [%remove from=path id=path]
+          [%rename path=path name=@t]
+          ::[%gatherall path=path]
+          ::[%gather path=path peer=@p]
+          ::[%sync path=path update=(update:index [id type])]
+      ==
+    ==
+    ::$:  %space
+    ::  $%  [%gatherall path=path]
+    ::      [%gather space=path peer=@p]
+    ::      [%sync space=path update=(update:index [id type])]
+    ::  Propogation will occur in three (ish) steps: 
+    ::    [spanning]      - across a space
+    ::    the gatherall   - a routing poke that sends gather for all the peers in a space
+    ::    the gather      - a poke is sent requesting updates from a peer for all the items indexed in a space 
+    ::    the sync        - a poke is send with updates for all items
+    ::    [specific]      - unique to an organism
+    ::    the gatherall   - a routing poke that sends gather for all the peers in a space
+    ::    the gather      - a poke is sent requesting updates from a peer, in the form of a sync poke
+    ::    the sync        - a poke is sent with updates; syncs may also be sent without request in the case of realtime updates
+    ::  ==
+    ::==
+    ::$:  %span
+    ::  $%  [%gatherall path=path]
+    ::      [%gather space=path]
+    ::      [%sync space=path space=(update:index [id type]) folders=(map id (update:index [id type])) documents=(jug id dupdate)]
+          ::
+          ::[%sub path=path to=@p]
+          ::[%unsub from=@p]
+          ::
+          ::[%update-live path=path update=dupdate]
+    ::  ==
+    ::==
   ==
 +$  update
-  $%  [%init =dmeta =doc =stg setupt=(set updt)]
-      [%update =dmeta =updt]
+  $%  [%init id=id settings=dsettings updates=(set dupdate)]
+      [%update id=id update=dupdate]
   ==
 --

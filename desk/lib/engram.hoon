@@ -1,156 +1,139 @@
-/-  *engram
+/-  engram
+/-  index
+/+  index
 |%
-++  dejs-action
-  =,  dejs:format
-  |=  jon=json
-  ^-  action
-  %.  jon
-  %-  of
-  :~
-    [%make (ot ~[dmeta+(ot ~[id+so timestamp+di]) doc+(ot ~[version+(ar ni) content+sa])])]
-    [%docsetup (ot ~[dmeta+(ot ~[id+so timestamp+di]) doc+(ot ~[version+(ar ni) content+sa]) stg+(ot ~[perms+(ar (se %p)) owner+(se %p) name+so])])]
-    [%delete (ot ~[dmeta+(ot ~[id+so timestamp+di])])]
-    [%save (ot ~[dmeta+(ot ~[id+so timestamp+di]) doc+(ot ~[version+(ar ni) content+sa])])]
-    [%settings (ot ~[dmeta+(ot ~[id+so timestamp+di]) stg+(ot ~[perms+(ar (se %p)) owner+(se %p) name+so])])]
-    [%dsettings (ot ~[dmeta+(ot ~[id+so timestamp+di])])]
-    [%mfolder (ot ~[fmeta+(ot ~[id+so name+so])])]
-    [%dfolder (ot ~[fmeta+(ot ~[id+so name+so])])]
-    [%renamefolder (ot ~[old+(ot ~[id+so name+so]) new+(ot ~[id+so name+so])])]
-    [%foldoc (ot ~[fmeta+(ot ~[id+so name+so]) fldr+(of ~[[[%doc] (ot ~[id+so timestamp+di])] [[%folder] (ot ~[id+so name+so])]])])]
-    [%remfoldoc (ot ~[fmeta+(ot ~[id+so name+so]) fldr+(of ~[[[%doc] (ot ~[id+so timestamp+di])] [[%folder] (ot ~[id+so name+so])]])])]
-    [%createsnap (ot ~[dmeta+(ot ~[id+so timestamp+di])])]
-    [%merge (ot ~[dmeta+(ot ~[id+so timestamp+di]) update+(ot ~[author+(se %p) content+sa time+di])])]
-    [%snap (ot ~[dmeta+(ot ~[id+so timestamp+di]) snap+(ot ~[date+di ship+(se %p) data+(ar ni)])])]
-    [%dsnap (ot ~[dmeta+(ot ~[id+so timestamp+di])])]
-    [%sub (ot ~[dmeta+(ot ~[id+so timestamp+di]) ship+(se %p)])]
-    [%unsub (ot ~[ship+(se %p)])]
-    [%update-live (ot ~[dmeta+(ot ~[id+so timestamp+di]) update+(ot ~[author+(se %p) content+sa time+di])])]
-  ==
-++  enjs-docinfo
-  =,  enjs:format
-  |=  stgs=dstgs
-  =/  docs  ~(tap in ~(key by stgs))
-  =/  results  *(list [@t json])
-  =/  counter  0
-  %-  pairs
-  |-
-  ?:  =(counter (lent docs))
-    results
-  =/  curr  (snag counter docs)
-  =/  dstg  (~(got by stgs) curr)
-  =/  meta  (pairs ~[['id' (pairs ~[['id' (tape (trip id:curr))] ['timestamp' (time timestamp:curr)]])] ['name' (tape (trip name:dstg))] ['owner' (ship owner:dstg)]])
-  %=  $
-    counter  (add counter 1)
-    results  (snoc results [id:curr meta])
-  ==
-++  enjs-gdoc
-  =,  enjs:format
-  |=  document=doc
-  =/  version-result  *(list [@t json])
-  =/  version-counter  0
-  =/  assembled-version
-  |-
-  ?:  =(version-counter (lent version:document))
-    version-result
-  %=  $
-    version-counter  (add version-counter 1)
-    version-result  (snoc version-result [(crip "{<version-counter>}") (numb:enjs:format (snag version-counter version:document))])
-  ==
-  (pairs:enjs:format ~[['version' (pairs:enjs:format assembled-version)] ['content' (tape:enjs:format cont:document)]])
-++  enjs-gsetting
-  =,  enjs:format
-  |=  settings=stg
-  =/  wl  *(list [@t json])
-  =/  counter  0
-  =/  assembled-wl
-  |-
-  ?:  =(counter (lent perms:settings))
-    wl
-  =/  curr  (snag counter perms:settings)
-  %=  $
-    counter  (add counter 1)
-    wl  (snoc wl [(crip "{<counter>}") (ship curr)])
-  ==
-  (pairs ~[['owner' (ship owner:settings)] ['name' (tape (trip name:settings))] ['whitelist' (pairs assembled-wl)]])
-++  enjs-gfolders
-  =,  enjs:format
-  |=  folders=fldrs
-  =/  keys  ~(tap in ~(key by folders))
-  =/  results  *(list [@t json])
-  =/  counter  0
-  =/  assembled
-  |-
-  ?:  =(counter (lent keys))
-    results
-  =/  key  (snag counter keys)
-  =/  curr  (~(get by folders) key)
-  =/  meta  (pairs ~[['id' (tape (trip `cord`id:key))] ['name' (tape (trip name:key))]])
-  =/  items  ~(tap in (~(get ju folders) key))
-  =/  content-results  *(list [@t json])
-  =/  content-counter  0
-  =/  content
-    %-
-      pairs
-    |-
-    ?:  =(content-counter (lent items))
-      content-results
-    =/  item  (snag content-counter items)
-    =/  res
-      ?-  -.item
-          [%doc]
-        (pairs ~[['id' (tape (trip `cord`id:dmeta:item))] ['timestamp' (time timestamp:dmeta:item)]])
-          [%folder]
-        (pairs ~[['id' (tape (trip `cord`id:fmeta:item))] ['name' (tape (trip name:fmeta:item))]])
+++  dejs
+  |%
+  ++  action
+    =,  dejs:format
+    |=  jon=json
+    ^-  action:engram
+    %.  jon
+    %-  of  
+    :~  :-  %document  %-  of
+      :~  [%make (ot ~[owner+(se %p) name+so space+pa content+sa version+sa roles+(op sym (se %tas)) ships+(op fed:ag (se %tas))])]
+          [%delete (ot ~[id+pa])]
+          [%save (ot ~[id+pa content+sa version+sa])]
+          [%snap (ot ~[id+pa snapshot+(ot ~[timestamp+di author+(se %p) data+sa])])]
+          [%rename (ot ~[id+pa name+so])]
+          [%addship (ot ~[id+pa ship+(se %p) level+(se %tas)])]
+          [%addrole (ot ~[id+pa role+(se %tas) level+(se %tas)])]
+          ::[%settings (ot ~[id+pa owner+(se %p) name+so roles+(op sym (se %tas)) ships+(op fed:ag (se %tas))])]
       ==
-    %=  $
-      content-counter  (add content-counter 1)
-      content-results  (snoc content-results [(crip "{<content-counter>}") res])
+      :-  %folder  %-  of  :~
+        [%make (ot ~[owner+(se %p) name+so space+pa roles+(op sym (se %tas)) ships+(op fed:ag (se %tas))])]
+        [%delete (ot ~[id+pa])]
+        [%rename (ot ~[id+pa name+so])]
+        [%add (ot ~[to+pa id+pa type+so])]
+        [%remove (ot ~[from+pa id+pa])]
+      ==
+      :::-  %prop  %-  of  :~
+      ::  [%accept (ot ~[id+pa update+(ot ~[author+(se %p) timestamp+di content+sa])])]
+      ::  [%sub (ot ~[id+pa ship+(se %p)])]
+      ::  [%unsub (ot ~[ship+(se %p)])]
+      ::  [%update-live (ot ~[id+pa update+(ot ~[author+(se %p) timestamp+di content+sa])])]
+      ::==
     ==
-  %=  $
-    counter  (add counter 1)
-    results  (snoc results [(crip "{<counter>}") (pairs ~[['meta' (pairs ~[['id' (tape (trip `@t`id:key))] ['name' (tape (trip name:key))]])] ['content' content]])])
-  ==
-  (pairs assembled)
-++  enjs-gupdates
-  =,  enjs:format
-  |=  updts=(set updt)
-  =/  lupdts  ~(tap in updts)
-  =/  counter  0
-  =/  results  *(list [@t json])
-  =/  assembled
-  |-
-    ?:  =(counter (lent lupdts))
-      results
-    =/  curr  (snag counter lupdts)
-  %=  $
-    counter  (add counter 1)
-    results  (snoc results [(crip "{<counter>}") (pairs ~[['timestamp' (time time:curr)] ['author' (ship author:curr)] ['content' (tape cont:curr)]])])
-  ==
-  (pairs assembled)
-++  enjs-getsnaps
-  =,  enjs:format
-  |=  snaps=(list snap)
-  =/  counter  0
-  =/  results  *(list [@t json])
-  =/  assembled
-  |-
-    ?:  =(counter (lent snaps))
-      results
-    =/  curr  (snag counter snaps)
-    =/  data  data:curr
-    =/  data-counter  0
-    =/  data-results  *(list [@t json])
-    =/  data-assembled
-    |-
-    ?:  =(data-counter (lent data))
-      data-results
-    %=  $
-      data-counter  (add data-counter 1)
-      data-results  (snoc data-results [(crip "{<data-counter>}") (numb (snag data-counter data))])
-    ==
-  %=  $
-    counter  (add counter 1)
-    results  (snoc results [(crip "{<counter>}") (pairs ~[['date' (time date:curr)] ['ship' (ship ship:curr)] ['data' (pairs data-assembled)]])])
-  ==
-  (pairs assembled)
+  --
+++  enjs
+  |%
+  ++  timestamp
+    =,  enjs:format
+    |=  timestamp=id:engram
+    ^-  json
+    (path ~[(scot %p -.timestamp) (scot %u +.timestamp)])
+  ++  space
+    |%
+    ++  list
+      =,  enjs:format
+      |=  [docs=documents:engram fols=folders:engram items=(map id:index [id:index @tas])]
+      ^-  json
+      %-  pairs  %~  val  by  
+      ^-  (map id:index [@t json])
+      %-  ~(run by items)
+      |=  [id=id:index type=@tas]
+      ?:  =(type %document)
+        =/  doc  (~(got by docs) id)
+        :-  (spat ~[(scot %p -.id) (scot %u +.id)])
+        (pairs ~[['type' (tape "document")] ['name' (tape (trip name.settings.doc))] ['owner' (tape (scow %p owner.settings.doc))]])
+      =/  fol  (~(got by fols) id)
+      =/  folcont  %-  ~(rut by content.content.fol)  
+        |=  [key=id:index v=[id=id:index type=@tas]]  
+        [(spat ~[(scot %p -.key) (scot %u +.key)]) (pairs ~[['id' (path ~[(scot %p -.id.v) (scot %u +.id.v)])] ['type' (tape (trip type.v))]])]
+      :-  (spat ~[(scot %p -.id) (scot %u +.id)])
+      (pairs ~[['type' (tape "folder")] ['name' (tape (trip name.fol))] ['owner' (tape (scow %p owner.fol))] ['content' (pairs ~(val by folcont))]])
+    --
+  ++  document
+    |%
+    ++  list
+      =,  enjs:format
+      |=  docs=documents:engram
+      ^-  json
+      %-  pairs  %~  tap  in  
+      ^-  (set [@t json])
+      %-  ~(run in ~(key by docs))
+      |=  id=id:engram
+      =/  doc  (~(got by docs) id)
+      :-  (spat ~[(scot %p -.id) (scot %u +.id)])
+      (pairs ~[['name' (tape (trip name.settings.doc))] ['owner' (tape (scow %p owner.settings.doc))]])
+    ++  get
+      =,  enjs:format
+      |=  doc=document:engram
+      ^-  json
+      %-  pairs  :~ 
+        :: Alvin Zhou
+        :: Ethan Chabowski
+        :: Binging with Bavish
+        :: Uncle Roger
+        ['id' (path ~[(scot %p -.id.doc) (scot %u +.id.doc)])]
+        ['version' (tape version.doc)]
+        ['content' (tape content.doc)]
+        :::-  'ships'  %-  pairs  %+  turn  ~(val by content.ships.settings.doc)  |=  [ship=@p level=@tas]  [(scot %p ship) (tape (trip level))]
+        ::['settings' (settings settings.doc)]
+        ::['snapshots' (snapshots snapshots.doc)]
+      ==
+    ++  settings
+      =,  enjs:format
+      |=  settings=dsettings:engram
+      ^-  json
+      %-  pairs  :~
+        ['name' (tape (trip name.settings))]
+        ['owner' (tape (scow %p owner.settings))]
+        :-  'ships'  %-  pairs  %+  turn  ~(val by content.ships.settings)  |=  [ship=@p level=@tas]  [(scot %p ship) (tape (trip level))]
+        :-  'roles'  %-  pairs  %+  turn  ~(val by content.roles.settings)  |=  [role=@tas level=@tas]  [(crip (trip role)) (tape (trip level))]
+      ==
+    ++  updates
+      =,  enjs:format
+      |=  updts=(set dupdate:engram)
+      ^-  json
+      %-  pairs  %~  tap  in
+        ^-  (set [@t json])
+        %-  ~(run in updts)
+        |=  updt=dupdate:engram
+        [(scot %da timestamp.updt) (pairs ~[['author' (tape (scow %p author.updt))] ['content' (tape content.updt)]])]
+    ++  snapshots
+      =,  enjs:format
+      |=  snaps=(set dsnapshot:engram)
+      ^-  json
+      %-  pairs  %~  tap  in
+        ^-  (set [@t json])
+        %-  ~(run in snaps)
+        |=  snap=dsnapshot:engram
+        [(scot %da timestamp.snap) (pairs ~[['author' (tape (scow %p author.snap))] ['timestamp' (time timestamp.snap)] ['content' (tape data.snap)]])]
+    --
+  ++  folder
+    |%
+    ++  list
+      =,  enjs:format
+      |=  folds=folders:engram
+      ^-  json
+      %-  pairs  %~  tap  in  
+      ^-  (set [@t json])
+      %-  ~(run in ~(key by folds))
+      |=  id=id:engram
+      =/  fold  (~(got by folds) id)
+      :-  (spat ~[(scot %p -.id) (scot %u +.id)])
+      (pairs ~[['name' (tape (trip name.fold))]])
+    --
+  --
 --
