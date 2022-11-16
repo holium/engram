@@ -83,7 +83,7 @@ export default defineComponent({
             type: String
         }
     },
-    inject: ["pushMenu"],
+    inject: ["pushMenu", "pushFolderDock"],
     data() {
         return {
             expand: false,
@@ -137,7 +137,14 @@ export default defineComponent({
                             (this.$refs["rename"] as any).focus();
                         }, 10);
                     }
-                }] : [])
+                }] : []),
+                ...(this.type == 'folder' ? [{
+                    display: "Settings",
+                    icon: "",
+                    run: () => {
+                        (this as any).pushFolderDock(this.item);
+                    }
+                }]: [])
             ]
             ));
         },

@@ -29,7 +29,8 @@
                 </clipPath>
               </defs>
             </svg>
-            <div @click="closeDock">
+            <div class="flex-grow"></div>
+            <div @click="closeDock" class="px-2 py-1 rounded-2 clickable">
               close
             </div>
         </div>
@@ -89,15 +90,6 @@
     transition: max-width 200ms ease;
   }
   
-  .hide-dock #dock {
-    overflow: hidden;
-    min-width: 0;
-    max-width: 0;
-  }
-  
-  .hide-dock .dock-grip {
-    opacity: 0;
-  }
   
   </style>
   
