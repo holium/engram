@@ -8,11 +8,11 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
-      path: "/apps/engram/:station/:space/",
+      path: "/apps/engram/",
       name: "Space",
       component: Space,
       children: [
-        { path: ":document", name: "Document", component: Document },
+        { path: ":author/:clock", name: "Document", component: Document },
         { path: "", name: "empty", component: Empty },
       ],
     },
@@ -22,5 +22,13 @@ const router = createRouter({
     }
   ],
 });
+
+router.beforeEach((to, from, next) => {
+  if(to.query.spaceId == undefined) {
+    next(`${to.path}?spaceId=/null/space`);
+  } else {
+    next();
+  }
+})
 
 export default router;

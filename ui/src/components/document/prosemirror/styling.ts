@@ -28,6 +28,7 @@ export const styling = (onChange: (styling: StylingUpdate) => void) => new Plugi
             (document.querySelector(":root") as any).style.setProperty(`---${node.attrs.key}`, node.attrs.value);
           }
         })
+        console.log("updating styling to: ", update);
         onChange(update);
         return {
           dom: dom,

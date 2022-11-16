@@ -7,16 +7,17 @@
         <Cover :cover="cover" />
       </div>
     </div>
-    <Dock :styling="styling" />
+    <DocumentDock :styling="styling" />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 import store from "@/store/index";
+import type { DocumentContent } from "@/store/types"
 
 import Toolbar from "@/components/Toolbar.vue";
-import Dock from "@/components/dock/Dock.vue";
+import DocumentDock from "@/components/dock/DocumentDock.vue";
 
 import { EditorView } from "prosemirror-view";
 import render from "./prosemirror/render";
@@ -39,12 +40,19 @@ export default defineComponent({
   name: "Document",
   components: {
     Toolbar,
-    Dock,
+    DocumentDock,
     Bauble,
     Cover,
   },
+  props: {
+    allowDock: {
+      type: Boolean,
+      required: true,
+    }
+  },
   data() {
     return {
+      loaded: null as null | Promise<DocumentContent>,
       bauble: {
         on: false,
         top: 0,
@@ -69,14 +77,22 @@ export default defineComponent({
     };
   },
   created: function() {
-    this.loadDocument(this.$route.params.document as string);
+    this.loaded = store.dispatch("workspace/open", `${this.$route.params.author}/${this.$route.params.clock}`);
   },
   beforeRouteUpdate: function(to) {
-    this.loadDocument(to.params.document as string);
+    this.loaded = store.dispatch("workspace/open", `${to.params.author}/${to.params.clock}`);
+    this.loaded.then((res: any) => {
+        render(this.$refs["document"] as any, res.content, this.updateBauble, this.updateCover, this.updateStyling);
+      })
   },
   mounted: function () {
     //render document
-    render(this.$refs["document"] as any, this.updateBauble, this.updateCover, this.updateStyling);
+    if(this.loaded == null) console.warn("no document");
+    else {
+      this.loaded.then((res: any) => {
+        render(this.$refs["document"] as any, res.content, this.updateBauble, this.updateCover, this.updateStyling);
+      })
+    }
   },
   methods: {
     loadDocument: function(document: string) {

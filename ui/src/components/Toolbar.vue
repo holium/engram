@@ -3,8 +3,6 @@
     <!-- Nav Show / hide -->
     <div class="p-2">
       <svg
-        width="16"
-        height="16"
         viewBox="0 0 16 16"
         fill="var(--rlm-icon-color, #333333)"
         class="icon clickable nav-toggle"
@@ -15,13 +13,15 @@
       </svg>
     </div>
 
-    <div class="flex px-3 py-2 flex-grow">toolbar</div>
+    <div class="flex px-3 py-2 flex-grow gap-3 items-center">
+      <div class="azimuth">
+        {{ $route.params.author }} / {{ $route.params.clock }}
+      </div>
+    </div>
 
     <!-- Dock Show / hide -->
     <div class="p-2">
       <svg
-        width="16"
-        height="16"
         viewBox="0 0 16 16"
         fill="var(--rlm-icon-color, #333333)"
         class="icon clickable dock-toggle"

@@ -11,8 +11,19 @@
     </div>
 
     <!-- Select -->
-    <div class="flex flex-col border-t border-border outline-none" :style="{top: '100%', width: '100%', display: expand ? 'flex' : 'none'}" ref="select-space" @blur="() => { expand = false }" tabindex="0">
-      <div class="flex gap-3 px-3 py-2" :key="option.path" v-for="option in spaces.filter(option => true || option.path != space.path)" @click="() => { openSpace(option.path) }">
+    <div 
+      class="flex flex-col border-t border-border outline-none" 
+      :style="{top: '100%', width: '100%', display: expand ? 'flex' : 'none'}" 
+      ref="select-space" 
+      @blur="() => { expand = false }" 
+      tabindex="0"
+    >
+      <div 
+        class="flex gap-3 px-3 py-2" 
+        :key="option.path" 
+        v-for="option in spaces.filter(option => true || option.path != space.path)" 
+        @click="() => { openSpace(option.path) }"
+      >
         <div class="rounded-2" :style="{ width: '32px', height: '32px', 'background-color': option.color }">
 
         </div>
@@ -39,10 +50,10 @@ export default defineComponent({
     }
   },
   created: function() {
-    this.loadSpaces();
+    this.loadSpaces(this.$route);
   },
-  onRouteUpdate: function() {
-    this.loadSpaces();
+  onRouteUpdate: function(to: any) {
+    this.loadSpaces(to);
   },
   methods: {
     openSelection: function() {
@@ -60,26 +71,28 @@ export default defineComponent({
       this.$router.push(`apps/engram${path}`);
       this.expand = false;
     },
-    loadSpaces: async function() {
-      const name = this.$route.params.station as string;
-      const type = this.$route.params.space as string;
-      const path = `${name}/${type}`;
+    loadSpaces: async function(route: any) {
+      const path = route.query.spaceId;
+      if(path == "/null/space") {
+        this.space = { path: "", name: (window as any).ship, color: "#262626"}
+        this.spaces = [];
+      } else {
+        const spaceRes = await store.getters["space"](path);
+        this.space = {
+          path: path,
+          name: spaceRes.name,
+          color: spaceRes.color,
+        } as Space;
 
-      const spaceRes = await store.getters["space"](path);
-      this.space = {
-        path: path,
-        name: spaceRes.name,
-        color: spaceRes.color,
-      } as Space;
-
-      const spacesRes = await store.getters["spaces"];
-      this.spaces = Object.keys(spacesRes).map((space) => {
-        return {
-          path: space,
-          name: spacesRes[space].name,
-          color: spacesRes[space].color
-        }
-      })
+        const spacesRes = await store.getters["spaces"];
+        this.spaces = Object.keys(spacesRes).map((space) => {
+          return {
+            path: space,
+            name: spacesRes[space].name,
+            color: spacesRes[space].color
+          }
+        })
+      }
     },
   }
 });

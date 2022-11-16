@@ -19,10 +19,22 @@ export interface DocumentState {
   [key: string]: Document
 }
 
+export interface ItemMeta {
+  id: string;
+  name: string;
+  owner: string;
+  content?: { [key: string]: {id: string, type: string} }
+}
+
 export interface Document {
   id: string;
   name: string;
   owner: Patp;
+}
+
+export interface DocumentContent {
+  content: Uint8Array;
+  version: Uint8Array;
 }
 
 export interface DocumentMeta {
@@ -35,11 +47,16 @@ export interface FolderState {
   [key: string]: Folder,
 }
 
+export interface FolderMeta {
+  id: string;
+  name: string;
+}
+
 export interface Folder {
   id: string,
   name: string,
-  documents: Array<string>,
-  folders: Array<string>,
+  owner: string,
+  content: { [key:string]: { id: string, type: string } },
 }
 
 // Workspace ------------------------------------------------------------------
@@ -61,6 +78,11 @@ export type DocumnetPermission = 'write' | 'read'
 
 // Revisions
 export type RevisionState = Array<DocumentVersion>
+
+export interface VersionMeta {
+  author: Patp;
+  date: Date;
+}
 
 export interface DocumentVersion {
   timestamp: number;

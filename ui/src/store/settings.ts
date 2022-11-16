@@ -5,6 +5,7 @@ import type {
   DocumnetPermission
 } from "./types"
 import type { Module, GetterTree, MutationTree, ActionTree } from "vuex"
+import { ID } from "yjs";
 
 const state: SettingsState = {
   autosync: false,
@@ -17,10 +18,10 @@ const getters: GetterTree<SettingsState, RootState> = {
     return state.autosync;
   },
   roles(state) {
-    return Object.keys(state.roleperms);
+    return state.roleperms;
   },
   ships(state) {
-    return Object.keys(state.shipperms);
+    return state.shipperms;
   },
   "role-permission": (state) => (role: string) => {
     return state.roleperms[role];
@@ -32,7 +33,9 @@ const getters: GetterTree<SettingsState, RootState> = {
 
 const mutations: MutationTree<SettingsState> = {
   open(state, payload: SettingsState) {
-    state = payload;
+    state.autosync = payload.autosync;
+    state.shipperms = payload.shipperms;
+    state.roleperms = payload.roleperms;
   },
   close(state) {
     state.autosync = false;
@@ -45,16 +48,16 @@ const mutations: MutationTree<SettingsState> = {
   },
 
   // Role Management -----------------------------------------------------------
-  setRole(state, payload: { role: string, permissions: DocumnetPermission}) {
-    state.roleperms[payload.role] = payload.permissions;
+  setRole(state, payload: { role: string, level: DocumnetPermission}) {
+    state.roleperms[payload.role] = payload.level;
   },
   deleteRole(state, payload: string) {
     delete state.roleperms[payload];
   },
 
   // Ship Management -----------------------------------------------------------
-  setShip(state, payload: { ship: Patp, permissions: DocumnetPermission}) {
-    state.shipperms[payload.ship] = payload.permissions;
+  setShip(state, payload: { ship: Patp, level: DocumnetPermission}) {
+    state.shipperms[payload.ship] = payload.level;
   },
   deleteShip(state, payload: string) {
     delete state.shipperms[payload];
@@ -63,21 +66,55 @@ const mutations: MutationTree<SettingsState> = {
 
 const actions: ActionTree<SettingsState, RootState> = {
   open({ commit }, payload: string) {
-    (window as any).urbit.scry({ app: "engram", path: ""}).then((response: any) => {
+    (window as any).urbit.scry({ app: "engram", path: `/document/${payload}/get/settings`}).then((response: any) => {
+      console.log("settings response", response);
       commit("open", {
         autosync: response.autosync,
         roleperms: response.roles,
-        shipperms: response.shipperms
+        shipperms: response.ships
       })
     })
   },
   close({ commit }) {
     commit("close");
+  },
+
+  addship({ commit }, payload: { id: string, ship: string, level: string }): Promise<void> {
+    return new Promise((resolve, reject) => {
+      commit("setShip", payload);
+      (window as any).urbit.poke({
+        app: "engram",
+        mark: "post",
+        json: {
+          document: { addship: {
+            id: payload.id,
+            ship: payload.ship,
+            level: payload.level,
+          }}
+        }
+      })
+    })
+  },
+  addrole({ commit }, payload: { id: string, role: string, level: string }): Promise<void> {
+    return new Promise((resolve, reject) => {
+      commit("setRole", payload);
+      (window as any).urbit.poke({
+        app: "engram",
+        mark: "post",
+        json: {
+          document: { addrole: {
+            id: payload.id,
+            role: payload.role,
+            level: payload.level,
+          }}
+        }
+      })
+    })
   }
 }
 
 export default {
-  namespace: true,
+  namespaced: true,
   state,
   getters,
   mutations,

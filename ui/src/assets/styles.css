@@ -3,10 +3,16 @@
   @apply flex gap-3 px-4 py-3;
 }
 
-/* UI */
+/* UI */ 
+
 .heading {
-  @apply font-bold text-base;
+  @apply font-bold text-base text-heading;
   font-variant: small-caps;
+}
+
+.azimuth {
+  @apply px-2 rounded-1 bg-border font-azimuth;
+  line-height: 1.12em;
 }
 
 .clickable {
@@ -21,11 +27,10 @@
 .dock-grip {
   @apply mx-2 border-border;
   opacity: 1;
-  border-color: theme(colors.border);
   cursor: col-resize;
   width: 4px;
-  border-left: 1px solid;
-  border-right: 1px solid;
+  border-left: 1px solid theme(colors.icon);
+  border-right: 1px solid theme(colors.icon);
   transition: opacity 200ms ease;
 }
 
