@@ -19,6 +19,7 @@
           [%addship (ot ~[id+pa ship+(se %p) level+(se %tas)])]
           [%addrole (ot ~[id+pa role+(se %tas) level+(se %tas)])]
           ::[%settings (ot ~[id+pa owner+(se %p) name+so roles+(op sym (se %tas)) ships+(op fed:ag (se %tas))])]
+          [%gatherall (ot ~[id+pa space+pa])]
       ==
       :-  %folder  %-  of  :~
         [%make (ot ~[owner+(se %p) name+so space+pa roles+(op sym (se %tas)) ships+(op fed:ag (se %tas))])]

@@ -74,7 +74,7 @@
           [%addship path=path ship=@p level=@tas]
           [%addrole path=path role=@tas level=@tas]
           ::[%settings path=path owner=@p name=@ta roles=(map @tas @tas) ships=(map @p @tas)]
-          [%gatherall path=path]
+          [%gatherall path=path space=path]
           [%gather path=path peer=@p]
           [%delta path=path]
           [%sync path=path updates=(set dupdate)]

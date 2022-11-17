@@ -167,13 +167,19 @@
         ::  A helper poke to gather updates from everyone who has access to a document
         ::
           %gatherall
+        ~&  "gathering..."
+        ~&  action
         =/  id  [`@p`(slav %p -.path.action) `@u`(slav %ud -.+.path.action)]
-        =/  doc  (~(got by d) id)
-        =/  peers  content.ships.settings.doc
-        :_  this
-        %+  turn  %+  skim  ~(val by content.ships.settings.doc)  
-        |=  [peer=@p level=@tas]  =(level %editor)
-        |=  [peer=@p @tas]        [%pass /engram/document/gather %agent [our.bowl %engram] %poke %noun !>([%gather path.action peer])]
+        ::=/  space  .^(json %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) ~.all ~.json])
+        =/  space  .^(* %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.action -.+.space.action ~.members ~.noun])
+        ~&  space
+        `this
+        ::=/  doc  (~(got by d) id)
+        ::=/  peers  content.ships.settings.doc
+        :::_  this
+        ::%+  turn  %+  skim  ~(val by content.ships.settings.doc)  
+        ::|=  [peer=@p level=@tas]  =(level %editor)
+        ::|=  [peer=@p @tas]        [%pass /engram/document/gather %agent [our.bowl %engram] %poke %noun !>([%gather path.action peer])]
         ::
         ::  Gather updates to a document from a peer (pokes their %delta)
         ::
