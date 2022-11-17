@@ -1,4 +1,5 @@
 /-  *engram
+/-  membership
 /+  engram
 /+  index
 /+  default-agent, dbug, agentio
@@ -171,7 +172,7 @@
         ~&  action
         =/  id  [`@p`(slav %p -.path.action) `@u`(slav %ud -.+.path.action)]
         ::=/  space  .^(json %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) ~.all ~.json])
-        =/  space  .^(* %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.action -.+.space.action ~.members ~.noun])
+        =/  space  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.action -.+.space.action ~.members ~.noun])
         ~&  space
         `this
         ::=/  doc  (~(got by d) id)
