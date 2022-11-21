@@ -1,80 +1,106 @@
 <template>
-  <div class="flex flex-col">
+  <div class="flex flex-col gap-2">
     <!-- Typography -->
-    <div class="px-3 py-2 heading">
-      typography
+    <div class="px-3 py-2 heading-2 opacity-50">
+      Typography
     </div>
 
-    <div class="px-3 flex gap-3">
-      <div class="dock-label">Font Size:</div>
-      <input type="number" min="8" max="48" class="px-3 py-2 bg-window flex-1 min-w-0 outline-none" v-model="mirror['root-size']"
-        @blur="(event: any) => {
-          changeStyle('root-size', `${parseInt(event.target.value) / 16}em`)
-        }"
-      />
+    <div class="dock-item">
+      <div class="dock-label flex-1">Font Size:</div>
+      <div class="input flex-1">
+        <input type="number" min="8" max="48" class="" v-model="mirror['root-size']"
+          @blur="(event: any) => {
+            changeStyle('root-size', `${parseInt(event.target.value) / 16}em`)
+          }"
+        />
+        <div class="unit">px</div>
+      </div>
+      
     </div>
-    <div class="px-3 flex gap-3">
-      <div class="dock-label">Scale:</div>
-      <input type="number" min="1" max="4" step=".01" class="px-3 py-2 bg-window flex-1 min-w-0 outline-none" v-model="mirror['ratio']"
-        @blur="(event: any) => {
-          changeStyle('ratio', `${Math.pow(parseFloat(event.target.value), 1 / 3)}`)
-        }"
-      />
-    </div>
-
-    <div class="px-3 flex gap-3">
-      <div class="dock-label">Body Font Family:</div>
-      <select class="px-3 py-2 bg-window flex-1 min-w-0 outline-none mr-3" v-model="mirror['body-font-family']"
-        @change="(event: any) => {
-          changeStyle('body-font-family', `${event.target.value}`)
-        }"
-      >
-        <option value="Rubik">sans-serif</option>
-        <option value="serif">serif</option>
-        <option value="monospace">monospace</option>
-      </select>
-    </div>
-    <div class="px-3 flex gap-3">
-      <div class="dock-label">Heading Font Family:</div>
-      <select class="px-3 py-2 bg-window flex-1 min-w-0 outline-none mr-3" v-model="mirror['heading-font-family']"
-        @change="(event: any) => {
-          changeStyle('heading-font-family', `${event.target.value}`)
-        }"
-      >
-        <option value="Rubik">sans-serif</option>
-        <option value="serif">serif</option>
-        <option value="monospace">monospace</option>
-      </select>
-    </div>
-    <div class="px-3 flex gap-3">
-      <div class="dock-label">Heading Weight:</div>
-      <input type="number" min="200" max="900" class="px-3 py-2 bg-window flex-1 min-w-0 outline-none" v-model="mirror['heading-weight']"
-        @blur="(event: any) => {
-          changeStyle('heading-weight', `${parseInt(event.target.value)}`)
-        }"
-      />
+    <div class="dock-item">
+      <div class="dock-label flex-1">Scale:</div>
+      <div class="input flex-1">
+        <input type="number" min="1" max="4" step=".01" v-model="mirror['ratio']"
+          @blur="(event: any) => {
+            changeStyle('ratio', `${Math.pow(parseFloat(event.target.value), 1 / 3)}`)
+          }"
+        />
+        <div class="unit">
+          x
+        </div>
+      </div>
     </div>
 
-    <div class="px-3 py-2 heading">
-      document structure
+    <div class="dock-item">
+      <div class="dock-label flex-1">Body Font Family:</div>
+      <div class="input flex-1">
+        <select v-model="mirror['body-font-family']"
+          @change="(event: any) => {
+            changeStyle('body-font-family', `${event.target.value}`)
+          }"
+        >
+          <option value="Rubik">sans-serif</option>
+          <option value="serif">serif</option>
+          <option value="monospace">monospace</option>
+        </select>
+      </div>
+    </div>
+    <div class="dock-item">
+      <div class="dock-label flex-1">Heading Font Family:</div>
+      <div class="input flex-1">
+        <select v-model="mirror['heading-font-family']"
+          @change="(event: any) => {
+            changeStyle('heading-font-family', `${event.target.value}`)
+          }"
+        >
+          <option value="Rubik">sans-serif</option>
+          <option value="serif">serif</option>
+          <option value="monospace">monospace</option>
+        </select>
+      </div>
+    </div>
+    <div class="dock-item">
+      <div class="dock-label flex-1">Heading Weight:</div>
+      <div class="input flex-1">
+        <input type="number" min="200" max="900" v-model="mirror['heading-weight']"
+          @blur="(event: any) => {
+            changeStyle('heading-weight', `${parseInt(event.target.value)}`)
+          }"
+        />
+      </div>
+      
+    </div>
+
+    <div class="px-3 py-2 heading-2 opacity-50">
+      Document Structure
     </div>
 
     <!-- Document -->
-    <div class="px-3 flex gap-3">
-      <div class="dock-label">Width:</div>
-      <input type="number" min="40" max="120" class="px-3 py-2 bg-window flex-1 min-w-0 outline-none" v-model="mirror['document-width']"
-        @blur="(event: any) => {
-          changeStyle('document-width', `${event.target.value}ch`)
-        }"
-      />
+    <div class="dock-item">
+      <div class="dock-label flex-1">Width:</div>
+      <div class="input flex-1">
+        <input type="number" min="40" max="120" v-model="mirror['document-width']"
+          @blur="(event: any) => {
+            changeStyle('document-width', `${event.target.value}ch`)
+          }"
+        />
+        <div class="unit">
+          ch
+        </div>
+      </div>
     </div>
-    <div class="px-3 flex gap-3">
-      <div class="dock-label">Margin:</div>
-      <input type="number" min="0" max="8" class="px-3 py-2 bg-window flex-1 min-w-0 outline-none" v-model="mirror['document-margin']"
-        @blur="(event: any) => {
-          changeStyle('document-margin', `${event.target.value}rem`)
-        }"
-      />
+    <div class="dock-item">
+      <div class="dock-label flex-1">Margin:</div>
+      <div class="input flex-1">
+        <input type="number" min="0" max="8" v-model="mirror['document-margin']"
+          @blur="(event: any) => {
+            changeStyle('document-margin', `${event.target.value}rem`)
+          }"
+        />
+        <div class="unit">
+          em
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -135,5 +161,9 @@ export default defineComponent({
 </script>
 
 <style lang="css" scoped>
+
+.input {
+  width: calc(6 * 16px);
+}
 
 </style>

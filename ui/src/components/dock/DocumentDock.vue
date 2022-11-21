@@ -65,7 +65,7 @@
           </svg>
           <div class="flex-grow"></div>
           <!-- Close -->
-          <div @click="closeDock" class="px-2 py-1 rounded-2 clickable">
+          <div @click="closeDock" class="px-2 rounded-2 clickable">
             close
           </div>
       </div>

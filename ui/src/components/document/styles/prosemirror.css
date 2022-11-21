@@ -1,15 +1,19 @@
 .ProseMirror {
   @apply bg-paper flex-grow;
-  box-shadow: 0 0px 32px -16px var(--rlm-text-color, #261f1f);
+  /* box-shadow: 0 0px 32px -16px var(--rlm-text-color, #261f1f); */
   outline-style: none;
   white-space: normal;
   line-height: var(--leading-body);
   font-size: var(--body);
   max-width: 100%;
   width: calc(var(--document-width) + calc(2 * var(--document-margin)));
-  border-radius: calc(var(--document-margin) / var(--ratio) / var(--ratio))
-    calc(var(--document-margin) / var(--ratio) / var(--ratio)) 0 0;
+  /* border-radius: calc(var(--document-margin) / var(--ratio) / var(--ratio))
+    calc(var(--document-margin) / var(--ratio) / var(--ratio)) 0 0; */
   /* min-height: calc(100% - 2 * var(--document-margin)); */
+  border-width: 1px 1px 0px 1px;
+  border-style: solid;
+  border-color: theme(colors.border);
+  border-radius: 16px 16px 0px 0px;
   margin: calc(var(--document-margin) * 2) 0 0;
   animation: fade-in ease-out 200ms;
   word-break: break-word;

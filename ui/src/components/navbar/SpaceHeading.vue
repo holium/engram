@@ -8,7 +8,7 @@
         <div class="heading-1">
           {{ space.path }}
         </div>
-        <div class="text-icon text-sm font-azimuth">
+        <div class="opacity-60 text-sm font-azimuth">
           ~{{ ship }}
         </div>
       </div>
@@ -34,10 +34,7 @@
         </div>
         <div class="flex flex-col gap-2">
           <div class="heading-1">
-            {{ option.path }}
-          </div>
-          <div class="text-icon text-sm">
-            ~{{ ship }}
+            {{ option.name }}
           </div>
         </div>
       </div>

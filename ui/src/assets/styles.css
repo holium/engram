@@ -1,6 +1,6 @@
 /* Components */
 .toolbar {
-  @apply flex gap-3 px-4 py-3;
+  @apply text-body flex items-center p-4 gap-3
 }
 
 /* UI */ 
@@ -11,7 +11,7 @@
 }
 
 .heading-2 {
-  @apply font-medium text-icon text-heading;
+  @apply font-medium text-type text-heading;
   line-height: 1em;
 }
 
@@ -34,7 +34,7 @@
   border-color: theme(colors.border);
 }
 
-.input input {
+.input input, .input select {
   @apply outline-none text-sm bg-none min-w-0 flex-1;
 }
 
@@ -58,6 +58,10 @@
 
 .dock-grip:hover {
   opacity: 1;
+}
+
+.dock-item {
+  @apply flex items-center px-3;
 }
 
 .dock-label {
