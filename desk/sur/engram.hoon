@@ -74,7 +74,7 @@
           [%addship path=path ship=@p level=@tas]
           [%addrole path=path role=@tas level=@tas]
           ::[%settings path=path owner=@p name=@ta roles=(map @tas @tas) ships=(map @p @tas)]
-          [%gatherall path=path]
+          [%gatherall path=path space=path]
           [%gather path=path peer=@p]
           [%delta path=path]
           [%sync path=path updates=(set dupdate)]
@@ -92,10 +92,11 @@
           ::[%sync path=path update=(update:index [id type])]
       ==
     ==
-    ::$:  %space
-    ::  $%  [%gatherall path=path]
-    ::      [%gather space=path peer=@p]
-    ::      [%sync space=path update=(update:index [id type])]
+    $:  %space
+      $%  [%gatherall space=path]
+          [%gather space=path peer=@p]
+          [%delta space=path version=version]
+          [%sync space=path update=(update:index [id @tas])]
     ::  Propogation will occur in three (ish) steps: 
     ::    [spanning]      - across a space
     ::    the gatherall   - a routing poke that sends gather for all the peers in a space
@@ -105,8 +106,8 @@
     ::    the gatherall   - a routing poke that sends gather for all the peers in a space
     ::    the gather      - a poke is sent requesting updates from a peer, in the form of a sync poke
     ::    the sync        - a poke is sent with updates; syncs may also be sent without request in the case of realtime updates
-    ::  ==
-    ::==
+      ==
+    ==
     ::$:  %span
     ::  $%  [%gatherall path=path]
     ::      [%gather space=path]
