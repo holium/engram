@@ -2,6 +2,7 @@ import {createStore} from 'vuex'
 import type { GetterTree, ActionTree } from "vuex"
 import router from "@/router/index"
 import type { RootState, Space } from "./types"
+import space from "./space"
 import documents from './documents';
 import folders from "./folders";
 import workspace from "./workspace"
@@ -15,16 +16,6 @@ const getters: GetterTree<RootState, RootState> = {
       }).catch((err: any) => {
         console.warn("spaces agent missing !!", err);
         reject([]);
-      })
-    })
-  },
-  space: () => (path: string): Promise<Space> => {
-    return new Promise((resolve, reject) => {
-      (window as any).urbit.scry({ app: "spaces", path: `${path}` }).then((response: any) => {
-        resolve(response.space);
-      }).catch((err: any) => {
-        console.warn("spaces agent missing!!", err);
-        reject({ path: "", name: "our", color: "#262626"});
       })
     })
   },
@@ -69,6 +60,7 @@ export default createStore({
   getters,
   actions,
   modules: {
+    space,
     documents,
     folders,
     workspace,

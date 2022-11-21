@@ -1,5 +1,5 @@
 <template>
-  <div class="text-body flex">
+  <div class="text-body flex items-center">
     <!-- Nav Show / hide -->
     <div class="p-2">
       <svg
@@ -13,9 +13,13 @@
       </svg>
     </div>
 
-    <div class="flex px-3 py-2 flex-grow gap-3 items-center">
-      <div class="azimuth">
-        {{ $route.params.author }} / {{ $route.params.clock }}
+    <div class="flex px-4 py-2 flex-grow gap-2 items-center">
+      <div class="heading-2">
+        {{ space.name }}
+      </div>
+      /
+      <div class="text-icon">
+        {{ doc.name }}
       </div>
     </div>
 
@@ -37,6 +41,8 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import store from "@/store/index"
+import type { Space, Document } from "@/store/types"
 export default defineComponent({
   name: "Toolbar",
   inject: ["toggleNav", "toggleDock"],
@@ -46,8 +52,16 @@ export default defineComponent({
     },
     toggleHideDock: function() {
       (this as any).toggleDock();
+    },
+  },
+  computed: {
+      space: function(): Space {
+        return store.getters["space/get"];
+      },
+      doc: function(): Document {
+        return store.getters["documents/meta"](`/${this.$route.params.author}/${this.$route.params.clock}`)
+      }
     }
-  }
 });
 </script>
 

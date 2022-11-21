@@ -10,7 +10,15 @@ export interface RootState {
 export interface Space {
   path: string;
   name: string;
+  image: string;
   color: string;
+}
+
+export interface SpaceState {
+  path: string,
+  name: string,
+  image: string,
+  color: string,
 }
 
 // File Management -------------------------------------------------------------

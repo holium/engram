@@ -1,7 +1,7 @@
 <template>
-    <div class="flex flex-col" @drop="handleDrop" @dragover="handleDragOver">
+    <div class="flex flex-col gap-2" @drop="handleDrop" @dragover="handleDragOver">
         <div 
-            class="flex px-3 hover:underline cursor-pointer items-center" 
+            class="flex py-1 hover:underline cursor-pointer items-center gap-2" 
             @click="open" 
             @contextmenu="openMenu" 
             draggable="true" 
@@ -40,12 +40,12 @@
                 @click.stop
                 ref="rename"
             />
-            <div class="pl-2 py-2 flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis" v-else>
+            <div class="flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis text-sm" v-else>
                 {{ meta.name }}
             </div>
         </div>
         <SystemItem 
-            class="pl-2" 
+            class="pl-4" 
             :parent="item"
             :item="(meta as any).content[i].id" 
             :index="i" 
