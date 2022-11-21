@@ -46,6 +46,13 @@
   @apply text-icon;
 }
 
+#dock {
+  @apply flex flex-col;
+  min-width: 180px;
+  max-width: 36vw;
+  transition: max-width 200ms ease;
+}
+
 .dock-grip {
   @apply mx-2;
   opacity: 0;
@@ -61,7 +68,7 @@
 }
 
 .dock-item {
-  @apply flex items-center px-3;
+  @apply flex items-center;
 }
 
 .dock-label {

@@ -2,30 +2,30 @@
   <div class="flex flex-col">
 
     <!-- Auto Update -->
-    <div class="px-3 flex gap-3 items-center">
+    <div class="dock-item">
       <div class="dock-label">Auto-sync with other ships:</div>
       <!-- toggle -->
       <Toggle :value="autoSync" @change="(event) => { autoSync = event }" class="px-3"/>
     </div>
 
-    <div class="px-3 heading">
-      permissions
+    <div class="py-2 heading-2 opacity-50">
+      Permission Rules
     </div>
-    <div class="flex flex-col px-3 gap-1">
+    <div class="flex flex-col gap-1">
       <ShipPermission :key="ship" :ship="ship" :level="ships[ship]" v-for="ship in Object.keys(ships)" />
       <RolePermission :key="role" :role="role" :level="roles[role]" v-for="role in Object.keys(roles)" />
     </div>
-    <div class="flex px-3">
+    <div class="input">
       <input 
         @keydown="addPermission"
         type="text" 
         placeholder="add role or ship"
         v-model="newPermission"
-        class="px-2 py-2 bg-none min-w-0 flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis outline-none border-type realm-cursor-text-cursor" 
+        class="whitespace-nowrap overflow-hidden overflow-ellipsis realm-cursor-text-cursor text-azimuth" 
       >
       <select 
         v-model="newPermissionLevel"
-        class="px-2 py-2 bg-none whitespace-nowrap overflow-hidden overflow-ellipsis outline-none border-type" 
+        class="whitespace-nowrap overflow-hidden overflow-ellipsis text-azimuth" 
       >
         <option value="editor">editor</option>
         <option value="viewer">viewer</option>

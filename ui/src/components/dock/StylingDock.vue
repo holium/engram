@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col gap-2">
     <!-- Typography -->
-    <div class="px-3 py-2 heading-2 opacity-50">
+    <div class="py-2 heading-2 opacity-50">
       Typography
     </div>
 
@@ -71,7 +71,7 @@
       
     </div>
 
-    <div class="px-3 py-2 heading-2 opacity-50">
+    <div class="py-2 heading-2 opacity-50">
       Document Structure
     </div>
 

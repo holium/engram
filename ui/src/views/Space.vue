@@ -1,8 +1,8 @@
 <template>
-  <div id="space" :class="{'hide-nav': !nav, 'hide-dock': !dock}">
+  <div id="space" :class="{'hide-nav': !nav, 'hide-doc-dock': !dock}">
     <Navbar />
     <router-view class="flex-grow"></router-view>
-    <FolderDock :folder="folderdock" v-if="folderdock.length > 0" @close="closeFolderDock"/>
+    <FolderDock :folder="folderdock" :class="{'hide-folder-dock': folderdock.length == 0}" @close="closeFolderDock"/>
   </div>
 </template>
 
@@ -66,6 +66,7 @@ export default defineComponent({
 #space {
   @apply flex items-stretch;
   height: 100vh;
+  overflow: hidden;
 }
 
 </style>

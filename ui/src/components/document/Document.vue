@@ -2,9 +2,12 @@
   <div class="flex flex-row items-stretch">
     <div class="flex flex-col flex-grow">
       <Toolbar />
-      <div class="relative items-center scrollbar-small flex-grow" id="document" ref="document">
+      <div class="relative items-center scrollbar-small flex-grow" id="main">
         <Bauble :bauble="bauble" />
         <Cover :cover="cover" />
+        <div id="document" ref="document">
+
+        </div>
       </div>
     </div>
     <DocumentDock :styling="styling" />
@@ -112,7 +115,18 @@ export default defineComponent({
 </script>
 
 <style lang="css" scoped>
-#document {
+#main {
   @apply relative flex flex-col overflow-auto;
 }
+
+#document {
+  @apply bg-paper flex flex-col flex-grow items-center;
+  width: 100%;
+  border-width: 1px 1px 0px 1px;
+  border-style: solid;
+  border-color: theme(colors.border);
+  border-radius: 16px 16px 0px 0px;
+  z-index: 1;
+}
+
 </style>

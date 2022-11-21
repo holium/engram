@@ -110,7 +110,7 @@ export default defineComponent({
 <style lang="css" scoped>
 
 .cover {
-  position: absolute;
+  position: relative;
   top: 0;
   left: 0;
   height: 30vh;
@@ -135,7 +135,7 @@ export default defineComponent({
 }
 
 .image-toolbar {
-  @apply absolute top-3 right-4 bg-border gap-1 flex;
+  @apply absolute bottom-3 right-4 bg-border gap-1 flex;
   overflow: hidden;
   z-index: 2;
   opacity: 0;
