@@ -6,71 +6,101 @@
   [version=version content=(map id item) dels=(map id id)]
 ++  update
   |$  item
-  [content=(map @p (set [id item])) dels=(set [id id])]
+  [content=(map id item) dels=(map id id)]
 ++  delta
-  |=  [state=index remote=version]
-  ^-  update
-  ^*  update
-  ::=/  dstate
-  ::  %-  ~(rut by version.state)
-  ::  |=  [client=@p clk=@u]
-  ::  =/  rclk  (~(got by remote) client)
-  ::  ?:  (lth rclk clk)
-  ::    ^-  (set [id type])
-  ::    %-  silt
-  ::    ^-  (list [id type])
-  ::    %+  murn  ~(tap by content.state)
-  ::    |=  [key=id value=[id type]]
-  ::    ?:  (gth +.key rclk)
-  ::      value
-  ::    ~
-  ::  ^*  set
-  ::=/  ddels
-  ::  %-  silt
-  ::  %+  murn  ~(tap by dels.state)
-  ::  |=  [timestamp=id item=id]
-  ::  ?:  (lth (~(got by remote) -.timestamp) +.timestamp)
-  ::    [timestamp item]
-  ::  ~
-  ::[dstate ddels]
+  |*  [state=(index) remote=version]
+  :-
+  :: assembling the state map 
+  %-  molt
+  %+  turn
+    %+  skim  ~(tap in ~(key by content.state))
+    |=  item=id  ?|(!(~(has by remote) -.item) (gth +.item (~(got by remote) -.item)))
+  |=  item=id  [item (~(got by content.state) item)]
+  :: assembling the delete map 
+  %-  molt
+  %+  turn
+    %+  skim  ~(tap in ~(key by dels.state))
+    |=  item=id  ?|(!(~(has by remote) -.item) (gth +.item (~(got by remote) -.item)))
+  |=  item=id  [item (~(got by dels.state) item)]
 ++  apply
-  |=  [state=(index) update=(update)]
-  ^-  (index)
-  =/  nstate  state
-  =/  clients  ~(tap in ~(key by content.update))
-  =/  nstate
+  |*  [state=(index) updt=(update)]
+  ^+  state
+  =/  tdels  ~(tap in ~(key by (~(dif by dels.updt) dels.state)))
+  =/  deleted  (silt (weld ~(val by dels.state) tdels))
+  =/  tcont  
+      %+  skim  ~(tap in (~(dif in ~(key by content.updt)) ~(key by content.state)))
+      |=  key=id  !(~(has in deleted) key)
+  =/  clients  ^*  (map @p (list id))
+  =/  tcontres
   |-
-    =/  client  (rear clients)
-    ?:  =((lent clients) 0)
-        nstate
-    =/  additions  %+  sort  ~(tap in (~(got by content.update) client))  |=  [a=[=id *] b=[=id *]]  (gth +.id.a +.id.b)
-    =/  nstate
-    |-
-      ?:  =((lent additions) 0)
-        nstate
-      =/  addition  (rear additions)
+    ?:  =((lent tcont) 0)
+      tcont
+    =/  item  (rear tcont)
+    =/  nclients
+    ?.  (~(has by clients) -.item)
+      (~(put by clients) -.item ~[item])
+    (~(put by clients) -.item (snoc (~(got by clients) -.item) item))
+    %=  $
+      clients  nclients
+      tcont  (snip tcont)
+    ==
+  =/  tdelres
+  |-
+    ?:  =((lent tdels) 0)
+      tdels
+    =/  item  (rear tdels)
+    ?.  (~(has by clients) -.item)
       %=  $
-        content.nstate  (~(put by content.nstate) -.addition +.addition)
-        version.nstate  (~(put by version.nstate) client (add (~(got by version.nstate) client) 1))
-        additions  (snip additions)
+        clients  (~(put by clients) -.item ~[item])
+        tdels  (snip tdels)
       ==
     %=  $
-      clients  (snip clients)
+      clients  (~(put by clients) -.item (snoc (~(got by clients) -.item) item))
+      tdels  (snip tdels)
     ==
-  =/  dels  ~(tap in dels.update)
-  =/  nstate
+  =/  clients  %-  ~(run by clients)  |=  cont=(list id)
+    %+  sort  cont  |=  [a=id b=id]  (gth +.a +.b)
   |-
-    ?:  =((lent dels) 0)
-      nstate
-    =/  del  (rear dels)
-    =/  nversion  (~(put by version.nstate) -.+.del (add (~(got by version.nstate) -.+.del) 1))
-    =/  delversion  (~(put by version.nstate) -.-.del (add (~(got by version.nstate) -.-.del) 1))
+    ?:  =(~(wyt by clients) 0)
+      state
+    =/  client  (rear ~(tap in ~(key by clients)))
+    =/  items   (~(got by clients) client)
     %=  $
-      dels.nstate  (~(put by dels.nstate) -.del +.del)
-      version.nstate  delversion
-      dels  (snip dels)
+      clients
+      |-  
+        ?:  =((lent items) 0)
+          (~(del by clients) client)
+        =/  item  (rear items)
+        =/  idx  ?:  (~(has by version.state) client)  
+          (add (~(got by version.state) client) 1)
+        0
+        ?:  =(idx +.item)
+          :: insert
+          ?:  (~(has by content.updt) item)
+            :: insert new content
+            =/  sample  (~(got by content.state) (rear ~(tap in ~(key by content.state))))
+            =/  value  ^+  sample  (~(got by content.updt) item)
+            %=  $
+              content.state  (~(put by content.state) item value)
+              version.state  (~(put by version.state) client idx)
+              items          (snip items)
+            ==
+          ?:  (~(has by dels.updt) item)
+            :: insert (& implement) new delete
+            %=  $
+              dels.state     (~(put by dels.state) item (~(got by dels.updt) item))
+              content.state  (~(del by content.state) item)
+              version.state  (~(put by version.state) client idx)
+              items          (snip items)
+            ==
+          !!  :: should never get here; this means an item (from the update) can't be found in the update
+        ?:  (~(has in deleted) [client idx])
+          :: update the version but DONT snip
+          %=  $
+            version.state  (~(put by version.state) client idx)
+          ==
+        !! :: This time has not been deleted, nor does it exist in the update 
     ==
-  nstate
 ++  insert
   |*  [state=(index) item=* ship=@p]
   ^+  state
