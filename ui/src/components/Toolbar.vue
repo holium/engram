@@ -1,5 +1,5 @@
 <template>
-  <div class="toolbar">
+  <div class="toolbar" id="toolbar">
     <!-- Nav Show / hide -->
     <svg
       viewBox="0 0 16 16"
@@ -63,9 +63,10 @@ export default defineComponent({
 
 <style lang="css" scoped>
 #toolbar {
-  position: sticky;
-  height: 0;
+  @apply bg-window;
+  position: absolute;
   top: 0;
+  left: 0;
   width: 100%;
   z-index: 1;
   opacity: 0;
