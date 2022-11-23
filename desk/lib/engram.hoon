@@ -28,6 +28,9 @@
         [%add (ot ~[to+pa id+pa type+so])]
         [%remove (ot ~[from+pa id+pa])]
       ==
+      :-  %space  %-  of  :~
+        [%gatherall (ot ~[space+pa])]
+      ==
       :::-  %prop  %-  of  :~
       ::  [%accept (ot ~[id+pa update+(ot ~[author+(se %p) timestamp+di content+sa])])]
       ::  [%sub (ot ~[id+pa ship+(se %p)])]
