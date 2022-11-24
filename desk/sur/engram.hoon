@@ -23,13 +23,13 @@
 ::  Documents
 +$  dversion   tape
 +$  dcontent   tape
-+$  dsettings  [owner=@p name=@t roles=(index [@tas @tas]) ships=(index [@p @tas])]
++$  dsettings  [owner=@p name=@t space=path roles=(index [@tas @tas]) ships=(index [@p @tas])]
 +$  dsnapshot  [timestamp=@da author=@p data=tape]
 +$  dupdate    [author=@p timestamp=@da content=dcontent]
 +$  document   [id=id version=dversion content=dcontent settings=dsettings snapshots=(set dsnapshot)]
 ::
 ::  Folders
-+$  folder  [id=id owner=@p name=@t roles=(index [@tas @tas]) ships=(index [@p @tas]) content=(index [id @tas])]
++$  folder  [id=id owner=@p name=@t space=path roles=(index [@tas @tas]) ships=(index [@p @tas]) content=(index [id @tas])]
 ::
 ::  Spaces
 +$  spath  path
@@ -74,7 +74,7 @@
           [%addship path=path ship=@p level=@tas]
           [%addrole path=path role=@tas level=@tas]
           ::[%settings path=path owner=@p name=@ta roles=(map @tas @tas) ships=(map @p @tas)]
-          [%gatherall path=path space=path]
+          [%gatherall path=path]
           [%gather path=path peer=@p]
           [%delta path=path]
           [%sync path=path updates=(set dupdate)]
@@ -87,9 +87,10 @@
           [%add to=path id=path type=@tas]
           [%remove from=path id=path]
           [%rename path=path name=@t]
-          ::[%gatherall path=path]
-          ::[%gather path=path peer=@p]
-          ::[%sync path=path update=(update:index [id type])]
+          [%gatherall path=path]
+          [%gather path=path peer=@p]
+          [%delta path=path version=version]
+          [%sync path=path update=(update:index [id @tas])]
       ==
     ==
     $:  %space

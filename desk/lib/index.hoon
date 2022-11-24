@@ -39,46 +39,6 @@
       |=  [a=id b=id]  (gth +.a +.b)
   ~&  "--clients:"
   ~&  clients
-  ::
-  ::~&  "Applying update"
-  ::~&  "~&  tcont"
-  ::~&  tcont
-  ::~&  "~&  tdels"
-  ::~&  tdels
-  ::~&  "~&  deleted"
-  ::~&  deleted
-  ::=/  clients  ^*  (map @p (list id))
-  ::~!  clients
-  ::=/  tcontres
-  ::  |-
-  ::    ?:  =((lent tcont) 0)
-  ::      clients
-  ::    =/  item  (rear tcont)
-  ::    ~&  "~&  item: {<item>}"
-  ::    =/  nclients
-  ::    ?:  (~(has by clients) -.item)
-  ::      (~(put by clients) -.item (snoc (~(got by clients) -.item) item))
-  ::    (~(put by clients) -.item ~[item])
-  ::    %=  $
-  ::      clients  nclients
-  ::      tcont  (snip tcont)
-  ::    ==
-  ::~&  "--clients after content:"
-  ::~&  clients
-  ::~!  clients
-  ::=/  tdelsres
-  ::  |-
-  ::    ?:  =((lent tdels) 0)
-  ::      clients
-  ::    =/  item  (rear tdels)
-  ::    ~!  item
-  ::    %=  $
-  ::      clients  (~(put by clients) -.item (snoc (~(got by clients) -.item) item))
-  ::      tdels  (snip tdels)
-  ::    ==
-  ::~&  "--clients after dels"
-  ::~&  clients
-  ::=/  sclients  ^-  (map @p (list id))  %-  ~(run by clients)  |=  cont=(list id)
   =/  res
   |-
     ?:  =(~(wyt by clients) 0)

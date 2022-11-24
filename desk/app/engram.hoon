@@ -53,6 +53,7 @@
           content.act
           :*  owner.act 
               name.act 
+              space.act
               ^*  (index:index [@tas @tas])
               ^*  (index:index [@p @tas])
           ==
@@ -168,10 +169,10 @@
         ::  A helper poke to gather updates from everyone who has access to a document
         ::
           %gatherall
-        ~&  "GATHERALL-- {<path.act>} from all ships in: {<space.act>}"
+        ~&  "GATHERALL-- {<path.act>}"
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  doc  (~(got by d) id)
-        =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.act -.+.space.act ~.members ~.noun])
+        =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.settings.doc -.+.space.settings.doc ~.members ~.noun])
         ?-  -.spacemembers
             %member      !!
             %is-member   !!
@@ -247,6 +248,7 @@
           [our.bowl t]
           owner.act
           name.act
+          space.act
           ^*  (index:index [@tas @tas])
           ^*  (index:index [@p @tas])
           ^*  (index:index [id @tas])
@@ -324,6 +326,62 @@
         =.  name.old  name.act
         old
         `this(f (~(put by f) id new))
+        ::
+        ::  Gather updated to a folder index from all peers in the space
+        ::
+          %gatherall
+        ~&  "GATHERALL-- items in {<path.act>}"
+        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  fold  (~(got by f) id)
+        =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.fold -.+.space.fold ~.members ~.noun])
+        ?+  -.spacemembers  !!
+            %members
+          =/  members  ^-  members:membership  +.spacemembers
+          =/  directpeers
+              %+  skim  ~(val by content.ships.fold)
+              |=  [peer=@p level=@tas]  =(level %editor)
+          =/  spacepeers  
+            %+  turn  %~  tap  in  %~  key  by  ^-  members:membership  +.spacemembers
+            |=  peer=@p  ^-  [@p @tas]  [peer %editor]
+          :_  this
+          %+  turn  (weld directpeers spacepeers)
+            |=  [peer=@p @tas]  
+            [%pass /engram/folder/gather %agent [our.bowl %engram] %poke %post !>([%folder %gather path.act peer])]
+        ==
+        ::
+        ::  Gather updates to a folder from a peer (pokes their %delta)
+        ::
+          %gather
+        ?.  !=(our.bowl peer.act)
+          `this
+        ~&  "GATHER-- {<path.act>} from: {<peer.act>}"
+        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  fold  (~(got by f) id)
+        :_  this
+        :~  [%pass /engram/(scot %p peer.act)/folder/delta %agent [peer.act %engram] %poke %post !>(`action`[%folder %delta path.act version.content.fold])]
+        ==
+        ::
+        ::  Assemble and reply with updates (pokes their sync)
+        ::
+          %delta
+        ~&  "DELTA-- from {<src.bowl>} for {<path.act>}"
+        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  fold  (~(got by f) id)
+        =/  updates  (delta:index content.fold version.act)
+        :_  this
+        :~  [%pass /engram/folder/sync %agent [src.bowl %engram] %poke %post !>(`action`[%folder %sync path.act updates])]
+        ==
+        ::
+        ::  Sync updates with current space
+        ::
+          %sync
+        ~&  "SYNC-- from {<src.bowl>} for {<path.act>}: "
+        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  fold  (~(got by f) id)
+        =/  newfold
+        =.  content.fold  (apply:index content.fold update.act)
+        fold
+        `this(f (~(put by f) id newfold))
       ==
       %space
         ?-  -.+.act
@@ -334,10 +392,7 @@
         ~&  "GATHERALL-- items in {<space.act>}"
         =/  spc  (~(got by s) space.act)
         =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.act -.+.space.act ~.members ~.noun])
-        ?-  -.spacemembers
-            %member      !!
-            %is-member   !!
-            %membership  !!
+        ?+  -.spacemembers  !!
             %members
           =/  members  ^-  members:membership  +.spacemembers
           =/  directpeers
@@ -368,9 +423,9 @@
           %delta
         ~&  "DELTA-- from {<src.bowl>} for {<space.act>}"
         =/  spc  (~(got by s) space.act)
-        =/  updates  ^-  (update:index [id @tas])  (delta:index content.spc version.act)
+        =/  updates  (delta:index content.spc version.act)
         :_  this
-        :~  [%pass /engram/document/sync %agent [src.bowl %engram] %poke %post !>(`action`[%space %sync space.act updates])]
+        :~  [%pass /engram/space/sync %agent [src.bowl %engram] %poke %post !>(`action`[%space %sync space.act updates])]
         ==
         ::
         ::  Sync updates with current space
