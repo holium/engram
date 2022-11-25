@@ -9,9 +9,6 @@
       </div>
 
     </div>
-    <div class="px-4 py-3 clickable rounded-2 flex items-center justify-center" @click="gatherall">
-      gather all
-    </div>
 
     <!-- Select -->
     <div 
@@ -53,6 +50,7 @@ export default defineComponent({
     }
   },
   created: function() {
+    this.gatherall();
     this.loadSpaces(this.$route);
   },
   onRouteUpdate: function(to: any) {
@@ -98,7 +96,6 @@ export default defineComponent({
       }
     },
     gatherall: function() {
-      console.log("gather space content");
       if(this.$route.query.spaceId != "/null/space") {
         (window as any).urbit.poke({ 
           app: "engram", 
