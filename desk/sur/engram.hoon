@@ -78,6 +78,9 @@
           [%gather path=path peer=@p]
           [%delta path=path]
           [%sync path=path updates=(set dupdate)]
+          [%request path=path peer=@p]
+          [%answer path=path]
+          [%populate path=path doc=document]
           ::[%accept path=path update=dupdate]
       ==
     ==
@@ -91,10 +94,14 @@
           [%gather path=path peer=@p]
           [%delta path=path version=version]
           [%sync path=path update=(update:index [id @tas])]
+          [%request path=path peer=@p]
+          [%answer path=path]
+          [%populate path=path fold=folder]
       ==
     ==
     $:  %space
-      $%  [%gatherall space=path]
+      $%  [%make space=path]
+          [%gatherall space=path]
           [%gather space=path peer=@p]
           [%delta space=path version=version]
           [%sync space=path update=(update:index [id @tas])]

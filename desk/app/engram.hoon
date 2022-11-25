@@ -221,8 +221,27 @@
         [id a]
         `this(u (~(gas ju u) updates))
         ::
+        :: Request a document you don't have
         ::
+          %request
+        :_  this
+        :~  [%pass /document/answer %agent [peer.act %engram] %poke %post !>([%document %answer path.act])]
+        ==
+        :: 
+        :: Answer a request for a document
         ::
+          %answer
+        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  doc  (~(got by d) id)
+        :_  this
+        :~  [%pass /document/populate %agent [src.bowl %engram] %poke %post !>([%document %populate path.act doc])]
+        ==
+        ::
+        :: Populate a requested document
+        ::
+          %populate
+        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        `this(d (~(put by d) id doc.act))
         ::  %createsnap
         ::?<  (~(has by su) dmeta.action)
         ::`this(su (~(put by su) dmeta.action ~))
@@ -382,9 +401,37 @@
         =.  content.fold  (apply:index content.fold update.act)
         fold
         `this(f (~(put by f) id newfold))
+        ::
+        :: Request a folder you don't have
+        ::
+          %request
+        :_  this
+        :~  [%pass /folder/answer %agent [peer.act %engram] %poke %post !>([%folder %answer path.act])]
+        ==
+        :: 
+        :: Answer a request for a document
+        ::
+          %answer
+        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  fold  (~(got by f) id)
+        :_  this
+        :~  [%pass /folder/populate %agent [src.bowl %engram] %poke %post !>([%folder %populate path.act fold])]
+        ==
+        ::
+        :: Populate a requested document
+        ::
+          %populate
+        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        `this(f (~(put by f) id fold.act))
       ==
       %space
         ?-  -.+.act
+        ::
+        :: Initialize a space index
+        ::
+          %make
+        =/  spc  ^*  space
+        `this(~(put by s) path.act spc)
         ::
         ::  Gather updated to a space index from all peers in the space
         ::
@@ -438,7 +485,15 @@
         =.  content.spc  (apply:index content.spc update.act)
         spc
         ~&  newspc
-        `this(s (~(put by s) space.act newspc))
+        =/  diff  (~(dif by content.content.newspc) content.content.spc)
+        =/  sstate  this(s (~(put by s) space.act newspc))
+        :_  sstate
+          %+  turn  ~(tap by diff)
+          |=  item=[id [id @tas]]
+          ?+  +.+.item  !!
+            %document  [%pass /document/request %agent [our.bowl %engram] %poke %post !>([%document %request `path`[(scot %p -.-.+.item) (scot %ud +.-.+.item) ~] -.-.+.item])]
+            %folder    [%pass /folder/request %agent [our.bowl %engram] %poke %post !>([%folder %request `path`[(scot %p -.-.+.item) (scot %ud +.-.+.item) ~] -.-.item])]
+          ==
     ==
       ::%prop
       ::  ?-  -.+.action
