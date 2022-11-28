@@ -89,6 +89,17 @@ const actions: ActionTree<FolderState, RootState> = {
         content: payload.content
       });
       resolve();
+      (window as any).urbit.poke({ 
+        app: "engram", 
+        mark: "post",
+        json: {
+          folder: {
+            gatherall: {
+              id: `${payload.id}`,
+            }
+          }
+        }
+      })
     })
   },
   clear({ commit }) {

@@ -151,21 +151,6 @@
         todoc
         `this(d (~(put by d) id ndoc))
         ::
-        :: modify document settings
-        ::
-        ::  %settings
-        ::=/  id  [`@p`(slav %p -.path.action) `@u`(slav %ud -.+.path.action)]
-        ::?>  (~(has by d) id)
-        ::=/  old  (~(got by d) id)
-        ::=/  new
-        ::=:  owner.settings.old  owner.action
-        ::    name.settings.old   name.action
-        ::    roles.settings.old  roles.action
-        ::    ships.settings.old  ships.action
-        ::  ==
-        ::old
-        ::`this(d (~(put by d) id new))
-        ::
         ::  A helper poke to gather updates from everyone who has access to a document
         ::
           %gatherall
@@ -194,6 +179,8 @@
         ::  Gather updates to a document from a peer (pokes their %delta)
         ::
           %gather
+        ?.  !=(our.bowl peer.act)
+          `this
         ~&  "GATHER-- {<path.act>} from: {<peer.act>}"
         :_  this
         :~  [%pass /document/delta %agent [peer.act %engram] %poke %post !>([%document %delta path.act])]
@@ -242,20 +229,12 @@
           %populate
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         `this(d (~(put by d) id doc.act))
-        ::  %createsnap
-        ::?<  (~(has by su) dmeta.action)
-        ::`this(su (~(put by su) dmeta.action ~))
         ::
+        :: Remove an update for the set of stored updates
         ::
-        ::
-        ::  %dsnap
-        ::?>  (~(has by su) dmeta.action)
-        ::`this(su (~(del by su) dmeta.action))
-        ::
-        :: {Documentation Here}
-        ::
-        ::  %dsettings
-        ::`this(s (~(del by s) dmeta.action))
+          %accept
+        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        `this(u (~(del ju u) id update.act))
       ==
       %folder
         ?-  -.+.act
@@ -431,7 +410,7 @@
         ::
           %make
         =/  spc  ^*  space
-        `this(~(put by s) path.act spc)
+        `this(s (~(put by s) space.act spc))
         ::
         ::  Gather updated to a space index from all peers in the space
         ::

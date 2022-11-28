@@ -16,6 +16,7 @@ import cover from "./cover";
 import type { CoverUpdate } from "./cover"
 import styling from "./styling";
 import type { StylingUpdate } from "./styling"
+import type { DocumentUpdate } from "@/store/types";
 
 
 export let view: EditorView;
@@ -33,6 +34,34 @@ export default function (
   doc.gc = false;
   const type = doc.getXmlFragment("prosemirror");
   console.log("applying update", content);
+
+  store.getters["documents/updates"](`/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`).then((updates: Array<DocumentUpdate>) => {
+    console.log("updates: ", updates);
+    updates.forEach((update: DocumentUpdate) => {
+      Y.applyUpdate(doc, update.content);
+      const snapshot = Y.snapshot(doc);
+      store.dispatch("workspace/revisions/snap", {
+        id: `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`,
+        author: update.author,
+        snapshot: snapshot
+      });
+      store.dispatch("workspace/reveisions/accept", {
+        id: `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`,
+        update: update,
+      })
+    })
+
+    if(updates.length > 0) {
+      const version = Y.encodeStateVector(doc);
+      const content = Y.encodeStateAsUpdate(doc);
+  
+      store.dispatch("documents/save", {
+        id: `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`,
+        version: version,
+        content: content
+      });
+    }
+  })
 
   const state = EditorState.create({
     schema: schema,

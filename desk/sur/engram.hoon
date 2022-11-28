@@ -81,7 +81,7 @@
           [%request path=path peer=@p]
           [%answer path=path]
           [%populate path=path doc=document]
-          ::[%accept path=path update=dupdate]
+          [%accept path=path update=dupdate]
       ==
     ==
     $:  %folder

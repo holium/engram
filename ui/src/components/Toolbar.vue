@@ -19,10 +19,6 @@
       </div>
     </div>
 
-    <div class="px-2 py-1 rounded-2 clickable" @click="gatherall">
-      gather all
-    </div>
-
     <!-- Dock Show / hide -->
     <div class="p-2">
       <svg
@@ -51,23 +47,6 @@ export default defineComponent({
     toggleHideDock: function() {
       (this as any).toggleDock();
     },
-    gatherall: function() {
-      console.log("gather all documents");
-      if(this.$route.query.spaceId != "/null/space") {
-        (window as any).urbit.poke({ 
-          app: "engram", 
-          mark: "post",
-          json: {
-            document: {
-              gatherall: {
-                id: `/${this.$route.params.author}/${this.$route.params.clock}`,
-                space: this.$route.query.spaceId
-              }
-            }
-          }
-        })
-      }
-    }
   }
 });
 </script>
