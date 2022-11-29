@@ -59,6 +59,8 @@ export default defineComponent({
   created: function() {
     store.dispatch("space/load", this.$route);
     this.ship = (window as any).ship;
+    this.gatherall();
+    this.loadSpaces(this.$route);
   },
   onRouteUpdate: function(to: any) {
     store.dispatch("space/load", to);
@@ -90,6 +92,24 @@ export default defineComponent({
         return { path: space, ...spacesRes } as Space;
       })
     },
+    gatherall: function() {
+      if(this.$route.query.spaceId != "/null/space") {
+        (window as any).urbit.poke({ 
+          app: "engram", 
+          mark: "post",
+          json: {
+            space: {
+              gatherall: {
+                space: this.$route.query.spaceId
+              }
+            }
+          }
+        })
+        setTimeout(() => {
+          store.dispatch("load", this.$route.query.spaceId as string);
+        }, 2000);
+      }
+    }
   }
 });
 </script>

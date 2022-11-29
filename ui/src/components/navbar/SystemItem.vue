@@ -185,6 +185,35 @@ export default defineComponent({
             if(this.type == "folder") {
                 event?.preventDefault();
             } 
+        },
+        gather: function() {
+            if(this.$route.query.spaceId != "/null/space") {
+                if(this.type == "folder") {
+                    (window as any).urbit.poke({ 
+                        app: "engram", 
+                        mark: "post",
+                        json: {
+                            folder: {
+                                gatherall: {
+                                    path: this.item
+                                }
+                            }
+                        }
+                    })
+                } else {
+                    (window as any).urbit.poke({ 
+                        app: "engram", 
+                        mark: "post",
+                        json: {
+                            document: {
+                                gatherall: {
+                                    path: this.item
+                                }
+                            }
+                        }
+                    })
+                }
+            }
         }
     }
 })

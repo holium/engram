@@ -75,6 +75,12 @@ export interface WorkspaceState {
   content: null | Uint8Array;
 }
 
+export interface DocumentUpdate {
+  timestamp: string,
+  author: Patp,
+  content: Uint8Array
+}
+
 // Settings
 export interface SettingsState {
   autosync: boolean;
