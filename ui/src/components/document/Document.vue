@@ -1,10 +1,13 @@
 <template>
   <div class="flex flex-row items-stretch">
-    <div class="flex flex-col flex-grow">
+    <div class="flex flex-col flex-grow relative">
       <Toolbar />
-      <div class="relative items-center scrollbar-small flex-grow" id="document" ref="document">
-        <Bauble :bauble="bauble" />
+      <div class="relative items-center scrollbar-small flex-grow" id="main" :class="{'no-cover': cover.src.length == 0}">
         <Cover :cover="cover" />
+        <div id="document" ref="document" >
+          <Bauble :bauble="bauble" />
+
+        </div>
       </div>
     </div>
     <DocumentDock :styling="styling" />
@@ -112,7 +115,23 @@ export default defineComponent({
 </script>
 
 <style lang="css" scoped>
-#document {
-  @apply relative flex flex-col overflow-auto;
+#main {
+  @apply relative overflow-auto;
 }
+
+#document {
+  @apply bg-paper flex flex-col flex-grow items-center overflow-hidden relative;
+  width: 100%;
+  min-height: calc(100% - 32vh);
+  border-width: 1px 1px 0px 1px;
+  border-style: solid;
+  border-color: theme(colors.border);
+  border-radius: 16px 16px 0px 0px;
+  z-index: 1;
+}
+
+.no-cover #document {
+  min-height: calc(100% - calc(2.5em + 32px));
+}
+
 </style>

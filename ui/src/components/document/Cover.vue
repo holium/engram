@@ -110,23 +110,31 @@ export default defineComponent({
 <style lang="css" scoped>
 
 .cover {
-  position: absolute;
+  position: relative;
+  overflow: hidden;
   top: 0;
   left: 0;
-  height: 30vh;
+  max-height: 32vh;
+  height: 32vh;
+  min-height: 32vh;
   width: 100%;
-  margin-bottom: calc(-2 * var(--document-margin));
   opacity: 1;
+}
+.no-cover .cover {
+  max-height: calc(2.5em + 32px);
+  height: calc(2.5em + 32px);
+  min-height: calc(2.5em + 32px);
 }
 
 .cover-image {
   position: absolute;
   top: 0;
   left: 0;
-  height: 100%;
+  height: calc(100% - 32px);
   width: 100%;
   object-fit: cover;
   opacity: 1;
+  border-radius: 0px 0px 8px 8px;
 }
 
 .cover-image[src=""] {
@@ -135,7 +143,7 @@ export default defineComponent({
 }
 
 .image-toolbar {
-  @apply absolute top-3 right-4 bg-border gap-1 flex;
+  @apply absolute bottom-3 right-4 bg-border gap-1 flex;
   overflow: hidden;
   z-index: 2;
   opacity: 0;

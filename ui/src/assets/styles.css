@@ -1,13 +1,18 @@
 /* Components */
 .toolbar {
-  @apply flex gap-3 px-4 py-3;
+  @apply text-body flex items-center p-4 gap-3
 }
 
 /* UI */ 
 
-.heading {
-  @apply font-bold text-base text-heading;
-  font-variant: small-caps;
+.heading-1 {
+  @apply font-medium text-type text-heading;
+  line-height: 1em;
+}
+
+.heading-2 {
+  @apply font-medium text-type text-heading;
+  line-height: 1em;
 }
 
 .azimuth {
@@ -24,14 +29,46 @@
   @apply bg-border;
 }
 
+.input {
+  @apply px-4 py-3 flex justify-between items-center rounded-2 border-;
+  border-color: theme(colors.border);
+}
+
+.input input, .input select {
+  @apply outline-none text-sm bg-none min-w-0 flex-1;
+}
+
+.input .unit {
+  @apply text-icon;
+}
+
+.input::placeholder {
+  @apply text-icon;
+}
+
+#dock {
+  @apply flex flex-col;
+  min-width: 180px;
+  max-width: 36vw;
+  transition: max-width 200ms ease;
+}
+
 .dock-grip {
-  @apply mx-2 border-border;
-  opacity: 1;
+  @apply mx-2;
+  opacity: 0;
   cursor: col-resize;
   width: 4px;
-  border-left: 1px solid theme(colors.icon);
-  border-right: 1px solid theme(colors.icon);
-  transition: opacity 200ms ease;
+  border-left: 1px solid theme(colors.border);
+  border-right: 1px solid theme(colors.border);
+  transition: opacity 80ms ease;
+}
+
+.dock-grip:hover {
+  opacity: 1;
+}
+
+.dock-item {
+  @apply flex items-center;
 }
 
 .dock-label {

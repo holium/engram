@@ -1,7 +1,7 @@
 <template>
-    <div class="flex flex-col" @drop="handleDrop" @dragover="handleDragOver">
-        <div class="heading px-3 py-2 flex" @contextmenu="openMenu">
-            <div class="flex-grow">
+    <div class="flex flex-col gap-2" @drop="handleDrop" @dragover="handleDragOver">
+        <div class="px-3 py-2 flex items-center" id="workspace-heading" @contextmenu="openMenu">
+            <div class="flex-grow heading-1">
                 workspace
             </div>
             <svg 
@@ -81,7 +81,7 @@ export default defineComponent({
     transition: opacity 80ms ease;
 }
 
-.heading:hover .new-item-button {
+#workspace-heading:hover .new-item-button {
     opacity: 1;
 }
 

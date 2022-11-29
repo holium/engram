@@ -65,14 +65,14 @@
           </svg>
           <div class="flex-grow"></div>
           <!-- Close -->
-          <div @click="closeDock" class="px-2 py-1 rounded-2 clickable">
+          <div @click="closeDock" class="px-2 rounded-2 clickable">
             close
           </div>
       </div>
 
-      <StylingDock :styling="styling" v-if="open == 'styling'" />
-      <SharingDock v-if="open == 'sharing'" />
-      <VersionDock v-if="open == 'revisions'" />
+      <StylingDock class="dock-body" :styling="styling" v-if="open == 'styling'" />
+      <SharingDock class="dock-body" v-if="open == 'sharing'" />
+      <VersionDock class="dock-body" v-if="open == 'revisions'" />
     </div>
   </div>
 </template>
@@ -126,21 +126,21 @@ export default defineComponent({
 </script>
 
 <style lang="css" scoped>
-
-#dock {
-  @apply flex flex-col;
-  min-width: 180px;
-  max-width: 36vw;
-  transition: max-width 200ms ease;
+.dock-body {
+  @apply bg-paper flex-grow px-4 py-3;
+  border-radius: 8px 8px 0px 0px;
+  border-width: 1px 1px 0px 1px;
+  border-style: solid;
+  border-color: theme(colors.border);
 }
 
-.hide-dock #dock {
+.hide-doc-dock #dock {
   overflow: hidden;
   min-width: 0;
   max-width: 0;
 }
 
-.hide-dock .dock-grip {
+.hide-doc-dock .dock-grip {
   opacity: 0;
 }
 

@@ -2,7 +2,8 @@
   <div class="flex items-stretch text-body">
     <div id="nav" :style="{width: `${navWidth}px`}">
       <SpaceHeading />
-      <FileSystem class="mt-4 flex-grow" />
+      <Search />
+      <FileSystem class="flex-grow" />
     </div>
     <div class="dock-grip" draggable="true" @dragstart="handleDragStart">
 
@@ -13,11 +14,13 @@
 <script lang="ts">
 import { defineComponent } from "vue"
 import SpaceHeading from "./SpaceHeading.vue";
+import Search from "./Search.vue";
 import FileSystem from "./FileSystem.vue";
 export default defineComponent({
   name: "Navbar",
   components: {
     SpaceHeading,
+    Search,
     FileSystem,
   },
   data() {
@@ -48,9 +51,9 @@ export default defineComponent({
 <style lang="css" scoped>
 
 #nav {
-  @apply flex flex-col;
+  @apply flex flex-col p-4 gap-4;
   min-width: 180px;
-  max-width: 20vw;
+  max-width: 24vw;
   transition: max-width 200ms ease;
 }
 

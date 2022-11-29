@@ -6,10 +6,12 @@
 }
 
 /* Element Styles */
+/*
 .ProseMirror > * {
-  padding-left: calc(var(--document-margin) / var(--ratio));
+  /padding-left: calc(var(--document-margin) / var(--ratio));
   padding-right: calc(var(--document-margin) / var(--ratio));
 }
+*/
 
 p,
 h1,

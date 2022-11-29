@@ -2,6 +2,7 @@
 
 const scale = {
   0: "0px",
+  "": "1px",
   1: "2px",
   2: "4px",
   3: "8px",
@@ -20,8 +21,9 @@ module.exports = {
       azimuth: "Source Code Pro",
     },
     fontSize: {
+      sm: "14px",
       body: "16px",
-      heading: "20px"
+      heading: "16px"
     },
     lineHeight: {
       base: "1.2599em",

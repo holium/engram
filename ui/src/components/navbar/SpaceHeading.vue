@@ -1,11 +1,16 @@
 <template>
   <div class="relative flex flex-col">
-    <div class="flex gap-3 px-3 py-2" @click="openSelection">
-      <div class="rounded-2" :style="{ width: '32px', height: '32px', 'background-color': space.color }">
+    <div class="flex gap-4" @click="openSelection">
+      <div class="rounded-2" :style="{ width: '40px', height: '40px', 'background-color': space.color }">
 
       </div>
-      <div class="">
-        {{ space.name }}
+      <div class="flex flex-col gap-2">
+        <div class="heading-1">
+          {{ space.path }}
+        </div>
+        <div class="opacity-60 text-sm font-azimuth">
+          ~{{ ship }}
+        </div>
       </div>
 
     </div>
@@ -19,16 +24,18 @@
       tabindex="0"
     >
       <div 
-        class="flex gap-3 px-3 py-2" 
+        class="flex gap-4 px-3 py-2" 
         :key="option.path" 
-        v-for="option in spaces.filter(option => true || option.path != space.path)" 
-        @click="() => { openSpace(option.path) }"
+          v-for="option in spaces.filter(option => true || option.path != space.path)" 
+          @click="() => { openSpace(option.path) }"
       >
-        <div class="rounded-2" :style="{ width: '32px', height: '32px', 'background-color': option.color }">
+        <div class="rounded-2" :style="{ width: '40px', height: '40px', 'background-color': option.color }">
 
         </div>
-        <div class="">
-          {{ option.name }}
+        <div class="flex flex-col gap-2">
+          <div class="heading-1">
+            {{ option.name }}
+          </div>
         </div>
       </div>
     </div>
@@ -45,16 +52,23 @@ export default defineComponent({
   data() {
     return {
       expand: false,
-      space: { path: "", name: "", color: "" } as Space,
       spaces: [] as Array<Space>,
+      ship: "~dev",
     }
   },
   created: function() {
+    store.dispatch("space/load", this.$route);
+    this.ship = (window as any).ship;
     this.gatherall();
     this.loadSpaces(this.$route);
   },
   onRouteUpdate: function(to: any) {
-    this.loadSpaces(to);
+    store.dispatch("space/load", to);
+  },
+  computed: {
+    space: function(): Space {
+      return store.getters['space/get'];
+    }
   },
   methods: {
     openSelection: function() {
@@ -73,27 +87,10 @@ export default defineComponent({
       this.expand = false;
     },
     loadSpaces: async function(route: any) {
-      const path = route.query.spaceId;
-      if(path == "/null/space") {
-        this.space = { path: "", name: (window as any).ship, color: "#262626"}
-        this.spaces = [];
-      } else {
-        const spaceRes = await store.getters["space"](path);
-        this.space = {
-          path: path,
-          name: spaceRes.name,
-          color: spaceRes.color,
-        } as Space;
-
-        const spacesRes = await store.getters["spaces"];
-        this.spaces = Object.keys(spacesRes).map((space) => {
-          return {
-            path: space,
-            name: spacesRes[space].name,
-            color: spacesRes[space].color
-          }
-        })
-      }
+      const spacesRes = await store.getters["spaces"];
+      this.spaces = Object.keys(spacesRes).map((space) => {
+        return { path: space, ...spacesRes } as Space;
+      })
     },
     gatherall: function() {
       if(this.$route.query.spaceId != "/null/space") {

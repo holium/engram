@@ -30,11 +30,11 @@
               </defs>
             </svg>
             <div class="flex-grow"></div>
-            <div @click="closeDock" class="px-2 py-1 rounded-2 clickable">
+            <div @click="closeDock" class="px-2 rounded-2 clickable">
               close
             </div>
         </div>
-        <SharingDock />
+        <SharingDock class="dock-body" />
       </div>
     </div>
   </template>
@@ -82,14 +82,24 @@
   </script>
   
   <style lang="css" scoped>
-  
-  #dock {
-    @apply flex flex-col;
-    min-width: 180px;
-    max-width: 36vw;
-    transition: max-width 200ms ease;
-  }
-  
+
+.dock-body {
+  @apply bg-paper flex-grow px-4 py-3;
+  border-radius: 8px 0px 0px 0px;
+  border-width: 1px 0px 0px 1px;
+  border-style: solid;
+  border-color: theme(colors.border);
+}
+
+.hide-folder-dock #dock {
+  overflow: hidden;
+  min-width: 0;
+  max-width: 0;
+}
+
+.hide-folder-dock .dock-grip {
+  opacity: 0;
+}
   
   </style>
   
