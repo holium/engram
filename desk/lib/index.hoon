@@ -64,8 +64,9 @@
           ?:  (~(has by content.updt) item)
             :: insert new content
             ~&  "inserting new content"
-            =/  sample  (~(got by content.state) (rear ~(tap in ~(key by content.state))))
-            =/  value  ^+  sample  (~(got by content.updt) item)
+            ::=/  sample  (~(got by content.state) (rear ~(tap in ~(key by content.state))))
+            ::=/  value  ^+  sample  (~(got by content.updt) item)
+            =/  value  (~(got by content.updt) item)
             =/  nstate
             =:  content.state  (~(put by content.state) item value)
                 version.state  (~(put by version.state) client idx)
