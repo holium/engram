@@ -108,6 +108,9 @@ export default defineComponent({
             }
           }
         })
+        setTimeout(() => {
+          store.dispatch("load", this.$route.query.spaceId as string);
+        }, 2000);
       }
     }
   }

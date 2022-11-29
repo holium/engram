@@ -578,8 +578,10 @@
   ::
       [%x %document @ @ %get %updates ~]
     =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
-    =/  updts  (need (~(get by u) id))
-    ``noun+!>((updates:document:enjs:engram updts))
+    ?:  (~(has by u) id)
+      =/  updts  (need (~(get by u) id))
+      ``noun+!>((updates:document:enjs:engram updts))
+    ``noun+!>((updates:document:enjs:engram ^*((set dupdate))))
   ::
       [%x %folder %list ~]
     ``noun+!>((list:folder:enjs:engram f))
