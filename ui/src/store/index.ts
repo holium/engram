@@ -35,8 +35,10 @@ const getters: GetterTree<RootState, RootState> = {
 
 const actions: ActionTree<RootState, RootState> = {
   load({ dispatch }, payload: string) {
+    console.log("loading space...")
     dispatch("workspace/close", {}, { root: true });
     (window as any).urbit.scry({ app: "engram", path: `/space${router.currentRoute.value.query.spaceId == null ? "/~/-" : router.currentRoute.value.query.spaceId}/list`,}).then((response: any) => {
+      console.log("spaces response: ", response);
       dispatch("documents/clear", {}, { root: true });
       dispatch("folders/clear", {}, { root: true });
       Promise.all(Object.keys(response).map((item: any) => {

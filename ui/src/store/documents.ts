@@ -5,6 +5,7 @@ import type {
   DocumentMeta,
   DocumentVersion,
   ItemMeta,
+  DocumentUpdate,
 } from "./types"
 import type { Module, GetterTree, MutationTree, ActionTree } from "vuex"
 import type { Snapshot } from "yjs"
@@ -32,6 +33,24 @@ const getters: GetterTree<DocumentState, RootState> = {
   document: (state) => (id: string): Document => {
     return state[id];
   },
+  updates: (state) => (id: string): Promise<Array<DocumentUpdate>> => {
+    return new Promise((resolve, reject) => {
+      (window as any).urbit.scry({
+        app: "engram",
+        path: `/document${id}/get/updates`
+      }).then((response: any) => {
+        resolve(Object.keys(response).map((timestamp: string) => {
+          console.log("parsing update: ", timestamp);
+          return {
+            timestamp: timestamp,
+            author: response[timestamp].author,
+            content: new Uint8Array(JSON.parse(response[timestamp].content))
+          }
+        }));
+      })
+    })
+    
+  }
 }
 
 const mutations: MutationTree<DocumentState> = {
@@ -69,6 +88,17 @@ const actions: ActionTree<DocumentState, RootState> = {
       });
       dispatch("folders/add", { item: { index: payload.id, id: payload.id, type: "document" }, to: "." }, { root: true });
       resolve();
+      (window as any).urbit.poke({ 
+        app: "engram", 
+        mark: "post",
+        json: {
+          document: {
+            gatherall: {
+              id: `${payload.id}`,
+            }
+          }
+        }
+      })
     })
   },
   clear({ commit }) {

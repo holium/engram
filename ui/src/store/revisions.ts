@@ -6,6 +6,7 @@ import type {
   RootState,
   RevisionState,
   DocumentVersion,
+  DocumentUpdate,
 } from "./types"
 
 const state: RevisionState = [];
@@ -64,10 +65,10 @@ const actions: ActionTree<RevisionState, RootState> = {
     commit("close");
   },
 
-  snap({ commit }, payload: { id: string, snapshot: Snapshot }): Promise<void> {
+  snap({ commit }, payload: { id: string, snapshot: Snapshot, author?: Patp }): Promise<void> {
     return new Promise((resolve, reject) => {
       const version = {
-        author: `~${(window as any).ship}`,
+        author: payload.author ? payload.author : `~${(window as any).ship}`,
         timestamp: Date.now(),
         snpashot: payload.snapshot,
         date: new Date()
@@ -83,6 +84,25 @@ const actions: ActionTree<RevisionState, RootState> = {
             author: version.author,
             timestamp: version.timestamp,
             data: JSON.stringify(Array.from(Y.encodeSnapshot(payload.snapshot)))
+          }
+        }}}
+      }).then(() => {
+        resolve();
+      })
+    })
+  },
+  
+  accept({}, payload: { id: string, update: DocumentUpdate }): Promise<void> {
+    return new Promise((resolve, reject) => {
+      (window as any).urbit.poke({
+        app: "engram",
+        mark: "post",
+        json: { "document": { "accept": {
+          id: payload.id,
+          update: {
+            author: payload.update.author,
+            timestamp: payload.update.timestamp,
+            data: JSON.stringify(Array.from(payload.update.content))
           }
         }}}
       }).then(() => {
