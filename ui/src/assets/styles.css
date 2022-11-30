@@ -47,7 +47,7 @@
 }
 
 #dock {
-  @apply flex flex-col;
+  @apply flex flex-col overflow-hidden;
   min-width: 180px;
   max-width: 36vw;
   transition: max-width 200ms ease;

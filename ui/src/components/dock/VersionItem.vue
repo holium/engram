@@ -24,7 +24,7 @@
                 :stroke="pallet(meta.author)"
                 stroke-width="2px"
             />
-          </svg>
+        </svg>
         <!-- Local Node -->
         <svg
             width="25"
@@ -58,7 +58,7 @@
         ></svg>
         <!--  First Commit Node -->
         <svg
-            v-else-if="shipIndex >= index"
+            v-else-if="ship == meta.author && index == firstIndecies[ships.indexOf(ship)]"
             width="25"
             height="25"
             viewBox="0 0 25 25"
@@ -82,6 +82,15 @@
                 d="M13.5 6.32031C16.4727 6.77344 18.75 9.36719 18.75 12.5C18.75 15.6328 16.4727 18.2266 13.5 18.6797V25C13.5 25 13.0195 25 12.5 25C11.9805 25 11.5 25 11.5 25V18.6797C8.49219 18.2266 6.25 15.6328 6.25 12.5C6.25 9.36719 8.49219 6.77344 11.5 6.32031L11.5 0C11.5 0 11.9805 0 12.5 0C13.0195 0 13.5 0 13.5 0L13.5 6.32031ZM16.8 12.5C16.8 10.082 14.918 8.125 12.5 8.125C10.082 8.125 8.2 10.082 8.2 12.5C8.2 14.918 10.082 16.875 12.5 16.875C14.918 16.875 16.8 14.918 16.8 12.5Z"
                 :fill="pallet(ship)"
             />
+        </svg>
+        <!-- No Node Yet -->
+        <svg
+            v-else-if="index < firstIndecies[ships.indexOf(ship)]"
+            width="25"
+            height="25"
+            viewBox="0 0 25 25"
+            xmlns="http://www.w3.org/2000/svg"
+        >
         </svg>
         <!-- Empty Node -->
         <svg
@@ -118,11 +127,15 @@ export default defineComponent({
             required: true,
         },
         ships: {
-            type: Set<string>,
+            type: Array<string>,
             required: true,
         },
         index: {
             type: Number,
+            required: true,
+        },
+        firstIndecies: {
+            type: Array<number>,
             required: true,
         }
     },
