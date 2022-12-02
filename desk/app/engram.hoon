@@ -47,6 +47,7 @@
         :: initialize a new document with a blank document as passed by the frontend
         ::
           %make
+        ?>  =(src.bowl our.bowl)
         =/  doc  :*  
           [our.bowl t]
           version.act
@@ -65,7 +66,9 @@
         =/  oldspc
         ?:  (~(has by s) space.act)
           (~(got by s) space.act)
-        ^*  space
+        =/  initspc  ^*  space
+        =.  roles.initspc  (insert:index roles.initspc ^-([@tas @tas] [%member %edit]) our.bowl)
+        initspc
         =/  newspc
         =.  content.oldspc  (insert:index content.oldspc [id %document] our.bowl)
           oldspc
@@ -76,6 +79,7 @@
         ::
         ::
           %delete
+        ?>  =(src.bowl our.bowl)
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         ?>  (~(has by d) id)
         =/  nstate  this(d (~(del by d) id))
@@ -98,6 +102,7 @@
         :: modify a document by changing the stored document state
         ::
           %save
+        ?>  =(src.bowl our.bowl)
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         ?>  (~(has by d) id)
         =/  old  (~(got by d) id)
@@ -111,6 +116,7 @@
         ::
         ::
           %snap
+        ?>  =(src.bowl our.bowl)
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         ?>  (~(has by d) id)
         =/  old  (~(got by d) id)
@@ -122,6 +128,7 @@
         :: Rename a document
         ::
           %rename
+        ?>  =(src.bowl our.bowl)
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         ~_  [%leaf "Error renaming document of id: {<id>}"]
         ?.  (~(has by d) id)
@@ -134,9 +141,17 @@
         old
         `this(d (~(put by d) id new))
         ::
+        :: Remove an update for the set of stored updates
+        ::
+          %accept
+        ?>  =(src.bowl our.bowl)
+        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        `this(u (~(del ju u) id update.act))
+        ::
         :: give a ship permissions
         ::
           %addship
+        ?>  =(src.bowl our.bowl)
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  todoc  (~(got by d) id)
         =/  ndoc
@@ -154,6 +169,7 @@
         ::  A helper poke to gather updates from everyone who has access to a document
         ::
           %gatherall
+        ?>  =(src.bowl our.bowl)
         ~&  "GATHERALL-- {<path.act>}"
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  doc  (~(got by d) id)
@@ -179,6 +195,7 @@
         ::  Gather updates to a document from a peer (pokes their %delta)
         ::
           %gather
+        ?>  =(src.bowl our.bowl)
         ?.  !=(our.bowl peer.act)
           `this
         ~&  "GATHER-- {<path.act>} from: {<peer.act>}"
@@ -211,6 +228,7 @@
         :: Request a document you don't have
         ::
           %request
+        ?>  =(src.bowl our.bowl)
         :_  this
         :~  [%pass /document/answer %agent [peer.act %engram] %poke %post !>([%document %answer path.act])]
         ==
@@ -229,12 +247,6 @@
           %populate
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         `this(d (~(put by d) id doc.act))
-        ::
-        :: Remove an update for the set of stored updates
-        ::
-          %accept
-        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
-        `this(u (~(del ju u) id update.act))
       ==
       %folder
         ?-  -.+.act
@@ -242,6 +254,7 @@
         :: create a new folder
         ::
           %make
+        ?>  =(src.bowl our.bowl)
         =/  fold  :*  
           [our.bowl t]
           owner.act
@@ -256,7 +269,9 @@
         =/  oldspc
         ?:  (~(has by s) space.act)
           (~(got by s) space.act)
-        ^*  space
+        =/  initspc  ^*  space
+        =.  roles.initspc  (insert:index roles.initspc ^-([@tas @tas] [%member %edit]) our.bowl)
+        initspc
         =/  newspc
         =.  content.oldspc  (insert:index content.oldspc [id %folder] our.bowl)
           oldspc
@@ -267,6 +282,7 @@
         :: delete an existing folder
         ::
           %delete
+        ?>  =(src.bowl our.bowl)
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         ?>  (~(has by f) id)
         =/  nstate  this(f (~(del by f) id))
@@ -289,6 +305,7 @@
         :: add a document or folder to another folder
         ::
           %add
+        ?>  =(src.bowl our.bowl)
         =/  id  [`@p`(slav %p -.id.act) `@u`(slav %ud -.+.id.act)]
         =/  to  [`@p`(slav %p -.to.act) `@u`(slav %ud -.+.to.act)]
         ?>  (~(has by f) to)
@@ -301,6 +318,7 @@
         :: remove a document or folder from a folder
         ::
           %remove
+        ?>  =(src.bowl our.bowl)
         =/  id  [`@p`(slav %p -.id.act) `@u`(slav %ud -.+.id.act)]
         =/  from  [`@p`(slav %p -.from.act) `@u`(slav %ud -.+.from.act)]
         ?>  (~(has by f) from)
@@ -313,6 +331,7 @@
         :: Rename a folder
         ::
           %rename
+        ?>  =(src.bowl our.bowl)
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         ~_  [%leaf "Error renaming folder of id: {<id>}"]
         ?.  (~(has by f) id)
@@ -328,6 +347,7 @@
         ::  Gather updated to a folder index from all peers in the space
         ::
           %gatherall
+        ?>  =(src.bowl our.bowl)
         ~&  "GATHERALL-- items in {<path.act>}"
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  fold  (~(got by f) id)
@@ -350,6 +370,7 @@
         ::  Gather updates to a folder from a peer (pokes their %delta)
         ::
           %gather
+        ?>  =(src.bowl our.bowl)
         ?.  !=(our.bowl peer.act)
           `this
         ~&  "GATHER-- {<path.act>} from: {<peer.act>}"
@@ -384,6 +405,7 @@
         :: Request a folder you don't have
         ::
           %request
+        ?>  =(src.bowl our.bowl)
         :_  this
         :~  [%pass /folder/answer %agent [peer.act %engram] %poke %post !>([%folder %answer path.act])]
         ==
@@ -409,33 +431,54 @@
         :: Initialize a space index
         ::
           %make
+        ?>  =(src.bowl our.bowl)
         =/  spc  ^*  space
         `this(s (~(put by s) space.act spc))
         ::
         ::  Gather updated to a space index from all peers in the space
         ::
           %gatherall
+        ?>  =(src.bowl our.bowl)
         ~&  "GATHERALL-- items in {<space.act>}"
         =/  spc  (~(got by s) space.act)
         =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.act -.+.space.act ~.members ~.noun])
         ?+  -.spacemembers  !!
             %members
           =/  members  ^-  members:membership  +.spacemembers
-          =/  directpeers
-              %+  skim  ~(val by content.ships.spc)
-              |=  [peer=@p level=@tas]  =(level %editor)
-          =/  spacepeers  
-            %+  turn  %~  tap  in  %~  key  by  ^-  members:membership  +.spacemembers
-            |=  peer=@p  ^-  [@p @tas]  [peer %editor]
+          =/  directpeers  ~(val by content.ships.spc)
+          ~&  "content.ships"
+          ~&  content.ships.spc
+          ~&  ~(val by content.ships.spc)
+          ~&  (silt ~(val by content.roles.spc))
+          =/  rolemap  %-  molt  ^-  (list [@tas @tas])  ~(val by content.roles.spc)
+          =/  spacepeers
+            %+  turn  %~  tap  by  ^-  members:membership  +.spacemembers
+              ::%+  skim  %~  tap  by  ^-  members:membership  members
+              ::|=  [peer=@p meta=member:membership]
+              ::%-  lien  %+  turn  roles.meta  |=  role=@tas  (~(has by roles.spc) role)
+            |=  [peer=@p meta=member:membership]
+            ^-  [@p @tas]
+            ~&  meta
+            :-  peer   %-  ~(rep in roles.meta)  
+              |=  [a=@tas b=@tas]
+              ~&  "a"
+              ~&  a
+              ~&  "b"
+              ~&  b
+              =/  level  (~(got by rolemap) a)
+              ~&  "found level"
+              ~&  level
+              ^-  @tas  %editor
           :_  this
           %+  turn  (weld directpeers spacepeers)
-            |=  [peer=@p @tas]  
+            |=  [peer=@p @tas]
             [%pass /engram/space/gather %agent [our.bowl %engram] %poke %post !>([%space %gather space.act peer])]
         ==
         ::
         ::  Gather updates to a space from a peer (pokes their %delta)
         ::
           %gather
+        ?>  =(src.bowl our.bowl)
         ?.  !=(our.bowl peer.act)
           `this
         ~&  "GATHER-- {<space.act>} from: {<peer.act>}"
@@ -474,59 +517,6 @@
             %folder    [%pass /folder/request %agent [our.bowl %engram] %poke %post !>([%folder %request `path`[(scot %p -.-.+.item) (scot %ud +.-.+.item) ~] -.-.item])]
           ==
     ==
-      ::%prop
-      ::  ?-  -.+.action
-        ::
-        :: remove the merged update from the update list (as updates aren't implemented this will just log)
-        ::
-      ::    %accept
-      ::  =/  id  [`@p`(slav %p -.path.action) `@u`(slav %ud -.+.path.action)]
-      ::  `this(u (~(del ju u) id update.action))
-        ::
-        :: subscribe to a remote document
-        ::
-      ::    %sub
-      ::  =/  li  `path`(weld ~['updates'] path.action)
-      ::  :_  this
-      ::  :~  [%pass `(list @ta)`[~.engram (wood (crip "{<our.bowl>}")) (wood (crip "{<to.action>}")) ~] %agent [to.action %engram] %watch li]
-      ::  ==
-        ::
-        :: {Documentation Here}
-        ::
-      ::    %unsub
-      ::  :_  this
-      ::  :~  [%pass `(list @ta)`[~.engram (wood (crip "{<our.bowl>}")) (wood (crip "{<from.action>}")) ~] %agent [from.action %engram] %leave ~]
-      ::  ==
-        ::
-        :: {Documentation Here}
-        ::
-      ::    %update
-      ::  =/  id  [`@p`(slav %p -.path.action) `@u`(slav %ud -.+.path.action)]
-      ::  `this(u (~(put ju u) id update.action))
-        ::
-        ::
-        :: {Documentation Here}
-        ::
-      ::    %update-live
-      ::  =/  id  [`@p`(slav %p -.path.action) `@u`(slav %ud -.+.path.action)]
-      ::  =/  li  `path`(weld ~['updates'] path.action)
-      ::  :_  this
-      ::  :~  %-  fact:agentio
-      ::    [update+!>([%update [path.action update.action]]) ~[li]]
-      ::  ==
-        ::  %docsetup
-        :::_  this
-        :::~  [%pass /settings %agent [our.bowl %engram] %poke %post !>([%settings dmeta.action stg.action])]
-        ::    [%pass /createsnap %agent [our.bowl %engram] %poke %post !>([%createsnap dmeta.action])]
-        ::    [%pass /make %agent [our.bowl %engram] %poke %post !>([%make dmeta.action doc.action])]
-        ::==
-        ::  %extend
-        ::=/  mut  |=  a=updt:engram  [dmeta:action a]
-        ::=/  save  (turn ~(tap in updts.action) mut)
-        ::=/  save  ~(tap in `(set dmeta:engram updt:engram)`(~(run in updts:action) mut))
-        ::`this(u (~(gas ju u) save))
-      ::==
-  ::==
 ==
 ++  on-watch
   |=  =path
@@ -550,10 +540,12 @@
   ^-  (unit (unit cage))
   ?+    p  (on-peek:def p)
       [%x %history ~]
+    ?>  =(src.bowl our.bowl)
     ~_  [%leaf "empty history"]
     ``noun+!>((timestamp:enjs:engram (rear h)))
     ::
       [%x %space @ @ %list ~]
+    ?>  =(src.bowl our.bowl)
     ?:  (~(has by s) ~[i.t.t.p i.t.t.t.p])
       =/  spc  (~(got by s) ~[i.t.t.p i.t.t.t.p])
       ``noun+!>((list:space:enjs:engram [d f content.content.spc]))
@@ -562,21 +554,25 @@
     ``noun+!>((list:document:enjs:engram d))
   ::
       [%x %document @ @ %get ~]
+    ?>  =(src.bowl our.bowl)
     =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
     =/  doc  (~(got by d) id)
     ``noun+!>((get:document:enjs:engram doc))
   ::
       [%x %document @ @ %get %settings ~]
+    ?>  =(src.bowl our.bowl)
     =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
     =/  doc  (~(got by d) id)
     ``noun+!>((settings:document:enjs:engram settings.doc))
   ::
       [%x %document @ @ %get %snapshots ~]
+    ?>  =(src.bowl our.bowl)
     =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
     =/  doc  (~(got by d) id)
     ``noun+!>((snapshots:document:enjs:engram snapshots.doc))
   ::
       [%x %document @ @ %get %updates ~]
+    ?>  =(src.bowl our.bowl)
     =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
     ?:  (~(has by u) id)
       =/  updts  (need (~(get by u) id))
@@ -584,6 +580,7 @@
     ``noun+!>((updates:document:enjs:engram ^*((set dupdate))))
   ::
       [%x %folder %list ~]
+    ?>  =(src.bowl our.bowl)
     ``noun+!>((list:folder:enjs:engram f))
   ::
   ==

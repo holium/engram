@@ -33,7 +33,7 @@
 ::
 ::  Spaces
 +$  spath  path
-+$  space  [roles=(index @tas @tas) ships=(index [@p @tas]) content=(index [id @tas])]
++$  space  [roles=(index [@tas @tas]) ships=(index [@p @tas]) content=(index [id @tas])]
 
 ::
 :: State Data Types
