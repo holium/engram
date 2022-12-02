@@ -69,10 +69,9 @@
             close
           </div>
       </div>
-
-      <StylingDock class="dock-body" :styling="styling" v-if="open == 'styling'" />
-      <SharingDock class="dock-body" v-if="open == 'sharing'" />
-      <VersionDock class="dock-body" v-if="open == 'revisions'" />
+        <StylingDock class="dock-body scrollbar-small" :styling="styling" v-if="open == 'styling'" />
+        <SharingDock class="dock-body scrollbar-small" v-if="open == 'sharing'" />
+        <VersionDock class="dock-body scrollbar-small" v-if="open == 'revisions'" />
     </div>
   </div>
 </template>
@@ -127,7 +126,7 @@ export default defineComponent({
 
 <style lang="css" scoped>
 .dock-body {
-  @apply bg-paper flex-grow px-4 py-3;
+  @apply bg-paper flex-grow px-4 py-3 overflow-auto;
   border-radius: 8px 8px 0px 0px;
   border-width: 1px 1px 0px 1px;
   border-style: solid;

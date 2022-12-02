@@ -70,7 +70,7 @@ export interface Folder {
 // Workspace ------------------------------------------------------------------
 
 export interface WorkspaceState {
-  snapshot: null | number;
+  snapshot: null | DocumentVersion;
   version: null | Uint8Array;
   content: null | Uint8Array;
 }
@@ -101,6 +101,6 @@ export interface VersionMeta {
 export interface DocumentVersion {
   timestamp: number;
   author: Patp;
-  Snapshot: Y.Snapshot;
+  snapshot: Y.Snapshot;
   date: Date;
 }
