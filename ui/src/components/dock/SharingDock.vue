@@ -67,7 +67,8 @@ export default defineComponent({
   },
   methods: {
     addPermission: function(event: KeyboardEvent) {
-      if(event.key == "Enter") {
+      console.log("input: ", this.newPermission, event.key, " @ ", (event.target as any).selectionStart);
+      if(event.key == "Enter" && this.newPermission.length > 0 && this.newPermissionLevel.length > 0) {
         if(this.newPermission.charAt(0) == "~") {
           store.dispatch('workspace/settings/addship', { 
             id: `/${this.$route.params.author}/${this.$route.params.clock}`, 
@@ -77,12 +78,25 @@ export default defineComponent({
         } else {
           store.dispatch('workspace/settings/addrole', { 
             id: `/${this.$route.params.author}/${this.$route.params.clock}`, 
-            role: this.newPermission, 
-            level: this.newPermissionLevel 
+            role: this.newPermission.substring(1), 
+            level: this.newPermissionLevel
           });
         }
         this.newPermission = "";
         this.newPermissionLevel = "";
+      } else {
+        if(event.key != "ArrowLeft" && event.key != "ArrowRight" && event.key != "Backspace" && event.key != "Delete") {
+          if(this.newPermission.length == 0) {
+            if(event.key != '~' && event.key != '%') event.preventDefault();
+          } else {
+            if((event.target as any).selectionStart == 0) event.preventDefault();
+            else if(this.newPermission.charAt(0) == '~') {
+              if(!"abcdefghijklmnopqrstuvwxyz-".includes(event.key)) event.preventDefault();
+            } else if(this.newPermission.charAt(0) == "%") {
+              if(!"abcdefghijklmnopqrstuvwxyz-0123456789".includes(event.key)) event.preventDefault();
+            }
+          }
+        }
       }
     }
   }
