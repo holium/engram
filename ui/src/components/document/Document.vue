@@ -17,7 +17,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import store from "@/store/index";
-import type { DocumentContent } from "@/store/types"
+import type { DocumentContent, DocumentVersion } from "@/store/types"
 
 import Toolbar from "@/components/Toolbar.vue";
 import DocumentDock from "@/components/dock/DocumentDock.vue";
@@ -85,7 +85,7 @@ export default defineComponent({
   beforeRouteUpdate: function(to) {
     this.loaded = store.dispatch("workspace/open", `${to.params.author}/${to.params.clock}`);
     this.loaded.then((res: any) => {
-        render(this.$refs["document"] as any, res.content, this.updateBauble, this.updateCover, this.updateStyling);
+        render(this.$refs["document"] as any, res.content, this.updateBauble, this.updateCover, this.updateStyling, null);
       })
   },
   mounted: function () {
@@ -93,8 +93,18 @@ export default defineComponent({
     if(this.loaded == null) console.warn("no document");
     else {
       this.loaded.then((res: any) => {
-        render(this.$refs["document"] as any, res.content, this.updateBauble, this.updateCover, this.updateStyling);
+        render(this.$refs["document"] as any, res.content, this.updateBauble, this.updateCover, this.updateStyling, null);
       })
+    }
+  },
+  watch: {
+    previewing: function(newRender: null | DocumentVersion) {
+      console.log("previewing changed:", newRender)
+      if(this.loaded != null) {
+        this.loaded.then((res: any) => {
+          render(this.$refs["document"] as any, res.content, this.updateBauble, this.updateCover, this.updateStyling, newRender);
+        });
+      }
     }
   },
   methods: {
@@ -111,6 +121,11 @@ export default defineComponent({
       this.styling = { ...this.styling, ...styling };
     }
   },
+  computed: {
+    previewing: function() {
+      return store.getters['workspace/previewing'];
+    }
+  }
 });
 </script>
 

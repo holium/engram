@@ -15,10 +15,18 @@ const getters: GetterTree<RevisionState, RootState> = {
   versions: (state): Array<{ author: Patp, date: Date}> => {
     return state.map((version) => {
       return { author: version.author, date: version.date }
+    }).filter((version, i, arr) => {
+      if(i == 0) return true;
+      console.log(arr[i - 1].date.getTime() - version.date.getTime());
+      return arr[i - 1].date.getTime() - version.date.getTime() > 1000 * 60 * 20;
     })
   },
   version: (state) => (index: number) => {
-    return state[index]
+    return state.filter((version, i, arr) => {
+      if(i == 0) return true;
+      console.log(arr[i - 1].date.getTime() - version.date.getTime());
+      return arr[i - 1].date.getTime() - version.date.getTime() > 1000 * 60 * 20;
+    })[index]
   }
 }
 
@@ -64,7 +72,7 @@ const actions: ActionTree<RevisionState, RootState> = {
   close({ commit }) {
     commit("close");
   },
-
+  
   snap({ commit }, payload: { id: string, snapshot: Snapshot, author?: Patp }): Promise<void> {
     return new Promise((resolve, reject) => {
       const version = {

@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col">
-        <div class="flex">
+        <div class="flex" @click="closePreview">
             <svg
                 width="25"
                 height="25"
@@ -11,6 +11,11 @@
                 <path
                     d="M11.5 18.6797C8.52734 18.2266 6.25 15.6328 6.25 12.5C6.25 9.36719 8.52734 6.77344 11.5 6.32031V6.78003e-06C11.5 6.78003e-06 11.9805 0 12.5 0C13.0195 0 13.5 6.78003e-06 13.5 6.78003e-06V6.32031C16.5078 6.77344 18.75 9.36719 18.75 12.5C18.75 15.6328 16.5078 18.2266 13.5 18.6797C13.5 18.6797 13.0195 18.75 12.5 18.75C11.9805 18.75 11.5 18.6797 11.5 18.6797ZM8.2 12.5C8.2 14.918 10.082 16.875 12.5 16.875C14.918 16.875 16.8 14.918 16.8 12.5C16.8 10.082 14.918 8.125 12.5 8.125C10.082 8.125 8.2 10.082 8.2 12.5Z"
                     fill="var(--rlm-text-color, #261f1f)"
+                />
+                <path 
+                    v-if="previewing == null"
+                    d="M16.8 12.5C16.8 10.082 14.918 8.125 12.5 8.125C10.082 8.125 8.2 10.082 8.2 12.5C8.2 14.918 10.082 16.875 12.5 16.875C14.918 16.875 16.8 14.918 16.8 12.5Z" 
+                    fill="black"
                 />
             </svg>
             <!-- Other Ships -->
@@ -61,6 +66,9 @@ export default defineComponent({
         VersionShipLabel,
     },
     computed: {
+        previewing: function() {
+            return store.getters['workspace/previewing'];
+        },
         snapshots: function(): Array<VersionMeta> {
             console.log("versions:", store.getters['workspace/revisions/versions']);
             return store.getters['workspace/revisions/versions'];
@@ -82,5 +90,10 @@ export default defineComponent({
             })
         }
     },
+    methods: {
+        closePreview: function() {
+            store.dispatch("workspace/preview", null);
+        }
+    }
 })
 </script>
