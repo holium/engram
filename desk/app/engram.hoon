@@ -67,11 +67,12 @@
         ?:  (~(has by s) space.act)
           (~(got by s) space.act)
         =/  initspc  ^*  space
-        =.  roles.initspc  (insert:index roles.initspc ^-([@tas @tas] [%member %edit]) our.bowl)
+        =.  roles.initspc  (insert:index roles.initspc ^-([@tas @tas] [%member %editor]) our.bowl)
         initspc
         =/  newspc
         =.  content.oldspc  (insert:index content.oldspc [id %document] our.bowl)
           oldspc
+        ~&  newspc
         =/  sstate  state(s (~(put by s) space.act newspc))
         =/  hstate  sstate(h (snoc h id))
         `hstate(t (add t 1))
@@ -270,7 +271,7 @@
         ?:  (~(has by s) space.act)
           (~(got by s) space.act)
         =/  initspc  ^*  space
-        =.  roles.initspc  (insert:index roles.initspc ^-([@tas @tas] [%member %edit]) our.bowl)
+        =.  roles.initspc  (insert:index roles.initspc ^-([@tas @tas] [%member %editor]) our.bowl)
         initspc
         =/  newspc
         =.  content.oldspc  (insert:index content.oldspc [id %folder] our.bowl)
@@ -444,34 +445,27 @@
         =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.act -.+.space.act ~.members ~.noun])
         ?+  -.spacemembers  !!
             %members
-          =/  members  ^-  members:membership  +.spacemembers
-          =/  directpeers  ~(val by content.ships.spc)
-          ~&  "content.ships"
-          ~&  content.ships.spc
-          ~&  ~(val by content.ships.spc)
-          ~&  (silt ~(val by content.roles.spc))
-          =/  rolemap  %-  molt  ^-  (list [@tas @tas])  ~(val by content.roles.spc)
-          =/  spacepeers
-            %+  turn  %~  tap  by  ^-  members:membership  +.spacemembers
-              ::%+  skim  %~  tap  by  ^-  members:membership  members
-              ::|=  [peer=@p meta=member:membership]
-              ::%-  lien  %+  turn  roles.meta  |=  role=@tas  (~(has by roles.spc) role)
-            |=  [peer=@p meta=member:membership]
-            ^-  [@p @tas]
-            ~&  meta
-            :-  peer   %-  ~(rep in roles.meta)  
-              |=  [a=@tas b=@tas]
-              ~&  "a"
-              ~&  a
-              ~&  "b"
-              ~&  b
-              =/  level  (~(got by rolemap) a)
-              ~&  "found level"
-              ~&  level
-              ^-  @tas  %editor
+          =/  directpeers  %+  turn  ~(val by content.ships.spc)  |=  a=[@p @tas]  -.a
+          =/  spacepeers  %~  tap  in  %~  key  by  ^-  members:membership  +.spacemembers
+          ::=/  rolemap  %-  molt  ^-  (list [@tas @tas])  ~(val by content.roles.spc)
+          ::~&  "Calculating space peers"
+          ::=/  spacepeers
+          ::  %+  turn  %~  tap  by  ^-  members:membership  +.spacemembers
+          ::  |=  [peer=@p meta=member:membership]
+          ::  ^-  [@p @tas]
+          ::  :-  peer   %-  ~(rep in roles.meta)
+          ::    |=  [a=@tas b=@tas]
+          ::    ~&  "comparing: [a  b]"
+          ::    ?:  =(a %owner)  %admin
+          ::    ?.  (~(has by rolemap) a)  b
+          ::    =/  level  (~(got by rolemap) a)
+          ::    ~&  [level b]          
+          ::    ?+  b  ?:  ?|(=(level %visitor) =(level %editor) =(level %admin))  level  b
+          ::      %visitor  ?:  ?|(=(level %editor) =(level %admin))  level  b
+          ::    ==
           :_  this
           %+  turn  (weld directpeers spacepeers)
-            |=  [peer=@p @tas]
+            |=  peer=@p
             [%pass /engram/space/gather %agent [our.bowl %engram] %poke %post !>([%space %gather space.act peer])]
         ==
         ::
@@ -483,6 +477,7 @@
           `this
         ~&  "GATHER-- {<space.act>} from: {<peer.act>}"
         =/  spc  (~(got by s) space.act)
+        ?>  (guardspace:engram [space.act (molt ~(val by content.roles.spc)) (molt ~(val by content.ships.spc)) (silt `(list @tas)`[%admin %editor ~]) peer.act our.bowl now.bowl])
         :_  this
         :~  [%pass /engram/(scot %p peer.act)/space/delta %agent [peer.act %engram] %poke %post !>(`action`[%space %delta space.act version.content.spc])]
         ==

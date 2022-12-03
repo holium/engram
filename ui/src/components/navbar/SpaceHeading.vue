@@ -6,7 +6,7 @@
       </div>
       <div class="flex flex-col gap-2">
         <div class="heading-1">
-          {{ space.path }}
+          {{ space.name }}
         </div>
         <div class="opacity-60 text-sm font-azimuth">
           ~{{ ship }}
@@ -57,7 +57,7 @@ export default defineComponent({
     }
   },
   created: function() {
-    store.dispatch("space/load", this.$route);
+    store.dispatch("space/load", this.$route.query.spaceId);
     this.ship = (window as any).ship;
     this.gatherall();
     this.loadSpaces(this.$route);

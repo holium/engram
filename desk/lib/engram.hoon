@@ -1,5 +1,6 @@
 /-  engram
 /-  index
+/-  membership
 /+  index
 |%
 ++  dejs
@@ -143,4 +144,23 @@
       (pairs ~[['name' (tape (trip name.fold))]])
     --
   --
+++  guardspace
+  |=  [space=path roles=(map @tas @tas) ships=(map @p @tas) levels=(set @tas) peer=@p our=@p now=@da]
+  ^-  @f
+  =/  memberdata  .^(view:membership %gx `path`~[(scot %p our) ~.spaces (scot %da now) -.space -.+.space ~.members (scot %p peer) ~.noun])
+  ?|
+    :: Checking ships
+    ?&  (~(has by ships) peer)  
+        (~(has in levels) (~(got by ships) peer))
+    ==
+    :: Checking roles
+    ?+  -.memberdata  !!
+        %member
+      %-  ~(rep in roles.member.memberdata)
+        |=  [a=@tas b=@f]
+        ?:  ?|(=(a %owner) b)  %.y
+        ?.  (~(has by roles) a)  b
+        (~(has in levels) (~(got by roles) a))
+    ==
+  ==
 --
