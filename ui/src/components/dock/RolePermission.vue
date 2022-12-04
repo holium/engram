@@ -1,7 +1,7 @@
 <template>
     <div class="flex justify-between items-center">
         <div class="azimuth">
-            {{ role }}
+            %{{ role }}
         </div>
         <div class="px-2 py-1 clickable">
             {{ level }}
