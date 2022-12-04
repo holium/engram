@@ -1,5 +1,6 @@
 /-  *engram
 /-  membership
+/-  index
 /+  engram
 /+  index
 /+  default-agent, dbug, agentio
@@ -175,21 +176,13 @@
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  doc  (~(got by d) id)
         =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.settings.doc -.+.space.settings.doc ~.members ~.noun])
-        ?-  -.spacemembers
-            %member      !!
-            %is-member   !!
-            %membership  !!
+        ?+  -.spacemembers  !!
             %members
-          =/  members  ^-  members:membership  +.spacemembers
-          =/  directpeers
-              %+  skim  ~(val by content.ships.settings.doc)  
-              |=  [peer=@p level=@tas]  =(level %editor)
-          =/  spacepeers  
-            %+  turn  %~  tap  in  %~  key  by  ^-  members:membership  +.spacemembers
-            |=  peer=@p  ^-  [@p @tas]  [peer %editor]
+          =/  directpeers  %+  turn  ~(val by content.ships.settings.doc)  |=  a=[@p @tas]  -.a
+          =/  spacepeers  %~  tap  in  %~  key  by  ^-  members:membership  +.spacemembers
           :_  this
           %+  turn  (weld directpeers spacepeers)
-            |=  [peer=@p @tas]  
+            |=  peer=@p 
             [%pass /document/gather %agent [our.bowl %engram] %poke %post !>([%document %gather path.act peer])]
         ==
         ::
@@ -200,6 +193,9 @@
         ?.  !=(our.bowl peer.act)
           `this
         ~&  "GATHER-- {<path.act>} from: {<peer.act>}"
+        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  doc  (~(got by d) id)
+        ?>  (guardspace:engram [space.settings.doc (molt ~(val by content.roles.settings.doc)) (molt ~(val by content.ships.settings.doc)) (silt `(list @tas)`[%admin %editor ~]) peer.act our.bowl now.bowl])
         :_  this
         :~  [%pass /document/delta %agent [peer.act %engram] %poke %post !>([%document %delta path.act])]
         ==
@@ -210,9 +206,12 @@
         ~&  "DELTA-- from {<src.bowl>} for {<path.act>}"
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  doc  (~(got by d) id)
+        ?>  (guardspace:engram [space.settings.doc (molt ~(val by content.roles.settings.doc)) (molt ~(val by content.ships.settings.doc)) (silt `(list @tas)`[%admin %editor %visitor ~]) src.bowl our.bowl now.bowl])
         =/  updates  (silt ~[[author=our.bowl timestamp=now.bowl content=content.doc]])
+        =/  roles  (delta:index roles.settings.doc ^*(version:index))
+        =/  ships  (delta:index ships.settings.doc ^*(version:index))
         :_  this
-        :~  [%pass /document/sync %agent [src.bowl %engram] %poke %post !>([%document %sync path.act updates])]
+        :~  [%pass /document/sync %agent [src.bowl %engram] %poke %post !>([%document %sync path.act [name.settings.doc roles ships updates]])]
         ==
         ::
         ::  Sync updates with current document
@@ -220,11 +219,27 @@
           %sync
         ~&  "SYNC-- from {<src.bowl>}  for {<path.act>}"
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  doc  (~(got by d) id)
+        ::  Name Changes
+        =/  namedoc
+          ?.  (guardspace:engram [space.settings.doc (molt ~(val by content.roles.settings.doc)) (molt ~(val by content.ships.settings.doc)) (silt `(list @tas)`[~]) src.bowl our.bowl now.bowl])
+            doc
+          =.  name.settings.doc  name.update.act
+          doc
+        ::  Settings Changes
+        =/  settingsdoc
+          ?.  (guardspace:engram [space.settings.namedoc (molt ~(val by content.roles.settings.namedoc)) (molt ~(val by content.ships.settings.namedoc)) (silt `(list @tas)`[%admin ~]) src.bowl our.bowl now.bowl])
+            namedoc
+          =:  roles.settings.namedoc  (apply:index roles.settings.namedoc roles.update.act)
+              ships.settings.namedoc  (apply:index ships.settings.namedoc ships.update.act)
+            ==
+          namedoc  ::replace with actually making changes
+        =/  dstate  this(d (~(put by d) id namedoc))
         =/  updates
-        %+  turn  ~(tap in updates.act)
+        %+  turn  ~(tap in content.update.act)
         |=  a=dupdate  
         [id a]
-        `this(u (~(gas ju u) updates))
+        `dstate(u (~(gas ju u) updates))
         ::
         :: Request a document you don't have
         ::
@@ -239,6 +254,7 @@
           %answer
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  doc  (~(got by d) id)
+        ?>  (guardspace:engram [space.settings.doc (molt ~(val by content.roles.settings.doc)) (molt ~(val by content.ships.settings.doc)) (silt `(list @tas)`[%admin %editor %visitor ~]) src.bowl our.bowl now.bowl])
         :_  this
         :~  [%pass /document/populate %agent [src.bowl %engram] %poke %post !>([%document %populate path.act doc])]
         ==
@@ -355,16 +371,11 @@
         =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.fold -.+.space.fold ~.members ~.noun])
         ?+  -.spacemembers  !!
             %members
-          =/  members  ^-  members:membership  +.spacemembers
-          =/  directpeers
-              %+  skim  ~(val by content.ships.fold)
-              |=  [peer=@p level=@tas]  =(level %editor)
-          =/  spacepeers  
-            %+  turn  %~  tap  in  %~  key  by  ^-  members:membership  +.spacemembers
-            |=  peer=@p  ^-  [@p @tas]  [peer %editor]
+          =/  directpeers  %+  turn  ~(val by content.ships.fold)  |=  a=[@p @tas]  -.a
+          =/  spacepeers  %~  tap  in  %~  key  by  ^-  members:membership  +.spacemembers
           :_  this
           %+  turn  (weld directpeers spacepeers)
-            |=  [peer=@p @tas]  
+            |=  peer=@p
             [%pass /engram/folder/gather %agent [our.bowl %engram] %poke %post !>([%folder %gather path.act peer])]
         ==
         ::
@@ -377,6 +388,7 @@
         ~&  "GATHER-- {<path.act>} from: {<peer.act>}"
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  fold  (~(got by f) id)
+        ?>  (guardspace:engram [space.fold (molt ~(val by content.roles.fold)) (molt ~(val by content.ships.fold)) (silt `(list @tas)`[%admin %editor ~]) peer.act our.bowl now.bowl])
         :_  this
         :~  [%pass /engram/(scot %p peer.act)/folder/delta %agent [peer.act %engram] %poke %post !>(`action`[%folder %delta path.act version.content.fold])]
         ==
@@ -387,21 +399,39 @@
         ~&  "DELTA-- from {<src.bowl>} for {<path.act>}"
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  fold  (~(got by f) id)
+        ?>  (guardspace:engram [space.fold (molt ~(val by content.roles.fold)) (molt ~(val by content.ships.fold)) (silt `(list @tas)`[%admin %editor %visitor ~]) src.bowl our.bowl now.bowl])
         =/  updates  (delta:index content.fold version.act)
+        =/  roles  (delta:index roles.fold ^*(version:index))
+        =/  ships  (delta:index ships.fold ^*(version:index))
         :_  this
-        :~  [%pass /engram/folder/sync %agent [src.bowl %engram] %poke %post !>(`action`[%folder %sync path.act updates])]
+        :~  [%pass /engram/folder/sync %agent [src.bowl %engram] %poke %post !>(`action`[%folder %sync path.act [name.fold roles ships updates]])]
         ==
         ::
-        ::  Sync updates with current space
+        ::  Sync updates with current folder
         ::
           %sync
         ~&  "SYNC-- from {<src.bowl>} for {<path.act>}: "
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  fold  (~(got by f) id)
-        =/  newfold
-        =.  content.fold  (apply:index content.fold update.act)
-        fold
-        `this(f (~(put by f) id newfold))
+        ?>  (guardspace:engram [space.fold (molt ~(val by content.roles.fold)) (molt ~(val by content.ships.fold)) (silt `(list @tas)`[%admin %editor ~]) src.bowl our.bowl now.bowl])
+        ::  Name Changes
+        =/  namefold
+          ?.  (guardspace:engram [space.fold (molt ~(val by content.roles.fold)) (molt ~(val by content.ships.fold)) (silt `(list @tas)`[~]) src.bowl our.bowl now.bowl])
+            fold
+          =.  name.fold  name.update.act
+          fold
+        ::  Settings Changes
+        =/  settingsfold
+          ?.  (guardspace:engram [space.namefold (molt ~(val by content.roles.namefold)) (molt ~(val by content.ships.namefold)) (silt `(list @tas)`[%admin ~]) src.bowl our.bowl now.bowl])
+            namefold
+          =:  roles.namefold  (apply:index roles.namefold roles.update.act)
+              ships.namefold  (apply:index ships.namefold ships.update.act)
+            ==
+          namefold  ::replace with actually making changes
+        =/  contentfold
+        =.  content.settingsfold  (apply:index content.settingsfold content.update.act)
+        settingsfold
+        `this(f (~(put by f) id contentfold))
         ::
         :: Request a folder you don't have
         ::
@@ -416,6 +446,7 @@
           %answer
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  fold  (~(got by f) id)
+        ?>  (guardspace:engram [space.fold (molt ~(val by content.roles.fold)) (molt ~(val by content.ships.fold)) (silt `(list @tas)`[%admin %editor %visitor ~]) src.bowl our.bowl now.bowl])
         :_  this
         :~  [%pass /folder/populate %agent [src.bowl %engram] %poke %post !>([%folder %populate path.act fold])]
         ==
@@ -447,22 +478,6 @@
             %members
           =/  directpeers  %+  turn  ~(val by content.ships.spc)  |=  a=[@p @tas]  -.a
           =/  spacepeers  %~  tap  in  %~  key  by  ^-  members:membership  +.spacemembers
-          ::=/  rolemap  %-  molt  ^-  (list [@tas @tas])  ~(val by content.roles.spc)
-          ::~&  "Calculating space peers"
-          ::=/  spacepeers
-          ::  %+  turn  %~  tap  by  ^-  members:membership  +.spacemembers
-          ::  |=  [peer=@p meta=member:membership]
-          ::  ^-  [@p @tas]
-          ::  :-  peer   %-  ~(rep in roles.meta)
-          ::    |=  [a=@tas b=@tas]
-          ::    ~&  "comparing: [a  b]"
-          ::    ?:  =(a %owner)  %admin
-          ::    ?.  (~(has by rolemap) a)  b
-          ::    =/  level  (~(got by rolemap) a)
-          ::    ~&  [level b]          
-          ::    ?+  b  ?:  ?|(=(level %visitor) =(level %editor) =(level %admin))  level  b
-          ::      %visitor  ?:  ?|(=(level %editor) =(level %admin))  level  b
-          ::    ==
           :_  this
           %+  turn  (weld directpeers spacepeers)
             |=  peer=@p
@@ -487,9 +502,12 @@
           %delta
         ~&  "DELTA-- from {<src.bowl>} for {<space.act>}"
         =/  spc  (~(got by s) space.act)
+        ?>  (guardspace:engram [space.act (molt ~(val by content.roles.spc)) (molt ~(val by content.ships.spc)) (silt `(list @tas)`[%admin %editor %visitor ~]) src.bowl our.bowl now.bowl])
         =/  updates  (delta:index content.spc version.act)
+        =/  roles  (delta:index roles.spc ^*(version:index))
+        =/  ships  (delta:index ships.spc ^*(version:index))
         :_  this
-        :~  [%pass /engram/space/sync %agent [src.bowl %engram] %poke %post !>(`action`[%space %sync space.act updates])]
+        :~  [%pass /engram/space/sync %agent [src.bowl %engram] %poke %post !>(`action`[%space %sync space.act [roles ships updates]])]
         ==
         ::
         ::  Sync updates with current space
@@ -498,12 +516,21 @@
         ~&  "SYNC-- from {<src.bowl>} for {<space.act>}: "
         ~&  update.act
         =/  spc  (~(got by s) space.act)
-        =/  newspc
-        =.  content.spc  (apply:index content.spc update.act)
-        spc
-        ~&  newspc
-        =/  diff  (~(dif by content.content.newspc) content.content.spc)
-        =/  sstate  this(s (~(put by s) space.act newspc))
+        ?>  (guardspace:engram [space.act (molt ~(val by content.roles.spc)) (molt ~(val by content.ships.spc)) (silt `(list @tas)`[%admin %editor ~]) src.bowl our.bowl now.bowl])
+        ::  Settings Changes
+        =/  settingsspc  
+          ?.  (guardspace:engram [space.act (molt ~(val by content.roles.spc)) (molt ~(val by content.ships.spc)) (silt `(list @tas)`[%admin ~]) src.bowl our.bowl now.bowl])
+            spc
+          =:  roles.spc  (apply:index roles.spc roles.update.act)
+              ships.spc  (apply:index ships.spc ships.update.act)
+            ==
+          spc  ::replace with actually making changes
+        =/  contentspc
+        =.  content.spc  (apply:index content.spc content.update.act)
+        settingsspc
+        ~&  contentspc
+        =/  diff  (~(dif by content.content.contentspc) content.content.spc)
+        =/  sstate  this(s (~(put by s) space.act contentspc))
         :_  sstate
           %+  turn  ~(tap by diff)
           |=  item=[id [id @tas]]

@@ -77,7 +77,7 @@
           [%gatherall path=path]
           [%gather path=path peer=@p]
           [%delta path=path]
-          [%sync path=path updates=(set dupdate)]
+          [%sync path=path update=[name=@t roles=(update:index [@tas @tas]) ships=(update:index [@p @tas]) content=(set dupdate)]]
           [%request path=path peer=@p]
           [%answer path=path]
           [%populate path=path doc=document]
@@ -93,7 +93,7 @@
           [%gatherall path=path]
           [%gather path=path peer=@p]
           [%delta path=path version=version]
-          [%sync path=path update=(update:index [id @tas])]
+          [%sync path=path update=[name=@t roles=(update:index [@tas @tas]) ships=(update:index [@p @tas]) content=(update:index [id @tas])]]
           [%request path=path peer=@p]
           [%answer path=path]
           [%populate path=path fold=folder]
@@ -104,7 +104,7 @@
           [%gatherall space=path]
           [%gather space=path peer=@p]
           [%delta space=path version=version]
-          [%sync space=path update=(update:index [id @tas])]
+          [%sync space=path update=[roles=(update:index [@tas @tas]) ships=(update:index [@p @tas]) content=(update:index [id @tas])]]
     ::  Propogation will occur in three (ish) steps: 
     ::    [spanning]      - across a space
     ::    the gatherall   - a routing poke that sends gather for all the peers in a space
