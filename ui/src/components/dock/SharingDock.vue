@@ -52,10 +52,29 @@ export default defineComponent({
   data() {
     return {
       autoSync: false,
+      isAdmin: false,
 
       newPermission: "",
       newPermissionLevel: "",
     }
+  },
+  created: function() {
+    console.log(this.$route.query.spaceId);
+    if(this.$route.query.spaceId != "/null/space") {
+      (window as any).urbit.scry({
+        app: "spaces",
+        path: `${this.$route.query.spaceId}/members/~${(window as any).ship}`
+      }).then((res: any) => {
+        console.log("member scry: ", res);
+        const ships = store.getters['workspace/settings/ships'];
+        console.log("ships: ", ships, ships[(window as any).ship])
+
+      })
+    } else {
+      console.log("ships: ", this.ships, "roles:", this.roles);
+      this.isAdmin = true;
+    }
+    
   },
   computed: {
     ships: function(): { [key: string]: string } {

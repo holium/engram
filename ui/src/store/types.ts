@@ -83,9 +83,8 @@ export interface DocumentUpdate {
 
 // Settings
 export interface SettingsState {
-  autosync: boolean;
-  roleperms: { [key: string]: DocumnetPermission };
-  shipperms: { [key: Patp]: DocumnetPermission };
+  roles: { [key: string]: DocumnetPermission };
+  ships: { [key: Patp]: DocumnetPermission };
 }
 
 export type DocumnetPermission = 'write' | 'read'
