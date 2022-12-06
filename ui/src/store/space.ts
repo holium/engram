@@ -42,18 +42,18 @@ const actions: ActionTree<SpaceState, RootState> = {
         return new Promise((resolve, reject) => {
             (window as any).urbit.scry({ app: "spaces", path: `${payload}` }).then((response: any) => {
                 console.log("load space res:", response);
-                commit("load", { path: payload, ...response.space})
+                commit("load", { ...response.space})
                 resolve(response.space);
               }).catch((err: any) => {
                 console.warn("spaces agent missing!!", err);
                 const nullspace = {
-                    path: (window as any).ship, 
-                    name: (window as any).ship, 
+                    path: "/null/space", 
+                    name: "Local", 
                     color: "#262626",
                     image: ""
                 }
                 commit("load", nullspace)
-                reject(nullspace);
+                resolve(nullspace);
               })
         })
     }

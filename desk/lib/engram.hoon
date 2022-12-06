@@ -19,7 +19,6 @@
           [%rename (ot ~[id+pa name+so])]
           [%addship (ot ~[id+pa ship+(se %p) level+(se %tas)])]
           [%addrole (ot ~[id+pa role+(se %tas) level+(se %tas)])]
-          ::[%settings (ot ~[id+pa owner+(se %p) name+so roles+(op sym (se %tas)) ships+(op fed:ag (se %tas))])]
           [%gatherall (ot ~[id+pa])]
           [%accept (ot ~[id+pa update+(ot ~[author+(se %p) timestamp+(se %da) content+sa])])]
       ==
@@ -70,6 +69,18 @@
         [(spat ~[(scot %p -.key) (scot %u +.key)]) (pairs ~[['id' (path ~[(scot %p -.id.v) (scot %u +.id.v)])] ['type' (tape (trip type.v))]])]
       :-  (spat ~[(scot %p -.id) (scot %u +.id)])
       (pairs ~[['type' (tape "folder")] ['name' (tape (trip name.fol))] ['owner' (tape (scow %p owner.fol))] ['content' (pairs ~(val by folcont))]])
+    ++  settings
+      =,  enjs:format  
+      |=  spc=space:engram
+      ^-  json
+      %-  pairs  :~
+        :-  'roles'  %-  pairs  %+  turn  ~(val by content.roles.spc)
+          |=  [role=@tas level=@tas]
+          [(crip (trip role)) (tape (trip level))]
+        :-  'ships'  %-  pairs  %+  turn  ~(val by content.ships.spc)
+          |=  [ship=@p level=@tas]
+          [(scot %p ship) (tape (trip level))]
+      ==
     --
   ++  document
     |%

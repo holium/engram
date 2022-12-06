@@ -61,6 +61,7 @@ export default defineComponent({
   created: function() {
     console.log(this.$route.query.spaceId);
     if(this.$route.query.spaceId != "/null/space") {
+      /*
       (window as any).urbit.scry({
         app: "spaces",
         path: `${this.$route.query.spaceId}/members/~${(window as any).ship}`
@@ -70,6 +71,7 @@ export default defineComponent({
         console.log("ships: ", ships, ships[(window as any).ship])
 
       })
+      */
     } else {
       console.log("ships: ", this.ships, "roles:", this.roles);
       this.isAdmin = true;

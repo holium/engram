@@ -57,7 +57,9 @@ const mutations: MutationTree<DocumentState> = {
 
   // Management ----------------------------------------------------------------
   clear(state) {
-    state = {};
+    Object.keys(state).forEach((key: string) => {
+      delete state[key];
+    })
   },
   load(state, payload: Document) {
     state[payload.id] = payload;
@@ -136,6 +138,23 @@ const actions: ActionTree<DocumentState, RootState> = {
             owner: `~${(window as any).ship}`,
           });
           dispatch("folders/add", { item: { index: path, id: path, type: "document" }, to: "." }, { root: true });
+          if(router.currentRoute.value.query.spaceId != "/null/space") {
+            (window as any).urbit.poke({
+              app: "engram",
+              mark: "post",
+              json: {
+                document: {
+                  addship: {
+                    id: path,
+                    ship: `~${(window as any).ship}`,
+                    level: "admin",
+                  }
+                }
+              }
+            });
+          } else {
+            dispatch("syncpermswithspace", path);
+          }
         });
       })
     })
@@ -171,6 +190,24 @@ const actions: ActionTree<DocumentState, RootState> = {
           }
         }
       })
+    })
+  },
+
+  syncpermswithspace({}, payload: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if(router.currentRoute.value.query.spaceId != "/null/space") {
+        // Get space permissions
+        (window as any).urbit.scry({
+          app: "engram",
+          path: `space${router.currentRoute.value.query.spaceId}/settings`
+        }).then((res: any) => {
+          console.log("space permissions response: ", res);
+        })
+        // Get space owner
+        // Set owner as admin
+        // Copy over space permissions
+      }
+      
     })
   }
 }
