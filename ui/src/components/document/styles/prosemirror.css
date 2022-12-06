@@ -7,6 +7,7 @@
   font-size: var(--body);
   max-width: 100%;
   width: calc(var(--document-width) + calc(2 * var(--document-margin)));
+  padding: 0 16px 0 72px;
   /* border-radius: calc(var(--document-margin) / var(--ratio) / var(--ratio))
     calc(var(--document-margin) / var(--ratio) / var(--ratio)) 0 0; */
   /* min-height: calc(100% - 2 * var(--document-margin)); */

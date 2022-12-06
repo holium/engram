@@ -49,6 +49,14 @@ export default defineComponent({
     toggleHideDock: function() {
       (this as any).toggleDock();
     },
+  },
+  computed: {
+    space: function(): Space {
+      return store.getters["space/get"]
+    },
+    doc: function() {
+      return store.getters['documents/meta'](`/${this.$route.params.author}/${this.$route.params.clock}`)
+    }
   }
 });
 </script>

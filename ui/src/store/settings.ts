@@ -8,59 +8,49 @@ import type { Module, GetterTree, MutationTree, ActionTree } from "vuex"
 import { ID } from "yjs";
 
 const state: SettingsState = {
-  autosync: false,
-  roleperms: {},
-  shipperms: {},
+  roles: {},
+  ships: {},
 }
 
 const getters: GetterTree<SettingsState, RootState> = {
-  autosync(state): boolean {
-    return state.autosync;
-  },
   roles(state) {
-    return state.roleperms;
+    return state.roles;
   },
   ships(state) {
-    return state.shipperms;
+    return state.ships;
   },
   "role-permission": (state) => (role: string) => {
-    return state.roleperms[role];
+    return state.roles[role];
   },
   "ship-permission": (state) => (ship: Patp) => {
-    return state.shipperms[ship];
+    return state.ships[ship];
   }
 }
 
 const mutations: MutationTree<SettingsState> = {
   open(state, payload: SettingsState) {
-    state.autosync = payload.autosync;
-    state.shipperms = payload.shipperms;
-    state.roleperms = payload.roleperms;
+    state.ships = payload.ships;
+    state.roles = payload.roles;
   },
   close(state) {
-    state.autosync = false;
-    state.roleperms = {};
-    state.shipperms = {};
-  },
-
-  setAutosync(state, payload: boolean) {
-    state.autosync = payload;
+    state.roles = {};
+    state.ships = {};
   },
 
   // Role Management -----------------------------------------------------------
   setRole(state, payload: { role: string, level: DocumnetPermission}) {
-    state.roleperms[payload.role] = payload.level;
+    state.roles[payload.role] = payload.level;
   },
   deleteRole(state, payload: string) {
-    delete state.roleperms[payload];
+    delete state.roles[payload];
   },
 
   // Ship Management -----------------------------------------------------------
   setShip(state, payload: { ship: Patp, level: DocumnetPermission}) {
-    state.shipperms[payload.ship] = payload.level;
+    state.ships[payload.ship] = payload.level;
   },
   deleteShip(state, payload: string) {
-    delete state.shipperms[payload];
+    delete state.ships[payload];
   },
 }
 
@@ -69,9 +59,8 @@ const actions: ActionTree<SettingsState, RootState> = {
     (window as any).urbit.scry({ app: "engram", path: `/document/${payload}/get/settings`}).then((response: any) => {
       console.log("settings response", response);
       commit("open", {
-        autosync: response.autosync,
-        roleperms: response.roles,
-        shipperms: response.ships
+        roles: response.roles,
+        ships: response.ships
       })
     })
   },

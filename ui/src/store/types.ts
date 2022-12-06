@@ -70,7 +70,7 @@ export interface Folder {
 // Workspace ------------------------------------------------------------------
 
 export interface WorkspaceState {
-  snapshot: null | number;
+  snapshot: null | DocumentVersion;
   version: null | Uint8Array;
   content: null | Uint8Array;
 }
@@ -83,9 +83,8 @@ export interface DocumentUpdate {
 
 // Settings
 export interface SettingsState {
-  autosync: boolean;
-  roleperms: { [key: string]: DocumnetPermission };
-  shipperms: { [key: Patp]: DocumnetPermission };
+  roles: { [key: string]: DocumnetPermission };
+  ships: { [key: Patp]: DocumnetPermission };
 }
 
 export type DocumnetPermission = 'write' | 'read'
@@ -101,6 +100,6 @@ export interface VersionMeta {
 export interface DocumentVersion {
   timestamp: number;
   author: Patp;
-  Snapshot: Y.Snapshot;
+  snapshot: Y.Snapshot;
   date: Date;
 }

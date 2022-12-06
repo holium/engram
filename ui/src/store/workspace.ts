@@ -3,6 +3,7 @@ import type {
   RootState,
   WorkspaceState,
   DocumentContent,
+  DocumentVersion
 } from "./types"
 import settings from "./settings";
 import revisions from "./revisions"
@@ -14,7 +15,7 @@ const state: WorkspaceState = {
 }
 
 const getters: GetterTree<WorkspaceState, RootState> = {
-  viewing(state) {
+  previewing(state) {
     return state.snapshot
   },
 }
@@ -32,12 +33,9 @@ const mutations: MutationTree<WorkspaceState> = {
   },
 
   // Snapshot
-  setViewing(state, payload: number) {
+  setViewing(state, payload: DocumentVersion | null) {
     state.snapshot = payload;
   },
-  closeViewing(state) {
-    state.snapshot = null;
-  }
 }
 
 const actions: ActionTree<WorkspaceState, RootState> = {
@@ -70,7 +68,15 @@ const actions: ActionTree<WorkspaceState, RootState> = {
         dispatch("revisions/open", payload);
       });
     })
-  }
+  },
+
+  preview({ commit }, payload: DocumentVersion| null): Promise<void> {
+    console.log("previewing: ", payload);
+    return new Promise((resolve, reject) => {
+      commit("setViewing", payload);
+      resolve();
+    })
+  },
 }
 
 export default {
