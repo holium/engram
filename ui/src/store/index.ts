@@ -37,8 +37,8 @@ const actions: ActionTree<RootState, RootState> = {
     dispatch("space/load", router.currentRoute.value.query.spaceId, { root: true });
     (window as any).urbit.scry({ app: "engram", path: `/space${router.currentRoute.value.query.spaceId}/list`}).then((response: any) => {
       console.log("spaces response: ", response);
-      dispatch("documents/clear", {}, { root: true });
       dispatch("folders/clear", {}, { root: true });
+      dispatch("documents/clear", {}, { root: true });
       Promise.all(Object.keys(response).map((item: any) => {
         return new Promise<void>((res) => {
           if(response[item].type == "document") {

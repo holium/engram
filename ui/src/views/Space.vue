@@ -50,6 +50,7 @@ export default defineComponent({
   },
   methods: {
     loadSpace: function(to: string) {
+      store.dispatch("load", to as string);
       if(to != "/null/space") {
         (window as any).urbit.poke({ 
           app: "engram", 
@@ -62,10 +63,10 @@ export default defineComponent({
             }
           }
         })
-      }
-      setTimeout(() => {
+        setTimeout(() => {
           store.dispatch("load", to as string);
-      }, to == "/null/space" ? 2000 : 0);
+      }, 2000);
+      }
     },
     toggleNav: function() {
       this.nav = !this.nav;

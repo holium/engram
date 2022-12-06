@@ -22,6 +22,7 @@ const getters: GetterTree<FolderState, RootState> = {
     return state[id].name;
   },
   meta: (state) => (id: string): ItemMeta => {
+    console.log("getting meta: ", id);
     return {
       id: id,
       name: state[id].name,
@@ -54,7 +55,15 @@ const mutations: MutationTree<FolderState> = {
     })
   },
   clear(state) {
-    state = {};
+    Object.keys(state).forEach((key: string) => {
+      delete state[key];
+    });
+    state["."] = {
+      id: ".",
+      name: "root",
+      owner: "",
+      content: {}
+    }
   },
 
   delete(state, payload: string) {

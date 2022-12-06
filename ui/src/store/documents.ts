@@ -24,6 +24,7 @@ const getters: GetterTree<DocumentState, RootState> = {
     })
   },
   meta: (state) => (id: string): ItemMeta => {
+    console.log("getting meta: ", id);
     return {
       id: id,
       name: state[id].name,

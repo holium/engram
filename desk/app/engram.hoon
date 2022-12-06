@@ -473,6 +473,7 @@
           %gatherall
         ?>  =(src.bowl our.bowl)
         ~&  "GATHERALL-- items in {<space.act>}"
+        ?.  (~(has by s) space.act)  ~&  "No space at this path"  `this
         =/  spc  (~(got by s) space.act)
         =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.act -.+.space.act ~.members ~.noun])
         ?+  -.spacemembers  !!
@@ -573,7 +574,8 @@
     ?:  (~(has by s) ~[i.t.t.p i.t.t.t.p])
       =/  spc  (~(got by s) ~[i.t.t.p i.t.t.t.p])
       ``noun+!>((list:space:enjs:engram [d f content.content.spc]))
-    ~&  "No space of path: {<`path`~[i.t.t.p i.t.t.t.p]>}"  !!
+    ~&  "No space of path: {<`path`~[i.t.t.p i.t.t.t.p]>}"
+    ``noun+!>((list:space:enjs:engram [d f ^*((map id [id @tas]))]))
     ::
       [%x %space @ @ %settings ~]
     ?:  (~(has by s) ~[i.t.t.p i.t.t.t.p])
