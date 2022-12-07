@@ -117,6 +117,7 @@ export default defineComponent({
                     display: "Delete", 
                     icon: "", 
                     run: () => {
+                        store.dispatch("folders/softremove", { from: this.parent, index: this.item })
                         if(this.type == "folder") {
                             store.dispatch("folders/delete", this.item);
                         } else {

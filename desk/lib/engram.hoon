@@ -100,17 +100,11 @@
       |=  doc=document:engram
       ^-  json
       %-  pairs  :~ 
-        :: Alvin Zhou
-        :: Ethan Chabowski
-        :: Binging with Bavish
-        :: Uncle Roger
         ['id' (path ~[(scot %p -.id.doc) (scot %u +.id.doc)])]
         ['version' (tape version.doc)]
         ['content' (tape content.doc)]
-        :::-  'ships'  %-  pairs  %+  turn  ~(val by content.ships.settings.doc)  |=  [ship=@p level=@tas]  [(scot %p ship) (tape (trip level))]
-        ::['settings' (settings settings.doc)]
-        ::['snapshots' (snapshots snapshots.doc)]
       ==
+
     ++  settings
       =,  enjs:format
       |=  settings=dsettings:engram

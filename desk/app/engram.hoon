@@ -85,16 +85,21 @@
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         ?>  (~(has by d) id)
         =/  nstate  this(d (~(del by d) id))
+        ~&  "Trying to remove from space"
         =/  spcs
           %-  ~(run by s)  |=  spc=space
           ?:  (~(has by content.content.spc) id)
+            ~&  "Removing from space"
             =.  content.spc  (remove:index content.spc id our.bowl)
             spc
           spc
+        ~&  spcs
         =/  sstate  nstate(s spcs)
+        ~&  "Trying to remove from folder"
         =/  fldrs
           %-  ~(run by f)  |=  fldr=folder
           ?:  (~(has by content.content.fldr) id)
+            ~&  "Removing from folder"
             =.  content.fldr  (remove:index content.fldr id our.bowl)
             fldr
           fldr
@@ -573,6 +578,8 @@
     ?>  =(src.bowl our.bowl)
     ?:  (~(has by s) ~[i.t.t.p i.t.t.t.p])
       =/  spc  (~(got by s) ~[i.t.t.p i.t.t.t.p])
+      ~&  "Requested space: "
+      ~&  spc
       ``noun+!>((list:space:enjs:engram [d f content.content.spc]))
     ~&  "No space of path: {<`path`~[i.t.t.p i.t.t.t.p]>}"
     ``noun+!>((list:space:enjs:engram [d f ^*((map id [id @tas]))]))
