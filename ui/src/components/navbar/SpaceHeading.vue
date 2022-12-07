@@ -17,14 +17,14 @@
 
     <!-- Select -->
     <div 
-      class="flex flex-col border-t border-border outline-none" 
-      :style="{top: '100%', width: '100%', display: expand ? 'flex' : 'none'}" 
+      class="flex flex-col outline-none bg-window relative overflow-auto scrollbar-small"
+      :style="{width: '100%', display: expand ? 'flex' : 'none', left: '-8px', 'max-height': '40vh'}" 
       ref="select-space" 
       @blur="() => { expand = false }" 
       tabindex="0"
     >
       <div 
-        class="flex gap-4 px-3 py-2" 
+        class="flex gap-4 px-3 py-2 cursor-pointer" 
         :key="option.path" 
           v-for="option in spaces.filter(option => true || option.path != space.path)" 
           @click="() => { openSpace(option.path) }"
