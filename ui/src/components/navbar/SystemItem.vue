@@ -117,7 +117,11 @@ export default defineComponent({
                     display: "Delete", 
                     icon: "", 
                     run: () => {
-                        console.log("delete document")
+                        if(this.type == "folder") {
+                            store.dispatch("folders/delete", this.item);
+                        } else {
+                            store.dispatch("documents/delete", this.item);
+                        }
                     }
                 },
                 { 
