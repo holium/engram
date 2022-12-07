@@ -38,12 +38,35 @@ export default defineComponent({
   created: function() {
     this.loadSpace(this.$route.query.spaceId as string);
   },
-  beforeRouteUpdate: function(to) {
-    this.loadSpace(to.query.spaceId as string);
+  watch: {
+    spaceId: function() {
+      this.loadSpace(this.$route.query.spaceId as string);
+    }
+  },
+  computed: {
+    spaceId: function(): string {
+      return this.$route.query.spaceId as string;
+    }
   },
   methods: {
     loadSpace: function(to: string) {
-      store.dispatch('load', to);
+      store.dispatch("load", to as string);
+      if(to != "/null/space") {
+        (window as any).urbit.poke({ 
+          app: "engram", 
+          mark: "post",
+          json: {
+            space: {
+              gatherall: {
+                space: to
+              }
+            }
+          }
+        })
+        setTimeout(() => {
+          store.dispatch("load", to as string);
+      }, 2000);
+      }
     },
     toggleNav: function() {
       this.nav = !this.nav;

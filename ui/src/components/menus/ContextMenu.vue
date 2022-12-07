@@ -4,7 +4,7 @@
         tabindex="0"
         @blur="close"
         style="item.location"
-        class="bg-paper flex absolute outline-none shadow-menu" 
+        class="bg-paper flex absolute outline-none shadow-menu overflow-hidden rounded-2" 
         :class="{'flex-col': !contextmenu.horizontal}"
         :style="contextmenu.location"
     >

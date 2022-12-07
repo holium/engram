@@ -1,7 +1,7 @@
 <template>
   <div class="relative flex flex-col">
     <div class="flex gap-4" @click="openSelection">
-      <div class="rounded-2" :style="{ width: '40px', height: '40px', 'background-color': space.color }">
+      <div class="rounded-2" :style="{ width: '40px', height: '40px', 'min-width': '40px', 'min-height': '40px', 'background-color': space.color }">
 
       </div>
       <div class="flex flex-col gap-2">
@@ -17,14 +17,14 @@
 
     <!-- Select -->
     <div 
-      class="flex flex-col border-t border-border outline-none" 
-      :style="{top: '100%', width: '100%', display: expand ? 'flex' : 'none'}" 
+      class="flex flex-col outline-none bg-window relative overflow-auto scrollbar-small"
+      :style="{width: '100%', display: expand ? 'flex' : 'none', left: '-8px', 'max-height': '40vh'}" 
       ref="select-space" 
       @blur="() => { expand = false }" 
       tabindex="0"
     >
       <div 
-        class="flex gap-4 px-3 py-2" 
+        class="flex gap-4 px-3 py-2 cursor-pointer" 
         :key="option.path" 
           v-for="option in spaces.filter(option => true || option.path != space.path)" 
           @click="() => { openSpace(option.path) }"
@@ -57,18 +57,13 @@ export default defineComponent({
     }
   },
   created: function() {
-    store.dispatch("space/load", this.$route.query.spaceId);
     this.ship = (window as any).ship;
-    this.gatherall();
-    this.loadSpaces(this.$route);
-  },
-  onRouteUpdate: function(to: any) {
-    store.dispatch("space/load", to);
+    this.loadSpaces();
   },
   computed: {
     space: function(): Space {
       return store.getters['space/get'];
-    }
+    },
   },
   methods: {
     openSelection: function() {
@@ -79,37 +74,18 @@ export default defineComponent({
         setTimeout(() => {
           (this.$refs["select-space"] as any).focus();
         }, 10);
-
       }
     },
     openSpace: function(path: string) {
-      this.$router.push(`apps/engram${path}`);
+      this.$router.push(`/apps/engram/?spaceId=${path}`);
       this.expand = false;
     },
-    loadSpaces: async function(route: any) {
+    loadSpaces: async function() {
       const spacesRes = await store.getters["spaces"];
       this.spaces = Object.keys(spacesRes).map((space) => {
-        return { path: space, ...spacesRes } as Space;
+        return { path: space, ...(spacesRes[space]) } as Space;
       })
     },
-    gatherall: function() {
-      if(this.$route.query.spaceId != "/null/space") {
-        (window as any).urbit.poke({ 
-          app: "engram", 
-          mark: "post",
-          json: {
-            space: {
-              gatherall: {
-                space: this.$route.query.spaceId
-              }
-            }
-          }
-        })
-        setTimeout(() => {
-          store.dispatch("load", this.$route.query.spaceId as string);
-        }, 2000);
-      }
-    }
   }
 });
 </script>
