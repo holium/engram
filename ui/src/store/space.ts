@@ -10,7 +10,8 @@ const state: SpaceState = {
     name: "",
     path: "",
     image: "",
-    color: ""
+    color: "",
+    roles: [],
 }
 
 const getters: GetterTree<SpaceState, RootState> = {
@@ -25,6 +26,9 @@ const getters: GetterTree<SpaceState, RootState> = {
     },
     color(state) {
         return state.color;
+    },
+    roles(state) {
+      return state.roles;
     }
 }
 
@@ -34,27 +38,31 @@ const mutations: MutationTree<SpaceState> = {
         state.name = payload.name;
         state.image = payload.image;
         state.color = payload.color;
+        state.roles = payload.roles;
     }
 }
 
 const actions: ActionTree<SpaceState, RootState> = {
     load({ commit }, payload: string): Promise<Space> {
         return new Promise((resolve, reject) => {
+          (window as any).urbit.scry({ app: "spaces", path: `${payload}/members/~${(window as any).ship}` }).then((member: any) => {
             (window as any).urbit.scry({ app: "spaces", path: `${payload}` }).then((response: any) => {
-                console.log("load space res:", response);
-                commit("load", { ...response.space});
+                console.log("load space res:", member, response);
+                commit("load", { ...response.space, roles: member.member.roles});
                 resolve(response.space);
-              }).catch((err: any) => {
-                console.warn("spaces agent missing!!", err);
-                const nullspace = {
-                    path: `/~${(window as any).ship}/our`, 
-                    name: "Local", 
-                    color: "#262626",
-                    image: ""
-                }
-                commit("load", nullspace)
-                resolve(nullspace);
               })
+            }).catch((err: any) => {
+              console.warn("spaces agent missing!!", err);
+              const nullspace = {
+                  path: `/~${(window as any).ship}/our`, 
+                  name: "Local", 
+                  color: "#262626",
+                  image: "",
+                  roles: []
+              }
+              commit("load", nullspace)
+              resolve(nullspace);
+            })
         })
     },
     addship({ commit }, payload: { id: string, ship: string, level: string }): Promise<void> {

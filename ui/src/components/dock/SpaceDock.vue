@@ -16,6 +16,7 @@
             </div>
                 <div class="flex flex-col gap-1">
                   <ShipPermission 
+                    :editable="isAdmin"
                     :key="item" 
                     :ship="ships[item].ship" 
                     :level="ships[item].level" 
@@ -23,6 +24,7 @@
                     v-for="item in Object.keys(ships)" 
                   />
                   <RolePermission 
+                    :editable="isAdmin"
                     :key="item" 
                     :role="roles[item].role" 
                     :level="roles[item].level" 
@@ -34,13 +36,15 @@
                     <input 
                         @keydown="addPermission"
                         type="text" 
+                        :editable="isAdmin"
                         placeholder="add role or ship"
                         v-model="newPermission"
                         class="whitespace-nowrap overflow-hidden overflow-ellipsis realm-cursor-text-cursor text-azimuth" 
                     >
                     <select 
-                        v-model="newPermissionLevel"
-                        class="whitespace-nowrap overflow-hidden overflow-ellipsis text-azimuth" 
+                      :editable="isAdmin"
+                      v-model="newPermissionLevel"
+                      class="whitespace-nowrap overflow-hidden overflow-ellipsis text-azimuth" 
                     >
                         <option value="editor">editor</option>
                         <option value="viewer">viewer</option>
@@ -54,6 +58,7 @@
   
 <script lang="ts">
   import { defineComponent } from "vue";
+  import store from "@/store/index"
   import ShipPermission from "./ShipPermission.vue";
   import RolePermission from "./RolePermission.vue";
   export default defineComponent({
@@ -86,6 +91,15 @@
             this.roles = res.roles;
             this.ships = res.ships;
         });
+      }
+    },
+    computed: {
+      isAdmin: function(): boolean {
+        return store.getters['space/owner'] == `~${(window as any).ship}`
+        || store.getters['space/roles'].reduce((role: string, acc: boolean) => {
+          return acc || Object.keys(this.roles).find(role => this.roles[role].role == role && this.roles[role].level == 'admin');
+        }, false) 
+        || Object.keys(this.ships).find(ship => this.ships[ship].ship == `~${(window as any).ship}` && this.ships[ship].level == 'admin');
       }
     },
     methods: {

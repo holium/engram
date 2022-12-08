@@ -5,6 +5,7 @@
         </div>
         <select 
             v-model="lvl"
+            :editable="editable"
             @change="handleLevel"
             class="whitespace-nowrap overflow-hidden overflow-ellipsis text-azimuth px-3 py-2 clickable" 
         >
@@ -28,6 +29,11 @@ export default defineComponent({
         level: {
             type: String,
             required: true,
+        },
+        editable: {
+            type: Boolean,
+            required: false,
+            default: () => { return false; }
         }
     },
     data() {

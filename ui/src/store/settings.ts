@@ -2,10 +2,9 @@ import type { Patp } from "@urbit/http-api";
 import type {
   RootState,
   SettingsState,
-  DocumnetPermission
 } from "./types"
 import type { Module, GetterTree, MutationTree, ActionTree } from "vuex"
-import { ID } from "yjs";
+import router from "@/router/index"
 
 const state: SettingsState = {
   roles: {},
@@ -38,16 +37,16 @@ const mutations: MutationTree<SettingsState> = {
   },
 
   // Role Management -----------------------------------------------------------
-  setRole(state, payload: { role: string, level: DocumnetPermission}) {
-    state.roles[payload.role] = payload.level;
+  setRole(state, payload: { role: string, level: string}) {
+    state.roles[`${Date.now()}`] = { role: payload.role, level: payload.level};
   },
   deleteRole(state, payload: string) {
     delete state.roles[payload];
   },
 
   // Ship Management -----------------------------------------------------------
-  setShip(state, payload: { ship: Patp, level: DocumnetPermission}) {
-    state.ships[payload.ship] = payload.level;
+  setShip(state, payload: { ship: Patp, level: string}) {
+    state.ships[`${Date.now()}`] = { ship: payload.ship, level: payload.level};
   },
   deleteShip(state, payload: string) {
     delete state.ships[payload];
@@ -68,7 +67,7 @@ const actions: ActionTree<SettingsState, RootState> = {
     commit("close");
   },
 
-  addship({ commit }, payload: { id: string, ship: string, level: string }): Promise<void> {
+  addship({ commit, dispatch }, payload: { id: string, ship: string, level: string }): Promise<void> {
     return new Promise((resolve, reject) => {
       commit("setShip", payload);
       (window as any).urbit.poke({
@@ -81,10 +80,12 @@ const actions: ActionTree<SettingsState, RootState> = {
             level: payload.level,
           }}
         }
+      }).then(() => {
+        dispatch('open', `${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`)
       })
     })
   },
-  addrole({ commit }, payload: { id: string, role: string, level: string }): Promise<void> {
+  addrole({ commit, dispatch }, payload: { id: string, role: string, level: string }): Promise<void> {
     return new Promise((resolve, reject) => {
       commit("setRole", payload);
       (window as any).urbit.poke({
@@ -97,6 +98,8 @@ const actions: ActionTree<SettingsState, RootState> = {
             level: payload.level,
           }}
         }
+      }).then(() => {
+        dispatch('open', `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`);
       })
     })
   }
