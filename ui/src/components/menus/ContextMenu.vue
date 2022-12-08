@@ -3,6 +3,7 @@
         ref="menu"
         tabindex="0"
         @blur="close"
+        @keydown="handleKey"
         class="bg-paper flex absolute outline-none shadow-menu overflow-hidden rounded-2" 
         :class="{'flex-col': !contextmenu.horizontal}"
         :style="contextmenu.location"
@@ -28,6 +29,9 @@ export default defineComponent({
         (this.$refs["menu"] as any).focus();
     },
     methods: {
+        handleKey: function(event: KeyboardEvent) {
+            console.log("menu handling key: ", event);
+        },
         close: function() {
             (this as any).closeMenu();
         }

@@ -27,7 +27,7 @@ export let view: EditorView;
 export default function (
   place: HTMLElement,
   content: Uint8Array,
-  pushMenu: (menu: Menu) => void,
+  pushMenu: (menu: Menu | null) => void,
   updateBauble: (bauble: BaubleUpdate) => void,
   updateCover: (cover: CoverUpdate) => void,
   updateStyling: (styling: StylingUpdate) => void,

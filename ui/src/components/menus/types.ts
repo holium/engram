@@ -24,9 +24,13 @@ export class Menu {
 export class SlashMenu extends Menu {
 
     dom = SlashMenuNode;
+    search: string;
+    selected: number;
 
-    constructor(location:  { top: number, left: number }) {
+    constructor(location:  { top: number, left: number }, search: string, selected: number) {
         super(location, suggestions, false);
+        this.search = search;
+        this.selected = selected;
     }
 }
 
