@@ -35,10 +35,12 @@ const slashmenu = (pushMenu: (menu: SlashMenu | null) => void) => new Plugin({
                     event.preventDefault();
                     pushMenu(new SlashMenu({ top: top, left: left }, search, selected));
                 } else if(top != 0 && event.key == "Enter") {
-                    const items = (new SlashMenu({ top: top, left: left }, search, selected)).items.filter((item) => {
+                    const tempmenu = (new SlashMenu({ top: top, left: left }, search, selected));
+                    const items = tempmenu.items.filter((item) => {
                         return item.display.toLowerCase().search(search.toLowerCase()) > -1;
                     })
                     console.log("Running command: ", items, items[selected % items.length]);
+                    tempmenu.clearSearch();
                     items[selected % items.length].command();
                     pushMenu(null);
                     search = "";

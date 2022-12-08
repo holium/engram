@@ -10,7 +10,7 @@
             class="clickable flex"
             :key="suggestion.display" 
             v-for="(suggestion, i) in items" 
-            @click="() => { suggestion.command(); close(); }"
+            @click="() => { contextmenu.clearSearch(); suggestion.command(); close(); }"
         >
             <div>
 

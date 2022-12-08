@@ -1,4 +1,5 @@
 import { suggestions } from "../document/prosemirror/suggestions";
+import { view } from "../document/prosemirror/render"
 
 import ContextMenuNode from "./ContextMenu.vue";
 import SlashMenuNode from "./SlashMenu.vue";
@@ -31,6 +32,12 @@ export class SlashMenu extends Menu {
         super(location, suggestions, false);
         this.search = search;
         this.selected = selected;
+    }
+
+    clearSearch() {
+        const sel = view.state.selection;
+        const tr = view.state.tr.delete(sel.from - 1 - this.search.length, sel.from);
+        view.dispatch(tr);
     }
 }
 
