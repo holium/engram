@@ -388,7 +388,7 @@ const schema = new Schema({
     },
 
     // Hypertext ---------------------------------------------------------------
-    ameslink: {
+    engramlink: {
       priority: 100,
       inclusive: false,
       attrs: {
@@ -397,10 +397,10 @@ const schema = new Schema({
       parseDOM: [{ tag: 'a[href*="engram://"]' }],
       toDOM(node) {
         return [
-          "abbr",
+          "a",
           {
             href: node.attrs.href,
-            "data-type": "urbit",
+            "data-type": "engram",
           },
           0,
         ];

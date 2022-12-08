@@ -116,7 +116,7 @@ export default defineComponent({
                 { 
                     display: "Delete", 
                     icon: "", 
-                    run: () => {
+                    command: () => {
                         store.dispatch("folders/softremove", { from: this.parent, index: this.item })
                         if(this.type == "folder") {
                             store.dispatch("folders/delete", this.item);
@@ -128,14 +128,14 @@ export default defineComponent({
                 { 
                     display: "Link", 
                     icon: "", 
-                    run: () => {
+                    command: () => {
                         console.log("link document")
                     }
                 },
                 ...(`~${(window as any).ship}` == this.meta.owner ? [{
                     display: "Rename",
                     icon: "",
-                    run: () => {
+                    command: () => {
                         this.name = this.meta.name;
                         this.rename = true;
                         setTimeout(() => {
@@ -146,7 +146,7 @@ export default defineComponent({
                 ...(this.type == 'folder' ? [{
                     display: "Settings",
                     icon: "",
-                    run: () => {
+                    command: () => {
                         (this as any).pushFolderDock(this.item);
                     }
                 }]: [])

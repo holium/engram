@@ -1,7 +1,7 @@
 import { EditorView } from "prosemirror-view";
 import { EditorState } from "prosemirror-state";
 import * as Y from "yjs"
-import { ySyncPlugin, undo, redo } from "y-prosemirror";
+import { ySyncPlugin, yUndoPlugin } from "y-prosemirror";
 
 import store from "@/store/index";
 import router from "@/router/index";
@@ -17,6 +17,10 @@ import type { CoverUpdate } from "./cover"
 import styling from "./styling";
 import type { StylingUpdate } from "./styling"
 import type { DocumentUpdate, DocumentVersion } from "@/store/types";
+import type { Menu } from "../../menus/types";
+
+import slashmenu from "./slashmenu";
+import highlightmenu from "./highlightmenu"
 
 
 export let view: EditorView;
@@ -24,6 +28,7 @@ export let view: EditorView;
 export default function (
   place: HTMLElement,
   content: Uint8Array,
+  pushMenu: (menu: Menu | null) => void,
   updateBauble: (bauble: BaubleUpdate) => void,
   updateCover: (cover: CoverUpdate) => void,
   updateStyling: (styling: StylingUpdate) => void,
@@ -92,11 +97,14 @@ export default function (
         }),
         // CRDT
         ySyncPlugin(type),
+        yUndoPlugin(),
         // Views
         cover(updateCover),
         styling(updateStyling),
         // ux
         bauble(updateBauble),
+        slashmenu(pushMenu),
+        highlightmenu(pushMenu)
       ],
     });
   } else {

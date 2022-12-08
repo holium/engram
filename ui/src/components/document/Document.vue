@@ -53,6 +53,7 @@ export default defineComponent({
       required: true,
     }
   },
+  inject: ['pushMenu'],
   data() {
     return {
       loaded: null as null | Promise<DocumentContent>,
@@ -85,7 +86,7 @@ export default defineComponent({
   beforeRouteUpdate: function(to) {
     this.loaded = store.dispatch("workspace/open", `${to.params.author}/${to.params.clock}`);
     this.loaded.then((res: any) => {
-        render(this.$refs["document"] as any, res.content, this.updateBauble, this.updateCover, this.updateStyling, null);
+        render(this.$refs["document"] as any, res.content, (this as any).pushMenu, this.updateBauble, this.updateCover, this.updateStyling, null);
       })
   },
   mounted: function () {
@@ -93,7 +94,7 @@ export default defineComponent({
     if(this.loaded == null) console.warn("no document");
     else {
       this.loaded.then((res: any) => {
-        render(this.$refs["document"] as any, res.content, this.updateBauble, this.updateCover, this.updateStyling, null);
+        render(this.$refs["document"] as any, res.content, (this as any).pushMenu, this.updateBauble, this.updateCover, this.updateStyling, null);
       })
     }
   },
@@ -102,7 +103,7 @@ export default defineComponent({
       console.log("previewing changed:", newRender)
       if(this.loaded != null) {
         this.loaded.then((res: any) => {
-          render(this.$refs["document"] as any, res.content, this.updateBauble, this.updateCover, this.updateStyling, newRender);
+          render(this.$refs["document"] as any, res.content, (this as any).pushMenu, this.updateBauble, this.updateCover, this.updateStyling, newRender);
         });
       }
     }

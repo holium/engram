@@ -3,12 +3,12 @@
         ref="menu"
         tabindex="0"
         @blur="close"
-        style="item.location"
+        @keydown="handleKey"
         class="bg-paper flex absolute outline-none shadow-menu overflow-hidden rounded-2" 
         :class="{'flex-col': !contextmenu.horizontal}"
         :style="contextmenu.location"
     >
-        <div :key="i" v-for="(item, i) in contextmenu.items" @click="() => { item.run(); close() }" class="px-3 py-1 clickable">
+        <div :key="i" v-for="(item, i) in contextmenu.items" @click="() => { item.command(); close() }" class="px-3 py-1 clickable">
             {{ item.display }}
         </div>
     </div>
@@ -29,6 +29,9 @@ export default defineComponent({
         (this.$refs["menu"] as any).focus();
     },
     methods: {
+        handleKey: function(event: KeyboardEvent) {
+            console.log("menu handling key: ", event);
+        },
         close: function() {
             (this as any).closeMenu();
         }

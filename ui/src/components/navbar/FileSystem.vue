@@ -43,14 +43,14 @@ export default defineComponent({
                 {
                     display: "New Document",
                     icon: "",
-                    run: () => {
+                    command: () => {
                         store.dispatch("documents/make", { name: "Untitled Document" })
                     }
                 },
                 {
                     display: "New Folder",
                     icon: "",
-                    run: () => {
+                    command: () => {
                         store.dispatch("folders/make", { name: "Untitled Folder" })
                     }
 
