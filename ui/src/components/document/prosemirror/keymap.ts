@@ -16,6 +16,7 @@ import {
   newlineInCode,
   setBlockType,
 } from "prosemirror-commands";
+import { undo, redo } from "y-prosemirror"
 import { undoInputRule } from "prosemirror-inputrules";
 import {
   splitListItem,
@@ -28,6 +29,8 @@ import schema from "./schema";
 
 export default keymap({
   // Basic ---------------------------------------------------------------------
+  "Mod-z": undo,
+  "Mod-y": redo,
   // Enter
   Enter: chainCommands(
     newlineInCode,

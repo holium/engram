@@ -1,7 +1,7 @@
 import { EditorView } from "prosemirror-view";
 import { EditorState } from "prosemirror-state";
 import * as Y from "yjs"
-import { ySyncPlugin, undo, redo } from "y-prosemirror";
+import { ySyncPlugin, yUndoPlugin } from "y-prosemirror";
 
 import store from "@/store/index";
 import router from "@/router/index";
@@ -92,6 +92,7 @@ export default function (
         }),
         // CRDT
         ySyncPlugin(type),
+        yUndoPlugin(),
         // Views
         cover(updateCover),
         styling(updateStyling),
