@@ -3,6 +3,7 @@
     <Navbar />
     <router-view class="flex-grow"></router-view>
     <FolderDock :folder="folderdock" :class="{'hide-folder-dock': folderdock.length == 0}" @close="closeFolderDock"/>
+    <SpaceDock :open="(spacedock.length == 0)" :class="{'hide-space-dock': spacedock.length == 0}" @close="closeSpaceDock" />
   </div>
 </template>
 
@@ -12,6 +13,7 @@ import store from "@/store/index";
 import { RouterLink, RouterView } from "vue-router";
 import Navbar from "@/components/navbar/Navbar.vue";
 import FolderDock from "@/components/dock/FolderDock.vue"
+import SpaceDock from "@/components/dock/SpaceDock.vue"
 
 export default defineComponent({
   name: "Space",
@@ -19,12 +21,14 @@ export default defineComponent({
     RouterView,
     Navbar,
     FolderDock,
+    SpaceDock,
   },
   data() {
     return {
       nav: true,
       dock: false,
       folderdock: "",
+      spacedock: "",
     }
   },
   provide() {
@@ -32,7 +36,9 @@ export default defineComponent({
       toggleNav: this.toggleNav,
       toggleDock: this.toggleDock,
       pushFolderDock: this.pushFolderDock,
-      closeFolderDock: this.closeFolderDock
+      closeFolderDock: this.closeFolderDock,
+      pushSpaceDock: this.pushSpaceDock,
+      closeSpaceDock: this.closeSpaceDock
     }
   },
   created: function() {
@@ -79,6 +85,12 @@ export default defineComponent({
     },
     closeFolderDock: function() {
       this.folderdock = "";
+    },
+    pushSpaceDock: function() {
+      this.spacedock = this.$route.query.spaceId as string;
+    },
+    closeSpaceDock: function() {
+      this.spacedock = "";
     }
   }
 });

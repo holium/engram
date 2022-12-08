@@ -7,6 +7,9 @@
 ++  update
   |$  item
   [content=(map id item) dels=(map id id)]
+++  stringify
+  |=  id=id
+  (weld (weld "/" (trip (scot %p -.id))) (weld "/" (trip (scot %ud +.id))))
 ++  delta
   |*  [state=(index) remote=version]
   :-

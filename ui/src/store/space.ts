@@ -56,7 +56,39 @@ const actions: ActionTree<SpaceState, RootState> = {
                 resolve(nullspace);
               })
         })
-    }
+    },
+    addship({ commit }, payload: { id: string, ship: string, level: string }): Promise<void> {
+        return new Promise((resolve, reject) => {
+          commit("setShip", payload);
+          (window as any).urbit.poke({
+            app: "engram",
+            mark: "post",
+            json: {
+              space: { addship: {
+                id: payload.id,
+                ship: payload.ship,
+                level: payload.level,
+              }}
+            }
+          })
+        })
+      },
+      addrole({ commit }, payload: { id: string, role: string, level: string }): Promise<void> {
+        return new Promise((resolve, reject) => {
+          commit("setRole", payload);
+          (window as any).urbit.poke({
+            app: "engram",
+            mark: "post",
+            json: {
+                space: { addrole: {
+                id: payload.id,
+                role: payload.role,
+                level: payload.level,
+              }}
+            }
+          })
+        })
+      }
 }
 
 export default {

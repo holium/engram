@@ -1,11 +1,18 @@
 <template>
-    <div class="flex justify-between items-center">
-        <div class="azimuth">
+    <div class="flex justify-between items-center py-2">
+        <div class="azimuth px-3 py-2">
             %{{ role }}
         </div>
-        <div class="px-2 py-1 clickable">
-            {{ level }}
-        </div>
+        <select 
+            v-model="lvl"
+            @change="handleLevel"
+            class="whitespace-nowrap overflow-hidden overflow-ellipsis text-azimuth px-3 py-2 clickable" 
+        >
+            <option value="editor">editor</option>
+            <option value="viewer">viewer</option>
+            <option value="admin">admin</option>
+            <option value="-">delete</option>
+        </select>
     </div>
 </template>
 
@@ -21,6 +28,19 @@ export default defineComponent({
         level: {
             type: String,
             required: true,
+        }
+    },
+    data() {
+        return {
+            lvl: "",
+        }
+    },
+    created: function() {
+        this.lvl = this.level;
+    },
+    methods: {
+        handleLevel: function(event: any) {
+            this.$emit("level", event.target.value);
         }
     }
 })

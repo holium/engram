@@ -155,7 +155,7 @@
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         `this(u (~(del ju u) id update.act))
         ::
-        :: give a ship permissions
+        :: Give a ship permissions
         ::
           %addship
         ?>  =(src.bowl our.bowl)
@@ -166,6 +166,7 @@
         todoc
         `this(d (~(put by d) id ndoc))
           %addrole
+        ?>  =(src.bowl our.bowl)
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  todoc  (~(got by d) id)
         =/  ndoc
@@ -472,6 +473,37 @@
         ?>  =(src.bowl our.bowl)
         =/  spc  ^*  space
         `this(s (~(put by s) space.act spc))
+        ::
+        :: Edit Space Permissions
+        ::
+          %addship
+        ?>  =(src.bowl our.bowl)
+        =/  spc  (~(got by s) path.act)
+        =/  nspc
+        =.  ships.spc  (insert:index ships.spc [ship.act level.act] our.bowl)
+        spc
+        `this(s (~(put by s) path.act nspc))
+          %addrole
+        ?>  =(src.bowl our.bowl)
+        =/  spc  (~(got by s) path.act)
+        =/  nspc
+        =.  roles.spc  (insert:index roles.spc [role.act level.act] our.bowl)
+        spc
+        `this(s (~(put by s) path.act nspc))
+          %removeperms
+        ?>  =(src.bowl our.bowl)
+        =/  spc  (~(got by s) path.act)
+        =/  id  [`@p`(slav %p -.item.act) `@u`(slav %ud -.+.item.act)]
+        =/  nspc
+        ?+  type.act  !!
+            %role
+          =.  roles.spc  (remove:index roles.spc id our.bowl)
+          spc
+            %ship
+          =.  ships.spc  (remove:index ships.spc id our.bowl)
+          spc
+        ==
+        `this(s (~(put by s) path.act nspc))
         ::
         ::  Gather updated to a space index from all peers in the space
         ::
