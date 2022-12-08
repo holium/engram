@@ -13,12 +13,12 @@ const getters: GetterTree<RootState, RootState> = {
       (window as any).urbit.scry({ app: "spaces", path: `/all` }).then((response: any) => {
         console.log("got spaces: ", response);
         const nullspace = {
-          path: "/null/space", 
+          path: `/~${(window as any).ship}/our`, 
           name: "Local", 
           color: "#262626",
           image: ""
       }
-        resolve({...response.spaces, "/null/space": nullspace});
+        resolve({...response.spaces, [`/~${(window as any).ship}/our`]: nullspace});
       }).catch((err: any) => {
         console.warn("spaces agent missing !!", err);
         reject([]);
