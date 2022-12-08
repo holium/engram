@@ -1,4 +1,4 @@
-import {createStore} from 'vuex'
+import {createStore, storeKey} from 'vuex'
 import type { GetterTree, ActionTree } from "vuex"
 import router from "@/router/index"
 import type { RootState, Space } from "./types"
@@ -37,6 +37,9 @@ const actions: ActionTree<RootState, RootState> = {
     dispatch("space/load", router.currentRoute.value.query.spaceId, { root: true });
     (window as any).urbit.scry({ app: "engram", path: `/space${router.currentRoute.value.query.spaceId}/list`}).then((response: any) => {
       console.log("spaces response: ", response);
+      if(Object.keys(response).length == 0) {
+        dispatch("documents/make", { name: "Untitled Document"}, { root: true});
+      }
       dispatch("folders/clear", {}, { root: true });
       dispatch("documents/clear", {}, { root: true });
       Promise.all(Object.keys(response).map((item: any) => {

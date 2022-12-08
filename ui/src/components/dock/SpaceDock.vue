@@ -99,8 +99,10 @@
         },
         removePermission: function(timestamp: string, type: string) {
             if(type == "ship") {
+              this.spanningremove(this.ships[timestamp].ship, this.ships[timestamp].level, type);
               delete this.ships[timestamp];
             } else {
+              this.spanningremove(this.roles[timestamp].role, this.roles[timestamp].level, type);
               delete this.roles[timestamp];
             }
             (window as any).urbit.poke({
@@ -111,12 +113,17 @@
                     item: timestamp,
                     type: type,
                 }}}
-            })
+            });
         },
         addPermission: function(event: KeyboardEvent) {
             console.log("input: ", this.newPermission, event.key, " @ ", (event.target as any).selectionStart);
             if(event.key == "Enter" && this.newPermission.length > 0 && this.newPermissionLevel.length > 0) {
                 if(this.newPermission.charAt(0) == "~") {
+                  this.spanningadd(this.newPermission, this.newPermissionLevel, "ship");
+                    (window as any).urbit.scry({
+                      app: "engram",
+                      path: ""
+                    });
                     this.ships[`${Date.now()}`] = { ship: this.newPermission, level: this.newPermissionLevel };
                     (window as any).urbit.poke({
                         app: "engram",
@@ -128,16 +135,17 @@
                         }}}
                     })
                 } else {
-                    this.roles[`${Date.now()}`] = { role: this.newPermission.substring(1), level: this.newPermissionLevel };
-                    (window as any).urbit.poke({
-                        app: "engram",
-                        mark: "post",
-                        json: { space: { addrole: {
-                            id: this.$route.query.spaceId,
-                            role: this.newPermission.substring(1),
-                            level: this.newPermissionLevel
-                        }}}
-                    })
+                  this.spanningadd(this.newPermission.substring(1), this.newPermissionLevel, "role");
+                  this.roles[`${Date.now()}`] = { role: this.newPermission.substring(1), level: this.newPermissionLevel };
+                  (window as any).urbit.poke({
+                    app: "engram",
+                    mark: "post",
+                    json: { space: { addrole: {
+                      id: this.$route.query.spaceId,
+                      role: this.newPermission.substring(1),
+                      level: this.newPermissionLevel
+                    }}}
+                  })
                 }
                 this.newPermission = "";
                 this.newPermissionLevel = "";
@@ -155,6 +163,61 @@
                 }
                 }
             }
+        },
+        spanningadd: function(perm: string, level: string, type: string) {
+          (window as any).urbit.scry({
+            app: "engram", path: `/space${this.$route.query.spaceId}/list`
+          }).then((items: any) => {
+            console.log("spannign add: ", items);
+            Object.keys(items).forEach((item: string) => {
+              (window as any).urbit.scry({ app: "engram", path: `/${items[item].type}${item}/get/settings`})
+              .then((stg: any) => {
+                console.log("adding ?", perm);
+                if(!stg.ships[items[item].owner] || stg.ships[items[item].owner].level != 'admin') {
+                  (window as any).urbit.poke({
+                    app: "engram",
+                    mark: "post",
+                    json: { [items[item].type]: { [`add${type}`]: {
+                      id: item,
+                      [type]: perm,
+                      level: level
+                    }}}
+                  })
+                }
+              })
+            })
+          })
+        },
+        spanningremove: function(perm: string, level: string, type: string) {
+          (window as any).urbit.scry({
+            app: "engram", path: `/space${this.$route.query.spaceId}/list`
+          }).then((items: any) => {
+            console.log("spannign add: ", items);
+            Object.keys(items).forEach((item: string) => {
+              (window as any).urbit.scry({ app: "engram", path: `/${items[item].type}${item}/get/settings`})
+              .then((stg: any) => {
+                console.log("settings: ", stg);
+                if(!stg.ships[items[item].owner] || stg.ships[items[item].owner].level != 'admin') {
+                  let timestamp = "";
+                  Object.keys(stg[`${type}s`]).forEach((id: string) => {
+                    if(stg[`${type}s`][id][type] == perm && stg[`${type}s`][id].level == level) {
+                      timestamp = id;
+                    }
+                  });
+                  console.log("timestamp: ", timestamp);
+                  (window as any).urbit.poke({
+                    app: "engram",
+                    mark: "post",
+                    json: { [items[item].type]: { removeperms: {
+                      id: item,
+                      item: timestamp,
+                      type: type
+                    }}}
+                  })
+                }
+              })
+            })
+          })
         },
       handleDragStart: function(event: any) {
         this.dragStart = event.clientX;

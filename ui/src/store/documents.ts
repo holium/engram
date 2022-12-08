@@ -220,19 +220,19 @@ const actions: ActionTree<DocumentState, RootState> = {
         }).then((res: any) => {
           console.log("space permissions response: ", res);
           // Copy Roles
-          Object.keys(res.roles).forEach((role: string) => {
+          Object.keys(res.roles).forEach((id: string) => {
             dispatch('workspace/settings/addrole', {
               id: payload,
-              role: role,
-              level: res.roles[role],
+              role: res.roles[id].role,
+              level: res.roles[id].level,
             }, { root: true })
           });
           // Copy Ships
-          Object.keys(res.ships).forEach((ship: string) => {
+          Object.keys(res.ships).forEach((id: string) => {
             dispatch('workspace/settings/addrole', {
               id: payload,
-              ship: ship,
-              level: res.ships[ship],
+              ship: res.ships[id].ship,
+              level: res.ships[id].level,
             }, { root: true })
           });
         })

@@ -12,8 +12,8 @@
       Permission Rules
     </div>
     <div class="flex flex-col gap-1">
-      <ShipPermission :key="ship" :ship="ship" :level="ships[ship]" v-for="ship in Object.keys(ships)" />
-      <RolePermission :key="role" :role="role" :level="roles[role]" v-for="role in Object.keys(roles)" />
+      <ShipPermission :key="item" :ship="ships[item].ship" :level="ships[item].level" v-for="item in Object.keys(ships)" />
+      <RolePermission :key="item" :role="roles[item].role" :level="roles[item].level" v-for="item in Object.keys(roles)" />
     </div>
     <div class="input">
       <input 
@@ -79,10 +79,10 @@ export default defineComponent({
     
   },
   computed: {
-    ships: function(): { [key: string]: string } {
+    ships: function(): { [key: string]: { ship: string, level: string } } {
       return store.getters['workspace/settings/ships'];
     },
-    roles: function(): { [key: string]: string } {
+    roles: function(): { [key: string]: { role: string, level: string } } {
       return store.getters['workspace/settings/roles'];
     }
   },

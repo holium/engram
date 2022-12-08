@@ -19,6 +19,7 @@
           [%rename (ot ~[id+pa name+so])]
           [%addship (ot ~[id+pa ship+(se %p) level+(se %tas)])]
           [%addrole (ot ~[id+pa role+(se %tas) level+(se %tas)])]
+          [%removeperms (ot ~[id+pa item+pa type+(se %tas)])]
           [%gatherall (ot ~[id+pa])]
           [%accept (ot ~[id+pa update+(ot ~[author+(se %p) timestamp+(se %da) content+sa])])]
       ==

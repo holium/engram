@@ -174,6 +174,24 @@
         todoc
         `this(d (~(put by d) id ndoc))
         ::
+        :: Remove a permission rule
+        ::
+          %removeperms
+        ?>  =(src.bowl our.bowl)
+        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  doc  (~(got by d) id)
+        =/  item  [`@p`(slav %p -.item.act) `@u`(slav %ud -.+.item.act)]
+        =/  ndoc
+        ?+  type.act  !!
+            %role
+          =.  roles.settings.doc  (remove:index roles.settings.doc item our.bowl)
+          doc
+            %ship
+          =.  ships.settings.doc  (remove:index ships.settings.doc item our.bowl)
+          doc
+        ==
+        `this(d (~(put by d) id ndoc))
+        ::
         ::  A helper poke to gather updates from everyone who has access to a document
         ::
           %gatherall
@@ -351,6 +369,43 @@
         =.  content.fromfldr  (remove:index content.fromfldr id our.bowl)
         fromfldr
         `this(f (~(put by f) from nfldr))
+        ::
+        :: Give a ship permissions
+        ::
+          %addship
+        ?>  =(src.bowl our.bowl)
+        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  tofold  (~(got by f) id)
+        =/  nfold
+        =.  ships.tofold  (insert:index ships.tofold [ship.act level.act] our.bowl)
+        tofold
+        `this(f (~(put by f) id nfold))
+          %addrole
+        ?>  =(src.bowl our.bowl)
+        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  tofold  (~(got by f) id)
+        =/  nfold
+        =.  roles.tofold  (insert:index roles.tofold [role.act level.act] our.bowl)
+        tofold
+        `this(f (~(put by f) id nfold))
+        ::
+        :: Remove a permission rule
+        ::
+          %removeperms
+        ?>  =(src.bowl our.bowl)
+        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  fold  (~(got by f) id)
+        =/  item  [`@p`(slav %p -.item.act) `@u`(slav %ud -.+.item.act)]
+        =/  nfold
+        ?+  type.act  !!
+            %role
+          =.  roles.fold  (remove:index roles.fold item our.bowl)
+          fold
+            %ship
+          =.  ships.fold  (remove:index ships.fold item our.bowl)
+          fold
+        ==
+        `this(f (~(put by f) id nfold))
         ::
         :: Rename a folder
         ::

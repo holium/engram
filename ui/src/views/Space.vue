@@ -85,9 +85,13 @@ export default defineComponent({
     },
     closeFolderDock: function() {
       this.folderdock = "";
+      this.spacedock = "";
+      this.dock = false;
     },
     pushSpaceDock: function() {
       this.spacedock = this.$route.query.spaceId as string;
+      this.folderdock = "";
+      this.dock = false;
     },
     closeSpaceDock: function() {
       this.spacedock = "";
