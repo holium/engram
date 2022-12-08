@@ -19,6 +19,7 @@
           [%rename (ot ~[id+pa name+so])]
           [%addship (ot ~[id+pa ship+(se %p) level+(se %tas)])]
           [%addrole (ot ~[id+pa role+(se %tas) level+(se %tas)])]
+          [%removeperms (ot ~[id+pa item+pa type+(se %tas)])]
           [%gatherall (ot ~[id+pa])]
           [%accept (ot ~[id+pa update+(ot ~[author+(se %p) timestamp+(se %da) content+sa])])]
       ==
@@ -32,6 +33,9 @@
       ==
       :-  %space  %-  of  :~
         [%make (ot ~[space+pa])]
+        [%addship (ot ~[id+pa ship+(se %p) level+(se %tas)])]
+        [%addrole (ot ~[id+pa role+(se %tas) level+(se %tas)])]
+        [%removeperms (ot ~[id+pa item+pa type+(se %tas)])]
         [%gatherall (ot ~[space+pa])]
       ==
       :::-  %prop  %-  of  :~
@@ -74,12 +78,12 @@
       |=  spc=space:engram
       ^-  json
       %-  pairs  :~
-        :-  'roles'  %-  pairs  %+  turn  ~(val by content.roles.spc)
-          |=  [role=@tas level=@tas]
-          [(crip (trip role)) (tape (trip level))]
-        :-  'ships'  %-  pairs  %+  turn  ~(val by content.ships.spc)
-          |=  [ship=@p level=@tas]
-          [(scot %p ship) (tape (trip level))]
+        :-  'roles'  %-  pairs  %+  turn  ~(tap by content.roles.spc)
+          |=  [id=id:index [role=@tas level=@tas]]
+          [(crip (stringify:index id)) (pairs ~[['role' (tape (trip role))] ['level' (tape (trip level))]])]
+        :-  'ships'  %-  pairs  %+  turn  ~(tap by content.ships.spc)
+          |=  [id=id:index [ship=@p level=@tas]]
+          [(crip (stringify:index id)) (pairs ~[['ship' (tape (trip (scot %p ship)))] ['level' (tape (trip level))]])]
       ==
     --
   ++  document
@@ -100,17 +104,11 @@
       |=  doc=document:engram
       ^-  json
       %-  pairs  :~ 
-        :: Alvin Zhou
-        :: Ethan Chabowski
-        :: Binging with Bavish
-        :: Uncle Roger
         ['id' (path ~[(scot %p -.id.doc) (scot %u +.id.doc)])]
         ['version' (tape version.doc)]
         ['content' (tape content.doc)]
-        :::-  'ships'  %-  pairs  %+  turn  ~(val by content.ships.settings.doc)  |=  [ship=@p level=@tas]  [(scot %p ship) (tape (trip level))]
-        ::['settings' (settings settings.doc)]
-        ::['snapshots' (snapshots snapshots.doc)]
       ==
+
     ++  settings
       =,  enjs:format
       |=  settings=dsettings:engram
@@ -118,8 +116,12 @@
       %-  pairs  :~
         ['name' (tape (trip name.settings))]
         ['owner' (tape (scow %p owner.settings))]
-        :-  'ships'  %-  pairs  %+  turn  ~(val by content.ships.settings)  |=  [ship=@p level=@tas]  [(scot %p ship) (tape (trip level))]
-        :-  'roles'  %-  pairs  %+  turn  ~(val by content.roles.settings)  |=  [role=@tas level=@tas]  [(crip (trip role)) (tape (trip level))]
+        :-  'ships'  %-  pairs  %+  turn  ~(tap by content.ships.settings)  
+          |=  [id=id:index [ship=@p level=@tas]]  
+          [(crip (stringify:index id)) (pairs ~[['ship' (tape (trip (scot %p ship)))] ['level' (tape (trip level))]])]
+        :-  'roles'  %-  pairs  %+  turn  ~(tap by content.roles.settings)  
+          |=  [id=id:index [role=@tas level=@tas]]  
+          [(crip (stringify:index id)) (pairs ~[['role' (tape (trip role))] ['level' (tape (trip level))]])]
       ==
     ++  updates
       =,  enjs:format

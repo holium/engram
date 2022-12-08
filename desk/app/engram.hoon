@@ -85,16 +85,21 @@
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         ?>  (~(has by d) id)
         =/  nstate  this(d (~(del by d) id))
+        ~&  "Trying to remove from space"
         =/  spcs
           %-  ~(run by s)  |=  spc=space
           ?:  (~(has by content.content.spc) id)
+            ~&  "Removing from space"
             =.  content.spc  (remove:index content.spc id our.bowl)
             spc
           spc
+        ~&  spcs
         =/  sstate  nstate(s spcs)
+        ~&  "Trying to remove from folder"
         =/  fldrs
           %-  ~(run by f)  |=  fldr=folder
           ?:  (~(has by content.content.fldr) id)
+            ~&  "Removing from folder"
             =.  content.fldr  (remove:index content.fldr id our.bowl)
             fldr
           fldr
@@ -150,7 +155,7 @@
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         `this(u (~(del ju u) id update.act))
         ::
-        :: give a ship permissions
+        :: Give a ship permissions
         ::
           %addship
         ?>  =(src.bowl our.bowl)
@@ -161,11 +166,30 @@
         todoc
         `this(d (~(put by d) id ndoc))
           %addrole
+        ?>  =(src.bowl our.bowl)
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  todoc  (~(got by d) id)
         =/  ndoc
         =.  roles.settings.todoc  (insert:index roles.settings.todoc [role.act level.act] our.bowl)
         todoc
+        `this(d (~(put by d) id ndoc))
+        ::
+        :: Remove a permission rule
+        ::
+          %removeperms
+        ?>  =(src.bowl our.bowl)
+        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  doc  (~(got by d) id)
+        =/  item  [`@p`(slav %p -.item.act) `@u`(slav %ud -.+.item.act)]
+        =/  ndoc
+        ?+  type.act  !!
+            %role
+          =.  roles.settings.doc  (remove:index roles.settings.doc item our.bowl)
+          doc
+            %ship
+          =.  ships.settings.doc  (remove:index ships.settings.doc item our.bowl)
+          doc
+        ==
         `this(d (~(put by d) id ndoc))
         ::
         ::  A helper poke to gather updates from everyone who has access to a document
@@ -346,6 +370,43 @@
         fromfldr
         `this(f (~(put by f) from nfldr))
         ::
+        :: Give a ship permissions
+        ::
+          %addship
+        ?>  =(src.bowl our.bowl)
+        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  tofold  (~(got by f) id)
+        =/  nfold
+        =.  ships.tofold  (insert:index ships.tofold [ship.act level.act] our.bowl)
+        tofold
+        `this(f (~(put by f) id nfold))
+          %addrole
+        ?>  =(src.bowl our.bowl)
+        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  tofold  (~(got by f) id)
+        =/  nfold
+        =.  roles.tofold  (insert:index roles.tofold [role.act level.act] our.bowl)
+        tofold
+        `this(f (~(put by f) id nfold))
+        ::
+        :: Remove a permission rule
+        ::
+          %removeperms
+        ?>  =(src.bowl our.bowl)
+        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  fold  (~(got by f) id)
+        =/  item  [`@p`(slav %p -.item.act) `@u`(slav %ud -.+.item.act)]
+        =/  nfold
+        ?+  type.act  !!
+            %role
+          =.  roles.fold  (remove:index roles.fold item our.bowl)
+          fold
+            %ship
+          =.  ships.fold  (remove:index ships.fold item our.bowl)
+          fold
+        ==
+        `this(f (~(put by f) id nfold))
+        ::
         :: Rename a folder
         ::
           %rename
@@ -468,6 +529,37 @@
         =/  spc  ^*  space
         `this(s (~(put by s) space.act spc))
         ::
+        :: Edit Space Permissions
+        ::
+          %addship
+        ?>  =(src.bowl our.bowl)
+        =/  spc  (~(got by s) path.act)
+        =/  nspc
+        =.  ships.spc  (insert:index ships.spc [ship.act level.act] our.bowl)
+        spc
+        `this(s (~(put by s) path.act nspc))
+          %addrole
+        ?>  =(src.bowl our.bowl)
+        =/  spc  (~(got by s) path.act)
+        =/  nspc
+        =.  roles.spc  (insert:index roles.spc [role.act level.act] our.bowl)
+        spc
+        `this(s (~(put by s) path.act nspc))
+          %removeperms
+        ?>  =(src.bowl our.bowl)
+        =/  spc  (~(got by s) path.act)
+        =/  id  [`@p`(slav %p -.item.act) `@u`(slav %ud -.+.item.act)]
+        =/  nspc
+        ?+  type.act  !!
+            %role
+          =.  roles.spc  (remove:index roles.spc id our.bowl)
+          spc
+            %ship
+          =.  ships.spc  (remove:index ships.spc id our.bowl)
+          spc
+        ==
+        `this(s (~(put by s) path.act nspc))
+        ::
         ::  Gather updated to a space index from all peers in the space
         ::
           %gatherall
@@ -573,6 +665,8 @@
     ?>  =(src.bowl our.bowl)
     ?:  (~(has by s) ~[i.t.t.p i.t.t.t.p])
       =/  spc  (~(got by s) ~[i.t.t.p i.t.t.t.p])
+      ~&  "Requested space: "
+      ~&  spc
       ``noun+!>((list:space:enjs:engram [d f content.content.spc]))
     ~&  "No space of path: {<`path`~[i.t.t.p i.t.t.t.p]>}"
     ``noun+!>((list:space:enjs:engram [d f ^*((map id [id @tas]))]))

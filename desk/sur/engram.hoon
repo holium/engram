@@ -73,7 +73,7 @@
           [%rename path=path name=@t]
           [%addship path=path ship=@p level=@tas]
           [%addrole path=path role=@tas level=@tas]
-          ::[%settings path=path owner=@p name=@ta roles=(map @tas @tas) ships=(map @p @tas)]
+          [%removeperms path=path item=path type=@tas]
           [%gatherall path=path]
           [%gather path=path peer=@p]
           [%delta path=path]
@@ -90,6 +90,9 @@
           [%add to=path id=path type=@tas]
           [%remove from=path id=path]
           [%rename path=path name=@t]
+          [%addship path=path ship=@p level=@tas]
+          [%addrole path=path role=@tas level=@tas]
+          [%removeperms path=path item=path type=@tas]
           [%gatherall path=path]
           [%gather path=path peer=@p]
           [%delta path=path version=version]
@@ -101,32 +104,15 @@
     ==
     $:  %space
       $%  [%make space=path]
+          [%addship path=path ship=@p level=@tas]
+          [%addrole path=path role=@tas level=@tas]
+          [%removeperms path=path item=path type=@tas]
           [%gatherall space=path]
           [%gather space=path peer=@p]
           [%delta space=path version=version]
           [%sync space=path update=[roles=(update:index [@tas @tas]) ships=(update:index [@p @tas]) content=(update:index [id @tas])]]
-    ::  Propogation will occur in three (ish) steps: 
-    ::    [spanning]      - across a space
-    ::    the gatherall   - a routing poke that sends gather for all the peers in a space
-    ::    the gather      - a poke is sent requesting updates from a peer for all the items indexed in a space 
-    ::    the sync        - a poke is send with updates for all items
-    ::    [specific]      - unique to an organism
-    ::    the gatherall   - a routing poke that sends gather for all the peers in a space
-    ::    the gather      - a poke is sent requesting updates from a peer, in the form of a sync poke
-    ::    the sync        - a poke is sent with updates; syncs may also be sent without request in the case of realtime updates
       ==
     ==
-    ::$:  %span
-    ::  $%  [%gatherall path=path]
-    ::      [%gather space=path]
-    ::      [%sync space=path space=(update:index [id type]) folders=(map id (update:index [id type])) documents=(jug id dupdate)]
-          ::
-          ::[%sub path=path to=@p]
-          ::[%unsub from=@p]
-          ::
-          ::[%update-live path=path update=dupdate]
-    ::  ==
-    ::==
   ==
 +$  update
   $%  [%init id=id settings=dsettings updates=(set dupdate)]

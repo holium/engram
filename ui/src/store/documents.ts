@@ -139,7 +139,7 @@ const actions: ActionTree<DocumentState, RootState> = {
             owner: `~${(window as any).ship}`,
           });
           dispatch("folders/add", { item: { index: path, id: path, type: "document" }, to: "." }, { root: true });
-          if(router.currentRoute.value.query.spaceId != "/null/space") {
+          if(router.currentRoute.value.query.spaceId == "/null/space") {
             (window as any).urbit.poke({
               app: "engram",
               mark: "post",
@@ -157,6 +157,22 @@ const actions: ActionTree<DocumentState, RootState> = {
             dispatch("syncpermswithspace", path);
           }
         });
+      })
+    })
+  },
+  delete({ commit, dispatch }, payload: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      commit('delete', payload);
+      (window as any).urbit.poke({
+        app: "engram",
+        mark: "post",
+        json: {
+          document: { delete: {
+            id: payload
+          }}
+        }
+      }).then(() => {
+        resolve();
       })
     })
   },
@@ -194,21 +210,35 @@ const actions: ActionTree<DocumentState, RootState> = {
     })
   },
 
-  syncpermswithspace({}, payload: string): Promise<void> {
+  syncpermswithspace({ dispatch }, payload: string): Promise<void> {
     return new Promise((resolve, reject) => {
       if(router.currentRoute.value.query.spaceId != "/null/space") {
         // Get space permissions
         (window as any).urbit.scry({
           app: "engram",
-          path: `space${router.currentRoute.value.query.spaceId}/settings`
+          path: `/space${router.currentRoute.value.query.spaceId}/settings`
         }).then((res: any) => {
           console.log("space permissions response: ", res);
+          // Copy Roles
+          Object.keys(res.roles).forEach((id: string) => {
+            dispatch('workspace/settings/addrole', {
+              id: payload,
+              role: res.roles[id].role,
+              level: res.roles[id].level,
+            }, { root: true })
+          });
+          // Copy Ships
+          Object.keys(res.ships).forEach((id: string) => {
+            dispatch('workspace/settings/addrole', {
+              id: payload,
+              ship: res.ships[id].ship,
+              level: res.ships[id].level,
+            }, { root: true })
+          });
         })
         // Get space owner
         // Set owner as admin
-        // Copy over space permissions
       }
-      
     })
   }
 }

@@ -7,6 +7,9 @@
 ++  update
   |$  item
   [content=(map id item) dels=(map id id)]
+++  stringify
+  |=  id=id
+  (weld (weld "/" (trip (scot %p -.id))) (weld "/" (trip (scot %ud +.id))))
 ++  delta
   |*  [state=(index) remote=version]
   :-
@@ -136,6 +139,7 @@
   ?:  (~(has by version.state) ship)
     (add (~(got by version.state) ship) 1)
   0
+  ~&  (~(del by content.state) item)
   =:  dels.state     (~(put by dels.state) [ship clock] item)
       content.state  (~(del by content.state) item)
       version.state  (~(put by version.state) ship clock)

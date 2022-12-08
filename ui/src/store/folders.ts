@@ -141,6 +141,26 @@ const actions: ActionTree<FolderState, RootState> = {
       })
     })
   },
+  delete({ commit, dispatch, state }, payload: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const content = state[payload].content;
+      Object.keys(content).forEach((item: string) => {
+        dispatch(`${content[item].type}s/delete`, content[item].id, { root: true });
+      });
+      commit('delete', payload);
+      (window as any).urbit.poke({
+        app: "engram",
+        mark: "post",
+        json: {
+          folder: { delete: {
+            id: payload
+          }}
+        }
+      }).then(() => {
+        resolve();
+      })
+    })
+  },
   rename({ commit }, payload: { id: string, name: string}): Promise<void> {
     return new Promise((resolve, reject) => {
       commit("rename", payload);
@@ -179,6 +199,13 @@ const actions: ActionTree<FolderState, RootState> = {
         })
       }
     })
+  },
+  softremove({ commit }, payload: { from: string, index: string}): Promise<void> {
+    return new Promise((resolve, reject) => {
+      console.log("removing item from folder: ", payload);
+      commit("remove", payload);
+      resolve();
+    });
   },
   remove({ commit }, payload: { from: string, index: string}): Promise<void> {
     return new Promise((resolve, reject) => {

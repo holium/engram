@@ -34,7 +34,7 @@
               close
             </div>
         </div>
-        <SharingDock class="dock-body" />
+        <SharingDock class="dock-body scrollbar-small" />
       </div>
     </div>
   </template>
