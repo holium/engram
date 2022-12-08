@@ -2,25 +2,31 @@
     <div
     class="bg-paper flex absolute outline-none shadow-menu overflow-auto rounded-2 scrollbar-small flex-col"
         tabIndex="0"
-        :style="{ ...contextmenu.location, top: `calc(${contextmenu.location.top} - 24px)` }"
+        :style="{ 
+            ...contextmenu.location, 
+            top: `calc(${contextmenu.location.top} - 
+                ${hasMark.get('hyperlink') || hasMark.get('engramlink') ? (24 + 32): 24}px)` 
+        }"
     >
         <input
             v-if="hasMark.get('hyperlink')"
             type="text"
-            v-model="hyperlink"
-            class="px-3 py-2"
+            v-model="linkvalue"
+            class="px-3 py-2 outline-none"
             @blur="(event) => {
                 implementLink('hyperlink');
             }"
+            placeholder="https://"
         />
         <input
-            v-if="hasMark.get('urbitlink')"
+            v-if="hasMark.get('engramlinl')"
             type="text"
-            v-model="urbitlink"
-            className="px-3 py-2"
+            v-model="linkvalue"
+            className="px-3 py-2 outline-none"
             @blur="(event) => {
-                implementLink('urbitlink');
+                implementLink('engramlinl');
             }"
+            placeholder="engram://"
         />
       <div class="flex">
         <div
@@ -187,13 +193,37 @@ export default defineComponent({
     },
     data() {
         return {
-            hyperlink: "",
-            urbitlink: "",
+            linkvalue: "",
+        }
+    },
+    watch: {
+        contextmenu: function() {
+            const hasHyperlink = view.state.doc.rangeHasMark(
+                        this.contextmenu.from,
+                        this.contextmenu.to,
+                        schema.marks["hyperlink"]
+                    )
+            const hasEngramLink = view.state.doc.rangeHasMark(
+                this.contextmenu.from,
+                this.contextmenu.to,
+                schema.marks["engramlink"]
+            )
+            if(hasHyperlink) {
+                const value = view.state.selection.$head
+                .marks()
+                .find((mark) => mark.type.name == "hyperlink")
+                if(value) this.linkvalue = value.attrs.href;
+            } else if(hasEngramLink) {
+                const value = view.state.selection.$head
+                .marks()
+                .find((mark) => mark.type.name == "engramlink")
+                if(value) this.linkvalue = value.attrs.href;
+            }
         }
     },
     computed: {
         hasMark: function() {
-            return new Map(['strong', 'italic', 'underline'].map((mark: string) => {
+            return new Map(['strong', 'italic', 'underline', 'strike', 'code', 'hyperlink', 'engramlink'].map((mark: string) => {
                 return [
                     mark, 
                     view.state.doc.rangeHasMark(
@@ -210,7 +240,9 @@ export default defineComponent({
             toggleMark(schema.marks[mark])(view.state, view.dispatch, view);
         },
         implementLink: function(type: string) {
-            //
+            const sel = view.state.selection;
+            const tr = view.state.tr.addMark(sel.from, sel.to, schema.marks[type].create({ 'link-type': type, href: this.linkvalue}));
+            view.dispatch(tr);
         }
     },
 })
