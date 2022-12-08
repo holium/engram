@@ -3,6 +3,7 @@ import { view } from "../document/prosemirror/render"
 
 import ContextMenuNode from "./ContextMenu.vue";
 import SlashMenuNode from "./SlashMenu.vue";
+import HighlightMenuNode from "./HighlightMenu.vue";
 
 export class Menu {
     location: { top: string, left: string, width: string };
@@ -38,6 +39,19 @@ export class SlashMenu extends Menu {
         const sel = view.state.selection;
         const tr = view.state.tr.delete(sel.from - 1 - this.search.length, sel.from);
         view.dispatch(tr);
+    }
+}
+
+export class HighlightMenu extends Menu {
+
+    dom = HighlightMenuNode;
+    from: number;
+    to: number;
+
+    constructor(location: { top: number, left: number }, from: number, to: number) {
+        super(location, [], true);
+        this.from = from;
+        this.to = to;
     }
 }
 

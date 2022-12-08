@@ -20,6 +20,7 @@ import type { DocumentUpdate, DocumentVersion } from "@/store/types";
 import type { Menu } from "../../menus/types";
 
 import slashmenu from "./slashmenu";
+import highlightmenu from "./highlightmenu"
 
 
 export let view: EditorView;
@@ -102,7 +103,8 @@ export default function (
         styling(updateStyling),
         // ux
         bauble(updateBauble),
-        slashmenu(pushMenu)
+        slashmenu(pushMenu),
+        highlightmenu(pushMenu)
       ],
     });
   } else {
