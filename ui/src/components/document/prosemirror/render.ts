@@ -17,6 +17,9 @@ import type { CoverUpdate } from "./cover"
 import styling from "./styling";
 import type { StylingUpdate } from "./styling"
 import type { DocumentUpdate, DocumentVersion } from "@/store/types";
+import type { Menu } from "../../menus/types";
+
+import slashmenu from "./slashmenu";
 
 
 export let view: EditorView;
@@ -24,6 +27,7 @@ export let view: EditorView;
 export default function (
   place: HTMLElement,
   content: Uint8Array,
+  pushMenu: (menu: Menu) => void,
   updateBauble: (bauble: BaubleUpdate) => void,
   updateCover: (cover: CoverUpdate) => void,
   updateStyling: (styling: StylingUpdate) => void,
@@ -98,6 +102,7 @@ export default function (
         styling(updateStyling),
         // ux
         bauble(updateBauble),
+        slashmenu(pushMenu)
       ],
     });
   } else {
