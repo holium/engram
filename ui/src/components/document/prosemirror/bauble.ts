@@ -16,10 +16,15 @@ export const bauble = (update: (bauble: BaubleUpdate) => void) =>
             const dom = view.nodeDOM(pos.inside);
             if (dom) {
               const box = (dom as Element).getBoundingClientRect();
+              const parent = document.querySelector(".ProseMirror");
+              let top = box.top;
+              if(parent) top = top - parent.getBoundingClientRect().top;
+              console.log("bauble parent: ", parent);
+              const node = view.state.doc.nodeAt(pos.inside);
               update({
                 on: true,
-                top: box.top,
-                node: null,
+                top: top,
+                node: node,
               });
             } else {
               update({

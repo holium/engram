@@ -83,6 +83,18 @@ hr {
   width: 100%;
 }
 
+div[data-type="engram-link"] {
+  @apply flex flex-row py-2 gap-3 items-center;
+}
+
+div[data-type="engram-link"]:hover {
+  @apply cursor-pointer bg-border;
+}
+
+div[data-type="engram-link"]:disabled {
+  opacity: .5;
+}
+
 /* List Nodes */
 
 ul {

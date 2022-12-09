@@ -25,6 +25,7 @@ const getters: GetterTree<DocumentState, RootState> = {
   },
   meta: (state) => (id: string): ItemMeta => {
     console.log("getting meta: ", id);
+    if(!state[id]) return { id: "missing document", name: "missing document", owner: "missing document"};
     return {
       id: id,
       name: state[id].name,

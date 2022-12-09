@@ -1,9 +1,8 @@
 <template>
     <div
-        class="bg-paper flex absolute outline-none shadow-menu overflow-auto rounded-2 scrollbar-small"
+        class="bg-paper flex absolute outline-none shadow-menu overflow-auto rounded-2 scrollbar-small flex-col"
         tabIndex="0"
         style="max-height: 240px"
-        :class="{'flex-col': !contextmenu.horizontal}"
         :style="contextmenu.location"
     >
         <div 
@@ -40,6 +39,12 @@ export default defineComponent({
         }
     },
     inject: ['closeMenu'],
+    created: function() {
+        console.log("created slashmenu");
+    },
+    beforeUnmount: function() {
+        console.log("unmounting");
+    },
     computed: {
         height: function() {
             return window.innerHeight;
@@ -52,7 +57,7 @@ export default defineComponent({
     },
     methods: {
         close: function() {
-            (this as any).closeMenu();
+           (this as any).closeMenu();
         }
     }
 })

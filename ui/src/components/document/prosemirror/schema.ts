@@ -10,6 +10,7 @@ import {
 */
 //import { ConfigSpec, ConfigTermSpec } from "./config/plugin";
 import { Schema, NodeType, MarkType } from "prosemirror-model";
+import { setBlockTracking } from "vue";
 //import { NodeSpec } from "prosemirror-model";
 
 export const protectedBlocks = new Set(["paragraph"]);
@@ -33,7 +34,7 @@ const schema = new Schema({
       attrs: { id: { default: null } },
       parseDOM: [{ tag: "header" }],
       toDOM(node) {
-        return ["header", 0];
+        return ["header", { id: node.attrs.id }, 0];
       },
     },
 
@@ -43,7 +44,7 @@ const schema = new Schema({
       attrs: { id: { default: null } },
       parseDOM: [{ tag: `h1[name="title"]` }],
       toDOM(node) {
-        return ["h1", { name: "title" }, 0];
+        return ["h1", { name: "title", id: node.attrs.id }, 0];
       },
     },
 
@@ -62,7 +63,7 @@ const schema = new Schema({
         },
       ],
       toDOM(node) {
-        return ["img", { name: "title", src: node.attrs.src }];
+        return ["img", { name: "title", src: node.attrs.src, id: node.attrs.id }];
       },
     },
 
@@ -72,7 +73,7 @@ const schema = new Schema({
       attrs: { id: { default: null } },
       parseDOM: [{ tag: `p[name="description"]` }],
       toDOM(node) {
-        return ["p", { name: "description" }, 0];
+        return ["p", { name: "description", id: node.attrs.id }, 0];
       },
     },
 
@@ -294,6 +295,25 @@ const schema = new Schema({
         return ["br"];
       },
     },
+
+    // Engram Link
+    engramlink: {
+      inline: false,
+      group: "block",
+      attrs: {
+        href: { default: "" },
+      },
+      parseDOM: [{ tag: 'div[data-type="engram-link"]' }],
+      toDOM(node) {
+        return [
+          "div",
+          {
+            href: node.attrs.href,
+            "data-type": "engram-link",
+          },
+        ];
+      },
+    },
   },
   marks: {
     /* Basic ================================================================ */
@@ -387,25 +407,6 @@ const schema = new Schema({
       },
     },
 
-    // Hypertext ---------------------------------------------------------------
-    engramlink: {
-      priority: 100,
-      inclusive: false,
-      attrs: {
-        href: { default: "" },
-      },
-      parseDOM: [{ tag: 'a[href*="engram://"]' }],
-      toDOM(node) {
-        return [
-          "a",
-          {
-            href: node.attrs.href,
-            "data-type": "engram",
-          },
-          0,
-        ];
-      },
-    },
     // Hyperlink
     hyperlink: {
       priority: 90,
