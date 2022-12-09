@@ -117,7 +117,7 @@ export default function (
       schema: schema,
       plugins: [
         // CRDT
-        ySyncPlugin(type),
+        ySyncPlugin(type, {}),
         // Views
         cover(updateCover),
         styling(updateStyling),
