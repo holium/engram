@@ -22,6 +22,7 @@ import type { Menu } from "../../menus/types";
 import slashmenu from "./slashmenu";
 import highlightmenu from "./highlightmenu"
 import engram from "./engramview";
+import comments from "./comments";
 
 
 export let view: EditorView;
@@ -106,7 +107,8 @@ export default function (
         bauble(updateBauble),
         slashmenu(pushMenu),
         highlightmenu(pushMenu),
-        engram
+        engram,
+        comments,
       ],
     });
   } else {

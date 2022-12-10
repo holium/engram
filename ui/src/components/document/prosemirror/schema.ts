@@ -429,13 +429,13 @@ const schema = new Schema({
       },
     },
 
-    // Comment Link
-    markup: {
+    // Comment
+    comment: {
       attrs: { comment: { default: "{}" } },
       inclusive: false,
       excludes: "",
       parseDOM: [{ tag: "mark" }],
-      toDOM() {
+      toDOM(node) {
         return ["mark", 0];
       },
     },

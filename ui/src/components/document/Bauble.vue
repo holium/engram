@@ -1,10 +1,9 @@
 <template>
-  <div style="position: relative; left: 72px">
     <div
     class="bauble px-3 py-2 gap-3"
     :class="bauble.on ? 'bauble-on' : ''"
     :style="{
-      right: `calc(var(--document-width) + var(--document-margin) + calc(100% - var(--document-width)) / 2)`,
+      left: `${left}px`,
       top: `${bauble.top - 4}px`,
     }"
   >
@@ -22,8 +21,6 @@
       />
     </svg>
   </div>
-  </div>
-  
 </template>
 
 <script lang="ts">
@@ -37,6 +34,23 @@ export default defineComponent({
       required: true,
     },
   },
+  data() {
+    return {
+      left: 0,
+    }
+  },
+  created: function() {
+    const prosemirror = document.querySelector(".ProseMirror");
+    const parent = document.querySelector("#document");
+    if(prosemirror && parent) this.left = prosemirror.getBoundingClientRect().left - parent.getBoundingClientRect().left + 36;
+  },
+  watch: {
+    bauble: function() {
+      const prosemirror = document.querySelector(".ProseMirror");
+      const parent = document.querySelector("#document");
+      if(prosemirror && parent) this.left = prosemirror.getBoundingClientRect().left - parent.getBoundingClientRect().left + 36;
+    }
+  }
 });
 </script>
 

@@ -19,8 +19,6 @@ export const bauble = (update: (bauble: BaubleUpdate) => void) =>
               const parent = document.querySelector(".ProseMirror");
               let top = box.top;
               if(parent) top = top - parent.getBoundingClientRect().top;
-              console.log("bauble parent: ", parent);
-              //const node = view.state.doc.nodeAt(pos.inside);
               update({
                 on: true,
                 top: top,
