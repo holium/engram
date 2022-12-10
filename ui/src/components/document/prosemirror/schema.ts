@@ -104,6 +104,7 @@ const schema = new Schema({
     // Blocks ------------------------------------------------------------------
     // Paragraph
     paragraph: {
+      draggable: true,
       content: "inline*",
       group: "block",
       attrs: { id: { default: null } },
@@ -115,6 +116,7 @@ const schema = new Schema({
 
     // Heading
     heading: {
+      draggable: true,
       content: "inline*",
       group: "block",
       attrs: { level: { default: 1 }, id: { default: null } },
@@ -138,6 +140,7 @@ const schema = new Schema({
 
     // Blockquote
     blockquote: {
+      draggable: true,
       content: "inline*",
       group: "block",
       attrs: { id: { default: null } },
@@ -173,6 +176,7 @@ const schema = new Schema({
 
     // Code Block
     "code-block": {
+      draggable: true,
       content: "text*",
       group: "block",
       attrs: { id: { default: null } },
@@ -186,6 +190,7 @@ const schema = new Schema({
 
     /// A horizontal rule (`<hr>`).
     "horizontal-rule": {
+      draggable: true,
       group: "block",
       parseDOM: [{ tag: "hr" }],
       attrs: { id: { default: null } },
@@ -196,6 +201,7 @@ const schema = new Schema({
 
     // List Item
     li: {
+      draggable: true,
       content: "paragraph block*",
       attrs: { id: { default: null } },
       parseDOM: [{ tag: "li" }],
@@ -207,6 +213,7 @@ const schema = new Schema({
 
     // Ordered List
     "ordered-list": {
+      draggable: true,
       group: "block",
       content: "li+",
       attrs: { order: { default: 1 }, id: { default: null } },
@@ -236,6 +243,7 @@ const schema = new Schema({
 
     //Unordered List
     "unordered-list": {
+      draggable: true,
       group: "block",
       content: "li+",
       attrs: { id: { default: null } },
@@ -246,6 +254,7 @@ const schema = new Schema({
     },
 
     image: {
+      draggable: true,  
       group: "block",
       attrs: {
         src: { default: "" },

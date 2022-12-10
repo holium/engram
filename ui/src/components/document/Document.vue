@@ -5,7 +5,7 @@
       <div class="relative items-center scrollbar-small flex-grow" id="main" :class="{'no-cover': cover.src.length == 0}">
         <Cover :cover="cover" />
         <div id="document" ref="document" >
-          <Bauble :bauble="bauble" />
+          <!-- <Bauble :bauble="bauble" /> -->
 
         </div>
       </div>
@@ -24,7 +24,7 @@ import DocumentDock from "@/components/dock/DocumentDock.vue";
 
 import { EditorView } from "prosemirror-view";
 import render from "./prosemirror/render";
-import Bauble from "./Bauble.vue";
+//import Bauble from "./Bauble.vue";
 import type {
   BaubleUpdate,
   Bauble as IBauble,
@@ -44,7 +44,7 @@ export default defineComponent({
   components: {
     Toolbar,
     DocumentDock,
-    Bauble,
+    //Bauble,
     Cover,
   },
   props: {

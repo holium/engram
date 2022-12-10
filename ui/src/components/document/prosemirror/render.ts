@@ -2,6 +2,7 @@ import { EditorView } from "prosemirror-view";
 import { EditorState } from "prosemirror-state";
 import * as Y from "yjs"
 import { ySyncPlugin, yUndoPlugin } from "y-prosemirror";
+import { dropCursor } from "prosemirror-dropcursor";
 
 import store from "@/store/index";
 import router from "@/router/index";
@@ -107,6 +108,7 @@ export default function (
         bauble(updateBauble),
         slashmenu(pushMenu),
         highlightmenu(pushMenu),
+        dropCursor(),
         engram,
         comments,
       ],

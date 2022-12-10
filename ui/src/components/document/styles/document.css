@@ -25,6 +25,19 @@ pre {
   margin-bottom: var(--margin-after);
 }
 
+.ProseMirror > *::before {
+  position: absolute;
+  opacity: 0;
+  left: 49px;
+  content: url("./grip.svg");
+  transition: opacity 80ms ease;
+  cursor: grab;
+}
+
+.ProseMirror > *:hover::before {
+  opacity: 1;
+}
+
 /* Header */
 header {
   padding-top: var(--document-margin);

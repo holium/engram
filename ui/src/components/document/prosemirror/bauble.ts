@@ -14,7 +14,8 @@ export const bauble = (update: (bauble: BaubleUpdate) => void) =>
           });
           if (pos && pos.inside >= 0) {
             const dom = view.nodeDOM(pos.inside);
-            if (dom) {
+            const node = view.state.doc.nodeAt(pos.inside);
+            if (dom && node && node.type.name != "header" && node.type.name != "title" && node.type.name != "description") {
               const box = (dom as Element).getBoundingClientRect();
               const parent = document.querySelector(".ProseMirror");
               let top = box.top;
@@ -22,18 +23,22 @@ export const bauble = (update: (bauble: BaubleUpdate) => void) =>
               update({
                 on: true,
                 top: top,
-                node: null,
+                node: node,
+                el: dom,
+                pos: pos.inside,
               });
             } else {
               update({
                 on: false,
                 node: null,
+                el: null,
               });
             }
           } else {
             update({
               on: false,
               node: null,
+              el: null,
             });
           }
         },
@@ -47,10 +52,14 @@ export interface Bauble {
   on: boolean;
   top: number;
   node: any;
+  el: any;
+  pos: number;
 }
 
 export interface BaubleUpdate {
   on?: boolean;
   top?: number;
   node?: any;
+  el?: any;
+  pos?: number;
 }

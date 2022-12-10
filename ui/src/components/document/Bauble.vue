@@ -6,6 +6,10 @@
       left: `${left}px`,
       top: `${bauble.top - 4}px`,
     }"
+    draggable="true"
+      @dragstart="handleDragStart"
+      @drag="handleDrag"
+      @dragend="handleDragEnd"
   >
     <!-- Grip -->
     <svg
@@ -13,7 +17,6 @@
       height="16"
       viewBox="0 0 16 16"
       fill="var(--rlm-icon-color, #333333)"
-      class="icon clickable"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
@@ -26,6 +29,9 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import type { Bauble as IBauble } from "./prosemirror/bauble";
+import { view } from "./prosemirror/render"
+import { dropPoint } from "prosemirror-transform";
+
 export default defineComponent({
   name: "Bauble",
   props: {
@@ -50,6 +56,67 @@ export default defineComponent({
       const parent = document.querySelector("#document");
       if(prosemirror && parent) this.left = prosemirror.getBoundingClientRect().left - parent.getBoundingClientRect().left + 36;
     }
+  },
+  methods: {
+    handleDragStart: function(event: DragEvent) {
+      console.log("drag starting");
+      (event as any).dataTransfer.setDragImage(this.bauble.el, 0, 0);
+    },
+
+  handleDrag: function(event: DragEvent) {
+    //
+  },
+  handleDragEnd: function(event: DragEvent) {
+    const cursor = view.posAtCoords({
+      left: event.clientX,
+      top: event.clientY,
+    });
+    console.log("cursor", cursor);
+    if (cursor && cursor.pos != this.bauble.pos) {
+      console.log("finding dropoint for: ", this.bauble.node, " @ ", cursor.pos)
+      const target = dropPoint(
+        view.state.doc,
+        cursor.pos,
+        this.bauble.node
+      );
+      console.log("drop point target", target);
+      let inserted = false;
+      let finalPos;
+      let finalTr = null;
+      view.state.doc.descendants((childNode, childPos, parentNode) => {
+        if (!inserted && target && childPos >= target) {
+          const tr = view.state.tr.insert(childPos, this.bauble.node);
+          if (tr.docChanged) {
+            inserted = true;
+            view.dispatch(tr);
+            finalPos = childPos;
+            finalTr = tr;
+          }
+        }
+        return false;
+      });
+      if (!inserted) {
+        const tr = view.state.tr.insert(
+          view.state.doc.nodeSize - 2,
+          this.bauble.node
+        );
+        view.dispatch(tr);
+        finalPos = view.state.doc.nodeSize - 1;
+        finalTr = tr;
+      }
+
+      if (finalTr != null) {
+        const prev = finalTr.mapping.map(this.bauble.pos);
+        //const cleanup = props.view.state.tr.setSelection(new TextSelection(props.view.state.doc.resolve(prev + 1), props.view.state.doc.resolve(prev + props.menu.node.nodeSize - 1)))
+        const cleanup = view.state.tr.deleteRange(
+          prev,
+          prev + this.bauble.node.nodeSize
+        );
+        view.dispatch(cleanup);
+        //toggleMark(schema.marks["strong"])(props.view.state, props.view.dispatch, props.view)
+      }
+    }
+  }
   }
 });
 </script>
