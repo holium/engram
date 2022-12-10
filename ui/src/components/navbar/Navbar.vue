@@ -54,13 +54,14 @@ export default defineComponent({
   @apply flex flex-col p-4 gap-4;
   min-width: 180px;
   max-width: 24vw;
-  transition: max-width 200ms ease;
+  transition: max-width 200ms ease, padding 200ms ease;
 }
 
 .hide-nav #nav {
   overflow: hidden;
   min-width: 0;
   max-width: 0;
+  padding: 16px 0;
 }
 
 .hide-nav .dock-grip {
