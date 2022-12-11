@@ -4,6 +4,7 @@ import type {
     SpaceState,
     Space,
   } from "./types"
+ import router from "@/router/index";
 
 
 const state: SpaceState = {
@@ -80,23 +81,75 @@ const actions: ActionTree<SpaceState, RootState> = {
             }
           })
         })
-      },
-      addrole({ commit }, payload: { id: string, role: string, level: string }): Promise<void> {
-        return new Promise((resolve, reject) => {
-          commit("setRole", payload);
-          (window as any).urbit.poke({
-            app: "engram",
-            mark: "post",
-            json: {
-                space: { addrole: {
-                id: payload.id,
-                role: payload.role,
-                level: payload.level,
-              }}
-            }
+    },
+    addrole({ commit }, payload: { id: string, role: string, level: string }): Promise<void> {
+      return new Promise((resolve, reject) => {
+        commit("setRole", payload);
+        (window as any).urbit.poke({
+          app: "engram",
+          mark: "post",
+          json: {
+              space: { addrole: {
+              id: payload.id,
+              role: payload.role,
+              level: payload.level,
+            }}
+          }
+        })
+      })
+    },
+    addperm({ dispatch, state }, payload: { id: string, perm: string, level: string, type: string}): Promise<void> {
+      return new Promise((resolve) => {
+        (window as any).urbit.poke({
+          app: "engram",
+          mark: "post",
+          json: {
+            space: { addperm: {
+              id: payload.id,
+              perm: payload.perm,
+              level: payload.level,
+              type: payload.type
+            }}
+          }
+        }).then(() => {
+          (window as any).urbit.scry({app: "engram", path: `/space${router.currentRoute.value.query.spaceId}/list`}).then((res: any) => {
+            Promise.all(Object.keys(res).map((item: string) => {
+              dispatch(`${res[item].type}s/addperm`, { id: item, perm: payload.perm, level: payload.level, type: res[item].type}, { root: true });
+            })).then(() => { 
+              resolve();
+            });
           })
         })
-      }
+      })
+    },
+    removeperm({ dispatch, state }, payload: { id: string, timestamp: string, type: string, perm: string, level: string }): Promise<void> {
+      return new Promise((resolve) => {
+        (window as any).urbit.poke({
+          app: "engram",
+          mark: "post",
+          json: {
+            space: { removeperm: {
+              id: payload.id,
+              timestamp: payload.timestamp,
+              type: payload.type
+            }}
+          }
+        }).then(() => {
+          (window as any).urbit.scry({app: "engram", path: `/space${router.currentRoute.value.query.spaceId}/list`}).then((res: any) => {
+            Promise.all(Object.keys(res).map((item: string) => {
+              dispatch(`${res[item].type}s/findremoveperm`, { 
+                id: item, 
+                perm: payload.perm, 
+                level: payload.level, 
+                type: res[item].type
+              }, { root: true });
+            })).then(() => { 
+              resolve();
+            });
+          })
+        })
+      })
+    },
 }
 
 export default {

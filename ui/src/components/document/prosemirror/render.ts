@@ -11,8 +11,6 @@ import schema from "./schema";
 import keymap from "./keymap";
 import shortcuts from "./shortcuts";
 import save from "./save";
-import bauble from "./bauble";
-import type { BaubleUpdate } from "./bauble";
 import cover from "./cover";
 import type { CoverUpdate } from "./cover"
 import styling from "./styling";
@@ -32,7 +30,6 @@ export default function (
   place: HTMLElement,
   content: Uint8Array,
   pushMenu: (menu: Menu | null) => void,
-  updateBauble: (bauble: BaubleUpdate) => void,
   updateCover: (cover: CoverUpdate) => void,
   updateStyling: (styling: StylingUpdate) => void,
   snapshot: null | DocumentVersion,
@@ -105,7 +102,6 @@ export default function (
         cover(updateCover),
         styling(updateStyling),
         // ux
-        bauble(updateBauble),
         slashmenu(pushMenu),
         highlightmenu(pushMenu),
         dropCursor(),

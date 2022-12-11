@@ -155,28 +155,26 @@
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         `this(u (~(del ju u) id update.act))
         ::
-        :: Give a ship permissions
+        :: Add a permission to a document
         ::
-          %addship
+          %addperm
         ?>  =(src.bowl our.bowl)
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  todoc  (~(got by d) id)
         =/  ndoc
-        =.  ships.settings.todoc  (insert:index ships.settings.todoc [ship.act level.act] our.bowl)
-        todoc
-        `this(d (~(put by d) id ndoc))
-          %addrole
-        ?>  =(src.bowl our.bowl)
-        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
-        =/  todoc  (~(got by d) id)
-        =/  ndoc
-        =.  roles.settings.todoc  (insert:index roles.settings.todoc [role.act level.act] our.bowl)
-        todoc
+        ?+  type.act  !!
+            %ships
+          =.  ships.settings.todoc  (insert:index ships.settings.todoc [(slav %p perm.act) level.act] our.bowl)
+          todoc
+            %roles
+          =.  roles.settings.todoc  (insert:index roles.settings.todoc [(slav %tas perm.act) level.act] our.bowl)
+          todoc
+        ==
         `this(d (~(put by d) id ndoc))
         ::
         :: Remove a permission rule
         ::
-          %removeperms
+          %removeperm
         ?>  =(src.bowl our.bowl)
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  doc  (~(got by d) id)
@@ -370,28 +368,26 @@
         fromfldr
         `this(f (~(put by f) from nfldr))
         ::
-        :: Give a ship permissions
+        :: Add a permission to a document
         ::
-          %addship
+          %addperm
         ?>  =(src.bowl our.bowl)
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
-        =/  tofold  (~(got by f) id)
-        =/  nfold
-        =.  ships.tofold  (insert:index ships.tofold [ship.act level.act] our.bowl)
-        tofold
-        `this(f (~(put by f) id nfold))
-          %addrole
-        ?>  =(src.bowl our.bowl)
-        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
-        =/  tofold  (~(got by f) id)
-        =/  nfold
-        =.  roles.tofold  (insert:index roles.tofold [role.act level.act] our.bowl)
-        tofold
-        `this(f (~(put by f) id nfold))
+        =/  tofol  (~(got by f) id)
+        =/  nfol
+        ?+  type.act  !!
+            %ships
+          =.  ships.tofol  (insert:index ships.tofol [(slav %p perm.act) level.act] our.bowl)
+          tofol
+            %roles
+          =.  roles.tofol  (insert:index roles.tofol [(slav %tas perm.act) level.act] our.bowl)
+          tofol
+        ==
+        `this(f (~(put by f) id nfol))
         ::
         :: Remove a permission rule
         ::
-          %removeperms
+          %removeperm
         ?>  =(src.bowl our.bowl)
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  fold  (~(got by f) id)
@@ -411,13 +407,14 @@
         ::
           %rename
         ?>  =(src.bowl our.bowl)
+
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         ~_  [%leaf "Error renaming folder of id: {<id>}"]
         ?.  (~(has by f) id)
           ~&  "Could not find folder!"  !!
         =/  old  (~(got by f) id)
         ?.  =(owner.old our.bowl)
-          ~&  "You do not have the right to rename this flder!"  !!
+          ~&  "You do not have the right to rename this folder!"  !!
         =/  new
         =.  name.old  name.act
         old
@@ -529,23 +526,25 @@
         =/  spc  ^*  space
         `this(s (~(put by s) space.act spc))
         ::
-        :: Edit Space Permissions
+        :: Add a permission to a document
         ::
-          %addship
+          %addperm
         ?>  =(src.bowl our.bowl)
-        =/  spc  (~(got by s) path.act)
+        =/  tospc  (~(got by s) path.act)
         =/  nspc
-        =.  ships.spc  (insert:index ships.spc [ship.act level.act] our.bowl)
-        spc
+        ?+  type.act  !!
+            %ships
+          =.  ships.tospc  (insert:index ships.tospc [(slav %p perm.act) level.act] our.bowl)
+          tospc
+            %roles
+          =.  roles.tospc  (insert:index roles.tospc [(slav %tas perm.act) level.act] our.bowl)
+          tospc
+        ==
         `this(s (~(put by s) path.act nspc))
-          %addrole
-        ?>  =(src.bowl our.bowl)
-        =/  spc  (~(got by s) path.act)
-        =/  nspc
-        =.  roles.spc  (insert:index roles.spc [role.act level.act] our.bowl)
-        spc
-        `this(s (~(put by s) path.act nspc))
-          %removeperms
+        ::
+        :: Remove a permission rule
+        ::
+          %removeperm
         ?>  =(src.bowl our.bowl)
         =/  spc  (~(got by s) path.act)
         =/  id  [`@p`(slav %p -.item.act) `@u`(slav %ud -.+.item.act)]

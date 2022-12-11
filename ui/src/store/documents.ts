@@ -211,6 +211,7 @@ const actions: ActionTree<DocumentState, RootState> = {
     })
   },
 
+  /*
   syncpermswithspace({ dispatch }, payload: string): Promise<void> {
     return new Promise((resolve, reject) => {
       if(router.currentRoute.value.query.spaceId != "/null/space") {
@@ -240,6 +241,69 @@ const actions: ActionTree<DocumentState, RootState> = {
         // Get space owner
         // Set owner as admin
       }
+    })
+  },
+  */
+
+  addperm({ }, payload: { id: string, perm: string, level: string, type: string}): Promise<void> {
+    return new Promise((resolve) => {
+      (window as any).urbit.poke({
+        app: "engram",
+        mark: "post",
+        json: {
+          document: { addperm: {
+            id: payload.id,
+            perm: payload.perm,
+            level: payload.level,
+            type: payload.type
+          }}
+        }
+      }).then(() => {
+        resolve();
+      })
+    })
+  },
+  removeperm({ }, payload: { id: string, timestamp: string, type: string}): Promise<void> {
+    return new Promise((resolve) => {
+      (window as any).urbit.poke({
+        app: "engram",
+        mark: "post",
+        json: {
+          document: { addperm: {
+            id: payload.id,
+            timestamp: payload.timestamp,
+            type: payload.type
+          }}
+        }
+      }).then(() => {
+        resolve();
+      })
+    })
+  },
+  findremoveperm({ }, payload: { id: string, timestamp: string, type: string, perm: string, level: string }): Promise<void> {
+    return new Promise((resolve) => {
+      (window as any).urbit.scry({
+        app: "engram",
+        path: `document${payload.id}/get/settings`
+      }).then((res: any) => {
+        const closeenough = Object.keys(res[payload.type]).find((key) => {
+          return res[payload.type].perm == payload.perm && res[payload.type].level == payload.level;
+        });
+        (window as any).urbit.poke({
+          app: "engram",
+          mark: "post",
+          json: {
+            document: { removeperm: {
+              id: payload.id,
+              timestamp: closeenough,
+              type: payload.type
+            }}
+          }
+        }).then(() => {
+          resolve();
+        })
+      })
+      
     })
   }
 }
