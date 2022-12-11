@@ -34,8 +34,8 @@
       ==
       :-  %space  %-  of  :~
         [%make (ot ~[space+pa])]
-        [%addperm (ot ~[id+pa perm+so level+(se %tas) type+(se %tas)])]
-        [%removeperm (ot ~[id+pa timestamp+pa type+(se %tas)])]
+        [%addperm (ot ~[space+pa perm+so level+(se %tas) type+(se %tas)])]
+        [%removeperm (ot ~[space+pa timestamp+pa type+(se %tas)])]
         [%gatherall (ot ~[space+pa])]
       ==
     ==

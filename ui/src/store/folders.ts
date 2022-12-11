@@ -42,7 +42,7 @@ const getters: GetterTree<FolderState, RootState> = {
   },
 
   root: (state) => {
-    return Object.keys(state["."].content).map((id) => state["."].content[id]);
+    return state["."].content;
   },
 }
 
@@ -81,6 +81,7 @@ const mutations: MutationTree<FolderState> = {
 
   // Moving -------------------------------------------------------------------
   add(state, payload: { item: { index: string, id: string, type: string}, to: string }) {
+    console.log("adding?");
     state[payload.to].content[payload.item.index] = { id: payload.item.id, type: payload.item.type };
   },
   remove(state, payload: { index: string, from: string }) {
@@ -116,7 +117,7 @@ const actions: ActionTree<FolderState, RootState> = {
     commit("clear");
   },
 
-  make({ commit, rootGetters }, payload: { name: string }): Promise<Document> {
+  make({ commit, rootGetters }, payload: { name: string }): Promise<string> {
     return new Promise((resolve, reject) => {
       console.log("making folder");
       (window as any).urbit.poke({
@@ -138,6 +139,7 @@ const actions: ActionTree<FolderState, RootState> = {
             owner: `~${(window as any).ship}`,
             content: {},
           });
+          resolve(path);
         });
       })
     })
@@ -201,16 +203,16 @@ const actions: ActionTree<FolderState, RootState> = {
           (window as any).urbit.scry({ app: "engram", path: `/folder${payload.to}/get/settings`}).then((res: any) => {
             Object.keys(res.roles).forEach((role: string) => {
               dispatch(`${payload.item.type}s/addperm`, {
-                id: payload.item.index,
-                type: payload.item.type,
+                id: payload.item.id,
+                type: "roles",
                 perm: res.roles[role].perm,
                 level: res.roles[role].level
               }, { root: true})
             });
             Object.keys(res.ships).forEach((ship: string) => {
-              dispatch(`${payload.item.type}s/findremoveperm`, {
-                id: payload.item.index,
-                type: payload.item.type,
+              dispatch(`${payload.item.type}s/addperm`, {
+                id: payload.item.id,
+                type: "ships",
                 perm: res.ships[ship].perm,
                 level: res.ships[ship].level
               }, { root: true})
@@ -230,7 +232,7 @@ const actions: ActionTree<FolderState, RootState> = {
   remove({ commit, dispatch, state }, payload: { from: string, index: string}): Promise<void> {
     return new Promise((resolve, reject) => {
       console.log("removing item from folder: ", payload);
-      const type = state[payload.from].content[payload.index].type
+      const item = state[payload.from].content[payload.index]
       commit("remove", payload);
       if(payload.from != ".") {
         (window as any).urbit.poke({
@@ -247,17 +249,17 @@ const actions: ActionTree<FolderState, RootState> = {
         }).then(() => {
           (window as any).urbit.scry({ app: "engram", path: `/folder${payload.from}/get/settings`}).then((res: any) => {
             Object.keys(res.roles).forEach((role: string) => {
-              dispatch(`${type}s/findremoveperm`, {
-                id: payload.index,
-                type: type,
+              dispatch(`${item.type}s/findremoveperm`, {
+                id: item.id,
+                type: "roles",
                 perm: res.roles[role].perm,
                 level: res.roles[role].level
               }, { root: true})
             });
             Object.keys(res.ships).forEach((ship: string) => {
-              dispatch(`${type}s/findremoveperm`, {
-                id: payload.index,
-                type: type,
+              dispatch(`${item.type}s/findremoveperm`, {
+                id: item.id,
+                type: "ships",
                 perm: res.ships[ship].perm,
                 level: res.ships[ship].level
               }, { root: true})
@@ -283,7 +285,12 @@ const actions: ActionTree<FolderState, RootState> = {
         }
       }).then(() => {
         Promise.all(Object.keys(state[payload.id].content).map((item: string) => {
-          dispatch(`${state[payload.id].content[item].type}s/addperm`, { id: state[payload.id].content[item].id, perm: payload.perm, level: payload.level, type: state[payload.id].content[item].type}, { root: true })
+          dispatch(`${state[payload.id].content[item].type}s/addperm`, { 
+            id: state[payload.id].content[item].id, 
+            perm: payload.perm, 
+            level: payload.level, 
+            type: payload.type
+          }, { root: true })
         })).then(() => { 
           resolve();
         });
@@ -308,7 +315,7 @@ const actions: ActionTree<FolderState, RootState> = {
             id: state[payload.id].content[item].id, 
             perm: payload.perm, 
             level: payload.level, 
-            type: state[payload.id].content[item].type
+            type: payload.type
           }, { root: true })
         })).then(() => { 
           resolve();
@@ -321,10 +328,10 @@ const actions: ActionTree<FolderState, RootState> = {
     return new Promise((resolve) => {
       (window as any).urbit.scry({
         app: "engram",
-        path: `folder${payload.id}/get`
+        path: `/folder${payload.id}/get/settings`
       }).then((res: any) => {
         const closeenough = Object.keys(res[payload.type]).find((key: string) => {
-          return res[payload.type].perm == payload.perm && res[payload.type].level == payload.level;
+          return res[payload.type][key].perm == payload.perm && res[payload.type][key].level == payload.level;
         });
         dispatch("removeperm", {
           id: payload.id,

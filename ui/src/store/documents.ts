@@ -109,7 +109,7 @@ const actions: ActionTree<DocumentState, RootState> = {
     commit("clear");
   },
 
-  make({ commit, dispatch, rootGetters }, payload: { name: string }): Promise<Document> {
+  make({ commit, dispatch, rootGetters }, payload: { name: string }): Promise<string> {
     return new Promise((resolve, reject) => {
       console.log("making document")
       const doc = new Y.Doc();
@@ -140,23 +140,7 @@ const actions: ActionTree<DocumentState, RootState> = {
             owner: `~${(window as any).ship}`,
           });
           dispatch("folders/add", { item: { index: path, id: path, type: "document" }, to: "." }, { root: true });
-          if(router.currentRoute.value.query.spaceId == "/null/space") {
-            (window as any).urbit.poke({
-              app: "engram",
-              mark: "post",
-              json: {
-                document: {
-                  addship: {
-                    id: path,
-                    ship: `~${(window as any).ship}`,
-                    level: "admin",
-                  }
-                }
-              }
-            });
-          } else {
-            dispatch("syncpermswithspace", path);
-          }
+          resolve(path);
         });
       })
     })
@@ -280,15 +264,17 @@ const actions: ActionTree<DocumentState, RootState> = {
       })
     })
   },
-  findremoveperm({ }, payload: { id: string, timestamp: string, type: string, perm: string, level: string }): Promise<void> {
+  findremoveperm({ }, payload: { id: string, type: string, perm: string, level: string }): Promise<void> {
     return new Promise((resolve) => {
       (window as any).urbit.scry({
         app: "engram",
-        path: `document${payload.id}/get/settings`
+        path: `/document${payload.id}/get/settings`
       }).then((res: any) => {
-        const closeenough = Object.keys(res[payload.type]).find((key) => {
-          return res[payload.type].perm == payload.perm && res[payload.type].level == payload.level;
+        console.log("find remove perm res: ", res, " for: ", payload);
+        const closeenough = Object.keys(res[payload.type]).find((key: string) => {
+          return res[payload.type][key].perm == payload.perm && res[payload.type][key].level == payload.level;
         });
+        console.log("and close enough: ", closeenough);
         (window as any).urbit.poke({
           app: "engram",
           mark: "post",

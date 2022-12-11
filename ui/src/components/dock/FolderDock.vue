@@ -12,14 +12,19 @@
       </div>
       <div class="dock-body scrollbar-small">
 
-          <div class="py-2 heading-2 opacity-50">
-              Permission Rules
-          </div>
+          <div class="py-2 heading-2 opacity-50 flex">
+            <div class="flex-grow">
+              Permission Rules 
+            </div>
+            <div class="opacity-50" v-if="isAdmin">
+              admin view
+            </div>
+            </div>
           <div class="flex flex-col gap-1">
             <ShipPermission 
               :editable="isAdmin"
               :key="item" 
-              :ship="ships[item].ship" 
+              :ship="ships[item].perm" 
               :level="ships[item].level" 
               @level="(event: any) => { handleLevel(item, event, 'ships'); }"
               v-for="item in Object.keys(ships)" 
@@ -27,7 +32,7 @@
             <RolePermission 
               :editable="isAdmin"
               :key="item" 
-              :role="roles[item].role" 
+              :role="roles[item].perm" 
               :level="roles[item].level" 
               v-for="item in Object.keys(roles)" 
               @level="(event: any) => { handleLevel(item, event, 'roles'); }"
@@ -78,8 +83,8 @@ export default defineComponent({
     return {
       dockWidth: 420,
       dragStart: 0,
-      roles: { } as { [key: string]: { role: string, level: string} },
-      ships: { } as { [key: string]: { ship: string, level: string} },
+      roles: { } as { [key: string]: { perm: string, level: string} },
+      ships: { } as { [key: string]: { perm: string, level: string} },
 
       newPermission: "",
       newPermissionLevel: "",
@@ -91,21 +96,13 @@ export default defineComponent({
     }
   },
   computed: {
-    private: function(): boolean {
-      return typeof(
-        Object.keys(this.ships).find(ship => 
-          this.ships[ship].ship == `~${(window as any).ship}` 
-          && 
-          this.ships[ship].level == "admin"
-        )) != 'undefined';
-    },
     isAdmin: function(): boolean {
       return store.getters['space/owner'] == `~${(window as any).ship}`
       || store.getters['folders/meta'](this.folder).owner  == `~${(window as any).ship}`
       || store.getters['space/roles'].reduce((role: string, acc: boolean) => {
-        return acc || Object.keys(this.roles).find(role => this.roles[role].role == role && this.roles[role].level == 'admin');
+        return acc || Object.keys(this.roles).find(role => this.roles[role].perm == role && this.roles[role].level == 'admin');
       }, false) 
-      || Object.keys(this.ships).find(ship => this.ships[ship].ship == `~${(window as any).ship}` && this.ships[ship].level == 'admin');
+      || Object.keys(this.ships).find(ship => this.ships[ship].perm == `~${(window as any).ship}` && this.ships[ship].level == 'admin');
     },
     isOwner: function(): boolean {
       return store.getters['folders/meta'](this.folder).owner == `~${(window as any).ship}`
@@ -113,11 +110,13 @@ export default defineComponent({
   },
   methods: {
     loadSettings: function() {
-      (window as any).urbit.scry({ app: "engram", path: `/folder${this.folder}/get/settings`}).then((res: any) => {
+      if(this.folder.length > 0) {
+        (window as any).urbit.scry({ app: "engram", path: `/folder${this.folder}/get/settings`}).then((res: any) => {
           console.log("folder settings response", res);
           this.roles = res.roles;
           this.ships = res.ships;
-      });
+        });
+      }
     },
     handleLevel: function(item: string, level: string, type: string) {
       if(level == "-") {
@@ -148,11 +147,10 @@ export default defineComponent({
       })
     },
     addPermission: function(event: KeyboardEvent) {
-      console.log("input: ", this.newPermission, event.key, " @ ", (event.target as any).selectionStart);
       if(event.key == "Enter" && this.newPermission.length > 0 && this.newPermissionLevel.length > 0) {
         const ship = this.newPermission.charAt(0) == "~";
         store.dispatch('folders/addperm', { 
-          id: `/${this.$route.params.author}/${this.$route.params.clock}`, 
+          id: this.folder, 
           perm: ship ? this.newPermission : this.newPermission.substring(1),
           level: this.newPermissionLevel,
           type: ship ? "ships" : "roles"

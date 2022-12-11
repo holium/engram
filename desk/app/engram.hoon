@@ -38,8 +38,6 @@
 ++  on-poke
   |=  [=mark =vase]
   ^-  (quip card _this)
-  ::?+    mark  (on-poke:def mark vase)
-  ::    %post
     =/  act  !<(action vase)
     ?-   -.act
       %document
@@ -85,21 +83,21 @@
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         ?>  (~(has by d) id)
         =/  nstate  this(d (~(del by d) id))
-        ~&  "Trying to remove from space"
+        ~&  "Trying to remove document from space"
         =/  spcs
           %-  ~(run by s)  |=  spc=space
           ?:  (~(has by content.content.spc) id)
-            ~&  "Removing from space"
+            ~&  "Removing from document space"
             =.  content.spc  (remove:index content.spc id our.bowl)
             spc
           spc
         ~&  spcs
         =/  sstate  nstate(s spcs)
-        ~&  "Trying to remove from folder"
+        ~&  "Trying to remove document from folder"
         =/  fldrs
           %-  ~(run by f)  |=  fldr=folder
           ?:  (~(has by content.content.fldr) id)
-            ~&  "Removing from folder"
+            ~&  "Removing from document folder"
             =.  content.fldr  (remove:index content.fldr id our.bowl)
             fldr
           fldr
@@ -181,10 +179,10 @@
         =/  item  [`@p`(slav %p -.item.act) `@u`(slav %ud -.+.item.act)]
         =/  ndoc
         ?+  type.act  !!
-            %role
+            %roles
           =.  roles.settings.doc  (remove:index roles.settings.doc item our.bowl)
           doc
-            %ship
+            %ships
           =.  ships.settings.doc  (remove:index ships.settings.doc item our.bowl)
           doc
         ==
@@ -327,15 +325,19 @@
         ?>  (~(has by f) id)
         =/  nstate  this(f (~(del by f) id))
         =/  spcs
+          ~&  "Trying to folder from space"
           %-  ~(run by s)  |=  spc=space
           ?:  (~(has by content.content.spc) id)
+            ~&  "Removing folder from space"
             =.  content.spc  (remove:index content.spc id our.bowl)
             spc
           spc
         =/  sstate  nstate(s spcs)
         =/  fldrs
+          ~&  "Trying to folder from folder"
           %-  ~(run by f)  |=  fldr=folder
           ?:  (~(has by content.content.fldr) id)
+            ~&  "Removing folder from folder"
             =.  content.fldr  (remove:index content.fldr id our.bowl)
             fldr
           fldr
@@ -394,10 +396,10 @@
         =/  item  [`@p`(slav %p -.item.act) `@u`(slav %ud -.+.item.act)]
         =/  nfold
         ?+  type.act  !!
-            %role
+            %roles
           =.  roles.fold  (remove:index roles.fold item our.bowl)
           fold
-            %ship
+            %ships
           =.  ships.fold  (remove:index ships.fold item our.bowl)
           fold
         ==
@@ -530,7 +532,9 @@
         ::
           %addperm
         ?>  =(src.bowl our.bowl)
-        =/  tospc  (~(got by s) path.act)
+        ~&  "adding perm to space: "
+        ~&  space.act
+        =/  tospc  (~(got by s) space.act)
         =/  nspc
         ?+  type.act  !!
             %ships
@@ -540,24 +544,24 @@
           =.  roles.tospc  (insert:index roles.tospc [(slav %tas perm.act) level.act] our.bowl)
           tospc
         ==
-        `this(s (~(put by s) path.act nspc))
+        `this(s (~(put by s) space.act nspc))
         ::
         :: Remove a permission rule
         ::
           %removeperm
         ?>  =(src.bowl our.bowl)
-        =/  spc  (~(got by s) path.act)
+        =/  spc  (~(got by s) space.act)
         =/  id  [`@p`(slav %p -.item.act) `@u`(slav %ud -.+.item.act)]
         =/  nspc
         ?+  type.act  !!
-            %role
+            %roles
           =.  roles.spc  (remove:index roles.spc id our.bowl)
           spc
-            %ship
+            %ships
           =.  ships.spc  (remove:index ships.spc id our.bowl)
           spc
         ==
-        `this(s (~(put by s) path.act nspc))
+        `this(s (~(put by s) space.act nspc))
         ::
         ::  Gather updated to a space index from all peers in the space
         ::
@@ -708,6 +712,11 @@
     ?>  =(src.bowl our.bowl)
     ``noun+!>((list:folder:enjs:engram f))
   ::
+      [%x %folder @ @ %get %settings ~]
+    ?>  =(src.bowl our.bowl)
+    =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
+    =/  fold  (~(got by f) id)
+    ``noun+!>((settings:folder:enjs:engram fold))
   ==
 ::
 ++  on-agent

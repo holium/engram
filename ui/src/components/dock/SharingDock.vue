@@ -1,13 +1,18 @@
 <template>
   <div class="flex flex-col">
-    <div class="py-2 heading-2 opacity-50">
-      Permission Rules
+    <div class="py-2 heading-2 opacity-50 flex">
+      <div class="flex-grow">
+        Permission Rules 
+      </div>
+      <div class="opacity-50" v-if="isAdmin">
+        admin view
+      </div>
     </div>
     <div class="flex flex-col gap-1">
       <ShipPermission 
         :editable="isAdmin" 
         :key="item" 
-        :ship="ships[item].ship" 
+        :ship="ships[item].perm" 
         :level="ships[item].level" 
         v-for="item in Object.keys(ships)" 
         @level="(event: string) => { handleLevel(item, event, 'ships') }"
@@ -15,7 +20,7 @@
       <RolePermission 
         :editable="isAdmin" 
         :key="item" 
-        :role="roles[item].role" 
+        :role="roles[item].perm" 
         :level="roles[item].level" 
         v-for="item in Object.keys(roles)" 
         @level="(event: string) => { handleLevel(item, event, 'roles') }"
@@ -63,27 +68,19 @@ export default defineComponent({
     }
   },
   computed: {
-    ships: function(): { [key: string]: { ship: string, level: string } } {
+    ships: function(): { [key: string]: { perm: string, level: string } } {
       return store.getters['workspace/settings/ships'];
     },
-    roles: function(): { [key: string]: { role: string, level: string } } {
+    roles: function(): { [key: string]: { perm: string, level: string } } {
       return store.getters['workspace/settings/roles'];
-    },
-    private: function(): boolean {
-      return typeof(
-        Object.keys(this.ships).find(ship => 
-          this.ships[ship].ship == `~${(window as any).ship}` 
-          && 
-          this.ships[ship].level == "admin"
-        )) != 'undefined';
     },
     isAdmin: function(): boolean {
       return store.getters['space/owner'] == `~${(window as any).ship}`
       || store.getters['documents/meta'](`/${this.$route.params.author}/${this.$route.params.clock}`).owner == `~${(window as any).ship}`
       || store.getters['space/roles'].reduce((role: string, acc: boolean) => {
-        return acc || Object.keys(this.roles).find(role => this.roles[role].role == role && this.roles[role].level == 'admin');
+        return acc || Object.keys(this.roles).find(role => this.roles[role].perm == role && this.roles[role].level == 'admin');
       }, false)
-      || Object.keys(this.ships).find(ship => this.ships[ship].ship == `~${(window as any).ship}` && this.ships[ship].level == 'admin');
+      || Object.keys(this.ships).find(ship => this.ships[ship].perm == `~${(window as any).ship}` && this.ships[ship].level == 'admin');
     },
     isOwner: function(): boolean {
       return store.getters['documents/meta'](`/${this.$route.params.author}/${this.$route.params.clock}`).owner == `~${(window as any).ship}`

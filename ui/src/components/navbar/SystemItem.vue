@@ -48,7 +48,7 @@
             class="pl-4" 
             :parent="item"
             :item="(meta as any).content[i].id" 
-            :index="i" 
+            :index="i"
             :type="(meta as any).content[i].type" 
             :key="i" 
             v-for="i in expand ? Object.keys(meta.content == null ? {} : meta.content) : []"
@@ -181,8 +181,11 @@ export default defineComponent({
                 const raw = event.dataTransfer?.getData("text/plain");
                 if(raw) {
                     const data = JSON.parse(raw);
-                    store.dispatch("folders/remove", { index: data.index, from: data.from });
-                    store.dispatch("folders/add", { item: { id: data.item.id, type: data.item.type }, to: this.item });
+                    if(this.item != data.from) {
+                        store.dispatch("folders/remove", { index: data.index, from: data.from });
+                        store.dispatch("folders/add", { item: { id: data.item.id, type: data.item.type }, to: this.item });
+                    }
+                    
                 }
             }
         },

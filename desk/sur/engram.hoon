@@ -102,8 +102,8 @@
     ==
     $:  %space
       $%  [%make space=path]
-          [%addperm path=path perm=@t level=@tas type=@tas]
-          [%removeperm path=path item=path type=@tas]
+          [%addperm space=path perm=@t level=@tas type=@tas]
+          [%removeperm space=path item=path type=@tas]
           [%gatherall space=path]
           [%gather space=path peer=@p]
           [%delta space=path version=version]
