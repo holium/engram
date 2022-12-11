@@ -25,7 +25,7 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   if(to.query.spaceId == undefined) {
-    next(`${to.path}?spaceId=/null/space`);
+    next(`${to.path}?spaceId=/~${(window as any).ship}/our`);
   } else {
     next();
   }

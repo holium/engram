@@ -4,13 +4,15 @@ import type {
     SpaceState,
     Space,
   } from "./types"
+ import router from "@/router/index";
 
 
 const state: SpaceState = {
     name: "",
     path: "",
     image: "",
-    color: ""
+    color: "",
+    roles: [],
 }
 
 const getters: GetterTree<SpaceState, RootState> = {
@@ -25,6 +27,9 @@ const getters: GetterTree<SpaceState, RootState> = {
     },
     color(state) {
         return state.color;
+    },
+    roles(state) {
+      return state.roles;
     }
 }
 
@@ -34,29 +39,86 @@ const mutations: MutationTree<SpaceState> = {
         state.name = payload.name;
         state.image = payload.image;
         state.color = payload.color;
+        state.roles = payload.roles;
     }
 }
 
 const actions: ActionTree<SpaceState, RootState> = {
     load({ commit }, payload: string): Promise<Space> {
         return new Promise((resolve, reject) => {
+          (window as any).urbit.scry({ app: "spaces", path: `${payload}/members/~${(window as any).ship}` }).then((member: any) => {
             (window as any).urbit.scry({ app: "spaces", path: `${payload}` }).then((response: any) => {
-                console.log("load space res:", response);
-                commit("load", { path: payload, ...response.space})
+                console.log("load space res:", member, response);
+                commit("load", { ...response.space, roles: member.member.roles});
                 resolve(response.space);
-              }).catch((err: any) => {
-                console.warn("spaces agent missing!!", err);
-                const nullspace = {
-                    path: (window as any).ship, 
-                    name: (window as any).ship, 
-                    color: "#262626",
-                    image: ""
-                }
-                commit("load", nullspace)
-                reject(nullspace);
               })
+            }).catch((err: any) => {
+              console.warn("spaces agent missing!!", err);
+              const nullspace = {
+                  path: `/~${(window as any).ship}/our`, 
+                  name: "Local", 
+                  color: "#262626",
+                  image: "",
+                  roles: [],
+              }
+              commit("load", nullspace)
+              resolve(nullspace);
+            })
         })
-    }
+    },
+    addperm({ dispatch, state }, payload: { id: string, perm: string, level: string, type: string}): Promise<void> {
+      return new Promise((resolve) => {
+        console.log("adding perm to space", payload.id);
+        (window as any).urbit.poke({
+          app: "engram",
+          mark: "post",
+          json: {
+            space: { addperm: {
+              space: payload.id,
+              perm: payload.perm,
+              level: payload.level,
+              type: payload.type
+            }}
+          }
+        }).then(() => {
+          (window as any).urbit.scry({app: "engram", path: `/space${router.currentRoute.value.query.spaceId}/list`}).then((res: any) => {
+            Promise.all(Object.keys(res).map((item: string) => {
+              dispatch(`${res[item].type}s/addperm`, { id: item, perm: payload.perm, level: payload.level, type: payload.type}, { root: true });
+            })).then(() => { 
+              resolve();
+            });
+          })
+        })
+      })
+    },
+    removeperm({ dispatch, state }, payload: { id: string, timestamp: string, type: string, perm: string, level: string }): Promise<void> {
+      return new Promise((resolve) => {
+        (window as any).urbit.poke({
+          app: "engram",
+          mark: "post",
+          json: {
+            space: { removeperm: {
+              id: payload.id,
+              timestamp: payload.timestamp,
+              type: payload.type
+            }}
+          }
+        }).then(() => {
+          (window as any).urbit.scry({app: "engram", path: `/space${router.currentRoute.value.query.spaceId}/list`}).then((res: any) => {
+            Promise.all(Object.keys(res).map((item: string) => {
+              dispatch(`${res[item].type}s/findremoveperm`, { 
+                id: item, 
+                perm: payload.perm, 
+                level: payload.level, 
+                type: res[item].type
+              }, { root: true });
+            })).then(() => { 
+              resolve();
+            });
+          })
+        })
+      })
+    },
 }
 
 export default {

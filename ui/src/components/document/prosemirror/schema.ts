@@ -10,6 +10,7 @@ import {
 */
 //import { ConfigSpec, ConfigTermSpec } from "./config/plugin";
 import { Schema, NodeType, MarkType } from "prosemirror-model";
+import { setBlockTracking } from "vue";
 //import { NodeSpec } from "prosemirror-model";
 
 export const protectedBlocks = new Set(["paragraph"]);
@@ -33,7 +34,7 @@ const schema = new Schema({
       attrs: { id: { default: null } },
       parseDOM: [{ tag: "header" }],
       toDOM(node) {
-        return ["header", 0];
+        return ["header", { id: node.attrs.id }, 0];
       },
     },
 
@@ -43,7 +44,7 @@ const schema = new Schema({
       attrs: { id: { default: null } },
       parseDOM: [{ tag: `h1[name="title"]` }],
       toDOM(node) {
-        return ["h1", { name: "title" }, 0];
+        return ["h1", { name: "title", id: node.attrs.id }, 0];
       },
     },
 
@@ -62,7 +63,7 @@ const schema = new Schema({
         },
       ],
       toDOM(node) {
-        return ["img", { name: "title", src: node.attrs.src }];
+        return ["img", { name: "title", src: node.attrs.src, id: node.attrs.id }];
       },
     },
 
@@ -72,7 +73,7 @@ const schema = new Schema({
       attrs: { id: { default: null } },
       parseDOM: [{ tag: `p[name="description"]` }],
       toDOM(node) {
-        return ["p", { name: "description" }, 0];
+        return ["p", { name: "description", id: node.attrs.id }, 0];
       },
     },
 
@@ -103,6 +104,7 @@ const schema = new Schema({
     // Blocks ------------------------------------------------------------------
     // Paragraph
     paragraph: {
+      draggable: true,
       content: "inline*",
       group: "block",
       attrs: { id: { default: null } },
@@ -114,6 +116,7 @@ const schema = new Schema({
 
     // Heading
     heading: {
+      draggable: true,
       content: "inline*",
       group: "block",
       attrs: { level: { default: 1 }, id: { default: null } },
@@ -137,6 +140,7 @@ const schema = new Schema({
 
     // Blockquote
     blockquote: {
+      draggable: true,
       content: "inline*",
       group: "block",
       attrs: { id: { default: null } },
@@ -172,6 +176,7 @@ const schema = new Schema({
 
     // Code Block
     "code-block": {
+      draggable: true,
       content: "text*",
       group: "block",
       attrs: { id: { default: null } },
@@ -185,6 +190,7 @@ const schema = new Schema({
 
     /// A horizontal rule (`<hr>`).
     "horizontal-rule": {
+      draggable: true,
       group: "block",
       parseDOM: [{ tag: "hr" }],
       attrs: { id: { default: null } },
@@ -195,6 +201,7 @@ const schema = new Schema({
 
     // List Item
     li: {
+      draggable: true,
       content: "paragraph block*",
       attrs: { id: { default: null } },
       parseDOM: [{ tag: "li" }],
@@ -206,6 +213,7 @@ const schema = new Schema({
 
     // Ordered List
     "ordered-list": {
+      draggable: true,
       group: "block",
       content: "li+",
       attrs: { order: { default: 1 }, id: { default: null } },
@@ -235,6 +243,7 @@ const schema = new Schema({
 
     //Unordered List
     "unordered-list": {
+      draggable: true,
       group: "block",
       content: "li+",
       attrs: { id: { default: null } },
@@ -245,6 +254,7 @@ const schema = new Schema({
     },
 
     image: {
+      draggable: true,  
       group: "block",
       attrs: {
         src: { default: "" },
@@ -292,6 +302,25 @@ const schema = new Schema({
       parseDOM: [{ tag: "br" }],
       toDOM() {
         return ["br"];
+      },
+    },
+
+    // Engram Link
+    engramlink: {
+      inline: false,
+      group: "block",
+      attrs: {
+        href: { default: "" },
+      },
+      parseDOM: [{ tag: 'div[data-type="engram-link"]' }],
+      toDOM(node) {
+        return [
+          "div",
+          {
+            href: node.attrs.href,
+            "data-type": "engram-link",
+          },
+        ];
       },
     },
   },
@@ -387,25 +416,6 @@ const schema = new Schema({
       },
     },
 
-    // Hypertext ---------------------------------------------------------------
-    ameslink: {
-      priority: 100,
-      inclusive: false,
-      attrs: {
-        href: { default: "" },
-      },
-      parseDOM: [{ tag: 'a[href*="engram://"]' }],
-      toDOM(node) {
-        return [
-          "abbr",
-          {
-            href: node.attrs.href,
-            "data-type": "urbit",
-          },
-          0,
-        ];
-      },
-    },
     // Hyperlink
     hyperlink: {
       priority: 90,
@@ -428,13 +438,13 @@ const schema = new Schema({
       },
     },
 
-    // Comment Link
-    markup: {
+    // Comment
+    comment: {
       attrs: { comment: { default: "{}" } },
       inclusive: false,
       excludes: "",
       parseDOM: [{ tag: "mark" }],
-      toDOM() {
+      toDOM(node) {
         return ["mark", 0];
       },
     },

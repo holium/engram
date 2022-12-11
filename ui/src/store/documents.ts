@@ -24,6 +24,8 @@ const getters: GetterTree<DocumentState, RootState> = {
     })
   },
   meta: (state) => (id: string): ItemMeta => {
+    console.log("getting meta: ", id);
+    if(!state[id]) return { id: "missing document", name: "missing document", owner: "missing document"};
     return {
       id: id,
       name: state[id].name,
@@ -57,7 +59,9 @@ const mutations: MutationTree<DocumentState> = {
 
   // Management ----------------------------------------------------------------
   clear(state) {
-    state = {};
+    Object.keys(state).forEach((key: string) => {
+      delete state[key];
+    })
   },
   load(state, payload: Document) {
     state[payload.id] = payload;
@@ -105,7 +109,7 @@ const actions: ActionTree<DocumentState, RootState> = {
     commit("clear");
   },
 
-  make({ commit, dispatch, rootGetters }, payload: { name: string }): Promise<Document> {
+  make({ commit, dispatch, rootGetters }, payload: { name: string }): Promise<string> {
     return new Promise((resolve, reject) => {
       console.log("making document")
       const doc = new Y.Doc();
@@ -136,7 +140,24 @@ const actions: ActionTree<DocumentState, RootState> = {
             owner: `~${(window as any).ship}`,
           });
           dispatch("folders/add", { item: { index: path, id: path, type: "document" }, to: "." }, { root: true });
+          resolve(path);
         });
+      })
+    })
+  },
+  delete({ commit, dispatch }, payload: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      commit('delete', payload);
+      (window as any).urbit.poke({
+        app: "engram",
+        mark: "post",
+        json: {
+          document: { delete: {
+            id: payload
+          }}
+        }
+      }).then(() => {
+        resolve();
       })
     })
   },
@@ -171,6 +192,104 @@ const actions: ActionTree<DocumentState, RootState> = {
           }
         }
       })
+    })
+  },
+
+  /*
+  syncpermswithspace({ dispatch }, payload: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if(router.currentRoute.value.query.spaceId != "/null/space") {
+        // Get space permissions
+        (window as any).urbit.scry({
+          app: "engram",
+          path: `/space${router.currentRoute.value.query.spaceId}/settings`
+        }).then((res: any) => {
+          console.log("space permissions response: ", res);
+          // Copy Roles
+          Object.keys(res.roles).forEach((id: string) => {
+            dispatch('workspace/settings/addrole', {
+              id: payload,
+              role: res.roles[id].role,
+              level: res.roles[id].level,
+            }, { root: true })
+          });
+          // Copy Ships
+          Object.keys(res.ships).forEach((id: string) => {
+            dispatch('workspace/settings/addrole', {
+              id: payload,
+              ship: res.ships[id].ship,
+              level: res.ships[id].level,
+            }, { root: true })
+          });
+        })
+        // Get space owner
+        // Set owner as admin
+      }
+    })
+  },
+  */
+
+  addperm({ }, payload: { id: string, perm: string, level: string, type: string}): Promise<void> {
+    return new Promise((resolve) => {
+      (window as any).urbit.poke({
+        app: "engram",
+        mark: "post",
+        json: {
+          document: { addperm: {
+            id: payload.id,
+            perm: payload.perm,
+            level: payload.level,
+            type: payload.type
+          }}
+        }
+      }).then(() => {
+        resolve();
+      })
+    })
+  },
+  removeperm({ }, payload: { id: string, timestamp: string, type: string}): Promise<void> {
+    return new Promise((resolve) => {
+      (window as any).urbit.poke({
+        app: "engram",
+        mark: "post",
+        json: {
+          document: { addperm: {
+            id: payload.id,
+            timestamp: payload.timestamp,
+            type: payload.type
+          }}
+        }
+      }).then(() => {
+        resolve();
+      })
+    })
+  },
+  findremoveperm({ }, payload: { id: string, type: string, perm: string, level: string }): Promise<void> {
+    return new Promise((resolve) => {
+      (window as any).urbit.scry({
+        app: "engram",
+        path: `/document${payload.id}/get/settings`
+      }).then((res: any) => {
+        console.log("find remove perm res: ", res, " for: ", payload);
+        const closeenough = Object.keys(res[payload.type]).find((key: string) => {
+          return res[payload.type][key].perm == payload.perm && res[payload.type][key].level == payload.level;
+        });
+        console.log("and close enough: ", closeenough);
+        (window as any).urbit.poke({
+          app: "engram",
+          mark: "post",
+          json: {
+            document: { removeperm: {
+              id: payload.id,
+              timestamp: closeenough,
+              type: payload.type
+            }}
+          }
+        }).then(() => {
+          resolve();
+        })
+      })
+      
     })
   }
 }

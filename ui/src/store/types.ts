@@ -12,6 +12,7 @@ export interface Space {
   name: string;
   image: string;
   color: string;
+  roles: Array<string>;
 }
 
 export interface SpaceState {
@@ -19,6 +20,7 @@ export interface SpaceState {
   name: string,
   image: string,
   color: string,
+  roles: Array<string>,
 }
 
 // File Management -------------------------------------------------------------
@@ -83,11 +85,9 @@ export interface DocumentUpdate {
 
 // Settings
 export interface SettingsState {
-  roles: { [key: string]: DocumnetPermission };
-  ships: { [key: Patp]: DocumnetPermission };
+  roles: { [key: string]: { role: string, level: string} };
+  ships: { [key: string]: { ship: string, level: string} };
 }
-
-export type DocumnetPermission = 'write' | 'read'
 
 // Revisions
 export type RevisionState = Array<DocumentVersion>
