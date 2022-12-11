@@ -40,63 +40,45 @@
       %+  sort  %+  skim  lcomplete
         |=  item=id  =(-.item peer)
       |=  [a=id b=id]  (gth +.a +.b)
-  ~&  "--clients:"
-  ~&  clients
   =/  res
   |-
     ?:  =(~(wyt by clients) 0)
       state
     =/  client  (rear ~(tap in ~(key by clients)))
     =/  items   (~(got by clients) client)
-    ~&  "clients"
-    ~&  clients
     %=  $
       state
       |-  
         ?:  =((lent items) 0)
           state
         =/  item  (rear items)
-        ~&  "inserting ite: {<item>}"
         =/  idx  ?:  (~(has by version.state) client)  
           (add (~(got by version.state) client) 1)
         0
-        ~&  "the clock for this client is: {<idx>}"
         ?:  =(idx +.item)
           :: insert
-          ~&  "can insert"
           ?:  (~(has by content.updt) item)
             :: insert new content
-            ~&  "inserting new content"
-            ::=/  sample  (~(got by content.state) (rear ~(tap in ~(key by content.state))))
-            ::=/  value  ^+  sample  (~(got by content.updt) item)
             =/  value  (~(got by content.updt) item)
             =/  nstate
             =:  content.state  (~(put by content.state) item value)
                 version.state  (~(put by version.state) client idx)
               ==
             state
-            ~&  "next state versus state"
-            ~&  nstate
-            ~&  state
             =/  contres
             %=  $
               state  nstate
               items  (snip items)
             ==
-            ~&  "contres"
-            ~&  contres
             contres
           ?:  (~(has by dels.updt) item)
             :: insert (& implement) new delete
-            ~&  "inserting new delete"
             =/  nstate
             =:  dels.state     (~(put by dels.state) item (~(got by dels.updt) item))
                 content.state  (~(del by content.state) item)
                 version.state  (~(put by version.state) client idx)
               ==
             state
-            ~&  nstate
-            ~&  state
             %=  $
               state  nstate
               items  (snip items)
@@ -104,7 +86,6 @@
           !!  :: should never get here; this means an item (from the update) can't be found in the update
         ?:  (~(has in deleted) [client idx])
           :: update the version but DONT snip
-          ~&  "item has been deleted, forwarding the clock"
           =/  nstate
           =:  version.state  (~(put by version.state) client idx)
             ==
@@ -116,10 +97,6 @@
         !! :: This time has not been deleted, nor does it exist in the update 
       clients  (~(del by clients) client)
     ==
-  ~&  "res"
-  ~&  res
-  ~&  "state"
-  ~&  state
   res
 ++  insert
   |*  [state=(index) item=* ship=@p]
@@ -139,7 +116,6 @@
   ?:  (~(has by version.state) ship)
     (add (~(got by version.state) ship) 1)
   0
-  ~&  (~(del by content.state) item)
   =:  dels.state     (~(put by dels.state) [ship clock] item)
       content.state  (~(del by content.state) item)
       version.state  (~(put by version.state) ship clock)

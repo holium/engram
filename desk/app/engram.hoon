@@ -71,7 +71,6 @@
         =/  newspc
         =.  content.oldspc  (insert:index content.oldspc [id %document] our.bowl)
           oldspc
-        ~&  newspc
         =/  sstate  state(s (~(put by s) space.act newspc))
         =/  hstate  sstate(h (snoc h id))
         `hstate(t (add t 1))
@@ -192,7 +191,7 @@
         ::
           %gatherall
         ?>  =(src.bowl our.bowl)
-        ~&  "GATHERALL-- {<path.act>}"
+        ::~&  "GATHERALL-- {<path.act>}"
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  doc  (~(got by d) id)
         ?:  =(space.settings.doc /null/space)  ~&  "Document does not belong to a space"  `this
@@ -213,7 +212,7 @@
         ?>  =(src.bowl our.bowl)
         ?.  !=(our.bowl peer.act)
           `this
-        ~&  "GATHER-- {<path.act>} from: {<peer.act>}"
+        ::~&  "GATHER-- {<path.act>} from: {<peer.act>}"
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  doc  (~(got by d) id)
         ?>  (guardspace:engram [space.settings.doc (molt ~(val by content.roles.settings.doc)) (molt ~(val by content.ships.settings.doc)) (silt `(list @tas)`[%admin %editor ~]) peer.act our.bowl now.bowl])
@@ -224,7 +223,7 @@
         ::  Assemble and reply with updates (pokes their sync)
         ::
           %delta
-        ~&  "DELTA-- from {<src.bowl>} for {<path.act>}"
+        ::~&  "DELTA-- from {<src.bowl>} for {<path.act>}"
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  doc  (~(got by d) id)
         ?>  (guardspace:engram [space.settings.doc (molt ~(val by content.roles.settings.doc)) (molt ~(val by content.ships.settings.doc)) (silt `(list @tas)`[%admin %editor %visitor ~]) src.bowl our.bowl now.bowl])
@@ -238,7 +237,7 @@
         ::  Sync updates with current document
         ::
           %sync
-        ~&  "SYNC-- from {<src.bowl>}  for {<path.act>}"
+        ::~&  "SYNC-- from {<src.bowl>}  for {<path.act>}"
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  doc  (~(got by d) id)
         ::  Name Changes
@@ -426,7 +425,7 @@
         ::
           %gatherall
         ?>  =(src.bowl our.bowl)
-        ~&  "GATHERALL-- items in {<path.act>}"
+        ::~&  "GATHERALL-- items in {<path.act>}"
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  fold  (~(got by f) id)
         =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.fold -.+.space.fold ~.members ~.noun])
@@ -446,7 +445,7 @@
         ?>  =(src.bowl our.bowl)
         ?.  !=(our.bowl peer.act)
           `this
-        ~&  "GATHER-- {<path.act>} from: {<peer.act>}"
+        ::~&  "GATHER-- {<path.act>} from: {<peer.act>}"
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  fold  (~(got by f) id)
         ?>  (guardspace:engram [space.fold (molt ~(val by content.roles.fold)) (molt ~(val by content.ships.fold)) (silt `(list @tas)`[%admin %editor ~]) peer.act our.bowl now.bowl])
@@ -457,7 +456,7 @@
         ::  Assemble and reply with updates (pokes their sync)
         ::
           %delta
-        ~&  "DELTA-- from {<src.bowl>} for {<path.act>}"
+        ::~&  "DELTA-- from {<src.bowl>} for {<path.act>}"
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  fold  (~(got by f) id)
         ?>  (guardspace:engram [space.fold (molt ~(val by content.roles.fold)) (molt ~(val by content.ships.fold)) (silt `(list @tas)`[%admin %editor %visitor ~]) src.bowl our.bowl now.bowl])
@@ -471,7 +470,7 @@
         ::  Sync updates with current folder
         ::
           %sync
-        ~&  "SYNC-- from {<src.bowl>} for {<path.act>}: "
+        ::~&  "SYNC-- from {<src.bowl>} for {<path.act>}: "
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  fold  (~(got by f) id)
         ?>  (guardspace:engram [space.fold (molt ~(val by content.roles.fold)) (molt ~(val by content.ships.fold)) (silt `(list @tas)`[%admin %editor ~]) src.bowl our.bowl now.bowl])
@@ -532,8 +531,6 @@
         ::
           %addperm
         ?>  =(src.bowl our.bowl)
-        ~&  "adding perm to space: "
-        ~&  space.act
         =/  tospc  (~(got by s) space.act)
         =/  nspc
         ?+  type.act  !!
@@ -567,7 +564,7 @@
         ::
           %gatherall
         ?>  =(src.bowl our.bowl)
-        ~&  "GATHERALL-- items in {<space.act>}"
+        ::~&  "GATHERALL-- items in {<space.act>}"
         ?.  (~(has by s) space.act)  ~&  "No space at this path"  `this
         =/  spc  (~(got by s) space.act)
         =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.act -.+.space.act ~.members ~.noun])
@@ -587,7 +584,7 @@
         ?>  =(src.bowl our.bowl)
         ?.  !=(our.bowl peer.act)
           `this
-        ~&  "GATHER-- {<space.act>} from: {<peer.act>}"
+        ::~&  "GATHER-- {<space.act>} from: {<peer.act>}"
         =/  spc  (~(got by s) space.act)
         ?>  (guardspace:engram [space.act (molt ~(val by content.roles.spc)) (molt ~(val by content.ships.spc)) (silt `(list @tas)`[%admin %editor ~]) peer.act our.bowl now.bowl])
         :_  this
@@ -597,7 +594,7 @@
         ::  Assemble and reply with updates (pokes their sync)
         ::
           %delta
-        ~&  "DELTA-- from {<src.bowl>} for {<space.act>}"
+        ::~&  "DELTA-- from {<src.bowl>} for {<space.act>}"
         =/  spc  (~(got by s) space.act)
         ?>  (guardspace:engram [space.act (molt ~(val by content.roles.spc)) (molt ~(val by content.ships.spc)) (silt `(list @tas)`[%admin %editor %visitor ~]) src.bowl our.bowl now.bowl])
         =/  updates  (delta:index content.spc version.act)
@@ -610,8 +607,7 @@
         ::  Sync updates with current space
         ::
           %sync
-        ~&  "SYNC-- from {<src.bowl>} for {<space.act>}: "
-        ~&  update.act
+        ::~&  "SYNC-- from {<src.bowl>} for {<space.act>}: "
         =/  spc  (~(got by s) space.act)
         ?>  (guardspace:engram [space.act (molt ~(val by content.roles.spc)) (molt ~(val by content.ships.spc)) (silt `(list @tas)`[%admin %editor ~]) src.bowl our.bowl now.bowl])
         ::  Settings Changes
@@ -625,7 +621,6 @@
         =/  contentspc
         =.  content.spc  (apply:index content.spc content.update.act)
         settingsspc
-        ~&  contentspc
         =/  diff  (~(dif by content.content.contentspc) content.content.spc)
         =/  sstate  this(s (~(put by s) space.act contentspc))
         :_  sstate
@@ -668,8 +663,6 @@
     ?>  =(src.bowl our.bowl)
     ?:  (~(has by s) ~[i.t.t.p i.t.t.t.p])
       =/  spc  (~(got by s) ~[i.t.t.p i.t.t.t.p])
-      ~&  "Requested space: "
-      ~&  spc
       ``noun+!>((list:space:enjs:engram [d f content.content.spc]))
     ~&  "No space of path: {<`path`~[i.t.t.p i.t.t.t.p]>}"
     ``noun+!>((list:space:enjs:engram [d f ^*((map id [id @tas]))]))
