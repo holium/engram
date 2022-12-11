@@ -705,6 +705,12 @@
     ?>  =(src.bowl our.bowl)
     ``noun+!>((list:folder:enjs:engram f))
   ::
+      [%x %folder @ @ %get ~]
+    ?>  =(src.bowl our.bowl)
+    =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
+    =/  fold  (~(got by f) id)
+    ``noun+!>((list:space:enjs:engram [d f content.content.fold]))
+  ::
       [%x %folder @ @ %get %settings ~]
     ?>  =(src.bowl our.bowl)
     =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]

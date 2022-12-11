@@ -55,6 +55,9 @@ const mutations: MutationTree<FolderState> = {
       delete state["."].content[payload.content[item].id];
     })
   },
+  loadcontent(state, payload: { id: string, content: { [key:string]: { id: string, type: string }} }) {
+    state[payload.id].content = payload.content;
+  },
   clear(state) {
     Object.keys(state).forEach((key: string) => {
       delete state[key];
@@ -200,6 +203,13 @@ const actions: ActionTree<FolderState, RootState> = {
             }
           }
         }).then(() => {
+          (window as any).urbit.scry({ app: "engram", path: `/folder${payload.to}/get`}).then((res: any) => {
+            const content = {} as any;
+            Object.keys(res).forEach((timestamp: string) => {
+              content[timestamp] = { id: timestamp, ...res[timestamp] };
+            });
+            commit("loadcontent", { id: payload.to, content: content });
+          });
           (window as any).urbit.scry({ app: "engram", path: `/folder${payload.to}/get/settings`}).then((res: any) => {
             Object.keys(res.roles).forEach((role: string) => {
               dispatch(`${payload.item.type}s/addperm`, {

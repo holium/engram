@@ -33,14 +33,14 @@
                 type="text" 
                 v-if="rename" 
                 v-model="name" 
-                class="px-2 py-2 bg-none min-w-0 flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis outline-none border-type realm-cursor-text-cursor" 
+                class="text-sm px-2 py-2 bg-none min-w-0 flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis outline-none border-type realm-cursor-text-cursor" 
                 :style="{'padding-bottom': '3px', 'border-bottom-width': '1px'}"
                 @blur="renameItem" 
                 @keydown="handleRenameKey"
                 @click.stop
                 ref="rename"
             />
-            <div class="flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis text-sm" v-else>
+            <div class="flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis text-sm px-2 py-2" v-else>
                 {{ meta.name }}
             </div>
         </div>

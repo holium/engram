@@ -102,7 +102,6 @@
         ['version' (tape version.doc)]
         ['content' (tape content.doc)]
       ==
-
     ++  settings
       =,  enjs:format
       |=  settings=dsettings:engram
