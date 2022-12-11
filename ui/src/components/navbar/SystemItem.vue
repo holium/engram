@@ -33,14 +33,14 @@
                 type="text" 
                 v-if="rename" 
                 v-model="name" 
-                class="px-2 py-2 bg-none min-w-0 flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis outline-none border-type realm-cursor-text-cursor" 
+                class="text-sm px-2 py-2 bg-none min-w-0 flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis outline-none border-type realm-cursor-text-cursor" 
                 :style="{'padding-bottom': '3px', 'border-bottom-width': '1px'}"
                 @blur="renameItem" 
                 @keydown="handleRenameKey"
                 @click.stop
                 ref="rename"
             />
-            <div class="flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis text-sm" v-else>
+            <div class="flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis text-sm px-2 py-2" v-else>
                 {{ meta.name }}
             </div>
         </div>
@@ -48,7 +48,7 @@
             class="pl-4" 
             :parent="item"
             :item="(meta as any).content[i].id" 
-            :index="i" 
+            :index="i"
             :type="(meta as any).content[i].type" 
             :key="i" 
             v-for="i in expand ? Object.keys(meta.content == null ? {} : meta.content) : []"
@@ -181,8 +181,11 @@ export default defineComponent({
                 const raw = event.dataTransfer?.getData("text/plain");
                 if(raw) {
                     const data = JSON.parse(raw);
-                    store.dispatch("folders/remove", { index: data.index, from: data.from });
-                    store.dispatch("folders/add", { item: { id: data.item.id, type: data.item.type }, to: this.item });
+                    if(this.item != data.from) {
+                        store.dispatch("folders/remove", { index: data.index, from: data.from });
+                        store.dispatch("folders/add", { item: { id: data.item.id, type: data.item.type }, to: this.item });
+                    }
+                    
                 }
             }
         },

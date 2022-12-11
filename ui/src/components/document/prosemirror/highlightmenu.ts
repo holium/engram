@@ -3,6 +3,8 @@ import { HighlightMenu } from "@/components/menus/types";
 
 export const HighlightMenuPluginKey = new PluginKey("highlightmenu");
 
+let on = false;
+
 export const highlightmenu = (pushMenu: (menu: HighlightMenu | null) => void) => {
     return new Plugin({
         key: HighlightMenuPluginKey,
@@ -15,17 +17,17 @@ export const highlightmenu = (pushMenu: (menu: HighlightMenu | null) => void) =>
                     prev.doc.eq(state.doc) &&
                     prev.selection.eq(state.selection)
                 ) {
-                    pushMenu(null);
+                    if(on) pushMenu(null); on = false;
                     return;
                 }
     
                 if (state.selection.empty) {
-                    pushMenu(null);
+                    if(on) pushMenu(null); on = false;
                     return;
                 }
     
                 if ((state.selection as any).node) {
-                    pushMenu(null);
+                    if(on) pushMenu(null); on = false;
                     return;
                 }
     
@@ -35,6 +37,7 @@ export const highlightmenu = (pushMenu: (menu: HighlightMenu | null) => void) =>
                 const left =
                 Math.min(start.left, end.left);
                 pushMenu(new HighlightMenu({ top: start.top, left: left}, from, to))
+                on = true;
             },
             };
         },

@@ -102,7 +102,7 @@ const actions: ActionTree<SettingsState, RootState> = {
         dispatch('open', `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`);
       })
     })
-  }
+  },
 }
 
 export default {

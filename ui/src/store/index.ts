@@ -7,21 +7,23 @@ import documents from './documents';
 import folders from "./folders";
 import workspace from "./workspace"
 
+export const nullspace = {
+  path: `/~${(window as any).ship}/our`, 
+  name: "Local", 
+  color: "#262626",
+  image: "",
+  roles: [],
+}
+
 const getters: GetterTree<RootState, RootState> = {
   spaces: (): Promise<Array<Space>> => {
     return new Promise((resolve, reject) => {
       (window as any).urbit.scry({ app: "spaces", path: `/all` }).then((response: any) => {
         console.log("got spaces: ", response);
-        const nullspace = {
-          path: `/~${(window as any).ship}/our`, 
-          name: "Local", 
-          color: "#262626",
-          image: ""
-      }
-        resolve({...response.spaces, [`/~${(window as any).ship}/our`]: nullspace});
+        resolve({...response.spaces});
       }).catch((err: any) => {
         console.warn("spaces agent missing !!", err);
-        reject([]);
+        resolve([nullspace]);
       })
     })
   },
@@ -38,7 +40,27 @@ const actions: ActionTree<RootState, RootState> = {
     (window as any).urbit.scry({ app: "engram", path: `/space${router.currentRoute.value.query.spaceId}/list`}).then((response: any) => {
       console.log("spaces response: ", response);
       if(Object.keys(response).length == 0) {
-        dispatch("documents/make", { name: "Untitled Document"}, { root: true});
+        (dispatch("documents/make", { name: "Untitled Document"}, { root: true}) as any).then((path: string) => {
+          (window as any).urbit.scry({ app: "engram", path: `/space${router.currentRoute.value.query.spaceId}/settings`}).then((res: any) => {
+              console.log("space settings response", res);
+              Object.keys(res.roles).forEach((role: string) => {
+                dispatch(`documents/addperm`, {
+                  id: path,
+                  type: "roles",
+                  perm: res.roles[role].perm,
+                  level: res.roles[role].level
+                }, { root: true})
+              });
+              Object.keys(res.ships).forEach((ship: string) => {
+                dispatch(`documents/findremoveperm`, {
+                  id: path,
+                  type: "ships",
+                  perm: res.ships[ship].perm,
+                  level: res.ships[ship].level
+                }, { root: true})
+              });
+          });
+        });
       }
       dispatch("folders/clear", {}, { root: true });
       dispatch("documents/clear", {}, { root: true });

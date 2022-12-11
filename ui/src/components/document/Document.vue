@@ -5,8 +5,6 @@
       <div class="relative items-center scrollbar-small flex-grow" id="main" :class="{'no-cover': cover.src.length == 0}">
         <Cover :cover="cover" />
         <div id="document" ref="document" >
-          <Bauble :bauble="bauble" />
-
         </div>
       </div>
     </div>
@@ -24,11 +22,6 @@ import DocumentDock from "@/components/dock/DocumentDock.vue";
 
 import { EditorView } from "prosemirror-view";
 import render from "./prosemirror/render";
-import Bauble from "./Bauble.vue";
-import type {
-  BaubleUpdate,
-  Bauble as IBauble,
-} from "./prosemirror/bauble";
 import Cover from "./Cover.vue"
 import type {
   CoverUpdate,
@@ -44,7 +37,6 @@ export default defineComponent({
   components: {
     Toolbar,
     DocumentDock,
-    Bauble,
     Cover,
   },
   props: {
@@ -57,11 +49,6 @@ export default defineComponent({
   data() {
     return {
       loaded: null as null | Promise<DocumentContent>,
-      bauble: {
-        on: false,
-        top: 0,
-        node: null,
-      } as IBauble,
       cover: {
         pos: 0,
         src: "",
@@ -86,7 +73,7 @@ export default defineComponent({
   beforeRouteUpdate: function(to) {
     this.loaded = store.dispatch("workspace/open", `${to.params.author}/${to.params.clock}`);
     this.loaded.then((res: any) => {
-        render(this.$refs["document"] as any, res.content, (this as any).pushMenu, this.updateBauble, this.updateCover, this.updateStyling, null);
+        render(this.$refs["document"] as any, res.content, (this as any).pushMenu, this.updateCover, this.updateStyling, null);
       })
   },
   mounted: function () {
@@ -94,7 +81,7 @@ export default defineComponent({
     if(this.loaded == null) console.warn("no document");
     else {
       this.loaded.then((res: any) => {
-        render(this.$refs["document"] as any, res.content, (this as any).pushMenu, this.updateBauble, this.updateCover, this.updateStyling, null);
+        render(this.$refs["document"] as any, res.content, (this as any).pushMenu, this.updateCover, this.updateStyling, null);
       })
     }
   },
@@ -103,7 +90,7 @@ export default defineComponent({
       console.log("previewing changed:", newRender)
       if(this.loaded != null) {
         this.loaded.then((res: any) => {
-          render(this.$refs["document"] as any, res.content, (this as any).pushMenu, this.updateBauble, this.updateCover, this.updateStyling, newRender);
+          render(this.$refs["document"] as any, res.content, (this as any).pushMenu, this.updateCover, this.updateStyling, newRender);
         });
       }
     }
@@ -111,9 +98,6 @@ export default defineComponent({
   methods: {
     loadDocument: function(document: string) {
       store.dispatch("workspace/load", document);
-    },
-    updateBauble: function (bauble: BaubleUpdate) {
-      this.bauble = { ...this.bauble, ...bauble };
     },
     updateCover: function (cover: CoverUpdate) {
       this.cover = { ...this.cover, ...cover };

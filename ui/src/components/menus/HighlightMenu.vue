@@ -14,20 +14,11 @@
             v-model="linkvalue"
             class="px-3 py-2 outline-none"
             @blur="(event) => {
-                implementLink('hyperlink');
+                implementLink();
             }"
             placeholder="https://"
         />
-        <input
-            v-if="hasMark.get('engramlinl')"
-            type="text"
-            v-model="linkvalue"
-            className="px-3 py-2 outline-none"
-            @blur="(event) => {
-                implementLink('engramlinl');
-            }"
-            placeholder="engram://"
-        />
+
       <div class="flex">
         <div
             class="highlightmenu-item"
@@ -137,24 +128,6 @@
             <path d="M0 256C0 167.6 71.63 96 160 96H264C277.3 96 288 106.7 288 120C288 133.3 277.3 144 264 144H160C98.14 144 48 194.1 48 256C48 317.9 98.14 368 160 368H264C277.3 368 288 378.7 288 392C288 405.3 277.3 416 264 416H160C71.63 416 0 344.4 0 256zM480 416H376C362.7 416 352 405.3 352 392C352 378.7 362.7 368 376 368H480C541.9 368 592 317.9 592 256C592 194.1 541.9 144 480 144H376C362.7 144 352 133.3 352 120C352 106.7 362.7 96 376 96H480C568.4 96 640 167.6 640 256C640 344.4 568.4 416 480 416zM424 232C437.3 232 448 242.7 448 256C448 269.3 437.3 280 424 280H216C202.7 280 192 269.3 192 256C192 242.7 202.7 232 216 232H424z" />
           </svg>
         </div>
-        <div
-        class="highlightmenu-item"
-            @click="toggleMark('urbitlink')"
-            :class="{
-                'bg-border': hasMark.get('urbitlink')
-            }"
-        >
-          <!-- Urbit Link -->
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 513 224"
-            width="16"
-            height="16"
-            fill="var(--rlm-icon-color, #333333)"
-          >
-            <path d="M361.77 223.848C453.641 223.848 493.899 127.848 512.48 25.6542L449.512 11.2026C434.028 74.1704 418.545 154.686 362.803 154.686C327.706 154.686 298.803 108.235 268.867 73.1381C237.899 35.9768 203.835 0.880005 151.19 0.880005C58.2864 0.880005 19.0606 96.88 0.47998 199.074L63.4477 213.525C78.9316 150.557 94.4155 70.0413 150.157 70.0413C185.254 70.0413 214.157 116.493 244.093 151.59C275.061 188.751 309.125 223.848 361.77 223.848Z" />
-          </svg>
-        </div>
         <div 
         class="highlightmenu-item"
             @click="toggleMark('comment')"
@@ -203,27 +176,17 @@ export default defineComponent({
                         this.contextmenu.to,
                         schema.marks["hyperlink"]
                     )
-            const hasEngramLink = view.state.doc.rangeHasMark(
-                this.contextmenu.from,
-                this.contextmenu.to,
-                schema.marks["engramlink"]
-            )
             if(hasHyperlink) {
                 const value = view.state.selection.$head
                 .marks()
                 .find((mark) => mark.type.name == "hyperlink")
-                if(value) this.linkvalue = value.attrs.href;
-            } else if(hasEngramLink) {
-                const value = view.state.selection.$head
-                .marks()
-                .find((mark) => mark.type.name == "engramlink")
                 if(value) this.linkvalue = value.attrs.href;
             }
         }
     },
     computed: {
         hasMark: function() {
-            return new Map(['strong', 'italic', 'underline', 'strike', 'code', 'hyperlink', 'engramlink'].map((mark: string) => {
+            return new Map(['strong', 'italic', 'underline', 'strike', 'code', 'hyperlink'].map((mark: string) => {
                 return [
                     mark, 
                     view.state.doc.rangeHasMark(
@@ -239,9 +202,9 @@ export default defineComponent({
         toggleMark: function(mark: string) {
             toggleMark(schema.marks[mark])(view.state, view.dispatch, view);
         },
-        implementLink: function(type: string) {
+        implementLink: function() {
             const sel = view.state.selection;
-            const tr = view.state.tr.addMark(sel.from, sel.to, schema.marks[type].create({ 'link-type': type, href: this.linkvalue}));
+            const tr = view.state.tr.addMark(sel.from, sel.to, schema.marks["hyperlink"].create({ href: this.linkvalue}));
             view.dispatch(tr);
         }
     },

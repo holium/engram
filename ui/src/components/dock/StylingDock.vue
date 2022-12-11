@@ -119,20 +119,12 @@ export default defineComponent({
       required: true,
     }
   },
+  created: function() {
+    this.loadStyle(this.styling as any);
+  },
   watch: {
     styling: function(newStyling: Styling) {
-      console.log("2em".match(/\d+/));
-      this.mirror = {
-        "root-size": newStyling["root-size"].value == null ? 16 : parseInt(newStyling["root-size"].value.match(/\d+em/)[0]) * 16,
-        "ratio": newStyling["ratio"].value == null ? 2 : Math.pow(parseInt(newStyling["ratio"].value), 3),
-
-        "body-font-family": newStyling["body-font-family"].value == null ? "Rubik" : newStyling["body-font-family"].value,
-        "heading-font-family": newStyling["heading-font-family"].value == null ? "Rubik" : newStyling["heading-font-family"].value,
-        "heading-weight": newStyling["heading-weight"].value == null ? 800 : parseInt(newStyling["heading-weight"].value),
-
-        "document-width": newStyling["document-width"].value == null ? 60 : parseInt(newStyling["document-width"].value.match(/\d+ch/)[0]),
-        "document-margin": newStyling["document-margin"].value == null ? 4 : parseInt(newStyling["document-margin"].value.match(/\d+rem/)[0]),
-      };
+      this.loadStyle(newStyling);
     },
   },
   data() {
@@ -151,6 +143,27 @@ export default defineComponent({
     }
   },
   methods: {
+    loadStyle: function(newStyling: Styling) {
+      console.log("loading styling: ", newStyling);
+      this.mirror = {
+        "root-size": newStyling["root-size"].value == null ? 16 : parseInt(newStyling["root-size"].value.match(/\d+em/)[0]) * 16,
+        "ratio": newStyling["ratio"].value == null ? 2 : Math.pow(parseInt(newStyling["ratio"].value), 3),
+
+        "body-font-family": newStyling["body-font-family"].value == null ? "Rubik" : newStyling["body-font-family"].value,
+        "heading-font-family": newStyling["heading-font-family"].value == null ? "Rubik" : newStyling["heading-font-family"].value,
+        "heading-weight": newStyling["heading-weight"].value == null ? 800 : parseInt(newStyling["heading-weight"].value),
+
+        "document-width": newStyling["document-width"].value == null ? 60 : parseInt(newStyling["document-width"].value.match(/\d+ch/)[0]),
+        "document-margin": newStyling["document-margin"].value == null ? 4 : parseInt(newStyling["document-margin"].value.match(/\d+rem/)[0]),
+      };
+      this.changeStyle('root-size', `${this.mirror['root-size'] / 16}em`);
+      this.changeStyle('ratio', `${Math.pow(this.mirror['ratio'], 1 / 3)}`);
+      this.changeStyle('body-font-family', `${this.mirror['body-font-family']}`);
+      this.changeStyle('heading-font-family', `${this.mirror['heading-font-family']}`);
+      this.changeStyle('heading-weight', `${this.mirror['heading-weight']}`);
+      this.changeStyle('document-width', `${this.mirror['document-width']}ch`);
+      this.changeStyle('document-margin', `${this.mirror['document-margin']}rem`);
+    },
     changeStyle: function(key: string, value: string) {
       console.log("changing style: ", key);
       (document.querySelector(":root") as any).style.setProperty(`---${key}`, value);

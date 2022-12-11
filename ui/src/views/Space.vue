@@ -79,14 +79,18 @@ export default defineComponent({
     },
     toggleDock: function() {
       this.dock = !this.dock;
+      if(this.dock) {
+        this.folderdock = "";
+        this.spacedock = "";
+      }
     },
     pushFolderDock: function(id: string) {
       this.folderdock = id;
+      this.dock = false;
+      this.spacedock = "";
     },
     closeFolderDock: function() {
       this.folderdock = "";
-      this.spacedock = "";
-      this.dock = false;
     },
     pushSpaceDock: function() {
       this.spacedock = this.$route.query.spaceId as string;

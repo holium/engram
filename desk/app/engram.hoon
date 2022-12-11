@@ -38,8 +38,6 @@
 ++  on-poke
   |=  [=mark =vase]
   ^-  (quip card _this)
-  ::?+    mark  (on-poke:def mark vase)
-  ::    %post
     =/  act  !<(action vase)
     ?-   -.act
       %document
@@ -73,7 +71,6 @@
         =/  newspc
         =.  content.oldspc  (insert:index content.oldspc [id %document] our.bowl)
           oldspc
-        ~&  newspc
         =/  sstate  state(s (~(put by s) space.act newspc))
         =/  hstate  sstate(h (snoc h id))
         `hstate(t (add t 1))
@@ -85,21 +82,21 @@
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         ?>  (~(has by d) id)
         =/  nstate  this(d (~(del by d) id))
-        ~&  "Trying to remove from space"
+        ~&  "Trying to remove document from space"
         =/  spcs
           %-  ~(run by s)  |=  spc=space
           ?:  (~(has by content.content.spc) id)
-            ~&  "Removing from space"
+            ~&  "Removing from document space"
             =.  content.spc  (remove:index content.spc id our.bowl)
             spc
           spc
         ~&  spcs
         =/  sstate  nstate(s spcs)
-        ~&  "Trying to remove from folder"
+        ~&  "Trying to remove document from folder"
         =/  fldrs
           %-  ~(run by f)  |=  fldr=folder
           ?:  (~(has by content.content.fldr) id)
-            ~&  "Removing from folder"
+            ~&  "Removing from document folder"
             =.  content.fldr  (remove:index content.fldr id our.bowl)
             fldr
           fldr
@@ -155,38 +152,36 @@
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         `this(u (~(del ju u) id update.act))
         ::
-        :: Give a ship permissions
+        :: Add a permission to a document
         ::
-          %addship
+          %addperm
         ?>  =(src.bowl our.bowl)
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  todoc  (~(got by d) id)
         =/  ndoc
-        =.  ships.settings.todoc  (insert:index ships.settings.todoc [ship.act level.act] our.bowl)
-        todoc
-        `this(d (~(put by d) id ndoc))
-          %addrole
-        ?>  =(src.bowl our.bowl)
-        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
-        =/  todoc  (~(got by d) id)
-        =/  ndoc
-        =.  roles.settings.todoc  (insert:index roles.settings.todoc [role.act level.act] our.bowl)
-        todoc
+        ?+  type.act  !!
+            %ships
+          =.  ships.settings.todoc  (insert:index ships.settings.todoc [(slav %p perm.act) level.act] our.bowl)
+          todoc
+            %roles
+          =.  roles.settings.todoc  (insert:index roles.settings.todoc [(slav %tas perm.act) level.act] our.bowl)
+          todoc
+        ==
         `this(d (~(put by d) id ndoc))
         ::
         :: Remove a permission rule
         ::
-          %removeperms
+          %removeperm
         ?>  =(src.bowl our.bowl)
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  doc  (~(got by d) id)
         =/  item  [`@p`(slav %p -.item.act) `@u`(slav %ud -.+.item.act)]
         =/  ndoc
         ?+  type.act  !!
-            %role
+            %roles
           =.  roles.settings.doc  (remove:index roles.settings.doc item our.bowl)
           doc
-            %ship
+            %ships
           =.  ships.settings.doc  (remove:index ships.settings.doc item our.bowl)
           doc
         ==
@@ -196,7 +191,7 @@
         ::
           %gatherall
         ?>  =(src.bowl our.bowl)
-        ~&  "GATHERALL-- {<path.act>}"
+        ::~&  "GATHERALL-- {<path.act>}"
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  doc  (~(got by d) id)
         ?:  =(space.settings.doc /null/space)  ~&  "Document does not belong to a space"  `this
@@ -217,7 +212,7 @@
         ?>  =(src.bowl our.bowl)
         ?.  !=(our.bowl peer.act)
           `this
-        ~&  "GATHER-- {<path.act>} from: {<peer.act>}"
+        ::~&  "GATHER-- {<path.act>} from: {<peer.act>}"
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  doc  (~(got by d) id)
         ?>  (guardspace:engram [space.settings.doc (molt ~(val by content.roles.settings.doc)) (molt ~(val by content.ships.settings.doc)) (silt `(list @tas)`[%admin %editor ~]) peer.act our.bowl now.bowl])
@@ -228,7 +223,7 @@
         ::  Assemble and reply with updates (pokes their sync)
         ::
           %delta
-        ~&  "DELTA-- from {<src.bowl>} for {<path.act>}"
+        ::~&  "DELTA-- from {<src.bowl>} for {<path.act>}"
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  doc  (~(got by d) id)
         ?>  (guardspace:engram [space.settings.doc (molt ~(val by content.roles.settings.doc)) (molt ~(val by content.ships.settings.doc)) (silt `(list @tas)`[%admin %editor %visitor ~]) src.bowl our.bowl now.bowl])
@@ -242,7 +237,7 @@
         ::  Sync updates with current document
         ::
           %sync
-        ~&  "SYNC-- from {<src.bowl>}  for {<path.act>}"
+        ::~&  "SYNC-- from {<src.bowl>}  for {<path.act>}"
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  doc  (~(got by d) id)
         ::  Name Changes
@@ -329,15 +324,19 @@
         ?>  (~(has by f) id)
         =/  nstate  this(f (~(del by f) id))
         =/  spcs
+          ~&  "Trying to folder from space"
           %-  ~(run by s)  |=  spc=space
           ?:  (~(has by content.content.spc) id)
+            ~&  "Removing folder from space"
             =.  content.spc  (remove:index content.spc id our.bowl)
             spc
           spc
         =/  sstate  nstate(s spcs)
         =/  fldrs
+          ~&  "Trying to folder from folder"
           %-  ~(run by f)  |=  fldr=folder
           ?:  (~(has by content.content.fldr) id)
+            ~&  "Removing folder from folder"
             =.  content.fldr  (remove:index content.fldr id our.bowl)
             fldr
           fldr
@@ -370,38 +369,36 @@
         fromfldr
         `this(f (~(put by f) from nfldr))
         ::
-        :: Give a ship permissions
+        :: Add a permission to a document
         ::
-          %addship
+          %addperm
         ?>  =(src.bowl our.bowl)
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
-        =/  tofold  (~(got by f) id)
-        =/  nfold
-        =.  ships.tofold  (insert:index ships.tofold [ship.act level.act] our.bowl)
-        tofold
-        `this(f (~(put by f) id nfold))
-          %addrole
-        ?>  =(src.bowl our.bowl)
-        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
-        =/  tofold  (~(got by f) id)
-        =/  nfold
-        =.  roles.tofold  (insert:index roles.tofold [role.act level.act] our.bowl)
-        tofold
-        `this(f (~(put by f) id nfold))
+        =/  tofol  (~(got by f) id)
+        =/  nfol
+        ?+  type.act  !!
+            %ships
+          =.  ships.tofol  (insert:index ships.tofol [(slav %p perm.act) level.act] our.bowl)
+          tofol
+            %roles
+          =.  roles.tofol  (insert:index roles.tofol [(slav %tas perm.act) level.act] our.bowl)
+          tofol
+        ==
+        `this(f (~(put by f) id nfol))
         ::
         :: Remove a permission rule
         ::
-          %removeperms
+          %removeperm
         ?>  =(src.bowl our.bowl)
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  fold  (~(got by f) id)
         =/  item  [`@p`(slav %p -.item.act) `@u`(slav %ud -.+.item.act)]
         =/  nfold
         ?+  type.act  !!
-            %role
+            %roles
           =.  roles.fold  (remove:index roles.fold item our.bowl)
           fold
-            %ship
+            %ships
           =.  ships.fold  (remove:index ships.fold item our.bowl)
           fold
         ==
@@ -411,13 +408,14 @@
         ::
           %rename
         ?>  =(src.bowl our.bowl)
+
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         ~_  [%leaf "Error renaming folder of id: {<id>}"]
         ?.  (~(has by f) id)
           ~&  "Could not find folder!"  !!
         =/  old  (~(got by f) id)
         ?.  =(owner.old our.bowl)
-          ~&  "You do not have the right to rename this flder!"  !!
+          ~&  "You do not have the right to rename this folder!"  !!
         =/  new
         =.  name.old  name.act
         old
@@ -427,7 +425,7 @@
         ::
           %gatherall
         ?>  =(src.bowl our.bowl)
-        ~&  "GATHERALL-- items in {<path.act>}"
+        ::~&  "GATHERALL-- items in {<path.act>}"
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  fold  (~(got by f) id)
         =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.fold -.+.space.fold ~.members ~.noun])
@@ -447,7 +445,7 @@
         ?>  =(src.bowl our.bowl)
         ?.  !=(our.bowl peer.act)
           `this
-        ~&  "GATHER-- {<path.act>} from: {<peer.act>}"
+        ::~&  "GATHER-- {<path.act>} from: {<peer.act>}"
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  fold  (~(got by f) id)
         ?>  (guardspace:engram [space.fold (molt ~(val by content.roles.fold)) (molt ~(val by content.ships.fold)) (silt `(list @tas)`[%admin %editor ~]) peer.act our.bowl now.bowl])
@@ -458,7 +456,7 @@
         ::  Assemble and reply with updates (pokes their sync)
         ::
           %delta
-        ~&  "DELTA-- from {<src.bowl>} for {<path.act>}"
+        ::~&  "DELTA-- from {<src.bowl>} for {<path.act>}"
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  fold  (~(got by f) id)
         ?>  (guardspace:engram [space.fold (molt ~(val by content.roles.fold)) (molt ~(val by content.ships.fold)) (silt `(list @tas)`[%admin %editor %visitor ~]) src.bowl our.bowl now.bowl])
@@ -472,7 +470,7 @@
         ::  Sync updates with current folder
         ::
           %sync
-        ~&  "SYNC-- from {<src.bowl>} for {<path.act>}: "
+        ::~&  "SYNC-- from {<src.bowl>} for {<path.act>}: "
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  fold  (~(got by f) id)
         ?>  (guardspace:engram [space.fold (molt ~(val by content.roles.fold)) (molt ~(val by content.ships.fold)) (silt `(list @tas)`[%admin %editor ~]) src.bowl our.bowl now.bowl])
@@ -529,42 +527,44 @@
         =/  spc  ^*  space
         `this(s (~(put by s) space.act spc))
         ::
-        :: Edit Space Permissions
+        :: Add a permission to a document
         ::
-          %addship
+          %addperm
         ?>  =(src.bowl our.bowl)
-        =/  spc  (~(got by s) path.act)
+        =/  tospc  (~(got by s) space.act)
         =/  nspc
-        =.  ships.spc  (insert:index ships.spc [ship.act level.act] our.bowl)
-        spc
-        `this(s (~(put by s) path.act nspc))
-          %addrole
+        ?+  type.act  !!
+            %ships
+          =.  ships.tospc  (insert:index ships.tospc [(slav %p perm.act) level.act] our.bowl)
+          tospc
+            %roles
+          =.  roles.tospc  (insert:index roles.tospc [(slav %tas perm.act) level.act] our.bowl)
+          tospc
+        ==
+        `this(s (~(put by s) space.act nspc))
+        ::
+        :: Remove a permission rule
+        ::
+          %removeperm
         ?>  =(src.bowl our.bowl)
-        =/  spc  (~(got by s) path.act)
-        =/  nspc
-        =.  roles.spc  (insert:index roles.spc [role.act level.act] our.bowl)
-        spc
-        `this(s (~(put by s) path.act nspc))
-          %removeperms
-        ?>  =(src.bowl our.bowl)
-        =/  spc  (~(got by s) path.act)
+        =/  spc  (~(got by s) space.act)
         =/  id  [`@p`(slav %p -.item.act) `@u`(slav %ud -.+.item.act)]
         =/  nspc
         ?+  type.act  !!
-            %role
+            %roles
           =.  roles.spc  (remove:index roles.spc id our.bowl)
           spc
-            %ship
+            %ships
           =.  ships.spc  (remove:index ships.spc id our.bowl)
           spc
         ==
-        `this(s (~(put by s) path.act nspc))
+        `this(s (~(put by s) space.act nspc))
         ::
         ::  Gather updated to a space index from all peers in the space
         ::
           %gatherall
         ?>  =(src.bowl our.bowl)
-        ~&  "GATHERALL-- items in {<space.act>}"
+        ::~&  "GATHERALL-- items in {<space.act>}"
         ?.  (~(has by s) space.act)  ~&  "No space at this path"  `this
         =/  spc  (~(got by s) space.act)
         =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.act -.+.space.act ~.members ~.noun])
@@ -584,7 +584,7 @@
         ?>  =(src.bowl our.bowl)
         ?.  !=(our.bowl peer.act)
           `this
-        ~&  "GATHER-- {<space.act>} from: {<peer.act>}"
+        ::~&  "GATHER-- {<space.act>} from: {<peer.act>}"
         =/  spc  (~(got by s) space.act)
         ?>  (guardspace:engram [space.act (molt ~(val by content.roles.spc)) (molt ~(val by content.ships.spc)) (silt `(list @tas)`[%admin %editor ~]) peer.act our.bowl now.bowl])
         :_  this
@@ -594,7 +594,7 @@
         ::  Assemble and reply with updates (pokes their sync)
         ::
           %delta
-        ~&  "DELTA-- from {<src.bowl>} for {<space.act>}"
+        ::~&  "DELTA-- from {<src.bowl>} for {<space.act>}"
         =/  spc  (~(got by s) space.act)
         ?>  (guardspace:engram [space.act (molt ~(val by content.roles.spc)) (molt ~(val by content.ships.spc)) (silt `(list @tas)`[%admin %editor %visitor ~]) src.bowl our.bowl now.bowl])
         =/  updates  (delta:index content.spc version.act)
@@ -607,8 +607,7 @@
         ::  Sync updates with current space
         ::
           %sync
-        ~&  "SYNC-- from {<src.bowl>} for {<space.act>}: "
-        ~&  update.act
+        ::~&  "SYNC-- from {<src.bowl>} for {<space.act>}: "
         =/  spc  (~(got by s) space.act)
         ?>  (guardspace:engram [space.act (molt ~(val by content.roles.spc)) (molt ~(val by content.ships.spc)) (silt `(list @tas)`[%admin %editor ~]) src.bowl our.bowl now.bowl])
         ::  Settings Changes
@@ -622,7 +621,6 @@
         =/  contentspc
         =.  content.spc  (apply:index content.spc content.update.act)
         settingsspc
-        ~&  contentspc
         =/  diff  (~(dif by content.content.contentspc) content.content.spc)
         =/  sstate  this(s (~(put by s) space.act contentspc))
         :_  sstate
@@ -665,8 +663,6 @@
     ?>  =(src.bowl our.bowl)
     ?:  (~(has by s) ~[i.t.t.p i.t.t.t.p])
       =/  spc  (~(got by s) ~[i.t.t.p i.t.t.t.p])
-      ~&  "Requested space: "
-      ~&  spc
       ``noun+!>((list:space:enjs:engram [d f content.content.spc]))
     ~&  "No space of path: {<`path`~[i.t.t.p i.t.t.t.p]>}"
     ``noun+!>((list:space:enjs:engram [d f ^*((map id [id @tas]))]))
@@ -709,6 +705,17 @@
     ?>  =(src.bowl our.bowl)
     ``noun+!>((list:folder:enjs:engram f))
   ::
+      [%x %folder @ @ %get ~]
+    ?>  =(src.bowl our.bowl)
+    =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
+    =/  fold  (~(got by f) id)
+    ``noun+!>((list:space:enjs:engram [d f content.content.fold]))
+  ::
+      [%x %folder @ @ %get %settings ~]
+    ?>  =(src.bowl our.bowl)
+    =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
+    =/  fold  (~(got by f) id)
+    ``noun+!>((settings:folder:enjs:engram fold))
   ==
 ::
 ++  on-agent

@@ -25,6 +25,19 @@ pre {
   margin-bottom: var(--margin-after);
 }
 
+.ProseMirror > *::before {
+  position: absolute;
+  opacity: 0;
+  left: 49px;
+  content: url("./grip.svg");
+  transition: opacity 80ms ease;
+  cursor: grab;
+}
+
+.ProseMirror > *:hover::before {
+  opacity: 1;
+}
+
 /* Header */
 header {
   padding-top: var(--document-margin);
@@ -81,6 +94,18 @@ hr {
   border-top: 1px solid theme(colors.border);
   margin: var(--margin-before) 0;
   width: 100%;
+}
+
+div[data-type="engram-link"] {
+  @apply flex flex-row py-2 gap-3 items-center;
+}
+
+div[data-type="engram-link"]:hover {
+  @apply cursor-pointer bg-border;
+}
+
+div[data-type="engram-link"]:disabled {
+  opacity: .5;
 }
 
 /* List Nodes */
@@ -157,62 +182,60 @@ a[href*="engram://"]
 }
 
 /* Comments */
-/*
-    mark {
-      color: var(--type-color);
-      background-color: var(--type-glass-color);
-      text-decoration: underline;
-    }
+mark {
+  color: var(--type-color);
+  background-color: var(--type-glass-color);
+  text-decoration: underline;
+}
 
-    aside {
-      @apply inline mb-3;
-      position: relative;
-      font-weight: normal;
-      font-style: normal;
-      text-decoration: none;
-      float: right;
-      left: 6ch;
-      width: 0;
-      overflow: visible;
-      clear: both;
-    }
+aside {
+  @apply inline mb-3;
+  position: relative;
+  font-weight: normal;
+  font-style: normal;
+  text-decoration: none;
+  float: right;
+  width: 0;
+  overflow: visible;
+  clear: both;
+  left: 0;
+  right: 0;
+}
 
-    .comment {
-      @apply rounded-2 shadow-menu flex flex-col items-stretch;
-      background: var(--paper-color);
-      width: 280px;
-      min-width: 280px;
-    }
+.comment {
+  @apply rounded-2 shadow-menu flex flex-col items-stretch;
+  background: var(--paper-color);
+  width: 280px;
+  min-width: 280px;
+}
 
-    @media (max-width: 800px) {
-      aside {
-        position: absolute;
-        float: none;
-        left: 4ch;
-        top: auto;
-        margin-top: var(--leading-body);
-      }
-    }
+@media (max-width: 800px) {
+  aside {
+    position: absolute;
+    float: none;
+    top: auto;
+    margin-top: var(--leading-body);
+  }
+}
 
-    aside li {
-      @apply px-3 py-2 gap-2 flex;
-      list-style-type: none;
-      margin: 0;
-    }
+aside li {
+  @apply px-3 py-2 gap-2 flex;
+  list-style-type: none;
+  margin: 0;
+}
 
-    aside.context-menu li:hover {
-      background-color: var(--paper-color);
-      cursor: default;
-    }
+aside.context-menu li:hover {
+  background-color: var(--paper-color);
+  cursor: default;
+}
 
-    aside blockquote {
-      @apply pl-3;
-    }
+aside blockquote {
+  @apply pl-3;
+}
 
-    aside li textarea {
-      @apply px-3 py-2 flex-grow rounded-2;
-      outline: none;
-      background-color: var(--type-glass-color);
-      min-width: 0;
-    }
-    */
+aside li textarea {
+  @apply px-3 py-2 flex-grow rounded-2;
+  outline: none;
+  background-color: var(--type-glass-color);
+  min-width: 0;
+}

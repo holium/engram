@@ -2,6 +2,7 @@ import { EditorView } from "prosemirror-view";
 import { EditorState } from "prosemirror-state";
 import * as Y from "yjs"
 import { ySyncPlugin, yUndoPlugin } from "y-prosemirror";
+import { dropCursor } from "prosemirror-dropcursor";
 
 import store from "@/store/index";
 import router from "@/router/index";
@@ -10,8 +11,6 @@ import schema from "./schema";
 import keymap from "./keymap";
 import shortcuts from "./shortcuts";
 import save from "./save";
-import bauble from "./bauble";
-import type { BaubleUpdate } from "./bauble";
 import cover from "./cover";
 import type { CoverUpdate } from "./cover"
 import styling from "./styling";
@@ -21,6 +20,8 @@ import type { Menu } from "../../menus/types";
 
 import slashmenu from "./slashmenu";
 import highlightmenu from "./highlightmenu"
+import engram from "./engramview";
+import comments from "./comments";
 
 
 export let view: EditorView;
@@ -29,7 +30,6 @@ export default function (
   place: HTMLElement,
   content: Uint8Array,
   pushMenu: (menu: Menu | null) => void,
-  updateBauble: (bauble: BaubleUpdate) => void,
   updateCover: (cover: CoverUpdate) => void,
   updateStyling: (styling: StylingUpdate) => void,
   snapshot: null | DocumentVersion,
@@ -102,9 +102,11 @@ export default function (
         cover(updateCover),
         styling(updateStyling),
         // ux
-        bauble(updateBauble),
         slashmenu(pushMenu),
-        highlightmenu(pushMenu)
+        highlightmenu(pushMenu),
+        dropCursor(),
+        engram,
+        comments,
       ],
     });
   } else {
@@ -115,7 +117,7 @@ export default function (
       schema: schema,
       plugins: [
         // CRDT
-        ySyncPlugin(type),
+        ySyncPlugin(type, {}),
         // Views
         cover(updateCover),
         styling(updateStyling),
