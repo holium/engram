@@ -80,6 +80,14 @@ const codeRule = markInputRule(
   null
 );
 
+const engramRule = textblockTypeInputRule(
+  new RegExp("@\/~[\w\-]+\/\d+"),
+  schema.nodes["engramlink"],
+  (match) => {
+    return { href: `/~${match}/`}
+  }
+)
+
 export default inputRules({
   rules: [
     // Nodes
@@ -89,6 +97,7 @@ export default inputRules({
     codeBlockRule,
     orderedListRule,
     unorderedListRule,
+    engramRule,
     // Marks
     boldRule,
     italicRule,

@@ -125,13 +125,6 @@ export default defineComponent({
                         }
                     }
                 },
-                { 
-                    display: "Link", 
-                    icon: "", 
-                    command: () => {
-                        console.log("link document")
-                    }
-                },
                 ...(`~${(window as any).ship}` == this.meta.owner ? [{
                     display: "Rename",
                     icon: "",

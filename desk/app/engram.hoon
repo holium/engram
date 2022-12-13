@@ -82,22 +82,25 @@
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         ?>  (~(has by d) id)
         =/  nstate  this(d (~(del by d) id))
-        ~&  "Trying to remove document from space"
         =/  spcs
           %-  ~(run by s)  |=  spc=space
-          ?:  (~(has by content.content.spc) id)
-            ~&  "Removing from document space"
-            =.  content.spc  (remove:index content.spc id our.bowl)
+          ?:  (~(has in (silt ~(val by content.content.spc))) [id %document])
+            =/  spclist  ~(tap by content.content.spc) 
+            ~&  (turn spclist |=(a=[[@p @u] [[@p @u] @tas]] +.a))
+            ~&  [[id %document]]
+            =/  idx  (find ~[[id %document]] (turn spclist |=(a=[[@p @u] [[@p @u] @tas]] +.a)))
+            =/  todel  (snag (need idx) spclist)
+            =.  content.spc  (remove:index content.spc -.+.todel our.bowl)
             spc
           spc
-        ~&  spcs
         =/  sstate  nstate(s spcs)
-        ~&  "Trying to remove document from folder"
         =/  fldrs
           %-  ~(run by f)  |=  fldr=folder
-          ?:  (~(has by content.content.fldr) id)
-            ~&  "Removing from document folder"
-            =.  content.fldr  (remove:index content.fldr id our.bowl)
+          ?:  (~(has in (silt ~(val by content.content.fldr))) [id %document])
+            =/  fldrlist  ~(tap by content.content.fldr) 
+            =/  idx  (find ~[[id %document]] (turn fldrlist |=(a=[[@p @u] [[@p @u] @tas]] +.a)))
+            =/  todel  (snag (need idx) fldrlist)
+            =.  content.fldr  (remove:index content.fldr -.+.todel our.bowl)
             fldr
           fldr
         =/  fstate  sstate(f fldrs)
@@ -324,20 +327,22 @@
         ?>  (~(has by f) id)
         =/  nstate  this(f (~(del by f) id))
         =/  spcs
-          ~&  "Trying to folder from space"
           %-  ~(run by s)  |=  spc=space
-          ?:  (~(has by content.content.spc) id)
-            ~&  "Removing folder from space"
-            =.  content.spc  (remove:index content.spc id our.bowl)
+          ?:  (~(has in (silt ~(val by content.content.spc))) [id %folder])
+            =/  spclist  ~(tap by content.content.spc) 
+            =/  idx  (find ~[[id %folder]] (turn spclist |=(a=[[@p @u] [[@p @u] @tas]] +.a)))
+            =/  todel  (snag (need idx) spclist)
+            =.  content.spc  (remove:index content.spc -.+.todel our.bowl)
             spc
           spc
         =/  sstate  nstate(s spcs)
         =/  fldrs
-          ~&  "Trying to folder from folder"
           %-  ~(run by f)  |=  fldr=folder
-          ?:  (~(has by content.content.fldr) id)
-            ~&  "Removing folder from folder"
-            =.  content.fldr  (remove:index content.fldr id our.bowl)
+          ?:  (~(has in (silt ~(val by content.content.fldr))) [id %folder])
+            =/  fldrlist  ~(tap by content.content.fldr) 
+            =/  idx  (find ~[[id %folder]] (turn fldrlist |=(a=[[@p @u] [[@p @u] @tas]] +.a)))
+            =/  todel  (snag (need idx) fldrlist)
+            =.  content.fldr  (remove:index content.fldr -.+.todel our.bowl)
             fldr
           fldr
         =/  fstate  sstate(f fldrs)

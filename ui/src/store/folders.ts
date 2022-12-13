@@ -73,9 +73,6 @@ const mutations: MutationTree<FolderState> = {
   delete(state, payload: string) {
     const content = state[payload].content;
     delete state[payload];
-    Object.keys(content).forEach((item) => {
-      state["."].content[item] = content[item];
-    })
   },
 
   rename(state, payload: { id: string, name: string }) {
