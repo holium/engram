@@ -5,10 +5,10 @@
 
       </div>
       <div class="flex flex-col gap-2 flex-grow">
-        <div class="heading-1">
+        <div class="heading-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
           {{ space.name }}
         </div>
-        <div class="opacity-60 text-sm font-azimuth">
+        <div class="opacity-60 text-sm font-azimuth overflow-hidden overflow-ellipsis whitespace-nowrap">
           ~{{ ship }}
         </div>
       </div>
