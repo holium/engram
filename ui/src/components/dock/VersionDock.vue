@@ -70,7 +70,6 @@ export default defineComponent({
             return store.getters['workspace/previewing'];
         },
         snapshots: function(): Array<VersionMeta> {
-            console.log("versions:", store.getters['workspace/revisions/versions']);
             return store.getters['workspace/revisions/versions'];
         },
         ships: function(): Array<Patp> {

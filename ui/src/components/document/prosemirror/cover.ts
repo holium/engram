@@ -22,7 +22,6 @@ export const cover = (onChange: (cover: CoverUpdate) => void) => new Plugin({
         return {
           dom: dom,
           update: (node) => {
-            console.log("updating cover:", node);
             onChange({
               pos: getPos(),
               src: node.attrs.src,

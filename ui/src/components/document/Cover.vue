@@ -53,11 +53,9 @@ export default defineComponent({
   methods: {
     // prosemirror interactions
     changeCover: function(newSrc: string) {
-      console.log("changing cover", newSrc);
       setCover({ ...this.cover, src: newSrc} as ICover)(view.state, view.dispatch);
     },
     changePositioning: function() {
-      console.log("changing positioning", view);
       setCover({ ...this.cover, xpositioning: this.xpositioning, ypositioning: this.ypositioning} as ICover)(view.state, view.dispatch);
     },
 
@@ -93,7 +91,6 @@ export default defineComponent({
       this.ypositioning = newY < 0 ? 0 : newY > 100 ? 100 : newY;
     },
     handleDrop: function(event: DragEvent) {
-      console.log("handling drop: ", event);
       event.preventDefault();
       event.stopPropagation();
       handleImageDrop(event).then((image: string) => {

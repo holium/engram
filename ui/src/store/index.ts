@@ -19,7 +19,6 @@ const getters: GetterTree<RootState, RootState> = {
   spaces: (): Promise<Array<Space>> => {
     return new Promise((resolve, reject) => {
       (window as any).urbit.scry({ app: "spaces", path: `/all` }).then((response: any) => {
-        console.log("got spaces: ", response);
         resolve({...response.spaces});
       }).catch((err: any) => {
         console.warn("spaces agent missing !!", err);
@@ -34,15 +33,12 @@ const getters: GetterTree<RootState, RootState> = {
 
 const actions: ActionTree<RootState, RootState> = {
   load({ dispatch }, payload: string) {
-    console.log("loading space...")
     dispatch("workspace/close", {}, { root: true });
     dispatch("space/load", router.currentRoute.value.query.spaceId, { root: true });
     (window as any).urbit.scry({ app: "engram", path: `/space${router.currentRoute.value.query.spaceId}/list`}).then((response: any) => {
-      console.log("spaces response: ", response);
       if(Object.keys(response).length == 0) {
         (dispatch("documents/make", { name: "Untitled Document"}, { root: true}) as any).then((path: string) => {
           (window as any).urbit.scry({ app: "engram", path: `/space${router.currentRoute.value.query.spaceId}/settings`}).then((res: any) => {
-              console.log("space settings response", res);
               Object.keys(res.roles).forEach((role: string) => {
                 dispatch(`documents/addperm`, {
                   id: path,

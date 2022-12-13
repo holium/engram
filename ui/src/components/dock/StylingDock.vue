@@ -144,7 +144,6 @@ export default defineComponent({
   },
   methods: {
     loadStyle: function(newStyling: Styling) {
-      console.log("loading styling: ", newStyling);
       this.mirror = {
         "root-size": newStyling["root-size"].value == null ? 16 : parseInt(newStyling["root-size"].value.match(/\d+em/)[0]) * 16,
         "ratio": newStyling["ratio"].value == null ? 2 : Math.pow(parseInt(newStyling["ratio"].value), 3),
@@ -165,7 +164,6 @@ export default defineComponent({
       this.changeStyle('document-margin', `${this.mirror['document-margin']}rem`);
     },
     changeStyle: function(key: string, value: string) {
-      console.log("changing style: ", key);
       (document.querySelector(":root") as any).style.setProperty(`---${key}`, value);
       setProperty(this.styling[key].pos, key, value)(view.state, view.dispatch);
     }
