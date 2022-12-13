@@ -654,7 +654,6 @@
     ==
 ==
 ++  on-leave  on-leave:def
-:: iced sugar cookie with oat milk
 ++  on-peek
   |=  p=path
   ^-  (unit (unit cage))
