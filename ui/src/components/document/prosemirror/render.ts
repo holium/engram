@@ -39,14 +39,11 @@ export default function (
   doc.clientID = 0;
   doc.gc = false;
   if(content.length > 0) Y.applyUpdate(doc, content);
-  
-  console.log("applying update", content);
 
   let state;
   if(snapshot == null) {
     const type = doc.getXmlFragment("prosemirror");
     store.getters["documents/updates"](`/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`).then((updates: Array<DocumentUpdate>) => {
-      console.log("updates: ", updates);
       updates.forEach((update: DocumentUpdate) => {
         Y.applyUpdate(doc, update.content);
         const snapshot = Y.snapshot(doc);
@@ -79,11 +76,9 @@ export default function (
         keymap,
         shortcuts,
         save((view) => {
-          console.log("Saving...");
           const version = Y.encodeStateVector(doc);
           const content = Y.encodeStateAsUpdate(doc);
           const snapshot = Y.snapshot(doc);
-          console.log("content: ", content);
           store.dispatch("documents/save", {
             id: `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`,
             version: version,
@@ -110,7 +105,6 @@ export default function (
       ],
     });
   } else {
-    console.log(snapshot.snapshot)
     const preview = Y.createDocFromSnapshot(doc, snapshot.snapshot)
     const type = preview.getXmlFragment("prosemirror");
     state = EditorState.create({

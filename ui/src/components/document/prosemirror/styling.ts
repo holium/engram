@@ -10,7 +10,6 @@ export const styling = (onChange: (styling: StylingUpdate) => void) => new Plugi
       "styling": (node, view, getPos) => {
         const dom = document.createElement("fieldset");
         dom.setAttribute("name", "styling");
-        console.log("styling:", node);
         const update: { [key: string]: any} = {
           "root-size": { key: "root-size", value: null, pos: getPos() },
           "ratio": { key: "ratio", value: null, pos: getPos() },
@@ -22,40 +21,14 @@ export const styling = (onChange: (styling: StylingUpdate) => void) => new Plugi
           "heading-weight": { key: "heading-weight", value: null, pos: getPos() },
         }
         node.content.forEach((node, offset, index) => {
-          console.log("style element");
           if(node.type.name == "property") {
             update[node.attrs.key as string] = node.attrs.value;
             (document.querySelector(":root") as any).style.setProperty(`---${node.attrs.key}`, node.attrs.value);
           }
         })
-        console.log("updating styling to: ", update);
         onChange(update);
         return {
           dom: dom,
-          /*
-          update: (node): boolean => {
-            console.log("updated styling: ", node);
-            const update: { [key: string]: any} = {
-              "root-size": { key: "root-size", value: null, pos: getPos() },
-              "ratio": { key: "ratio", value: null, pos: getPos() },
-              "document-width": { key: "document-width", value: null, pos: getPos() },
-              "document-margin": { key: "document-margin", value: null, pos: getPos() },
-
-              "body-font-family": { key: "body-font-family", value: null, pos: getPos() },
-              "heading-font-family": { key: "heading-font-family", value: null, pos: getPos() },
-              "heading-weight": { key: "heading-weight", value: null, pos: getPos() },
-            }
-            node.content.forEach((node, offset, index) => {
-              console.log("style element");
-              if(node.type.name == "property") {
-                update[node.attrs.key as string] = { pos: getPos() + offset, key: node.attrs.key, value: node.attrs.value };
-                (document.querySelector(":root") as any).style.setProperty(`---${node.attrs.key}`, node.attrs.value);
-              }
-            })
-            onChange(update);
-            return true;
-          }
-          */
         }
       }
     }

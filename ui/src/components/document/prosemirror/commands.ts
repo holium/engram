@@ -13,9 +13,7 @@ import type { Cover } from "./cover";
 
 // Engram
 export const setCover: (newCover: Cover) => Command = (newCover: Cover) => (state, dispatch) => {
-  console.log("new cover: ", newCover, state.doc.nodeAt(newCover.pos))
   const tr = state.tr.setNodeMarkup(newCover.pos, null, {src: newCover.src, xpositioning: newCover.xpositioning, ypositioning: newCover.ypositioning });
-  console.log("determined transaction: ", tr);
   if(dispatch) {
     dispatch(tr);
     return true
@@ -24,9 +22,7 @@ export const setCover: (newCover: Cover) => Command = (newCover: Cover) => (stat
 }
 
 export const setProperty: (pos: number, key: string, value: string) => Command = (pos:number, key: string, value: string) => (state, dispatch) => {
-  console.log()
   const tr = state.tr.setNodeMarkup(pos, null, {key: key, value: value });
-  console.log("determined transaction: ", tr);
   if(dispatch) {
     dispatch(tr);
     return true

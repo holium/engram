@@ -24,7 +24,6 @@ const getters: GetterTree<DocumentState, RootState> = {
     })
   },
   meta: (state) => (id: string): ItemMeta => {
-    console.log("getting meta: ", id);
     if(!state[id]) return { id: "missing document", name: "missing document", owner: "missing document"};
     return {
       id: id,
@@ -42,7 +41,6 @@ const getters: GetterTree<DocumentState, RootState> = {
         path: `/document${id}/get/updates`
       }).then((response: any) => {
         resolve(Object.keys(response).map((timestamp: string) => {
-          console.log("parsing update: ", timestamp);
           return {
             timestamp: timestamp,
             author: response[timestamp].author,
@@ -111,7 +109,6 @@ const actions: ActionTree<DocumentState, RootState> = {
 
   make({ commit, dispatch, rootGetters }, payload: { name: string }): Promise<string> {
     return new Promise((resolve, reject) => {
-      console.log("making document")
       const doc = new Y.Doc();
       doc.clientID = 0;
       doc.gc = false;
@@ -133,7 +130,6 @@ const actions: ActionTree<DocumentState, RootState> = {
         }}}
       }).then(() => {
         rootGetters['lastOrganism']().then((path: string) => {
-          console.log("last organism: ", path);
           commit("load", {
             id: path,
             name: payload.name,
@@ -163,7 +159,6 @@ const actions: ActionTree<DocumentState, RootState> = {
   },
   save({}, payload: { id: string, content: string, version: string }): Promise<void> {
     return new Promise((resolve, reject) => {
-      console.log("saving content:", payload);
       (window as any).urbit.poke({
         app: "engram",
         mark: "post",
@@ -194,40 +189,6 @@ const actions: ActionTree<DocumentState, RootState> = {
       })
     })
   },
-
-  /*
-  syncpermswithspace({ dispatch }, payload: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-      if(router.currentRoute.value.query.spaceId != "/null/space") {
-        // Get space permissions
-        (window as any).urbit.scry({
-          app: "engram",
-          path: `/space${router.currentRoute.value.query.spaceId}/settings`
-        }).then((res: any) => {
-          console.log("space permissions response: ", res);
-          // Copy Roles
-          Object.keys(res.roles).forEach((id: string) => {
-            dispatch('workspace/settings/addrole', {
-              id: payload,
-              role: res.roles[id].role,
-              level: res.roles[id].level,
-            }, { root: true })
-          });
-          // Copy Ships
-          Object.keys(res.ships).forEach((id: string) => {
-            dispatch('workspace/settings/addrole', {
-              id: payload,
-              ship: res.ships[id].ship,
-              level: res.ships[id].level,
-            }, { root: true })
-          });
-        })
-        // Get space owner
-        // Set owner as admin
-      }
-    })
-  },
-  */
 
   addperm({ }, payload: { id: string, perm: string, level: string, type: string}): Promise<void> {
     return new Promise((resolve) => {
@@ -270,11 +231,9 @@ const actions: ActionTree<DocumentState, RootState> = {
         app: "engram",
         path: `/document${payload.id}/get/settings`
       }).then((res: any) => {
-        console.log("find remove perm res: ", res, " for: ", payload);
         const closeenough = Object.keys(res[payload.type]).find((key: string) => {
           return res[payload.type][key].perm == payload.perm && res[payload.type][key].level == payload.level;
         });
-        console.log("and close enough: ", closeenough);
         (window as any).urbit.poke({
           app: "engram",
           mark: "post",

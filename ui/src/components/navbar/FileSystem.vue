@@ -59,7 +59,6 @@ export default defineComponent({
                     command: () => {
                         store.dispatch("documents/make", { name: "Untitled Document" }).then((path: string) => {
                             (window as any).urbit.scry({ app: "engram", path: `/space${this.$route.query.spaceId}/settings`}).then((res: any) => {
-                                console.log("space settings response", res);
                                 Object.keys(res.roles).forEach((role: string) => {
                                     store.dispatch(`documents/addperm`, {
                                     id: path,
@@ -86,7 +85,6 @@ export default defineComponent({
                     command: () => {
                         store.dispatch("folders/make", { name: "Untitled Folder" }).then((path: string) => {
                             (window as any).urbit.scry({ app: "engram", path: `/space${this.$route.query.spaceId}/settings`}).then((res: any) => {
-                                console.log("space settings response", res);
                                 Object.keys(res.roles).forEach((role: string) => {
                                     store.dispatch(`folders/addperm`, {
                                     id: path,

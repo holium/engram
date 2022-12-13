@@ -56,7 +56,6 @@ const mutations: MutationTree<SettingsState> = {
 const actions: ActionTree<SettingsState, RootState> = {
   open({ commit }, payload: string) {
     (window as any).urbit.scry({ app: "engram", path: `/document/${payload}/get/settings`}).then((response: any) => {
-      console.log("settings response", response);
       commit("open", {
         roles: response.roles,
         ships: response.ships

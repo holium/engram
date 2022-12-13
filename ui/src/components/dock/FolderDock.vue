@@ -112,7 +112,6 @@ export default defineComponent({
     loadSettings: function() {
       if(this.folder.length > 0) {
         (window as any).urbit.scry({ app: "engram", path: `/folder${this.folder}/get/settings`}).then((res: any) => {
-          console.log("folder settings response", res);
           this.roles = res.roles;
           this.ships = res.ships;
         });

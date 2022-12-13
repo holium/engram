@@ -112,7 +112,6 @@ export default defineComponent({
       })
     },
     addPermission: function(event: KeyboardEvent) {
-      console.log("input: ", this.newPermission, event.key, " @ ", (event.target as any).selectionStart);
       if(event.key == "Enter" && this.newPermission.length > 0 && this.newPermissionLevel.length > 0) {
         const ship = this.newPermission.charAt(0) == "~";
         store.dispatch('documents/addperm', { 

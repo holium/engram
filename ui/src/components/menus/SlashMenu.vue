@@ -39,12 +39,6 @@ export default defineComponent({
         }
     },
     inject: ['closeMenu'],
-    created: function() {
-        console.log("created slashmenu");
-    },
-    beforeUnmount: function() {
-        console.log("unmounting");
-    },
     computed: {
         height: function() {
             return window.innerHeight;

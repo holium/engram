@@ -48,7 +48,6 @@ const actions: ActionTree<SpaceState, RootState> = {
         return new Promise((resolve, reject) => {
           (window as any).urbit.scry({ app: "spaces", path: `${payload}/members/~${(window as any).ship}` }).then((member: any) => {
             (window as any).urbit.scry({ app: "spaces", path: `${payload}` }).then((response: any) => {
-                console.log("load space res:", member, response);
                 commit("load", { ...response.space, roles: member.member.roles});
                 resolve(response.space);
               })
@@ -68,7 +67,6 @@ const actions: ActionTree<SpaceState, RootState> = {
     },
     addperm({ dispatch, state }, payload: { id: string, perm: string, level: string, type: string}): Promise<void> {
       return new Promise((resolve) => {
-        console.log("adding perm to space", payload.id);
         (window as any).urbit.poke({
           app: "engram",
           mark: "post",

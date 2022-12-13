@@ -12,13 +12,7 @@ export default defineComponent({
   name: "Empty",
   methods: {
     openDocument: function () {
-      console.log(store);
-      console.log(store.dispatch)
       store.dispatch("documents/make", { name: "Untitled"});
-      //.then((result) => {
-      //  console.log("make untitled result", result);
-      //  //this.$router.push(`/apps/engram/${this.$route.params.space}/document`);
-      //})
       
     },
   },

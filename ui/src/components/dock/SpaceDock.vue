@@ -106,7 +106,6 @@
     methods: {
       loadSettings: function() {
         (window as any).urbit.scry({ app: "engram", path: `/space${this.$route.query.spaceId}/settings`}).then((res: any) => {
-            console.log("space settings response", res);
             this.roles = res.roles;
             this.ships = res.ships;
         });

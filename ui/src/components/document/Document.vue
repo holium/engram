@@ -87,7 +87,6 @@ export default defineComponent({
   },
   watch: {
     previewing: function(newRender: null | DocumentVersion) {
-      console.log("previewing changed:", newRender)
       if(this.loaded != null) {
         this.loaded.then((res: any) => {
           render(this.$refs["document"] as any, res.content, (this as any).pushMenu, this.updateCover, this.updateStyling, newRender);

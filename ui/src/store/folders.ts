@@ -23,7 +23,6 @@ const getters: GetterTree<FolderState, RootState> = {
     return state[id].name;
   },
   meta: (state) => (id: string): ItemMeta => {
-    console.log("getting meta: ", id);
     return {
       id: id,
       name: state[id].name,
@@ -81,7 +80,6 @@ const mutations: MutationTree<FolderState> = {
 
   // Moving -------------------------------------------------------------------
   add(state, payload: { item: { index: string, id: string, type: string}, to: string }) {
-    console.log("adding?");
     state[payload.to].content[payload.item.index] = { id: payload.item.id, type: payload.item.type };
   },
   remove(state, payload: { index: string, from: string }) {
@@ -91,7 +89,6 @@ const mutations: MutationTree<FolderState> = {
 
 const actions: ActionTree<FolderState, RootState> = {
   load({ commit, state }, payload): Promise<void> {
-    console.log("loading folder: ", payload, state);
     return new Promise<void>((resolve, reject) => {
       commit("load", {
         id: payload.id,
@@ -119,7 +116,6 @@ const actions: ActionTree<FolderState, RootState> = {
 
   make({ commit, rootGetters }, payload: { name: string }): Promise<string> {
     return new Promise((resolve, reject) => {
-      console.log("making folder");
       (window as any).urbit.poke({
         app: "engram",
         mark: "post",
@@ -132,7 +128,6 @@ const actions: ActionTree<FolderState, RootState> = {
         }}}
       }).then(() => {
         rootGetters['lastOrganism']().then((path: string) => {
-          console.log("last organism: ", path);
           commit("load", {
             id: path,
             name: payload.name,
@@ -184,7 +179,6 @@ const actions: ActionTree<FolderState, RootState> = {
 
   add({ commit, dispatch }, payload: { to: string, item: { index: string, id: string, type: string}}): Promise<void> {
     return new Promise((resolve, reject) => {
-      console.log("adding item to folder: ", payload);
       if(payload.item.index) commit("add", payload);
       if(payload.to != ".") {
         (window as any).urbit.poke({
@@ -231,14 +225,12 @@ const actions: ActionTree<FolderState, RootState> = {
   },
   softremove({ commit }, payload: { from: string, index: string}): Promise<void> {
     return new Promise((resolve, reject) => {
-      console.log("removing item from folder: ", payload);
       commit("remove", payload);
       resolve();
     });
   },
   remove({ commit, dispatch, state }, payload: { from: string, index: string}): Promise<void> {
     return new Promise((resolve, reject) => {
-      console.log("removing item from folder: ", payload);
       const item = state[payload.from].content[payload.index]
       commit("remove", payload);
       if(payload.from != ".") {

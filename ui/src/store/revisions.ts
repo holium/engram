@@ -17,14 +17,12 @@ const getters: GetterTree<RevisionState, RootState> = {
       return { author: version.author, date: version.date }
     }).filter((version, i, arr) => {
       if(i == 0) return true;
-      console.log(arr[i - 1].date.getTime() - version.date.getTime());
       return arr[i - 1].date.getTime() - version.date.getTime() > 1000 * 60 * 20;
     })
   },
   version: (state) => (index: number) => {
     return state.filter((version, i, arr) => {
       if(i == 0) return true;
-      console.log(arr[i - 1].date.getTime() - version.date.getTime());
       return arr[i - 1].date.getTime() - version.date.getTime() > 1000 * 60 * 20;
     })[index]
   }
@@ -58,7 +56,6 @@ const mutations: MutationTree<RevisionState> = {
 const actions: ActionTree<RevisionState, RootState> = {
   open({ commit }, payload: string) {
     (window as any).urbit.scry({ app: "engram", path: `/document/${payload}/get/snapshots`}).then((response: any) => {
-      console.log("versions response: ", response);
       commit("open", Object.keys(response).map((timestamp: string) => {
         return {
           author: response[timestamp].author,
@@ -81,7 +78,6 @@ const actions: ActionTree<RevisionState, RootState> = {
         snpashot: payload.snapshot,
         date: new Date()
       }
-      console.log("saving snapshot: ", version);
       commit("add", version);
       (window as any).urbit.poke({
         app: "engram",
