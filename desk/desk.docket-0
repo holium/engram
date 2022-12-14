@@ -6,5 +6,6 @@
   website+'https://urbit.org'
   license+'MIT'
   base+'engram'
-  glob-ames+[~zod 0v0]
+  image+'https://lomder-librun.sfo3.digitaloceanspaces.com/tiles/engram.svg'
+  glob-ames+[~dalsyr-diglyn 0v0]
 ==
