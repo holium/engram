@@ -3,7 +3,7 @@
     <!-- Nav Show / hide -->
     <svg
       viewBox="0 0 16 16"
-      fill="var(--rlm-icon-color, #ff0000)"
+      fill="var(--rlm-icon-color, #333333)"
       class="icon clickable nav-toggle"
       xmlns="http://www.w3.org/2000/svg"
       @click="toggleHideNav"
