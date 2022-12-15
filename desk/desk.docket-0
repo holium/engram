@@ -4,6 +4,7 @@
   color+0xe2.dcc9
   version+[0 1 0]
   website+'https://urbit.org'
+  image+'https://lomder-librun.sfo3.digitaloceanspaces.com/tiles/engram.svg'
   license+'MIT'
   base+'engram'
   image+'https://lomder-librun.sfo3.digitaloceanspaces.com/tiles/engram.svg'
