@@ -78,8 +78,10 @@
 /* Icons */
 .icon {
   @apply p-1 rounded-1;
-  width: calc(theme(lineHeight.base) + 2 * theme(spacing.1));
-  height: calc(theme(lineHeight.base) + 2 * theme(spacing.1));
+  min-width: calc(theme(lineHeight.base) + 2 * theme(spacing.1));
+  min-height: calc(theme(lineHeight.base) + 2 * theme(spacing.1));
+  max-width: calc(theme(lineHeight.base) + 2 * theme(spacing.1));
+  max-height: calc(theme(lineHeight.base) + 2 * theme(spacing.1));
 }
 
 /* Scrollbars */
