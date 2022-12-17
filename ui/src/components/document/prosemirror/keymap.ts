@@ -1,5 +1,5 @@
 import { keymap } from "prosemirror-keymap";
-import { Plugin } from "prosemirror-state";
+import { Selection } from "prosemirror-state";
 import {
   chainCommands,
   createParagraphNear,
@@ -15,6 +15,7 @@ import {
   selectNodeForward,
   newlineInCode,
   setBlockType,
+  selectAll,
 } from "prosemirror-commands";
 import { undo, redo } from "y-prosemirror"
 import { undoInputRule } from "prosemirror-inputrules";
@@ -33,11 +34,29 @@ export default keymap({
   "Mod-y": redo,
   // Enter
   Enter: chainCommands(
+    (state, dispatch) => {
+      console.log("checking in header", state.doc.nodeAt(state.selection.from));
+      console.log("checking in header acnhor before", state.doc.nodeAt(state.selection.$anchor.before()))
+      const node = state.doc.nodeAt(state.selection.$anchor.before());
+      if(node && node.type.name == "description") {
+        if(state.selection.from + 1 == state.selection.$anchor.before() + node.nodeSize) {
+          console.log("skip forward");
+          const sel = Selection.findFrom(state.doc.resolve(state.selection.$anchor.before() + node.nodeSize), 1);
+          if(dispatch && sel) {
+            const tr = state.tr.setSelection(sel);
+            dispatch(tr);
+          }
+          return true;
+        }
+      }
+      return false;
+      
+    },
     newlineInCode,
     splitListItem(schema.nodes["li"]),
     createParagraphNear,
     liftEmptyBlock,
-    splitBlock
+    splitBlock,
   ),
   "Shift-Enter": chainCommands(exitCode, hardBreak),
   "Mod-Enter": exitCode,
