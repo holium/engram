@@ -4,7 +4,7 @@
       <div class="rounded-2" :style="{ width: '40px', height: '40px', 'min-width': '40px', 'min-height': '40px', 'background-color': space.color }">
 
       </div>
-      <div class="flex flex-col gap-2 flex-grow">
+      <div class="flex flex-col gap-2 flex-1 overflow-hidden">
         <div class="heading-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
           {{ space.name }}
         </div>
