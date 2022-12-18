@@ -105,12 +105,13 @@ export const comments = new Plugin({
           const newCommentHeading = document.createElement("li");
           newCommentHeading.className = "flex items-center gap-3";
           const author = document.createElement("div");
-          author.className = "azimuth";
+          author.className = "azimuth whitespace-nowrap overflow-hidden overflow-ellipsis";
           author.innerHTML = "~" + (window as any).ship;
           const timestamp = document.createElement("div");
           timestamp.innerHTML = "editing...";
           timestamp.style.flexGrow = "1";
           timestamp.style.opacity = ".6";
+          timestamp.className = "whitespace-nowrap"
           const sendButton = document.createElement("div");
           sendButton.innerHTML = `
             <svg
