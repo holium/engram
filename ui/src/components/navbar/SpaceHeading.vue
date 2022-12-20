@@ -11,7 +11,7 @@
           'background-size': 'cover',
           'background-repeat': 'norepeat',
           'background-position': 'center',
-          ...(space.image.length > 0 ? { 'background-image': `url(${space.image})` } : { 'background-color': space.color })
+          ...(space.picture.length > 0 ? { 'background-image': `url(${space.picture})` } : { 'background-color': space.color })
         }"
       >
 
@@ -66,7 +66,17 @@
           v-for="option in spaces.filter(option => true || option.path != space.path)" 
           @click="() => { openSpace(option.path) }"
       >
-        <div class="rounded-2" :style="{ width: '40px', height: '40px', 'background-color': option.color }">
+        <div 
+          class="rounded-2" 
+          :style="{ 
+            width: '40px', 
+            height: '40px', 
+            'background-size': 'cover',
+            'background-repeat': 'norepeat',
+            'background-position': 'center',
+            ...(space.picture.length > 0 ? { 'background-image': `url(${space.picture})` } : { 'background-color': space.color })
+          }"
+        >
 
         </div>
         <div class="flex flex-col gap-2">

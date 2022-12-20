@@ -10,7 +10,7 @@ import type {
 const state: SpaceState = {
     name: "",
     path: "",
-    image: "",
+    picture: "",
     color: "",
     roles: [],
 }
@@ -35,9 +35,10 @@ const getters: GetterTree<SpaceState, RootState> = {
 
 const mutations: MutationTree<SpaceState> = {
     load(state, payload: Space) {
+        console.log("loading space: ", payload);
         state.path = payload.path;
         state.name = payload.name;
-        state.image = payload.image;
+        state.picture = payload.picture;
         state.color = payload.color;
         state.roles = payload.roles;
     }
@@ -48,6 +49,7 @@ const actions: ActionTree<SpaceState, RootState> = {
         return new Promise((resolve, reject) => {
           (window as any).urbit.scry({ app: "spaces", path: `${payload}/members/~${(window as any).ship}` }).then((member: any) => {
             (window as any).urbit.scry({ app: "spaces", path: `${payload}` }).then((response: any) => {
+                console.log(response);
                 commit("load", { ...response.space, roles: member.member.roles});
                 resolve(response.space);
               })
@@ -57,7 +59,7 @@ const actions: ActionTree<SpaceState, RootState> = {
                   path: `/~${(window as any).ship}/our`, 
                   name: "Local", 
                   color: "#262626",
-                  image: "",
+                  picture: "",
                   roles: [],
               }
               commit("load", nullspace)
