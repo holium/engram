@@ -11,7 +11,7 @@ export const nullspace = {
   path: `/~${(window as any).ship}/our`, 
   name: "Local", 
   color: "#262626",
-  image: "",
+  picture: "",
   roles: [],
 }
 

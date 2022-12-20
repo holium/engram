@@ -228,6 +228,7 @@
           %delta
         ::~&  "DELTA-- from {<src.bowl>} for {<path.act>}"
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        ?.  (~(has by d) id)  ~&  "{<our.bowl>} does not know about {<path.act>} yet"  `this
         =/  doc  (~(got by d) id)
         ?>  (guardspace:engram [space.settings.doc (molt ~(val by content.roles.settings.doc)) (molt ~(val by content.ships.settings.doc)) (silt `(list @tas)`[%admin %editor %visitor ~]) src.bowl our.bowl now.bowl])
         =/  updates  (silt ~[[author=our.bowl timestamp=now.bowl content=content.doc]])
@@ -463,6 +464,7 @@
           %delta
         ::~&  "DELTA-- from {<src.bowl>} for {<path.act>}"
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        ?.  (~(has by f) id)  ~&  "{<our.bowl>} does not know about {<path.act>} yet"  `this
         =/  fold  (~(got by f) id)
         ?>  (guardspace:engram [space.fold (molt ~(val by content.roles.fold)) (molt ~(val by content.ships.fold)) (silt `(list @tas)`[%admin %editor %visitor ~]) src.bowl our.bowl now.bowl])
         =/  updates  (delta:index content.fold version.act)
@@ -624,7 +626,7 @@
             ==
           spc  ::replace with actually making changes
         =/  contentspc
-        =.  content.spc  (apply:index content.spc content.update.act)
+        =.  content.settingsspc  (apply:index content.settingsspc content.update.act)
         settingsspc
         =/  diff  (~(dif by content.content.contentspc) content.content.spc)
         =/  sstate  this(s (~(put by s) space.act contentspc))
@@ -725,6 +727,7 @@
 ++  on-agent
   |=  [=wire =sign:agent:gall]
     ^-  (quip card _this)
+    ~&  "Request on wire: {<wire>}"
     ?+    wire  (on-agent:def wire sign)
         [%engram @ @ ~]
       ?+    -.sign  (on-agent:def wire sign)

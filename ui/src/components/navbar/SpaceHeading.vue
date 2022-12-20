@@ -1,7 +1,19 @@
 <template>
   <div class="relative flex flex-col">
     <div class="flex gap-4" @click="openSelection">
-      <div class="rounded-2" :style="{ width: '40px', height: '40px', 'min-width': '40px', 'min-height': '40px', 'background-color': space.color }">
+      <div 
+        class="rounded-2" 
+        :style="{ 
+          width: '40px', 
+          height: '40px', 
+          'min-width': '40px', 
+          'min-height': '40px',
+          'background-size': 'cover',
+          'background-repeat': 'norepeat',
+          'background-position': 'center',
+          ...(space.picture.length > 0 ? { 'background-image': `url(${space.picture})` } : { 'background-color': space.color })
+        }"
+      >
 
       </div>
       <div class="flex flex-col gap-2 flex-1 overflow-hidden">
@@ -54,7 +66,17 @@
           v-for="option in spaces.filter(option => true || option.path != space.path)" 
           @click="() => { openSpace(option.path) }"
       >
-        <div class="rounded-2" :style="{ width: '40px', height: '40px', 'background-color': option.color }">
+        <div 
+          class="rounded-2" 
+          :style="{ 
+            width: '40px', 
+            height: '40px', 
+            'background-size': 'cover',
+            'background-repeat': 'norepeat',
+            'background-position': 'center',
+            ...(option.picture.length > 0 ? { 'background-image': `url(${option.picture})` } : { 'background-color': option.color })
+          }"
+        >
 
         </div>
         <div class="flex flex-col gap-2">

@@ -10,7 +10,7 @@ export interface RootState {
 export interface Space {
   path: string;
   name: string;
-  image: string;
+  picture: string;
   color: string;
   roles: Array<string>;
 }
@@ -18,7 +18,7 @@ export interface Space {
 export interface SpaceState {
   path: string,
   name: string,
-  image: string,
+  picture: string,
   color: string,
   roles: Array<string>,
 }
