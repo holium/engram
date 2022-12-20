@@ -1,13 +1,13 @@
 <template>
     <div class="flex justify-between items-center py-2">
-        <div class="azimuth px-3 py-2">
+        <div class="azimuth px-3 py-2 whitespace-nowrap overflow-hidden overflow-ellipsis">
             {{ ship }}
         </div>
         <select 
             v-model="lvl"
             :editable="editable"
             @change="handleLevel"
-            class="whitespace-nowrap overflow-hidden overflow-ellipsis text-azimuth px-3 py-2 clickable" 
+            class="whitespace-nowrap text-azimuth px-3 py-2 clickable" 
         >
             <option value="editor">editor</option>
             <option value="viewer">viewer</option>
