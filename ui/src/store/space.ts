@@ -49,7 +49,6 @@ const actions: ActionTree<SpaceState, RootState> = {
         return new Promise((resolve, reject) => {
           (window as any).urbit.scry({ app: "spaces", path: `${payload}/members/~${(window as any).ship}` }).then((member: any) => {
             (window as any).urbit.scry({ app: "spaces", path: `${payload}` }).then((response: any) => {
-                console.log(response);
                 commit("load", { ...response.space, roles: member.member.roles});
                 resolve(response.space);
               })

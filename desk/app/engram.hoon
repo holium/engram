@@ -39,7 +39,6 @@
   |=  [=mark =vase]
   ^-  (quip card _this)
     =/  act  !<(action vase)
-    ~&  "Poke: {<act>}"
     ?-   -.act
       %document
         ?-  -.+.act

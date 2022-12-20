@@ -5,7 +5,8 @@
         :style="{ 
             ...contextmenu.location, 
             top: `calc(${contextmenu.location.top} - 
-                ${hasMark.get('hyperlink') || hasMark.get('engramlink') ? (24 + 32): 24}px)` 
+                ${hasMark.get('hyperlink') || hasMark.get('engramlink') ? (24 + 32): 24}px)`,
+            width: 'auto'
         }"
     >
         <input
@@ -164,26 +165,6 @@ export default defineComponent({
             required: true,
         }
     },
-    data() {
-        return {
-            linkvalue: "",
-        }
-    },
-    watch: {
-        contextmenu: function() {
-            const hasHyperlink = view.state.doc.rangeHasMark(
-                        this.contextmenu.from,
-                        this.contextmenu.to,
-                        schema.marks["hyperlink"]
-                    )
-            if(hasHyperlink) {
-                const value = view.state.selection.$head
-                .marks()
-                .find((mark) => mark.type.name == "hyperlink")
-                if(value) this.linkvalue = value.attrs.href;
-            }
-        }
-    },
     computed: {
         hasMark: function() {
             return new Map(['strong', 'italic', 'underline', 'strike', 'code', 'hyperlink'].map((mark: string) => {
@@ -196,6 +177,16 @@ export default defineComponent({
                     )
                 ]
             }))
+        },
+        linkvalue: function() {
+          if(this.hasMark.get("hyperlink")) {
+                const value = view.state.selection.$head
+                .marks()
+                .find((mark) => mark.type.name == "hyperlink");
+                if(value) return value.attrs.href;
+            } else {
+              return "";
+            }
         }
     },
     methods: {
@@ -203,8 +194,7 @@ export default defineComponent({
             toggleMark(schema.marks[mark])(view.state, view.dispatch, view);
         },
         implementLink: function() {
-            const sel = view.state.selection;
-            const tr = view.state.tr.addMark(sel.from, sel.to, schema.marks["hyperlink"].create({ href: this.linkvalue}));
+            const tr = view.state.tr.addMark(this.contextmenu.from, this.contextmenu.to, schema.marks["hyperlink"].create({ href: this.linkvalue}));
             view.dispatch(tr);
         }
     },
