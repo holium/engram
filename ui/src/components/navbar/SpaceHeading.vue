@@ -74,7 +74,7 @@
             'background-size': 'cover',
             'background-repeat': 'norepeat',
             'background-position': 'center',
-            ...(space.picture.length > 0 ? { 'background-image': `url(${space.picture})` } : { 'background-color': space.color })
+            ...(option.picture.length > 0 ? { 'background-image': `url(${option.picture})` } : { 'background-color': option.color })
           }"
         >
 
