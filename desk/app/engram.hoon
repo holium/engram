@@ -232,6 +232,7 @@
           %delta
         ::~&  "DELTA-- from {<src.bowl>} for {<path.act>}"
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        ?.  (~(has by d) id)  ~&  "{<our.bowl>} does not know about {<path.act>} yet"  `this
         =/  doc  (~(got by d) id)
         =/  tid  `@ta`(cat 4 (cat 2 'document-delta-' (scot %p +.id)) (cat 2 (scot %ud -.id) (scot %uv (sham eny.bowl))))
         =/  ta-now  `@ta`(scot %da now.bowl)
@@ -465,6 +466,7 @@
         ::
           %delta
         ::~&  "DELTA-- from {<src.bowl>} for {<path.act>}"
+        ?.  (~(has by f) id)  ~&  "{<our.bowl>} does not know about {<path.act>} yet"  `this
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  fol  (~(got by f) id)
         =/  tid  `@ta`(cat 4 (cat 2 'folder-delta-' (scot %p +.id)) (cat 2 (scot %ud -.id) (scot %uv (sham eny.bowl))))
@@ -663,28 +665,6 @@
           [%pass /engram/thread/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
           [%pass /engram/thread/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
         ==
-        ::=/  spc  (~(got by s) space.act)
-        ::?>  (guardspace:engram [space.act (molt ~(val by content.roles.spc)) (molt ~(val by content.ships.spc)) (silt `(list @tas)`[%admin %editor ~]) src.bowl our.bowl now.bowl])
-        ::  Settings Changes
-        ::=/  settingsspc  
-        ::  ?.  (guardspace:engram [space.act (molt ~(val by content.roles.spc)) (molt ~(val by content.ships.spc)) (silt `(list @tas)`[%admin ~]) src.bowl our.bowl now.bowl])
-        ::    spc
-        ::  =:  roles.spc  (apply:index roles.spc roles.update.act)
-        ::      ships.spc  (apply:index ships.spc ships.update.act)
-        ::    ==
-        ::  spc  ::replace with actually making changes
-        ::=/  contentspc
-        ::=.  content.spc  (apply:index content.spc content.update.act)
-        ::settingsspc
-        ::=/  diff  (~(dif by content.content.contentspc) content.content.spc)
-        ::=/  sstate  this(s (~(put by s) space.act contentspc))
-        :::_  sstate
-        ::  %+  turn  ~(tap by diff)
-        ::  |=  item=[id [id @tas]]
-        ::  ?+  +.+.item  !!
-        ::    %document  [%pass /document/request %agent [our.bowl %engram] %poke %post !>([%document %request `path`[(scot %p -.-.+.item) (scot %ud +.-.+.item) ~] -.-.+.item])]
-        ::    %folder    [%pass /folder/request %agent [our.bowl %engram] %poke %post !>([%folder %request `path`[(scot %p -.-.+.item) (scot %ud +.-.+.item) ~] -.-.item])]
-        ::  ==
     ==
 ==
 ++  on-watch  on-watch:def
@@ -760,6 +740,7 @@
 ++  on-agent
   |=  [=wire =sign:agent:gall]
     ^-  (quip card _this)
+    ~&  "Request on wire: {<wire>}"
     ?+    wire  (on-agent:def wire sign)
         [%engram @ @ ~]
       ?+    -.sign  (on-agent:def wire sign)
