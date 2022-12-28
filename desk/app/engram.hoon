@@ -455,19 +455,13 @@
           [%pass /engram/thread/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
           [%pass /engram/thread/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
         ==
-        ::=/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
-        ::=/  fold  (~(got by f) id)
-        ::?>  (guardspace:engram [space.fold (molt ~(val by content.roles.fold)) (molt ~(val by content.ships.fold)) (silt `(list @tas)`[%admin %editor ~]) peer.act our.bowl now.bowl])
-        :::_  this
-        :::~  [%pass /engram/(scot %p peer.act)/folder/delta %agent [peer.act %engram] %poke %post !>(`action`[%folder %delta path.act version.content.fold])]
-        ::==
         ::
         ::  Assemble and reply with updates (pokes their sync)
         ::
           %delta
         ::~&  "DELTA-- from {<src.bowl>} for {<path.act>}"
-        ?.  (~(has by f) id)  ~&  "{<our.bowl>} does not know about {<path.act>} yet"  `this
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        ?.  (~(has by f) id)  ~&  "{<our.bowl>} does not know about {<path.act>} yet"  `this
         =/  fol  (~(got by f) id)
         =/  tid  `@ta`(cat 4 (cat 2 'folder-delta-' (scot %p +.id)) (cat 2 (scot %ud -.id) (scot %uv (sham eny.bowl))))
         =/  ta-now  `@ta`(scot %da now.bowl)
@@ -477,15 +471,6 @@
           [%pass /engram/thread/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
           [%pass /engram/thread/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
         ==
-        ::=/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
-        ::=/  fold  (~(got by f) id)
-        ::?>  (guardspace:engram [space.fold (molt ~(val by content.roles.fold)) (molt ~(val by content.ships.fold)) (silt `(list @tas)`[%admin %editor %visitor ~]) src.bowl our.bowl now.bowl])
-        ::=/  updates  (delta:index content.fold version.act)
-        ::=/  roles  (delta:index roles.fold ^*(version:index))
-        ::=/  ships  (delta:index ships.fold ^*(version:index))
-        :::_  this
-        :::~  [%pass /engram/folder/sync %agent [src.bowl %engram] %poke %post !>(`action`[%folder %sync path.act [name.fold roles ships updates]])]
-        ::==
         ::
         ::  Sync updates with current folder
         ::
@@ -501,27 +486,6 @@
           [%pass /engram/thread/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
           [%pass /engram/thread/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
         ==
-        ::=/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
-        ::=/  fold  (~(got by f) id)
-        ::?>  (guardspace:engram [space.fold (molt ~(val by content.roles.fold)) (molt ~(val by content.ships.fold)) (silt `(list @tas)`[%admin %editor ~]) src.bowl our.bowl now.bowl])
-        ::  Name Changes
-        ::=/  namefold
-        ::  ?.  (guardspace:engram [space.fold (molt ~(val by content.roles.fold)) (molt ~(val by content.ships.fold)) (silt `(list @tas)`[~]) src.bowl our.bowl now.bowl])
-        ::    fold
-        ::  =.  name.fold  name.update.act
-        ::  fold
-        ::  Settings Changes
-        ::=/  settingsfold
-        ::  ?.  (guardspace:engram [space.namefold (molt ~(val by content.roles.namefold)) (molt ~(val by content.ships.namefold)) (silt `(list @tas)`[%admin ~]) src.bowl our.bowl now.bowl])
-        ::    namefold
-        ::  =:  roles.namefold  (apply:index roles.namefold roles.update.act)
-        ::      ships.namefold  (apply:index ships.namefold ships.update.act)
-        ::    ==
-        ::  namefold  ::replace with actually making changes
-        ::=/  contentfold
-        ::=.  content.settingsfold  (apply:index content.settingsfold content.update.act)
-        ::settingsfold
-        ::`this(f (~(put by f) id contentfold))
         ::
         :: Request a folder you don't have
         ::
@@ -624,11 +588,6 @@
           [%pass /engram/thread/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
           [%pass /engram/thread/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
         ==
-        ::=/  spc  (~(got by s) space.act)
-        ::?>  (guardspace:engram [space.act (molt ~(val by content.roles.spc)) (molt ~(val by content.ships.spc)) (silt `(list @tas)`[%admin %editor ~]) peer.act our.bowl now.bowl])
-        :::_  this
-        :::~  [%pass /engram/(scot %p peer.act)/space/delta %agent [peer.act %engram] %poke %post !>(`action`[%space %delta space.act version.content.spc])]
-        ::==
         ::
         ::  Assemble and reply with updates (pokes their sync)
         ::
@@ -643,14 +602,6 @@
           [%pass /engram/thread/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
           [%pass /engram/thread/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
         ==
-        ::=/  spc  (~(got by s) space.act)
-        ::?>  (guardspace:engram [space.act (molt ~(val by content.roles.spc)) (molt ~(val by content.ships.spc)) (silt `(list @tas)`[%admin %editor %visitor ~]) src.bowl our.bowl now.bowl])
-        ::=/  updates  (delta:index content.spc version.act)
-        ::=/  roles  (delta:index roles.spc ^*(version:index))
-        ::=/  ships  (delta:index ships.spc ^*(version:index))
-        :::_  this
-        :::~  [%pass /engram/space/sync %agent [src.bowl %engram] %poke %post !>(`action`[%space %sync space.act [roles ships updates]])]
-        ::==
         ::
         ::  Sync updates with current space
         ::

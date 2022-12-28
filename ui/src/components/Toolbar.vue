@@ -62,6 +62,7 @@ export default defineComponent({
 </script>
 
 <style lang="css" scoped>
+
 #toolbar {
   @apply bg-window;
   position: absolute;
@@ -69,11 +70,6 @@ export default defineComponent({
   left: 0;
   width: 100%;
   z-index: 1;
-  opacity: 0;
-  transition: opacity 80ms ease;
-}
-#toolbar:hover {
-  opacity: 1;
 }
 
 .dock-toggle, .nav-toggle {

@@ -1,9 +1,12 @@
 <template>
   <div id="space" :class="{'hide-nav': !nav, 'hide-doc-dock': !dock}">
-    <Navbar />
-    <router-view class="flex-grow"></router-view>
-    <FolderDock :folder="folderdock" :class="{'hide-folder-dock': folderdock.length == 0}" @close="closeFolderDock"/>
-    <SpaceDock :open="(spacedock.length == 0)" :class="{'hide-space-dock': spacedock.length == 0}" @close="closeSpaceDock" />
+    <Navbar v-if="!loading"/>
+    <router-view class="flex-grow" v-if="!loading"></router-view>
+    <FolderDock :folder="folderdock" :class="{'hide-folder-dock': folderdock.length == 0}" @close="closeFolderDock" v-if="!loading"/>
+    <SpaceDock :open="(spacedock.length == 0)" :class="{'hide-space-dock': spacedock.length == 0}" @close="closeSpaceDock" v-if="!loading"/>
+    <div class="flex justify-center items-center" v-if="loading">
+      loading...
+    </div>
   </div>
 </template>
 
@@ -25,6 +28,7 @@ export default defineComponent({
   },
   data() {
     return {
+      loading: false,
       nav: true,
       dock: false,
       folderdock: "",
@@ -56,7 +60,10 @@ export default defineComponent({
   },
   methods: {
     loadSpace: function(to: string) {
-      store.dispatch("load", to as string);
+      this.loading = true;
+      store.dispatch("load", to as string).then(() => {
+        this.loading = false;
+      })
       if(to != "/null/space") {
         (window as any).urbit.poke({ 
           app: "engram", 

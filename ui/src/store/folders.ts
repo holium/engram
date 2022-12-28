@@ -344,7 +344,16 @@ const actions: ActionTree<FolderState, RootState> = {
       })
       
     })
-  }
+  },
+
+  softupdate({ commit }, payload: {
+    id: string, 
+    name: string, 
+    perms: Array<{id: string, perm: string, level: string, type: string}>,
+    content: { [key:string]: { id: string, type: string } }
+   }) {
+     // update document data
+ }
 }
 
 export default {

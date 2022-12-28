@@ -118,6 +118,13 @@ const actions: ActionTree<SpaceState, RootState> = {
         })
       })
     },
+    softupdate({ commit }, payload: {
+      id: string, 
+      perms: Array<{id: string, perm: string, level: string, type: string}>,
+      content: { [key:string]: { id: string, type: string } }
+     }) {
+       // update document data
+   }
 }
 
 export default {

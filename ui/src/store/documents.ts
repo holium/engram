@@ -250,6 +250,14 @@ const actions: ActionTree<DocumentState, RootState> = {
       })
       
     })
+  },
+
+  softupdate({ commit }, payload: {
+     id: string, 
+     name: string, 
+     perms: Array<{id: string, perm: string, level: string, type: string}>,
+    }) {
+      // update document data
   }
 }
 

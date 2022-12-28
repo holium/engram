@@ -5,6 +5,10 @@
   color: theme(colors.paper);
 }
 
+.loading-document #main {
+  display: none;
+}
+
 /* Element Styles */
 /*
 .ProseMirror > * {
