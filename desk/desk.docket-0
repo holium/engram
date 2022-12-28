@@ -4,8 +4,8 @@
   color+0x81.d9ff
   version+[0 1 0]
   website+'https://urbit.org'
+  image+'https://lomder-librun.sfo3.digitaloceanspaces.com/tiles/engram.svg'
   license+'MIT'
   base+'engram'
-  image+'https://lomder-librun.sfo3.digitaloceanspaces.com/tiles/engram.svg'
   glob-ames+[~dalsyr-diglyn 0v0]
 ==
