@@ -691,9 +691,9 @@
 ++  on-agent
   |=  [=wire =sign:agent:gall]
     ^-  (quip card _this)
-    ~&  "Request on wire: {<wire>}"
-    ?+    wire  (on-agent:def wire sign)
-        [%engram @ @ ~]
+    ~&  "Request on wire: {<wire>} with mark {<-.sign>}"
+    ?+    -.wire  (on-agent:def wire sign)
+        %engram
       ?+    -.sign  (on-agent:def wire sign)
           %watch-ack
         ?~  p.sign
@@ -701,12 +701,15 @@
         ((slog '%engram: Subscribe failed!' ~) `this)
       ::
           %kick
-        %-  (slog '%engram: Got kick, resubscribing...' ~)
-        :_  this
-        :~  [%pass `(list @ta)`[(wood 'engram') (wood (crip "{<our.bowl>}")) (wood (crip "{<src.bowl>}")) ~] %agent [src.bowl %engram] %watch /updates]
-        ==
+        ~&  "Kicked from {<wire>} :("
+        `this
+        ::%-  (slog '%engram: Got kick, resubscribing...' ~)
+        :::_  this
+        :::~  [%pass `(list @ta)`[(wood 'engram') (wood (crip "{<our.bowl>}")) (wood (crip "{<src.bowl>}")) ~] %agent [src.bowl %engram] %watch /updates]
+        ::==
       ::
           %fact
+        ~&  "Request to fact with marL {<p.cage.sign>}"
         ?+    p.cage.sign  (on-agent:def wire sign)
             %noun
           `this

@@ -90,17 +90,6 @@ const actions: ActionTree<DocumentState, RootState> = {
       });
       dispatch("folders/add", { item: { index: payload.id, id: payload.id, type: "document" }, to: "." }, { root: true });
       resolve();
-      (window as any).urbit.poke({ 
-        app: "engram", 
-        mark: "post",
-        json: {
-          document: {
-            gatherall: {
-              id: `${payload.id}`,
-            }
-          }
-        }
-      })
     })
   },
   clear({ commit }) {

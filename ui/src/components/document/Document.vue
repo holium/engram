@@ -86,9 +86,22 @@ export default defineComponent({
     //render document
     if(this.loaded == null) console.warn("no document");
     else {
+      console.log("need to render document");
       this.loaded.then((res: any) => {
+        console.log("loadded");
         render(this.$refs["document"] as any, res.content, (this as any).pushMenu, this.updateCover, this.updateStyling, null);
         this.loading = false;
+        (window as any).urbit.poke({ 
+          app: "engram", 
+          mark: "post",
+          json: {
+            document: {
+              gatherall: {
+                id: `/${this.$route.params.author}/${this.$route.params.clock}`
+              }
+            }
+          }
+        })
       })
     }
   },
