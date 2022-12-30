@@ -20,7 +20,7 @@
 ^-  thread:spider
 |=  starter=vase
 =/  args  !<(fthread-gather starter)
-~&  "extracted: {<args>}"
+::~&  "extracted: {<args>}"
 =/  m  (strand ,vase)
 ^-  form:m
 ;<  our=@p   bind:m  get-our

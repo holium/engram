@@ -90,7 +90,7 @@
             ~&  [[id %document]]
             =/  idx  (find ~[[id %document]] (turn spclist |=(a=[[@p @u] [[@p @u] @tas]] +.a)))
             =/  todel  (snag (need idx) spclist)
-            =.  content.spc  (remove:index content.spc -.+.todel our.bowl)
+            =.  content.spc  (remove:index content.spc -.todel our.bowl)
             spc
           spc
         =/  sstate  nstate(s spcs)
@@ -100,7 +100,7 @@
             =/  fldrlist  ~(tap by content.content.fldr) 
             =/  idx  (find ~[[id %document]] (turn fldrlist |=(a=[[@p @u] [[@p @u] @tas]] +.a)))
             =/  todel  (snag (need idx) fldrlist)
-            =.  content.fldr  (remove:index content.fldr -.+.todel our.bowl)
+            =.  content.fldr  (remove:index content.fldr -.todel our.bowl)
             fldr
           fldr
         =/  fstate  sstate(f fldrs)
@@ -223,8 +223,8 @@
         =/  start-args  [~ `tid byk.bowl(r da+now.bowl) %gather-document !>([path.act peer.act doc])]
         :_  this
         :~
-          [%pass /engram/thread/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
-          [%pass /engram/thread/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
+          [%pass /engram/gather/document/[(cat 2 (scot %p +.id) (scot %ud -.id))]/[(scot %p peer.act)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
+          [%pass /engram/gather/document/[(cat 2 (scot %p +.id) (scot %ud -.id))]/[(scot %p peer.act)]/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
         ==
         ::
         ::  Assemble and reply with updates (pokes their sync)
@@ -239,8 +239,8 @@
         =/  start-args  [~ `tid byk.bowl(r da+now.bowl) %delta-document !>([path.act src.bowl doc])]
         :_  this
         :~
-          [%pass /engram/thread/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
-          [%pass /engram/thread/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
+          [%pass /engram/delta/document/[(cat 2 (scot %p +.id) (scot %ud -.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
+          [%pass /engram/delta/document/[(cat 2 (scot %p +.id) (scot %ud -.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
         ==
         ::
         ::  Sync updates with current document
@@ -254,8 +254,8 @@
         =/  start-args  [~ `tid byk.bowl(r da+now.bowl) %sync-document !>([path.act src.bowl settings.doc update.act])]
         :_  this
         :~  
-          [%pass /engram/thread/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
-          [%pass /engram/thread/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
+          [%pass /engram/sync/document/[(cat 2 (scot %p +.id) (scot %ud -.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
+          [%pass /engram/sync/document/[(cat 2 (scot %p +.id) (scot %ud -.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
         ==
         ::
         :: Request a document you don't have
@@ -326,7 +326,7 @@
             =/  spclist  ~(tap by content.content.spc) 
             =/  idx  (find ~[[id %folder]] (turn spclist |=(a=[[@p @u] [[@p @u] @tas]] +.a)))
             =/  todel  (snag (need idx) spclist)
-            =.  content.spc  (remove:index content.spc -.+.todel our.bowl)
+            =.  content.spc  (remove:index content.spc -.todel our.bowl)
             spc
           spc
         =/  sstate  nstate(s spcs)
@@ -336,7 +336,7 @@
             =/  fldrlist  ~(tap by content.content.fldr) 
             =/  idx  (find ~[[id %folder]] (turn fldrlist |=(a=[[@p @u] [[@p @u] @tas]] +.a)))
             =/  todel  (snag (need idx) fldrlist)
-            =.  content.fldr  (remove:index content.fldr -.+.todel our.bowl)
+            =.  content.fldr  (remove:index content.fldr -.todel our.bowl)
             fldr
           fldr
         =/  fstate  sstate(f fldrs)
@@ -452,8 +452,8 @@
         =/  start-args  [~ `tid byk.bowl(r da+now.bowl) %gather-folder !>([path.act peer.act fol])]
         :_  this
         :~
-          [%pass /engram/thread/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
-          [%pass /engram/thread/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
+          [%pass /engram/gather/folder/[(cat 2 (scot %p +.id) (scot %ud -.id))]/[(scot %p peer.act)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
+          [%pass /engram/gather/folder/[(cat 2 (scot %p +.id) (scot %ud -.id))]/[(scot %p peer.act)]/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
         ==
         ::
         ::  Assemble and reply with updates (pokes their sync)
@@ -468,8 +468,8 @@
         =/  start-args  [~ `tid byk.bowl(r da+now.bowl) %delta-folder !>([path.act src.bowl fol version.act])]
         :_  this
         :~
-          [%pass /engram/thread/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
-          [%pass /engram/thread/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
+          [%pass /engram/delta/folder/[(cat 2 (scot %p +.id) (scot %ud -.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
+          [%pass /engram/delta/folder/[(cat 2 (scot %p +.id) (scot %ud -.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
         ==
         ::
         ::  Sync updates with current folder
@@ -483,8 +483,8 @@
         =/  start-args  [~ `tid byk.bowl(r da+now.bowl) %sync-folder !>([path.act src.bowl fol update.act])]
         :_  this
         :~  
-          [%pass /engram/thread/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
-          [%pass /engram/thread/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
+          [%pass /engram/sync/folder/[(cat 2 (scot %p +.id) (scot %ud -.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
+          [%pass /engram/sync/folder/[(cat 2 (scot %p +.id) (scot %ud -.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
         ==
         ::
         :: Request a folder you don't have
@@ -495,7 +495,7 @@
         :~  [%pass /folder/answer %agent [peer.act %engram] %poke %post !>([%folder %answer path.act])]
         ==
         :: 
-        :: Answer a request for a document
+        :: Answer a request for a folder
         ::
           %answer
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
@@ -585,8 +585,8 @@
         =/  start-args  [~ `tid byk.bowl(r da+now.bowl) %gather-space !>([space.act peer.act spc])]
         :_  this
         :~
-          [%pass /engram/thread/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
-          [%pass /engram/thread/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
+          [%pass /engram/gather/space/[(cat 2 (scot %p -.+.space.act) (scot %ud -.space.act))]/[(scot %p peer.act)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
+          [%pass /engram/gather/space/[(cat 2 (scot %p -.+.space.act) (scot %ud -.space.act))]/[(scot %p peer.act)]/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
         ==
         ::
         ::  Assemble and reply with updates (pokes their sync)
@@ -599,8 +599,8 @@
         =/  start-args  [~ `tid byk.bowl(r da+now.bowl) %delta-space !>([space.act src.bowl spc version.act])]
         :_  this
         :~
-          [%pass /engram/thread/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
-          [%pass /engram/thread/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
+          [%pass /engram/delta/space/[(cat 2 (scot %p -.+.space.act) (scot %ud -.space.act))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
+          [%pass /engram/delta/space/[(cat 2 (scot %p -.+.space.act) (scot %ud -.space.act))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
         ==
         ::
         ::  Sync updates with current space
@@ -613,8 +613,8 @@
         =/  start-args  [~ `tid byk.bowl(r da+now.bowl) %sync-space !>([space.act src.bowl spc update.act])]
         :_  this
         :~  
-          [%pass /engram/thread/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
-          [%pass /engram/thread/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
+          [%pass /engram/sync/space/[(cat 2 (scot %p -.+.space.act) (scot %ud -.space.act))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
+          [%pass /engram/sync/space/[(cat 2 (scot %p -.+.space.act) (scot %ud -.space.act))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
         ==
     ==
 ==
@@ -691,9 +691,9 @@
 ++  on-agent
   |=  [=wire =sign:agent:gall]
     ^-  (quip card _this)
-    ~&  "Request on wire: {<wire>}"
-    ?+    wire  (on-agent:def wire sign)
-        [%engram @ @ ~]
+    ::~&  "Request on wire: {<wire>} with mark {<-.sign>}"
+    ?+    -.wire  (on-agent:def wire sign)
+        %engram
       ?+    -.sign  (on-agent:def wire sign)
           %watch-ack
         ?~  p.sign
@@ -701,12 +701,15 @@
         ((slog '%engram: Subscribe failed!' ~) `this)
       ::
           %kick
-        %-  (slog '%engram: Got kick, resubscribing...' ~)
-        :_  this
-        :~  [%pass `(list @ta)`[(wood 'engram') (wood (crip "{<our.bowl>}")) (wood (crip "{<src.bowl>}")) ~] %agent [src.bowl %engram] %watch /updates]
-        ==
+        ::~&  "Kicked from {<wire>} :("
+        `this
+        ::%-  (slog '%engram: Got kick, resubscribing...' ~)
+        :::_  this
+        :::~  [%pass `(list @ta)`[(wood 'engram') (wood (crip "{<our.bowl>}")) (wood (crip "{<src.bowl>}")) ~] %agent [src.bowl %engram] %watch /updates]
+        ::==
       ::
           %fact
+        ::~&  "Request to fact with marL {<p.cage.sign>}"
         ?+    p.cage.sign  (on-agent:def wire sign)
             %noun
           `this
@@ -716,7 +719,7 @@
           `this
             %thread-done
           =/  res  !<(thread-res q.cage.sign)
-          ~&  "Thread Result: {<-.res>}"
+          ::~&  "Thread Result: {<-.res>}"
           ?+  -.res  ~&  "Bad thread result"  !!
               %gather-document-success  `this
               %delta-document-success   `this
@@ -768,7 +771,7 @@
                 settingsfol
               =.  content.settingsfol  (apply:index content.settingsfol +.content.update.res)
               settingsfol
-            ~&  "--- Sunk Folder :) ---"  `this(f (~(put by f) id contentfol))
+            ~&  "--- Sunk Folder @ {<version.content.contentfol>} :) ---"  `this(f (~(put by f) id contentfol))
             ::
               %gather-space-success  `this
               %delta-space-success   `this
@@ -782,6 +785,7 @@
                   ships.spc  (apply:index ships.spc +.ships.update.res)
                 ==
               spc
+            ~&  "Take update? {<-.content.update.res>}"
             =/  contentspc
               ?.  -.content.update.res
                 settingsspc
@@ -789,7 +793,8 @@
               settingsspc
             =/  diff  (~(dif by content.content.contentspc) content.content.spc)
             =/  sstate  this(s (~(put by s) space.res contentspc))
-            ~&  "--- Sunk Space :) ---" 
+            ~&  "--- Sunk Space @ {<version.content.contentspc>} :) ---" 
+            ~&  content.contentspc
             :_  sstate
               %+  turn  ~(tap by diff)
               |=  item=[id [id @tas]]

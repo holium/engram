@@ -57,15 +57,17 @@ const actions: ActionTree<WorkspaceState, RootState> = {
 
   open({ commit, dispatch }, payload: string): Promise<DocumentContent> {
     return new Promise((resolve) => {
+      console.log("opening");
       (window as any).urbit.scry({ app: "engram", path: `/document/${payload}/get`}).then((response: any) => {
+        console.log("got urbit response");
         const content = {
           version: new Uint8Array(JSON.parse(response.version)),
           content: new Uint8Array(JSON.parse(response.content))
         }
         commit('open', content)
         resolve(content);
-        dispatch("settings/open", payload);
-        dispatch("revisions/open", payload);
+        //dispatch("settings/open", payload);
+        //dispatch("revisions/open", payload);
       });
     })
   },
