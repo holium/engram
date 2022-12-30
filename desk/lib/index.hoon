@@ -75,7 +75,7 @@
             :: insert (& implement) new delete
             =/  nstate
             =:  dels.state     (~(put by dels.state) item (~(got by dels.updt) item))
-                content.state  (~(del by content.state) item)
+                content.state  (~(del by content.state) (~(got by dels.updt) item))
                 version.state  (~(put by version.state) client idx)
               ==
             state

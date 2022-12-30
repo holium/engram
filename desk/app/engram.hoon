@@ -90,7 +90,7 @@
             ~&  [[id %document]]
             =/  idx  (find ~[[id %document]] (turn spclist |=(a=[[@p @u] [[@p @u] @tas]] +.a)))
             =/  todel  (snag (need idx) spclist)
-            =.  content.spc  (remove:index content.spc -.+.todel our.bowl)
+            =.  content.spc  (remove:index content.spc -.todel our.bowl)
             spc
           spc
         =/  sstate  nstate(s spcs)
@@ -100,7 +100,7 @@
             =/  fldrlist  ~(tap by content.content.fldr) 
             =/  idx  (find ~[[id %document]] (turn fldrlist |=(a=[[@p @u] [[@p @u] @tas]] +.a)))
             =/  todel  (snag (need idx) fldrlist)
-            =.  content.fldr  (remove:index content.fldr -.+.todel our.bowl)
+            =.  content.fldr  (remove:index content.fldr -.todel our.bowl)
             fldr
           fldr
         =/  fstate  sstate(f fldrs)
@@ -326,7 +326,7 @@
             =/  spclist  ~(tap by content.content.spc) 
             =/  idx  (find ~[[id %folder]] (turn spclist |=(a=[[@p @u] [[@p @u] @tas]] +.a)))
             =/  todel  (snag (need idx) spclist)
-            =.  content.spc  (remove:index content.spc -.+.todel our.bowl)
+            =.  content.spc  (remove:index content.spc -.todel our.bowl)
             spc
           spc
         =/  sstate  nstate(s spcs)
@@ -336,7 +336,7 @@
             =/  fldrlist  ~(tap by content.content.fldr) 
             =/  idx  (find ~[[id %folder]] (turn fldrlist |=(a=[[@p @u] [[@p @u] @tas]] +.a)))
             =/  todel  (snag (need idx) fldrlist)
-            =.  content.fldr  (remove:index content.fldr -.+.todel our.bowl)
+            =.  content.fldr  (remove:index content.fldr -.todel our.bowl)
             fldr
           fldr
         =/  fstate  sstate(f fldrs)
@@ -691,7 +691,7 @@
 ++  on-agent
   |=  [=wire =sign:agent:gall]
     ^-  (quip card _this)
-    ~&  "Request on wire: {<wire>} with mark {<-.sign>}"
+    ::~&  "Request on wire: {<wire>} with mark {<-.sign>}"
     ?+    -.wire  (on-agent:def wire sign)
         %engram
       ?+    -.sign  (on-agent:def wire sign)
@@ -701,7 +701,7 @@
         ((slog '%engram: Subscribe failed!' ~) `this)
       ::
           %kick
-        ~&  "Kicked from {<wire>} :("
+        ::~&  "Kicked from {<wire>} :("
         `this
         ::%-  (slog '%engram: Got kick, resubscribing...' ~)
         :::_  this
@@ -709,7 +709,7 @@
         ::==
       ::
           %fact
-        ~&  "Request to fact with marL {<p.cage.sign>}"
+        ::~&  "Request to fact with marL {<p.cage.sign>}"
         ?+    p.cage.sign  (on-agent:def wire sign)
             %noun
           `this
@@ -719,7 +719,7 @@
           `this
             %thread-done
           =/  res  !<(thread-res q.cage.sign)
-          ~&  "Thread Result: {<-.res>}"
+          ::~&  "Thread Result: {<-.res>}"
           ?+  -.res  ~&  "Bad thread result"  !!
               %gather-document-success  `this
               %delta-document-success   `this
@@ -771,7 +771,7 @@
                 settingsfol
               =.  content.settingsfol  (apply:index content.settingsfol +.content.update.res)
               settingsfol
-            ~&  "--- Sunk Folder :) ---"  `this(f (~(put by f) id contentfol))
+            ~&  "--- Sunk Folder @ {<version.content.contentfol>} :) ---"  `this(f (~(put by f) id contentfol))
             ::
               %gather-space-success  `this
               %delta-space-success   `this
@@ -785,6 +785,7 @@
                   ships.spc  (apply:index ships.spc +.ships.update.res)
                 ==
               spc
+            ~&  "Take update? {<-.content.update.res>}"
             =/  contentspc
               ?.  -.content.update.res
                 settingsspc
@@ -792,7 +793,8 @@
               settingsspc
             =/  diff  (~(dif by content.content.contentspc) content.content.spc)
             =/  sstate  this(s (~(put by s) space.res contentspc))
-            ~&  "--- Sunk Space :) ---" 
+            ~&  "--- Sunk Space @ {<version.content.contentspc>} :) ---" 
+            ~&  content.contentspc
             :_  sstate
               %+  turn  ~(tap by diff)
               |=  item=[id [id @tas]]
