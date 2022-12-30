@@ -2,13 +2,12 @@
   <div class="flex flex-row items-stretch">
     <div class="flex flex-col flex-grow relative" :class="{'loading-document': loading}">
       <Toolbar />
-      <div class="flex items-center justify-center flex-grow" v-if="loading">
-        loading
+      <div class="flex justify-center items-center flex-grow" v-if="loading">
+        <img class="loading-animation" src="@/assets/engram.svg" />
       </div>
       <div class="relative items-center scrollbar-small flex-grow" id="main" :class="{'no-cover': cover.src.length == 0}">
         <Cover :cover="cover" />
-        <div id="document" ref="document" >
-        </div>
+        <div id="document" ref="document"> </div>
       </div>
     </div>
     <DocumentDock :styling="styling" />
