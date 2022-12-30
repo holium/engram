@@ -3,6 +3,16 @@
   @apply text-body flex items-center p-4 gap-3
 }
 
+.loading-animation {
+  animation: 1.2s linear 1s infinite loading;
+}
+
+@keyframes loading {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
 /* UI */ 
 
 .heading-1 {

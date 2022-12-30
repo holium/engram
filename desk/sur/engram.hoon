@@ -111,8 +111,25 @@
       ==
     ==
   ==
-+$  update
-  $%  [%init id=id settings=dsettings updates=(set dupdate)]
-      [%update id=id update=dupdate]
++$  dthread-gather  [path=path peer=@p doc=document]
++$  dthread-delta   [path=path src=@p doc=document]
++$  dthread-sync    [path=path peer=@p settings=dsettings update=[name=@t roles=(update:index [@tas @tas]) ships=(update:index [@p @tas]) content=(set dupdate)]]
++$  fthread-gather  [path=path peer=@p fol=folder]
++$  fthread-delta   [path=path src=@p fol=folder version=version]
++$  fthread-sync    [path=path peer=@p fol=folder update=[name=@t roles=(update:index [@tas @tas]) ships=(update:index [@p @tas]) content=(update:index [id @tas])]]
++$  sthread-gather  [space=path peer=@p spc=space]
++$  sthread-delta   [space=path src=@p spc=space version=version]
++$  sthread-sync    [space=path peer=@p spc=space update=[roles=(update:index [@tas @tas]) ships=(update:index [@p @tas]) content=(update:index [id @tas])]]
++$  thread-res
+  $%  [%none ~]
+      [%gather-document-success ~]
+      [%delta-document-success ~]
+      [%sync-document-success path=path peer=@p update=[name=[$?(%.n %.y) @t] roles=[$?(%.n %.y) (update:index [@tas @tas])] ships=[$?(%.n %.y) (update:index [@p @tas])] content=[$?(%.n %.y) (list [id:index dupdate])]]]
+      [%gather-folder-success ~]
+      [%delta-folder-success ~]
+      [%sync-folder-success path=path peer=@p update=[name=[$?(%.n %.y) @t] roles=[$?(%.n %.y) (update:index [@tas @tas])] ships=[$?(%.n %.y) (update:index [@p @tas])] content=[$?(%.n %.y) (update:index [id @tas])]]]
+      [%gather-space-success ~]
+      [%delta-space-success ~]
+      [%sync-space-success space=path peer=@p update=[roles=[$?(%.n %.y) (update:index [@tas @tas])] ships=[$?(%.n %.y) (update:index [@p @tas])] content=[$?(%.n %.y) (update:index [id @tas])]]]
   ==
 --

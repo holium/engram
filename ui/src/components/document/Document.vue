@@ -1,11 +1,13 @@
 <template>
   <div class="flex flex-row items-stretch">
-    <div class="flex flex-col flex-grow relative">
+    <div class="flex flex-col flex-grow relative" :class="{'loading-document': loading}">
       <Toolbar />
+      <div class="flex justify-center items-center flex-grow" v-if="loading">
+        <img class="loading-animation" src="@/assets/engram.svg" />
+      </div>
       <div class="relative items-center scrollbar-small flex-grow" id="main" :class="{'no-cover': cover.src.length == 0}">
         <Cover :cover="cover" />
-        <div id="document" ref="document" >
-        </div>
+        <div id="document" ref="document"> </div>
       </div>
     </div>
     <DocumentDock :styling="styling" />
@@ -49,6 +51,7 @@ export default defineComponent({
   data() {
     return {
       loaded: null as null | Promise<DocumentContent>,
+      loading: false,
       cover: {
         pos: 0,
         src: "",
@@ -69,11 +72,14 @@ export default defineComponent({
   },
   created: function() {
     this.loaded = store.dispatch("workspace/open", `${this.$route.params.author}/${this.$route.params.clock}`);
+    this.loading = true;
   },
   beforeRouteUpdate: function(to) {
     this.loaded = store.dispatch("workspace/open", `${to.params.author}/${to.params.clock}`);
+    this.loading = true;
     this.loaded.then((res: any) => {
         render(this.$refs["document"] as any, res.content, (this as any).pushMenu, this.updateCover, this.updateStyling, null);
+        this.loading = false;
       })
   },
   mounted: function () {
@@ -82,6 +88,7 @@ export default defineComponent({
     else {
       this.loaded.then((res: any) => {
         render(this.$refs["document"] as any, res.content, (this as any).pushMenu, this.updateCover, this.updateStyling, null);
+        this.loading = false;
       })
     }
   },
