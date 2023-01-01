@@ -6,6 +6,7 @@ import space from "./space"
 import documents from './documents';
 import folders from "./folders";
 import workspace from "./workspace"
+import engram from '@/components/document/prosemirror/engramview'
 
 export const nullspace = {
   path: `/~${(window as any).ship}/our`, 
@@ -40,6 +41,12 @@ const actions: ActionTree<RootState, RootState> = {
       (window as any).urbit.scry({ app: "engram", path: `/space${router.currentRoute.value.query.spaceId}/list`}).then((response: any) => {
         if(Object.keys(response).length == 0) {
           (dispatch("documents/make", { name: "Untitled Document"}, { root: true}) as any).then((path: string) => {
+            (window as any).urbit.poke({ 
+              app: "engram", 
+              mark: "post", 
+              json: { 
+                "space": { "gatherall": { space: router.currentRoute.value.query.spaceId }}}
+            });
             (window as any).urbit.scry({ app: "engram", path: `/space${router.currentRoute.value.query.spaceId}/settings`}).then((res: any) => {
                 Object.keys(res.roles).forEach((role: string) => {
                   dispatch(`documents/addperm`, {

@@ -605,7 +605,7 @@
       %space
         ?-  -.+.act
         ::
-        :: Initialize a space index
+        :: Initialize a new space index
         ::
           %make
         ?>  =(src.bowl our.bowl)
@@ -654,7 +654,7 @@
         ::
           %gatherall
         ?>  =(src.bowl our.bowl)
-        ::~&  "GATHERALL-- items in {<space.act>}"
+        ~&  "GATHERALL-- items in {<space.act>}"
         ?.  (~(has by s) space.act)  ~&  "No space at this path"  `this
         =/  spc  (~(got by s) space.act)
         =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.act -.+.space.act ~.members ~.noun])
@@ -830,7 +830,6 @@
         ((slog '%engram: Subscribe failed!' ~) `this)
       ::
           %kick
-        ::~&  "Kicked from {<wire>} :("
         `this
         ::%-  (slog '%engram: Got kick, resubscribing...' ~)
         :::_  this
