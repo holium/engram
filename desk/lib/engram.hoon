@@ -139,15 +139,12 @@
     |%
     ++  list
       =,  enjs:format
-      |=  folds=folders:engram
+      |=  fold=folder:engram
       ^-  json
-      %-  pairs  %~  tap  in  
-      ^-  (set [@t json])
-      %-  ~(run in ~(key by folds))
-      |=  id=id:engram
-      =/  fold  (~(got by folds) id)
-      :-  (spat ~[(scot %p -.id) (scot %u +.id)])
-      (pairs ~[['name' (tape (trip name.fold))]])
+      %-  pairs  
+      %+  turn  ~(tap by content.content.fold)
+      |=  [key=id:index v=[id=id:index type=@tas]]
+      [(crip (stringify:index key)) (pairs ~[['id' (tape (stringify:index id.v))] ['type' (tape (trip type.v))]])]
     ++  settings
       =,  enjs:format
       |=  fol=folder:engram

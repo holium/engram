@@ -73,7 +73,9 @@
           oldspc
         =/  sstate  state(s (~(put by s) space.act newspc))
         =/  hstate  sstate(h (snoc h id))
-        `hstate(t (add t 1))
+        :_  hstate(t (add t 1))
+        :~  [%pass /space/updateall %agent [our.bowl %engram] %poke %post !>([%space %updateall space.act])]
+        ==
         ::
         ::
         ::
@@ -81,6 +83,7 @@
         ?>  =(src.bowl our.bowl)
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         ?>  (~(has by d) id)
+        =/  copy  (~(got by d) id)
         =/  nstate  this(d (~(del by d) id))
         =/  spcs
           %-  ~(run by s)  |=  spc=space
@@ -104,7 +107,9 @@
             fldr
           fldr
         =/  fstate  sstate(f fldrs)
-        `fstate
+        :_  fstate
+        :~  [%pass /space/updateall %agent [our.bowl %engram] %poke %post !>([%space %updateall space.settings.copy])]
+        ==
         ::
         :: modify a document by changing the stored document state
         ::
@@ -118,7 +123,9 @@
             version.old  version.act
           ==
         old
-        `this(d (~(put by d) id new))
+        :_  this(d (~(put by d) id new))
+        :~  [%pass /document/updateall %agent [our.bowl %engram] %poke %post !>([%document %updateall path.act])]
+        ==
         ::
         ::
         ::
@@ -146,7 +153,9 @@
         =/  new
         =.  name.settings.old  name.act
         old
-        `this(d (~(put by d) id new))
+        :_  this(d (~(put by d) id new))
+        :~  [%pass /document/updateall %agent [our.bowl %engram] %poke %post !>([%document %updateall path.act])]
+        ==
         ::
         :: Remove an update for the set of stored updates
         ::
@@ -170,7 +179,9 @@
           =.  roles.settings.todoc  (insert:index roles.settings.todoc [(slav %tas perm.act) level.act] our.bowl)
           todoc
         ==
-        `this(d (~(put by d) id ndoc))
+        :_  this(d (~(put by d) id ndoc))
+        :~  [%pass /document/updateall %agent [our.bowl %engram] %poke %post !>([%document %updateall path.act])]
+        ==
         ::
         :: Remove a permission rule
         ::
@@ -188,7 +199,9 @@
           =.  ships.settings.doc  (remove:index ships.settings.doc item our.bowl)
           doc
         ==
-        `this(d (~(put by d) id ndoc))
+        :_  this(d (~(put by d) id ndoc))
+        :~  [%pass /document/updateall %agent [our.bowl %engram] %poke %post !>([%document %updateall path.act])]
+        ==
         ::
         ::  A helper poke to gather updates from everyone who has access to a document
         ::
@@ -207,6 +220,32 @@
           %+  turn  (weld directpeers spacepeers)
             |=  peer=@p 
             [%pass /document/gather %agent [our.bowl %engram] %poke %post !>([%document %gather path.act peer])]
+        ==
+        ::
+        ::  A Helper to send update notifs to everyone with access to a document
+        ::
+          %updateall
+        ?>  =(src.bowl our.bowl)
+        ::~&  "GATHERALL-- {<path.act>}"
+        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  doc  (~(got by d) id)
+        ?:  =(space.settings.doc /null/space)  ~&  "Document does not belong to a space"  `this
+        =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.settings.doc -.+.space.settings.doc ~.members ~.noun])
+        ?+  -.spacemembers  !!
+            %members
+          =/  directpeers  %+  turn  ~(val by content.ships.settings.doc)  |=  a=[@p @tas]  -.a
+          =/  spacepeers  %~  tap  in  %~  key  by  ^-  members:membership  +.spacemembers
+          :_  this
+          %+  turn  (weld directpeers spacepeers)
+            |=  peer=@p 
+            [%pass /document/update %agent [peer %engram] %poke %post !>([%document %update path.act])]
+        ==
+        ::
+        ::  Poked when a remote update is availible
+        ::
+          %update
+        :_  this
+        :~  [%pass /document/gather %agent [our.bowl %engram] %poke %post !>([%document %gather path.act src.bowl])]
         ==
         ::
         ::  Gather updates to a document from a peer (pokes their %delta)
@@ -311,7 +350,9 @@
           oldspc
         =/  sstate  fstate(s (~(put by s) space.act newspc))
         =/  hstate  sstate(h (snoc h id))
-        `hstate(t (add t 1))
+        :_  hstate(t (add t 1))
+        :~  [%pass /space/updateall %agent [our.bowl %engram] %poke %post !>([%space %updateall space.act])]
+        ==
         ::
         :: delete an existing folder
         ::
@@ -319,6 +360,7 @@
         ?>  =(src.bowl our.bowl)
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         ?>  (~(has by f) id)
+        =/  copy  (~(got by f) id)
         =/  nstate  this(f (~(del by f) id))
         =/  spcs
           %-  ~(run by s)  |=  spc=space
@@ -340,7 +382,9 @@
             fldr
           fldr
         =/  fstate  sstate(f fldrs)
-        `fstate
+        :_  fstate
+        :~  [%pass /space/updateall %agent [our.bowl %engram] %poke %post !>([%space %updateall space.copy])]
+        ==
         ::
         :: add a document or folder to another folder
         ::
@@ -353,7 +397,9 @@
         =/  nfldr
         =.  content.tofldr  (insert:index content.tofldr [id type.act] our.bowl)
         tofldr
-        `this(f (~(put by f) to nfldr))
+        :_  this(f (~(put by f) to nfldr))
+        :~  [%pass /folder/updateall %agent [our.bowl %engram] %poke %post !>([%folder %updateall to.act])]
+        ==
         ::
         :: remove a document or folder from a folder
         ::
@@ -366,7 +412,9 @@
         =/  nfldr
         =.  content.fromfldr  (remove:index content.fromfldr id our.bowl)
         fromfldr
-        `this(f (~(put by f) from nfldr))
+        :_  this(f (~(put by f) from nfldr))
+        :~  [%pass /folder/updateall %agent [our.bowl %engram] %poke %post !>([%folder %updateall from.act])]
+        ==
         ::
         :: Add a permission to a document
         ::
@@ -383,7 +431,9 @@
           =.  roles.tofol  (insert:index roles.tofol [(slav %tas perm.act) level.act] our.bowl)
           tofol
         ==
-        `this(f (~(put by f) id nfol))
+        :_  this(f (~(put by f) id nfol))
+        :~  [%pass /folder/updateall %agent [our.bowl %engram] %poke %post !>([%folder %updateall path.act])]
+        ==
         ::
         :: Remove a permission rule
         ::
@@ -401,7 +451,9 @@
           =.  ships.fold  (remove:index ships.fold item our.bowl)
           fold
         ==
-        `this(f (~(put by f) id nfold))
+        :_  this(f (~(put by f) id nfold))
+        :~  [%pass /folder/updateall %agent [our.bowl %engram] %poke %post !>([%folder %updateall path.act])]
+        ==
         ::
         :: Rename a folder
         ::
@@ -418,7 +470,9 @@
         =/  new
         =.  name.old  name.act
         old
-        `this(f (~(put by f) id new))
+        :_  this(f (~(put by f) id new))
+        :~  [%pass /folder/updateall %agent [our.bowl %engram] %poke %post !>([%folder %updateall path.act])]
+        ==
         ::
         ::  Gather updated to a folder index from all peers in the space
         ::
@@ -436,6 +490,32 @@
           %+  turn  (weld directpeers spacepeers)
             |=  peer=@p
             [%pass /engram/folder/gather %agent [our.bowl %engram] %poke %post !>([%folder %gather path.act peer])]
+        ==
+        ::
+        ::  A Helper to send update notifs to everyone with access to a folder
+        ::
+          %updateall
+        ?>  =(src.bowl our.bowl)
+        ::~&  "GATHERALL-- {<path.act>}"
+        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  fol  (~(got by f) id)
+        ?:  =(space.fol /null/space)  ~&  "Folder does not belong to a space"  `this
+        =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.fol -.+.space.fol ~.members ~.noun])
+        ?+  -.spacemembers  !!
+            %members
+          =/  directpeers  %+  turn  ~(val by content.ships.fol)  |=  a=[@p @tas]  -.a
+          =/  spacepeers  %~  tap  in  %~  key  by  ^-  members:membership  +.spacemembers
+          :_  this
+          %+  turn  (weld directpeers spacepeers)
+            |=  peer=@p 
+            [%pass /folder/update %agent [peer %engram] %poke %post !>([%folder %update path.act])]
+        ==
+        ::
+        ::  Poked when a remote update is availible
+        ::
+          %update
+        :_  this
+        :~  [%pass /folder/gather %agent [our.bowl %engram] %poke %post !>([%folder %gather path.act src.bowl])]
         ==
         ::
         ::  Gather updates to a folder from a peer (pokes their %delta)
@@ -535,7 +615,10 @@
           =.  roles.tospc  (insert:index roles.tospc [(slav %tas perm.act) level.act] our.bowl)
           tospc
         ==
-        `this(s (~(put by s) space.act nspc))
+        :_  this(s (~(put by s) space.act nspc))
+        :~  [%pass /space/updateall %agent [our.bowl %engram] %poke %post !>([%space %updateall space.act])]
+        ==
+        
         ::
         :: Remove a permission rule
         ::
@@ -552,7 +635,9 @@
           =.  ships.spc  (remove:index ships.spc id our.bowl)
           spc
         ==
-        `this(s (~(put by s) space.act nspc))
+        :_  this(s (~(put by s) space.act nspc))
+        :~  [%pass /space/updateall %agent [our.bowl %engram] %poke %post !>([%space %updateall space.act])]
+        ==
         ::
         ::  Gather updated to a space index from all peers in the space
         ::
@@ -570,6 +655,31 @@
           %+  turn  (weld directpeers spacepeers)
             |=  peer=@p
             [%pass /engram/space/gather %agent [our.bowl %engram] %poke %post !>([%space %gather space.act peer])]
+        ==
+        ::
+        ::  A Helper to send update notifs to everyone with access to a space
+        ::
+          %updateall
+        ?>  =(src.bowl our.bowl)
+        ::~&  "UPDATEDALL-- {<spc.act>}"
+        ?.  (~(has by s) space.act)  ~&  "No space at this path"  `this
+        =/  spc  (~(got by s) space.act)
+        =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.act -.+.space.act ~.members ~.noun])
+        ?+  -.spacemembers  !!
+            %members
+          =/  directpeers  %+  turn  ~(val by content.ships.spc)  |=  a=[@p @tas]  -.a
+          =/  spacepeers  %~  tap  in  %~  key  by  ^-  members:membership  +.spacemembers
+          :_  this
+          %+  turn  (weld directpeers spacepeers)
+            |=  peer=@p 
+            [%pass /space/update %agent [peer %engram] %poke %post !>([%space %update space.act])]
+        ==
+        ::
+        ::  Poked when a remote update is availible
+        ::
+          %update
+        :_  this
+        :~  [%pass /space/gather %agent [our.bowl %engram] %poke %post !>([%space %gather space.act src.bowl])]
         ==
         ::
         ::  Gather updates to a space from a peer (pokes their %delta)
@@ -618,7 +728,13 @@
         ==
     ==
 ==
-++  on-watch  on-watch:def
+++  on-watch
+  |=  p=path
+  ^-  (quip card _this)
+  ~&  "Watching: {<p>}"
+  ?+  p  (on-watch:def p)
+    [%updates ~]  `this
+  ==
 ++  on-leave  on-leave:def
 ++  on-peek
   |=  p=path
@@ -671,15 +787,17 @@
       ``noun+!>((updates:document:enjs:engram updts))
     ``noun+!>((updates:document:enjs:engram ^*((set dupdate))))
   ::
-      [%x %folder %list ~]
+      [%x %folder @ @ %list ~]
     ?>  =(src.bowl our.bowl)
-    ``noun+!>((list:folder:enjs:engram f))
+    =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
+    =/  fold  (~(got by f) id)
+    ``noun+!>((list:folder:enjs:engram fold))
   ::
       [%x %folder @ @ %get ~]
     ?>  =(src.bowl our.bowl)
     =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
     =/  fold  (~(got by f) id)
-    ``noun+!>((list:space:enjs:engram [d f content.content.fold]))
+    ``noun+!>((list:folder:enjs:engram fold))
   ::
       [%x %folder @ @ %get %settings ~]
     ?>  =(src.bowl our.bowl)
@@ -744,7 +862,10 @@
             ?.  -.content.update.res
               ~&  "--- Sunk Document :) ---"  `dstate
               ::  Update Changes
-            ~&  "--- Sunk Document :) ---"  `dstate(u (~(gas ju u) +.content.update.res))
+            ~&  "--- Sunk Document :) ---"  
+            :_  dstate(u (~(gas ju u) +.content.update.res))
+            :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['type' (tape:enjs:format "document")] ['id' (path:enjs:format path.res)]]))]
+            ==
             ::
               %gather-folder-success  `this
               %delta-folder-success   `this
@@ -771,7 +892,10 @@
                 settingsfol
               =.  content.settingsfol  (apply:index content.settingsfol +.content.update.res)
               settingsfol
-            ~&  "--- Sunk Folder @ {<version.content.contentfol>} :) ---"  `this(f (~(put by f) id contentfol))
+            ~&  "--- Sunk Folder @ {<version.content.contentfol>} :) ---"  
+            :_  this(f (~(put by f) id contentfol))
+            :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['type' (tape:enjs:format "folder")] ['id' (path:enjs:format path.res)]]))]
+            ==
             ::
               %gather-space-success  `this
               %delta-space-success   `this
@@ -796,12 +920,15 @@
             ~&  "--- Sunk Space @ {<version.content.contentspc>} :) ---" 
             ~&  content.contentspc
             :_  sstate
-              %+  turn  ~(tap by diff)
-              |=  item=[id [id @tas]]
-              ?+  +.+.item  !!
-                %document  [%pass /document/request %agent [our.bowl %engram] %poke %post !>([%document %request `path`[(scot %p -.-.+.item) (scot %ud +.-.+.item) ~] -.-.+.item])]
-                %folder    [%pass /folder/request %agent [our.bowl %engram] %poke %post !>([%folder %request `path`[(scot %p -.-.+.item) (scot %ud +.-.+.item) ~] -.-.item])]
-              ==
+              %+  snoc  
+                %+  turn  ~(tap by diff)
+                |=  item=[id [id @tas]]
+                ^-  card
+                ?+  +.+.item  !!
+                  %document  [%pass /document/request %agent [our.bowl %engram] %poke %post !>([%document %request `path`[(scot %p -.-.+.item) (scot %ud +.-.+.item) ~] -.-.+.item])]
+                  %folder    [%pass /folder/request %agent [our.bowl %engram] %poke %post !>([%folder %request `path`[(scot %p -.-.+.item) (scot %ud +.-.+.item) ~] -.-.item])]
+                ==
+              ^-  card  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['type' (tape:enjs:format "space")] ['id' (path:enjs:format space.res)]]))]
           ==
             %update
           =/  msg  !<  tape  q.cage.sign

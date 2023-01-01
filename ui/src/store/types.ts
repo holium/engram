@@ -26,7 +26,7 @@ export interface SpaceState {
 // File Management -------------------------------------------------------------
 
 export interface DocumentState {
-  [key: string]: Document
+  [key: string]: DocumentMeta
 }
 
 export interface ItemMeta {
@@ -34,12 +34,6 @@ export interface ItemMeta {
   name: string;
   owner: string;
   content?: { [key: string]: {id: string, type: string} }
-}
-
-export interface Document {
-  id: string;
-  name: string;
-  owner: Patp;
 }
 
 export interface DocumentContent {
