@@ -34,6 +34,7 @@ const getters: GetterTree<RootState, RootState> = {
 const actions: ActionTree<RootState, RootState> = {
   load({ dispatch, state }): Promise<void> {
     return new Promise((resolve) => {
+      let delay = 1;
       dispatch("workspace/close", {}, { root: true });
       dispatch("space/load", router.currentRoute.value.query.spaceId, { root: true });
       (window as any).urbit.scry({ app: "engram", path: `/space${router.currentRoute.value.query.spaceId}/list`}).then((response: any) => {
@@ -109,6 +110,13 @@ const actions: ActionTree<RootState, RootState> = {
           })
           resolve();
         })
+      }).catch((err: any) => {
+        console.warn("caught error: ", err);
+        setTimeout(() => {
+          delay = delay * 2;
+          if(delay < 10) delay = 10;
+          dispatch("load");
+        }, delay);
       })
     })
   }

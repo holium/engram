@@ -64,22 +64,6 @@ export default defineComponent({
       store.dispatch("load", to as string).then(() => {
         this.loading = false;
       })
-      if(to != "/null/space") {
-        (window as any).urbit.poke({ 
-          app: "engram", 
-          mark: "post",
-          json: {
-            space: {
-              gatherall: {
-                space: to
-              }
-            }
-          }
-        })
-        setTimeout(() => {
-          store.dispatch("load", to as string);
-      }, 2000);
-      }
     },
     toggleNav: function() {
       this.nav = !this.nav;

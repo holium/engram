@@ -32,7 +32,18 @@
   ^-  (quip card _this)
   =/  old  !<(versioned-state old-state)
   ?-  -.old
-    %0  `this(state old)
+    %0  :_  this(state old)
+        %+  weld
+          %+  weld  
+            %+  turn  ~(tap in ~(key by s.old))
+            |=  space=path
+            [%pass /space/gatherall %agent [our.bowl %engram] %poke %post !>([%space %gatherall space])]
+          %+  turn  ~(tap in ~(key by f.old))
+          |=  fol=id
+          [%pass /folder/gatherall %agent [our.bowl %engram] %poke %post !>([%folder %gatherall /(scot %p -.fol)/(scot %ud +.fol)])]
+        %+  turn  ~(tap in ~(key by d.old))
+        |=  doc=id
+        [%pass /document/gatherall %agent [our.bowl %engram] %poke %post !>([%document %gatherall /(scot %p -.doc)/(scot %ud +.doc)])]
   ==
 ::
 ++  on-poke
@@ -262,8 +273,8 @@
         =/  start-args  [~ `tid byk.bowl(r da+now.bowl) %gather-document !>([path.act peer.act doc])]
         :_  this
         :~
-          [%pass /engram/gather/document/[(cat 2 (scot %p +.id) (scot %ud -.id))]/[(scot %p peer.act)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
-          [%pass /engram/gather/document/[(cat 2 (scot %p +.id) (scot %ud -.id))]/[(scot %p peer.act)]/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
+          [%pass /engram/gather/document/[(cat 2 (scot %p -.id) (scot %ud +.id))]/[(scot %p peer.act)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
+          [%pass /engram/gather/document/[(cat 2 (scot %p -.id) (scot %ud +.id))]/[(scot %p peer.act)]/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
         ==
         ::
         ::  Assemble and reply with updates (pokes their sync)
@@ -278,8 +289,8 @@
         =/  start-args  [~ `tid byk.bowl(r da+now.bowl) %delta-document !>([path.act src.bowl doc])]
         :_  this
         :~
-          [%pass /engram/delta/document/[(cat 2 (scot %p +.id) (scot %ud -.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
-          [%pass /engram/delta/document/[(cat 2 (scot %p +.id) (scot %ud -.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
+          [%pass /engram/delta/document/[(cat 2 (scot %p -.id) (scot %ud +.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
+          [%pass /engram/delta/document/[(cat 2 (scot %p -.id) (scot %ud +.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
         ==
         ::
         ::  Sync updates with current document
@@ -293,8 +304,8 @@
         =/  start-args  [~ `tid byk.bowl(r da+now.bowl) %sync-document !>([path.act src.bowl settings.doc update.act])]
         :_  this
         :~  
-          [%pass /engram/sync/document/[(cat 2 (scot %p +.id) (scot %ud -.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
-          [%pass /engram/sync/document/[(cat 2 (scot %p +.id) (scot %ud -.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
+          [%pass /engram/sync/document/[(cat 2 (scot %p -.id) (scot %ud +.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
+          [%pass /engram/sync/document/[(cat 2 (scot %p -.id) (scot %ud +.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
         ==
         ::
         :: Request a document you don't have
@@ -532,8 +543,8 @@
         =/  start-args  [~ `tid byk.bowl(r da+now.bowl) %gather-folder !>([path.act peer.act fol])]
         :_  this
         :~
-          [%pass /engram/gather/folder/[(cat 2 (scot %p +.id) (scot %ud -.id))]/[(scot %p peer.act)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
-          [%pass /engram/gather/folder/[(cat 2 (scot %p +.id) (scot %ud -.id))]/[(scot %p peer.act)]/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
+          [%pass /engram/gather/folder/[(cat 2 (scot %p -.id) (scot %ud +.id))]/[(scot %p peer.act)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
+          [%pass /engram/gather/folder/[(cat 2 (scot %p -.id) (scot %ud +.id))]/[(scot %p peer.act)]/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
         ==
         ::
         ::  Assemble and reply with updates (pokes their sync)
@@ -548,8 +559,8 @@
         =/  start-args  [~ `tid byk.bowl(r da+now.bowl) %delta-folder !>([path.act src.bowl fol version.act])]
         :_  this
         :~
-          [%pass /engram/delta/folder/[(cat 2 (scot %p +.id) (scot %ud -.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
-          [%pass /engram/delta/folder/[(cat 2 (scot %p +.id) (scot %ud -.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
+          [%pass /engram/delta/folder/[(cat 2 (scot %p -.id) (scot %ud +.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
+          [%pass /engram/delta/folder/[(cat 2 (scot %p -.id) (scot %ud +.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
         ==
         ::
         ::  Sync updates with current folder
@@ -563,8 +574,8 @@
         =/  start-args  [~ `tid byk.bowl(r da+now.bowl) %sync-folder !>([path.act src.bowl fol update.act])]
         :_  this
         :~  
-          [%pass /engram/sync/folder/[(cat 2 (scot %p +.id) (scot %ud -.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
-          [%pass /engram/sync/folder/[(cat 2 (scot %p +.id) (scot %ud -.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
+          [%pass /engram/sync/folder/[(cat 2 (scot %p -.id) (scot %ud +.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
+          [%pass /engram/sync/folder/[(cat 2 (scot %p -.id) (scot %ud +.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
         ==
         ::
         :: Request a folder you don't have
