@@ -91,7 +91,7 @@ export default defineComponent({
         console.log("loadded");
         render(this.$refs["document"] as any, res.content, (this as any).pushMenu, this.updateCover, this.updateStyling, null);
         this.loading = false;
-        (window as any).urbit.poke({ 
+        (window as any).urbit.poke({
           app: "engram", 
           mark: "post",
           json: {

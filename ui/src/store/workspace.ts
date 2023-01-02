@@ -64,7 +64,7 @@ const actions: ActionTree<WorkspaceState, RootState> = {
           version: new Uint8Array(JSON.parse(response.version)),
           content: new Uint8Array(JSON.parse(response.content))
         }
-        commit('open', content)
+        commit('open', content);
         resolve(content);
         //dispatch("settings/open", payload);
         //dispatch("revisions/open", payload);

@@ -25,6 +25,9 @@ import comments from "./comments";
 
 
 export let view: EditorView;
+export let pushUpdate = (update: DocumentUpdate) => {
+  //
+} 
 
 export default function (
   place: HTMLElement,
@@ -44,20 +47,24 @@ export default function (
   if(snapshot == null) {
     const type = doc.getXmlFragment("prosemirror");
     store.getters["documents/updates"](`/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`).then((updates: Array<DocumentUpdate>) => {
-      updates.forEach((update: DocumentUpdate) => {
-        Y.applyUpdate(doc, update.content);
-        const snapshot = Y.snapshot(doc);
-        store.dispatch("workspace/revisions/snap", {
-          id: `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`,
-          author: update.author,
-          snapshot: snapshot
-        });
-        store.dispatch("workspace/reveisions/accept", {
-          id: `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`,
-          update: update,
-        })
-      })
-  
+      console.log("updates: ", updates);
+      pushUpdate = (update: DocumentUpdate) => {
+        if(update.content.length > 0) {
+          Y.applyUpdate(doc, update.content);
+          const snapshot = Y.snapshot(doc);
+          store.dispatch("workspace/revisions/snap", {
+            id: `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`,
+            author: update.author,
+            snapshot: snapshot
+          });
+          store.dispatch("workspace/reveisions/accept", {
+            id: `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`,
+            update: update,
+          })
+        }
+      }
+      updates.forEach(pushUpdate);
+
       if(updates.length > 0) {
         const version = Y.encodeStateVector(doc);
         const content = Y.encodeStateAsUpdate(doc);

@@ -38,7 +38,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import store from "@/store/index"
-import type { Space, Document } from "@/store/types"
+import type { Space } from "@/store/types"
 export default defineComponent({
   name: "Toolbar",
   inject: ["toggleNav", "toggleDock"],

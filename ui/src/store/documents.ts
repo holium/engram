@@ -1,17 +1,15 @@
 import type {
   RootState,
   DocumentState,
-  Document,
   DocumentMeta,
   DocumentVersion,
   ItemMeta,
   DocumentUpdate,
 } from "./types"
 import type { Module, GetterTree, MutationTree, ActionTree } from "vuex"
-import type { Snapshot } from "yjs"
 import * as Y from "yjs"
 import router from "@/router/index";
-import { version } from "vue"
+import { pushUpdate } from "@/components/document/prosemirror/render";
 
 const state: DocumentState = {
 
@@ -31,7 +29,7 @@ const getters: GetterTree<DocumentState, RootState> = {
       owner: state[id].owner,
     }
   },
-  document: (state) => (id: string): Document => {
+  document: (state) => (id: string): DocumentMeta => {
     return state[id];
   },
   updates: (state) => (id: string): Promise<Array<DocumentUpdate>> => {
@@ -61,7 +59,7 @@ const mutations: MutationTree<DocumentState> = {
       delete state[key];
     })
   },
-  load(state, payload: Document) {
+  load(state, payload: DocumentMeta) {
     state[payload.id] = payload;
   },
   delete(state, payload: string) {
@@ -241,12 +239,24 @@ const actions: ActionTree<DocumentState, RootState> = {
     })
   },
 
-  softupdate({ commit }, payload: {
-     id: string, 
-     name: string, 
-     perms: Array<{id: string, perm: string, level: string, type: string}>,
-    }) {
-      // update document data
+  getupdate({ commit, dispatch, getters }, payload: string) {
+    (window as any).urbit.scry({
+      app: "engram",
+      path: `/document${payload}/get/settings`
+    }).then((res: any) => {
+      commit("load", {
+        id: payload,
+        name: res.name,
+        owner: res.owner
+      });
+    })
+    if(payload == `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`) {
+      getters["updates"](payload).then((updates: Array<DocumentUpdate>) => {
+        updates.forEach((update: DocumentUpdate) => {
+          pushUpdate(update);
+        })
+      })
+    }
   }
 }
 

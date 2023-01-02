@@ -6,6 +6,7 @@ import space from "./space"
 import documents from './documents';
 import folders from "./folders";
 import workspace from "./workspace"
+import engram from '@/components/document/prosemirror/engramview'
 
 export const nullspace = {
   path: `/~${(window as any).ship}/our`, 
@@ -32,13 +33,20 @@ const getters: GetterTree<RootState, RootState> = {
 }
 
 const actions: ActionTree<RootState, RootState> = {
-  load({ dispatch }, payload: string): Promise<void> {
+  load({ dispatch, state }): Promise<void> {
     return new Promise((resolve) => {
+      let delay = 1;
       dispatch("workspace/close", {}, { root: true });
       dispatch("space/load", router.currentRoute.value.query.spaceId, { root: true });
       (window as any).urbit.scry({ app: "engram", path: `/space${router.currentRoute.value.query.spaceId}/list`}).then((response: any) => {
         if(Object.keys(response).length == 0) {
           (dispatch("documents/make", { name: "Untitled Document"}, { root: true}) as any).then((path: string) => {
+            (window as any).urbit.poke({ 
+              app: "engram", 
+              mark: "post", 
+              json: { 
+                "space": { "gatherall": { space: router.currentRoute.value.query.spaceId }}}
+            });
             (window as any).urbit.scry({ app: "engram", path: `/space${router.currentRoute.value.query.spaceId}/settings`}).then((res: any) => {
                 Object.keys(res.roles).forEach((role: string) => {
                   dispatch(`documents/addperm`, {
@@ -87,8 +95,35 @@ const actions: ActionTree<RootState, RootState> = {
             })
           ]
         ).then(() => {
+          (window as any).urbit.subscribe({
+            app: "engram",
+            path: "/updates",
+            event: (event: any) => {
+              console.log("received event: ", event);
+              if(event.type == "document") {
+                if(state.documents[event.id]) {
+                  dispatch("documents/getupdate", event.id, { root: true });
+                }
+              } else if(event.type == "folder") {
+                if(state.folders[event.id]) {
+                  dispatch("folders/getupdate", event.id, { root: true });
+                }
+              } else if(event.type == "space") {
+                if(event.id == router.currentRoute.value.query.spaceId) {
+                  dispatch("load");
+                }
+              }
+            }
+          })
           resolve();
         })
+      }).catch((err: any) => {
+        console.warn("caught error: ", err);
+        setTimeout(() => {
+          delay = delay * 2;
+          if(delay < 10) delay = 10;
+          dispatch("load");
+        }, delay);
       })
     })
   }

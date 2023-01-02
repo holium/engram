@@ -346,14 +346,26 @@ const actions: ActionTree<FolderState, RootState> = {
     })
   },
 
-  softupdate({ commit }, payload: {
-    id: string, 
-    name: string, 
-    perms: Array<{id: string, perm: string, level: string, type: string}>,
-    content: { [key:string]: { id: string, type: string } }
-   }) {
-     // update document data
- }
+  getupdate({ commit }, payload: string) {
+    (window as any).urbit.scry({
+      app: "engram",
+      path: `/folder${payload}/get/settings`
+    }).then((res: any) => {
+      console.log("get settings res: ", res);
+      (window as any).urbit.scry({
+        app: "engram",
+        path: `/folder${payload}/list`
+      }).then((content: any) => {
+        console.log("get res: ", content);
+        commit("load", {
+          id: payload,
+          name: res.name,
+          owner: res.owner,
+          content: content,
+        });
+      });
+    })
+  }
 }
 
 export default {
