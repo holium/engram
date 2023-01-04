@@ -33,20 +33,17 @@ export const highlightmenu = (pushMenu: (menu: HighlightMenu | null) => void) =>
                     prev.doc.eq(state.doc) &&
                     prev.selection.eq(state.selection)
                 ) {
-                    console.log("closing menu 1");
-                    //if(on) pushMenu(null); on = false;
-                    //return;
+                    if(on) pushMenu(null); on = false;
+                    return;
                 }
     
                 if (state.selection.empty) {
-                    console.log("closing menu 2");
-                    //if(on) pushMenu(null); on = false;
-                    //return;
+                    if(on) pushMenu(null); on = false;
+                    return;
                 }
     
                 if ((state.selection as any).node) {
-                    console.log("closing menu 3");
-                    //if(on) pushMenu(null); on = false;
+                    if(on) pushMenu(null); on = false;
                     return;
                 }
     
