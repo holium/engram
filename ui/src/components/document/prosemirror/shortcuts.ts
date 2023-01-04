@@ -75,7 +75,7 @@ const strikeRule = markInputRule(
 );
 
 const codeRule = markInputRule(
-  /(?:^|\s)`(?<content>[^`]+)`$/,
+  /^`(?<content>[^`]+)`$/,
   schema.marks["code"],
   null
 );

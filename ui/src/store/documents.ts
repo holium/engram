@@ -239,7 +239,7 @@ const actions: ActionTree<DocumentState, RootState> = {
     })
   },
 
-  getupdate({ commit, dispatch, getters }, payload: string) {
+  getupdate({ commit, getters }, payload: string) {
     (window as any).urbit.scry({
       app: "engram",
       path: `/document${payload}/get/settings`
