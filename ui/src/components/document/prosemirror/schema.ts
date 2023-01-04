@@ -406,6 +406,7 @@ const schema = new Schema({
     code: {
       attrs: { id: { default: null } },
       code: true,
+      inclusive: false,
       parseDOM: [
         {
           tag: "code",
