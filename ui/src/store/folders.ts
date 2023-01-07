@@ -223,8 +223,11 @@ const actions: ActionTree<FolderState, RootState> = {
       }
     })
   },
-  softremove({ commit }, payload: { from: string, index: string}): Promise<void> {
+  softremove({ commit, state }, payload: { from: string, index: string}): Promise<void> {
     return new Promise((resolve, reject) => {
+      console.log("soft removing: ", payload);
+      console.log("from: ", state[payload.from]);
+      console.log("content: ", state[payload.from].content);
       commit("remove", payload);
       resolve();
     });
