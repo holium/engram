@@ -17,6 +17,7 @@
         <SystemItem 
             :parent="'.'" 
             :item="items[i].id" 
+            :index="i"
             :type="'folder'" 
             :key="i" 
             v-for="i in Object.keys(items).filter((i: string) => items[i].type == 'folder')"
