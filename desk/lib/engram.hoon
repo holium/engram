@@ -53,20 +53,28 @@
       =,  enjs:format
       |=  [docs=documents:engram fols=folders:engram items=(map id:index [id:index @tas])]
       ^-  json
-      %-  pairs  %~  val  by  
-      ^-  (map id:index [@t json])
-      %-  ~(run by items)
+      %-  pairs
+      %+  turn  
+        %+  skim  ~(val by items)  
+        |=  [id=id:index type=@tas]
+        ?+  type  %.n
+          %document  (~(has by docs) id)
+          %folder    (~(has by fols) id)
+        ==
       |=  [id=id:index type=@tas]
-      ?:  =(type %document)
+      ?+  type  !!
+          %document
         =/  doc  (~(got by docs) id)
         :-  (spat ~[(scot %p -.id) (scot %u +.id)])
         (pairs ~[['type' (tape "document")] ['name' (tape (trip name.settings.doc))] ['owner' (tape (scow %p owner.settings.doc))]])
-      =/  fol  (~(got by fols) id)
-      =/  folcont  %-  ~(rut by content.content.fol)  
-        |=  [key=id:index v=[id=id:index type=@tas]]  
-        [(spat ~[(scot %p -.key) (scot %u +.key)]) (pairs ~[['id' (path ~[(scot %p -.id.v) (scot %u +.id.v)])] ['type' (tape (trip type.v))]])]
-      :-  (spat ~[(scot %p -.id) (scot %u +.id)])
-      (pairs ~[['type' (tape "folder")] ['name' (tape (trip name.fol))] ['owner' (tape (scow %p owner.fol))] ['content' (pairs ~(val by folcont))]])
+          %folder
+        =/  fol  (~(got by fols) id)
+        =/  folcont  %-  ~(rut by content.content.fol)  
+          |=  [key=id:index v=[id=id:index type=@tas]]  
+          [(spat ~[(scot %p -.key) (scot %u +.key)]) (pairs ~[['id' (path ~[(scot %p -.id.v) (scot %u +.id.v)])] ['type' (tape (trip type.v))]])]
+        :-  (spat ~[(scot %p -.id) (scot %u +.id)])
+        (pairs ~[['type' (tape "folder")] ['name' (tape (trip name.fol))] ['owner' (tape (scow %p owner.fol))] ['content' (pairs ~(val by folcont))]])
+      ==
     ++  settings
       =,  enjs:format  
       |=  spc=space:engram

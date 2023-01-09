@@ -330,7 +330,9 @@
         ::
           %populate
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
-        `this(d (~(put by d) id doc.act))
+        :_  this(d (~(put by d) id doc.act))
+        :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['type' (tape:enjs:format "document")] ['id' (path:enjs:format path.act)]]))]
+        ==
       ==
       %folder
         ?-  -.+.act
@@ -600,7 +602,9 @@
         ::
           %populate
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
-        `this(f (~(put by f) id fold.act))
+        :_  this(f (~(put by f) id fold.act))
+        :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['type' (tape:enjs:format "folder")] ['id' (path:enjs:format path.act)]]))]
+        ==
       ==
       %space
         ?-  -.+.act
