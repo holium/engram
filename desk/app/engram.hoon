@@ -51,6 +51,13 @@
   ^-  (quip card _this)
     =/  act  !<(action vase)
     ?-   -.act
+      ::
+      ::  Leave the update subscription
+      ::
+      %leave
+        :_  this
+        :~  [%give %kick ~[/updates] `src.bowl]
+        ==
       %document
         ?-  -.+.act
         ::
@@ -331,13 +338,13 @@
           %populate
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         :_  this(d (~(put by d) id doc.act))
-        :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['type' (tape:enjs:format "document")] ['id' (path:enjs:format path.act)]]))]
+        :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['type' (tape:enjs:format "space")] ['id' (path:enjs:format space.settings.doc.act)]]))]
         ==
       ==
       %folder
         ?-  -.+.act
         ::
-        :: create a new folder
+        :: Create a new folder
         ::
           %make
         ?>  =(src.bowl our.bowl)
@@ -603,7 +610,7 @@
           %populate
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         :_  this(f (~(put by f) id fold.act))
-        :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['type' (tape:enjs:format "folder")] ['id' (path:enjs:format path.act)]]))]
+        :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['type' (tape:enjs:format "space")] ['id' (path:enjs:format space.fold.act)]]))]
         ==
       ==
       %space
@@ -923,7 +930,7 @@
                   ships.spc  (apply:index ships.spc +.ships.update.res)
                 ==
               spc
-            ~&  "Take update? {<-.content.update.res>}"
+            ::~&  "Take update? {<-.content.update.res>}"
             =/  contentspc
               ?.  -.content.update.res
                 settingsspc
@@ -931,8 +938,8 @@
               settingsspc
             =/  diff  (~(dif by content.content.contentspc) content.content.spc)
             =/  sstate  this(s (~(put by s) space.res contentspc))
-            ~&  "--- Sunk Space @ {<version.content.contentspc>} :) ---" 
-            ~&  content.contentspc
+            ~&  "--- Sunk Space :) ---" 
+            ::~&  content.contentspc
             :_  sstate
               %+  snoc  
                 %+  turn  ~(tap by diff)
