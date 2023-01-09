@@ -65,6 +65,7 @@
 ::
 +$  action
   $% 
+    [%leave self=@p]
     $:  %document
       $%  [%make owner=@p name=@t space=path version=dversion content=dcontent roles=(map @tas @tas) ships=(map @p @tas)]
           [%delete path=path]

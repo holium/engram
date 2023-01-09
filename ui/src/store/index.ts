@@ -95,27 +95,33 @@ const actions: ActionTree<RootState, RootState> = {
             })
           ]
         ).then(() => {
-          (window as any).urbit.subscribe({
+          (window as any).urbit.poke({
             app: "engram",
-            path: "/updates",
-            event: (event: any) => {
-              console.log("received event: ", event);
-              if(event.type == "document") {
-                if(state.documents[event.id]) {
-                  dispatch("documents/getupdate", event.id, { root: true });
-                }
-              } else if(event.type == "folder") {
-                if(state.folders[event.id]) {
-                  dispatch("folders/getupdate", event.id, { root: true });
-                }
-              } else if(event.type == "space") {
-                if(event.id == router.currentRoute.value.query.spaceId) {
-                  dispatch("load");
+            mark: "post",
+            json: { leave: { self: `~${(window as any).ship}` } }
+          }).then(() => {
+            (window as any).urbit.subscribe({
+              app: "engram",
+              path: "/updates",
+              event: (event: any) => {
+                console.log("received event: ", event);
+                if(event.type == "document") {
+                  if(state.documents[event.id]) {
+                    dispatch("documents/getupdate", event.id, { root: true });
+                  }
+                } else if(event.type == "folder") {
+                  if(state.folders[event.id]) {
+                    dispatch("folders/getupdate", event.id, { root: true });
+                  }
+                } else if(event.type == "space") {
+                  if(event.id == router.currentRoute.value.query.spaceId) {
+                    dispatch("load");
+                  }
                 }
               }
-            }
+            })
+            resolve();
           })
-          resolve();
         })
       }).catch((err: any) => {
         console.warn("caught error: ", err);
