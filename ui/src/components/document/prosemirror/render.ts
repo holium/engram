@@ -22,6 +22,7 @@ import slashmenu from "./slashmenu";
 import highlightmenu from "./highlightmenu"
 import engram from "./engramview";
 import comments from "./comments";
+import imageview from "./imageview";
 
 
 export let view: EditorView;
@@ -82,6 +83,7 @@ export default function (
       plugins: [
         keymap,
         shortcuts,
+        imageview,
         save((view) => {
           const version = Y.encodeStateVector(doc);
           const content = Y.encodeStateAsUpdate(doc);

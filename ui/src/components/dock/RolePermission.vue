@@ -7,7 +7,7 @@
             v-model="lvl"
             :editable="editable"
             @change="handleLevel"
-            class="whitespace-nowrap text-azimuth px-3 py-2 clickable" 
+            class="whitespace-nowrap text-azimuth px-3 py-2 clickable rounded-1" 
         >
             <option value="editor">editor</option>
             <option value="viewer">viewer</option>

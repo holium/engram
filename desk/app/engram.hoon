@@ -274,6 +274,11 @@
           `this
         ::~&  "GATHER-- {<path.act>} from: {<peer.act>}"
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        ?.  (~(has by d) id)
+          :: If we do not have this document request it
+          :_  this
+          :~  [%pass /document/request %agent [our.bowl %engram] %poke %post !>([%document %request path.act peer.act])]
+          ==
         =/  doc  (~(got by d) id)
         =/  tid  `@ta`(cat 4 (cat 2 'document-sync-' (scot %p +.id)) (cat 2 (scot %ud -.id) (scot %uv (sham eny.bowl))))
         =/  ta-now  `@ta`(scot %da now.bowl)
@@ -546,6 +551,11 @@
           `this
         ::~&  "GATHER-- {<path.act>} from: {<peer.act>}"
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        ?.  (~(has by f) id)
+          :: If we do not have this folder request it
+          :_  this
+          :~  [%pass /folder/request %agent [our.bowl %engram] %poke %post !>([%folder %request path.act peer.act])]
+          ==
         =/  fol  (~(got by f) id)
         =/  tid  `@ta`(cat 4 (cat 2 'folder-sync-' (scot %p +.id)) (cat 2 (scot %ud -.id) (scot %uv (sham eny.bowl))))
         =/  ta-now  `@ta`(scot %da now.bowl)

@@ -28,12 +28,14 @@
 ++  apply
   |*  [state=(index) updt=(update)]
   ^+  state
-  =/  ldels  ~(tap in ~(key by (~(dif by dels.updt) dels.state)))
+  ~&  "Aplying update: {<updt>}"
+  =/  ldels  ~(val by (~(dif by dels.updt) dels.state))
+  ~&  ldels
   =/  deleted  (silt (weld ~(val by dels.state) ldels))
   =/  lcont  
       %+  skim  ~(tap in (~(dif in ~(key by content.updt)) ~(key by content.state)))
       |=  key=id  !(~(has in deleted) key)
-  =/  lcomplete  (weld ldels lcont)
+  =/  lcomplete  (weld ~(tap in ~(key by (~(dif by dels.updt) dels.state))) lcont)
   =/  clients  %-  %~  rut  by  %-  molt
       %+  turn  lcomplete  |=  item=id  [-.item %.y]
     |=  [peer=@p =%.y]
@@ -55,7 +57,8 @@
         =/  idx  ?:  (~(has by version.state) client)  
           (add (~(got by version.state) client) 1)
         0
-        ?:  =(idx +.item)
+        ~&  "Examining item: {<item>} @ idx {<idx>}"
+        ?:  ?&(=(idx +.item) !(~(has in deleted) [client idx]))
           :: insert
           ?:  (~(has by content.updt) item)
             :: insert new content
@@ -83,7 +86,8 @@
               state  nstate
               items  (snip items)
             ==
-          !!  :: should never get here; this means an item (from the update) can't be found in the update
+          ~&  "Can't find: {<item>} in:"  
+          ~&  dels.updt  !!  :: should never get here; this means an item (from the update) can't be found in the update
         ?:  (~(has in deleted) [client idx])
           :: update the version but DONT snip
           =/  nstate
@@ -94,6 +98,8 @@
             state  nstate
             items  items
           ==
+        ~&  "Missing: [{<client>} {<idx>}] from:"
+        ~&  deleted  
         !! :: This time has not been deleted, nor does it exist in the update 
       clients  (~(del by clients) client)
     ==

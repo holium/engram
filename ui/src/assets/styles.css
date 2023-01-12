@@ -32,6 +32,7 @@
 
 .clickable {
   @apply cursor-pointer;
+  background-color: #00000000;
   transition: background-color 80ms ease;
 }
 
