@@ -631,7 +631,12 @@
         ::
           %make
         ?>  =(src.bowl our.bowl)
-        =/  spc  ^*  space
+        =/  initspc  ^*  space
+        =/  spc
+        ?:  =(our.bowl (slav %p -.space.act))
+          =.  roles.initspc  (insert:index roles.initspc ^-([@tas @tas] [%member %editor]) our.bowl)
+          initspc
+        initspc
         `this(s (~(put by s) space.act spc))
         ::
         :: Add a permission to a document
