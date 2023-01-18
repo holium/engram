@@ -6,7 +6,6 @@ import space from "./space"
 import documents from './documents';
 import folders from "./folders";
 import workspace from "./workspace"
-import engram from '@/components/document/prosemirror/engramview'
 
 export const nullspace = {
   path: `/~${(window as any).ship}/our`, 
