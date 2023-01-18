@@ -4,6 +4,14 @@
 /+  engram
 /+  index
 /+  default-agent, dbug, agentio
+:: Notes on how to do access control
+:: Updates are sent to the entire space plus ships
+:: When added via ship there's no way to find it EXCEPT through search or link
+:: -> first search requests if not exists
+:: -> in the front end will need to hide the space when viewing a document added via-ship
+:: -> removing or changing a ship MUST PUSH TO THAT SHIP so they know to hide themselves
+:: When hidden in a space (you are in the space but do not have permission)
+:: -> documents are hidden in the front end
 |%
 +$  versioned-state
   $%  state-0

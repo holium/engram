@@ -70,7 +70,17 @@
         ?.  (~(has by docs) id)
           (pairs ~[['type' (tape "document")] ['name' (tape "Missing Document")] ['owner' (tape "Missing Document")]])
         =/  doc  (~(got by docs) id)
-        (pairs ~[['type' (tape "document")] ['name' (tape (trip name.settings.doc))] ['owner' (tape (scow %p owner.settings.doc))]])
+        %-  pairs 
+          :~  ['type' (tape "document")] 
+              ['name' (tape (trip name.settings.doc))] 
+              ['owner' (tape (scow %p owner.settings.doc))]
+              :-  'roles'  %-  pairs  %+  turn  ~(tap by content.roles.spc)
+                |=  [id=id:index [role=@tas level=@tas]]
+                [(crip (stringify:index id)) (pairs ~[['perm' (tape (trip role))] ['level' (tape (trip level))]])]
+              :-  'ships'  %-  pairs  %+  turn  ~(tap by content.ships.spc)
+                |=  [id=id:index [ship=@p level=@tas]]
+                [(crip (stringify:index id)) (pairs ~[['perm' (tape (trip (scot %p ship)))] ['level' (tape (trip level))]])]
+          ==
           %folder
         :-  (spat ~[(scot %p -.id) (scot %u +.id)])
         ?.  (~(has by fols) id)
@@ -79,7 +89,18 @@
         =/  folcont  %-  ~(rut by content.content.fol)  
           |=  [key=id:index v=[id=id:index type=@tas]]  
           [(spat ~[(scot %p -.key) (scot %u +.key)]) (pairs ~[['id' (path ~[(scot %p -.id.v) (scot %u +.id.v)])] ['type' (tape (trip type.v))]])]
-        (pairs ~[['type' (tape "folder")] ['name' (tape (trip name.fol))] ['owner' (tape (scow %p owner.fol))] ['content' (pairs ~(val by folcont))]])
+        %-  pairs 
+          :~  ['type' (tape "folder")] 
+              ['name' (tape (trip name.fol))] 
+              ['owner' (tape (scow %p owner.fol))] 
+              :-  'roles'  %-  pairs  %+  turn  ~(tap by content.roles.spc)
+                |=  [id=id:index [role=@tas level=@tas]]
+                [(crip (stringify:index id)) (pairs ~[['perm' (tape (trip role))] ['level' (tape (trip level))]])]
+              :-  'ships'  %-  pairs  %+  turn  ~(tap by content.ships.spc)
+                |=  [id=id:index [ship=@p level=@tas]]
+                [(crip (stringify:index id)) (pairs ~[['perm' (tape (trip (scot %p ship)))] ['level' (tape (trip level))]])]
+              ['content' (pairs ~(val by folcont))]
+          ==
       ==
     ++  settings
       =,  enjs:format  
