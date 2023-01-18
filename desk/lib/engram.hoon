@@ -66,15 +66,19 @@
       |=  [id=id:index type=@tas]
       ?+  type  !!
           %document
-        =/  doc  (~(got by docs) id)
         :-  (spat ~[(scot %p -.id) (scot %u +.id)])
+        ?.  (~(has by docs) id)
+          (pairs ~[['type' (tape "document")] ['name' (tape "Missing Document")] ['owner' (tape "Missing Document")]])
+        =/  doc  (~(got by docs) id)
         (pairs ~[['type' (tape "document")] ['name' (tape (trip name.settings.doc))] ['owner' (tape (scow %p owner.settings.doc))]])
           %folder
+        :-  (spat ~[(scot %p -.id) (scot %u +.id)])
+        ?.  (~(has by fols) id)
+          (pairs ~[['type' (tape "folder")] ['name' (tape "Missing Folder")] ['owner' (tape "Missing Folder")] ['content' (pairs [~])]])
         =/  fol  (~(got by fols) id)
         =/  folcont  %-  ~(rut by content.content.fol)  
           |=  [key=id:index v=[id=id:index type=@tas]]  
           [(spat ~[(scot %p -.key) (scot %u +.key)]) (pairs ~[['id' (path ~[(scot %p -.id.v) (scot %u +.id.v)])] ['type' (tape (trip type.v))]])]
-        :-  (spat ~[(scot %p -.id) (scot %u +.id)])
         (pairs ~[['type' (tape "folder")] ['name' (tape (trip name.fol))] ['owner' (tape (scow %p owner.fol))] ['content' (pairs ~(val by folcont))]])
       ==
     ++  settings

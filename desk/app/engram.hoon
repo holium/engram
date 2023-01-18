@@ -632,7 +632,6 @@
           %make
         ?>  =(src.bowl our.bowl)
         =/  spc  ^*  space
-        ~&  "Making space"
         `this(s (~(put by s) space.act spc))
         ::
         :: Add a permission to a document

@@ -59,73 +59,65 @@ const actions: ActionTree<RootState, RootState> = {
                 resolve();
               })
             })
-<<<<<<< Updated upstream
-          ]
-        ).then(() => {
+          });
+        } else {
           (window as any).urbit.poke({
             app: "engram",
             mark: "post",
             json: { leave: { self: `~${(window as any).ship}` } }
           }).then(() => {
-=======
-          })
-        } else {
-          dispatch("folders/clear", {}, { root: true });
-          dispatch("documents/clear", {}, { root: true });
-          Promise.all(
-            [
-              ...Object.keys(response).map((item: any) => {
-                return new Promise<void>((res) => {
-                  if(response[item].type == "document") {
-                    dispatch("documents/load", {id: item, ...response[item]}, { root: true }).then(() => {
+            dispatch("folders/clear", {}, { root: true });
+            dispatch("documents/clear", {}, { root: true });
+            Promise.all(
+              [
+                ...Object.keys(response).map((item: any) => {
+                  return new Promise<void>((res) => {
+                    if(response[item].type == "document") {
+                      dispatch("documents/load", {id: item, ...response[item]}, { root: true }).then(() => {
+                        res();
+                      })
+                    } else {
                       res();
-                    })
-                  } else {
-                    res();
-                  }
+                    }
+                  })
+                }),
+                ...Object.keys(response).map((item: any) => {
+                  return new Promise<void>((res) => {
+                    if(response[item].type == "folder") {
+                      dispatch("folders/load", {id: item, ...response[item]}, { root: true }).then(() => {
+                        res()
+                      })
+                    } else {
+                      res();
+                    }
+                  })
                 })
-              }),
-              ...Object.keys(response).map((item: any) => {
-                return new Promise<void>((res) => {
-                  if(response[item].type == "folder") {
-                    dispatch("folders/load", {id: item, ...response[item]}, { root: true }).then(() => {
-                      res()
-                    })
-                  } else {
-                    res();
-                  }
-                })
-              })
-            ]
-          ).then(() => {
->>>>>>> Stashed changes
-            (window as any).urbit.subscribe({
-              app: "engram",
-              path: "/updates",
-              event: (event: any) => {
-                console.log("received event: ", event);
-                if(event.type == "document") {
-                  if(state.documents[event.id]) {
-                    dispatch("documents/getupdate", event.id, { root: true });
-                  }
-                } else if(event.type == "folder") {
-                  if(state.folders[event.id]) {
-                    dispatch("folders/getupdate", event.id, { root: true });
-                  }
-                } else if(event.type == "space") {
-                  if(event.id == router.currentRoute.value.query.spaceId) {
-                    dispatch("load");
+              ]
+            ).then(() => {
+              (window as any).urbit.subscribe({
+                app: "engram",
+                path: "/updates",
+                event: (event: any) => {
+                  console.log("received event: ", event);
+                  if(event.type == "document") {
+                    if(state.documents[event.id]) {
+                      dispatch("documents/getupdate", event.id, { root: true });
+                    }
+                  } else if(event.type == "folder") {
+                    if(state.folders[event.id]) {
+                      dispatch("folders/getupdate", event.id, { root: true });
+                    }
+                  } else if(event.type == "space") {
+                    if(event.id == router.currentRoute.value.query.spaceId) {
+                      dispatch("load");
+                    }
                   }
                 }
-              }
+              })
+              resolve();
             })
-            resolve();
-          })
-<<<<<<< Updated upstream
-        })
-=======
+          });
         }
->>>>>>> Stashed changes
       }).catch((err: any) => {
         console.warn("caught error: ", err);
         setTimeout(() => {
