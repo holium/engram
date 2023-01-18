@@ -73,10 +73,32 @@ export default defineComponent({
   created: function() {
     this.loaded = store.dispatch("workspace/open", `${this.$route.params.author}/${this.$route.params.clock}`);
     this.loading = true;
+    /*
+    const sid = (window as any).urbit.subscribe({
+      app: "engram",
+      path: `/preview/${this.$route.params.author}/${this.$route.params.clock}`,
+      ship: (this.$route.params.author as string).substr(1),
+      event: (event: any) => {
+        console.log("preview res: ", event);
+        (window as any).urbit.unsubscribe(sid);
+      }
+    })
+    */
   },
   beforeRouteUpdate: function(to) {
     this.loaded = store.dispatch("workspace/open", `${to.params.author}/${to.params.clock}`);
     this.loading = true;
+    /*
+    const sid = (window as any).urbit.subscribe({
+      app: "engram",
+      path: `/preview/${to.params.author}/${to.params.clock}`,
+      ship: (to.params.author as string).substr(1),
+      event: (event: any) => {
+        console.log("preview res: ", event);
+        (window as any).urbit.unsubscribe(sid);
+      }
+    })
+    */
     this.loaded.then((res: any) => {
         render(this.$refs["document"] as any, res.content, (this as any).pushMenu, this.updateCover, this.updateStyling, null);
         this.loading = false;

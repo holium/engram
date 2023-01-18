@@ -17,7 +17,6 @@
 :: fldr: contents of a folder, either a document index or a folder index
 ::
 ::  Sharing Types
-::+$  access  $%(%read %write %admin)
 ::
 ::  Organisms
 ::  Documents

@@ -66,8 +66,8 @@ const actions: ActionTree<WorkspaceState, RootState> = {
         }
         commit('open', content);
         resolve(content);
-        //dispatch("settings/open", payload);
-        //dispatch("revisions/open", payload);
+        dispatch("settings/open", payload);
+        dispatch("revisions/open", payload);
       });
     })
   },

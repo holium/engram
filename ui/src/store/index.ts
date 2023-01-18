@@ -6,7 +6,6 @@ import space from "./space"
 import documents from './documents';
 import folders from "./folders";
 import workspace from "./workspace"
-import engram from '@/components/document/prosemirror/engramview'
 
 export const nullspace = {
   path: `/~${(window as any).ship}/our`, 
@@ -39,90 +38,85 @@ const actions: ActionTree<RootState, RootState> = {
       dispatch("workspace/close", {}, { root: true });
       dispatch("space/load", router.currentRoute.value.query.spaceId, { root: true });
       (window as any).urbit.scry({ app: "engram", path: `/space${router.currentRoute.value.query.spaceId}/list`}).then((response: any) => {
-        if(Object.keys(response).length == 0) {
-          (dispatch("documents/make", { name: "Untitled Document"}, { root: true}) as any).then((path: string) => {
-            (window as any).urbit.poke({ 
-              app: "engram", 
-              mark: "post", 
-              json: { 
-                "space": { "gatherall": { space: router.currentRoute.value.query.spaceId }}}
-            });
-            (window as any).urbit.scry({ app: "engram", path: `/space${router.currentRoute.value.query.spaceId}/settings`}).then((res: any) => {
-                Object.keys(res.roles).forEach((role: string) => {
-                  dispatch(`documents/addperm`, {
-                    id: path,
-                    type: "roles",
-                    perm: res.roles[role].perm,
-                    level: res.roles[role].level
-                  }, { root: true})
-                });
-                Object.keys(res.ships).forEach((ship: string) => {
-                  dispatch(`documents/findremoveperm`, {
-                    id: path,
-                    type: "ships",
-                    perm: res.ships[ship].perm,
-                    level: res.ships[ship].level
-                  }, { root: true})
-                });
-            });
-          });
-        }
-        dispatch("folders/clear", {}, { root: true });
-        dispatch("documents/clear", {}, { root: true });
-        Promise.all(
-          [
-            ...Object.keys(response).map((item: any) => {
-              return new Promise<void>((res) => {
-                if(response[item].type == "document") {
-                  dispatch("documents/load", {id: item, ...response[item]}, { root: true }).then(() => {
-                    res();
-                  })
-                } else {
-                  res();
-                }
-              })
-            }),
-            ...Object.keys(response).map((item: any) => {
-              return new Promise<void>((res) => {
-                if(response[item].type == "folder") {
-                  dispatch("folders/load", {id: item, ...response[item]}, { root: true }).then(() => {
-                    res()
-                  })
-                } else {
-                  res();
-                }
+        if(response == "Missing Space") {
+          console.log("making space...");
+          (window as any).urbit.poke({
+            app: "engram",
+            mark: "post",
+            json: {
+              space: { "make": { "space": router.currentRoute.value.query.spaceId }}
+            }
+          }).then(() => {
+            (window as any).urbit.poke({
+              app: "engram",
+              mark: "post",
+              json: {
+                space: { "gatherall": { "space": router.currentRoute.value.query.spaceId }}
+              }
+            }).then(() => {
+              dispatch("load").then(() => {
+                resolve();
               })
             })
-          ]
-        ).then(() => {
+          });
+        } else {
           (window as any).urbit.poke({
             app: "engram",
             mark: "post",
             json: { leave: { self: `~${(window as any).ship}` } }
           }).then(() => {
-            (window as any).urbit.subscribe({
-              app: "engram",
-              path: "/updates",
-              event: (event: any) => {
-                console.log("received event: ", event);
-                if(event.type == "document") {
-                  if(state.documents[event.id]) {
-                    dispatch("documents/getupdate", event.id, { root: true });
-                  }
-                } else if(event.type == "folder") {
-                  if(state.folders[event.id]) {
-                    dispatch("folders/getupdate", event.id, { root: true });
-                  }
-                } else if(event.type == "space") {
-                  if(event.id == router.currentRoute.value.query.spaceId) {
-                    dispatch("load");
+            dispatch("folders/clear", {}, { root: true });
+            dispatch("documents/clear", {}, { root: true });
+            Promise.all(
+              [
+                ...Object.keys(response).map((item: any) => {
+                  return new Promise<void>((res) => {
+                    if(response[item].type == "document") {
+                      dispatch("documents/load", {id: item, ...response[item]}, { root: true }).then(() => {
+                        res();
+                      })
+                    } else {
+                      res();
+                    }
+                  })
+                }),
+                ...Object.keys(response).map((item: any) => {
+                  return new Promise<void>((res) => {
+                    if(response[item].type == "folder") {
+                      dispatch("folders/load", {id: item, ...response[item]}, { root: true }).then(() => {
+                        res()
+                      })
+                    } else {
+                      res();
+                    }
+                  })
+                })
+              ]
+            ).then(() => {
+              (window as any).urbit.subscribe({
+                app: "engram",
+                path: "/updates",
+                event: (event: any) => {
+                  console.log("received event: ", event);
+                  if(event.type == "document") {
+                    if(state.documents[event.id]) {
+                      dispatch("documents/getupdate", event.id, { root: true });
+                    }
+                  } else if(event.type == "folder") {
+                    if(state.folders[event.id]) {
+                      dispatch("folders/getupdate", event.id, { root: true });
+                    }
+                  } else if(event.type == "space") {
+                    if(event.id == router.currentRoute.value.query.spaceId) {
+                      dispatch("load");
+                    }
                   }
                 }
-              }
+              })
+              resolve();
             })
-            resolve();
-          })
-        })
+          });
+        }
       }).catch((err: any) => {
         console.warn("caught error: ", err);
         setTimeout(() => {

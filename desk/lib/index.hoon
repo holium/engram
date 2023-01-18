@@ -54,7 +54,7 @@
         ?:  =((lent items) 0)
           state
         =/  item  (rear items)
-        =/  idx  ?:  (~(has by version.state) client)  
+        =/  idx  ?:  (~(has by version.state) client)
           (add (~(got by version.state) client) 1)
         0
         ~&  "Examining item: {<item>} @ idx {<idx>}"

@@ -61,6 +61,7 @@ export default defineComponent({
                         store.dispatch("documents/make", { name: "Untitled Document" }).then((path: string) => {
                             (window as any).urbit.scry({ app: "engram", path: `/space${this.$route.query.spaceId}/settings`}).then((res: any) => {
                                 Object.keys(res.roles).forEach((role: string) => {
+                                    console.log("adding role");
                                     store.dispatch(`documents/addperm`, {
                                     id: path,
                                     type: "roles",
