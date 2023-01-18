@@ -83,6 +83,7 @@
         =/  oldspc
         ?:  (~(has by s) space.act)
           (~(got by s) space.act)
+        ~&  "Initializing space"
         =/  initspc  ^*  space
         =.  roles.initspc  (insert:index roles.initspc ^-([@tas @tas] [%member %editor]) our.bowl)
         initspc
@@ -631,6 +632,7 @@
           %make
         ?>  =(src.bowl our.bowl)
         =/  spc  ^*  space
+        ~&  "Making space"
         `this(s (~(put by s) space.act spc))
         ::
         :: Add a permission to a document
@@ -675,7 +677,7 @@
         ::
           %gatherall
         ?>  =(src.bowl our.bowl)
-        ~&  "GATHERALL-- items in {<space.act>}"
+        ::~&  "GATHERALL-- items in {<space.act>}"
         ?.  (~(has by s) space.act)  ~&  "No space at this path"  `this
         =/  spc  (~(got by s) space.act)
         =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.act -.+.space.act ~.members ~.noun])
@@ -758,7 +760,7 @@
           [%pass /engram/sync/space/[(cat 2 (scot %p -.+.space.act) (scot %ud -.space.act))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
           [%pass /engram/sync/space/[(cat 2 (scot %p -.+.space.act) (scot %ud -.space.act))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
         ==
-    ==
+      ==
 ==
 ++  on-watch
   |=  p=path
@@ -766,6 +768,13 @@
   ~&  "Watching: {<p>}"
   ?+  p  (on-watch:def p)
     [%updates ~]  `this
+    [%preview @ @ ~]  
+    =/  id=id  [`@p`(slav %p i.t.p) `@u`(slav %ud i.t.t.p)]
+    =/  doc  (~(got by d) id)
+    ~&  "Previewing: {<id>}"
+    :_  this
+    :~  [%give %fact ~ %json !>((get:document:enjs:engram doc))]
+    ==
   ==
 ++  on-leave  on-leave:def
 ++  on-peek
@@ -783,7 +792,7 @@
       =/  spc  (~(got by s) ~[i.t.t.p i.t.t.t.p])
       ``noun+!>((list:space:enjs:engram [d f content.content.spc]))
     ~&  "No space of path: {<`path`~[i.t.t.p i.t.t.t.p]>}"
-    ``noun+!>((list:space:enjs:engram [d f ^*((map id [id @tas]))]))
+    ``noun+!>((tape:enjs:format "Missing Space"))
     ::
       [%x %space @ @ %settings ~]
     ?:  (~(has by s) ~[i.t.t.p i.t.t.t.p])
@@ -796,6 +805,8 @@
       [%x %document @ @ %get ~]
     ?>  =(src.bowl our.bowl)
     =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
+    ?.  (~(has by d) id)
+      ``noun+!>((tape:enjs:format "missing document"))
     =/  doc  (~(got by d) id)
     ``noun+!>((get:document:enjs:engram doc))
   ::
@@ -841,10 +852,9 @@
 ++  on-agent
   |=  [=wire =sign:agent:gall]
     ^-  (quip card _this)
-    ::~&  "Request on wire: {<wire>} with mark {<-.sign>}"
     ?+    -.wire  (on-agent:def wire sign)
         %engram
-      ?+    -.sign  (on-agent:def wire sign)
+      ?+    -.sign  ~&  "Request on wire: {<wire>} with sign {<-.sign>}"  (on-agent:def wire sign)
           %watch-ack
         ?~  p.sign
           ((slog '%engram: Subscribe succeeded!' ~) `this)
@@ -852,10 +862,6 @@
       ::
           %kick
         `this
-        ::%-  (slog '%engram: Got kick, resubscribing...' ~)
-        :::_  this
-        :::~  [%pass `(list @ta)`[(wood 'engram') (wood (crip "{<our.bowl>}")) (wood (crip "{<src.bowl>}")) ~] %agent [src.bowl %engram] %watch /updates]
-        ::==
       ::
           %fact
         ::~&  "Request to fact with marL {<p.cage.sign>}"
@@ -969,5 +975,8 @@
     ==
   ==
 ++  on-arvo   on-arvo:def
-++  on-fail   on-fail:def
+++  on-fail   
+  |=  [=term =tang]
+  ~&  "Fail with term {<term>}"
+  (on-fail:def term tang)
 --
