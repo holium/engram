@@ -37,6 +37,7 @@ export default function (
   updateCover: (cover: CoverUpdate) => void,
   updateStyling: (styling: StylingUpdate) => void,
   snapshot: null | DocumentVersion,
+  editable: boolean,
 ): EditorView {
   if(view) view.destroy();
   const doc = new Y.Doc();
@@ -133,5 +134,6 @@ export default function (
   view = new EditorView(place, {
     state,
   });
+  if(!editable) view.editable = false;
   return view;
 }

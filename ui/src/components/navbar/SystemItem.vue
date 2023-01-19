@@ -51,7 +51,7 @@
             :index="i"
             :type="(meta as any).content[i].type" 
             :key="i" 
-            v-for="i in expand ? Object.keys(meta.content == null ? {} : meta.content) : []"
+            v-for="i in expand ? Object.keys(meta.content == null ? {} : meta.content).filter((i: string) => canView(i, (meta.content as any)[i].type)) : []"
         />
     </div>
     
@@ -104,6 +104,17 @@ export default defineComponent({
         open: function() {
             if(this.type == "folder") this.expand = !this.expand;
             else this.$router.push(`/apps/engram${this.item}?spaceId=${this.$route.query.spaceId}`); 
+        },
+        canView: function(id: string, type: string): boolean {
+            const item = store.getters[`${type}s/meta`](id);
+            const roles = store.getters['space/roles'];
+            const perms = Object.keys(item.roles).map((key: string) => item.roles[key].perm)
+            console.log(roles);
+            console.log(perms);
+
+            return typeof item.ships[(window as any).ship] != 'undefined' || roles.reduce((a: string, acc: boolean) => {
+                return acc || perms.includes(a);
+            }, false)
         },
         openMenu: function(event: MouseEvent) {
             event.preventDefault();
