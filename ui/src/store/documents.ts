@@ -31,10 +31,13 @@ const getters: GetterTree<DocumentState, RootState> = {
       ships: state[id].ships,
     }
   },
-  roles: (state) => (id: string): { [key: string]: string } => {
+  owner: (state) => (id: string): string => {
+    return state[id].owner;
+  },
+  roles: (state) => (id: string): { [key: string]: { perm: string, level: string } } => {
     return state[id].roles;
   },
-  ships: (state) => (id: string): { [key: string]: string } => {
+  ships: (state) => (id: string): { [key: string]: { perm: string, level: string } } => {
     return state[id].ships;
   },
   document: (state) => (id: string): DocumentMeta => {

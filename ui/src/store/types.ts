@@ -34,8 +34,8 @@ export interface ItemMeta {
   name: string;
   owner: string;
   content?: { [key: string]: {id: string, type: string} }
-  roles: { [key: string]: string },
-  ships: { [key: string]: string }
+  roles: { [key: string]: { perm: string, level: string } },
+  ships: { [key: string]: { perm: string, level: string } }
 }
 
 export interface DocumentContent {
@@ -47,8 +47,8 @@ export interface DocumentMeta {
   id: string,
   name: string,
   owner: Patp,
-  roles: { [key: string]: string },
-  ships: { [key: string]: string }
+  roles: { [key: string]: { perm: string, level: string } },
+  ships: { [key: string]: { perm: string, level: string } }
 }
 
 export interface FolderState {
@@ -65,8 +65,8 @@ export interface Folder {
   name: string,
   owner: string,
   content: { [key:string]: { id: string, type: string } },
-  roles: { [key: string]: string },
-  ships: { [key: string]: string }
+  roles: { [key: string]: { perm: string, level: string } },
+  ships: { [key: string]: { perm: string, level: string } }
 }
 
 // Workspace ------------------------------------------------------------------

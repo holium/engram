@@ -130,7 +130,7 @@ export default function (
   }
   
 
-  
+  console.log("editable: ", editable);
   view = new EditorView(place, {
     editable: () => { return editable },
     state,

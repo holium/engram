@@ -5,7 +5,7 @@
         </div>
         <select 
             v-model="lvl"
-            :editable="editable"
+            :disabled="!editable"
             @change="handleLevel"
             class="whitespace-nowrap text-azimuth px-3 py-2 clickable rounded-1" 
         >

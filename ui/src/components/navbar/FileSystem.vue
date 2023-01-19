@@ -20,6 +20,7 @@
             :index="i"
             :type="'folder'" 
             :key="i" 
+            :editable="canEdit"
             v-for="i in Object.keys(items).filter((i: string) => items[i].type == 'folder' && canView(i, items[i].type))"
         />
         <SystemItem 
@@ -28,6 +29,7 @@
             :index="i"
             :type="'document'" 
             :key="i" 
+            :editable="canEdit"
             v-for="i in Object.keys(items).filter((i: string) => items[i].type == 'document' && canView(i, items[i].type))"
         />
     </div>
@@ -45,12 +47,54 @@ export default defineComponent({
         SystemItem,
     },
     inject: ["pushMenu"],
+    data() {
+        return {
+            ships: {} as any,
+            roles: {} as any,
+        }
+    },
+    created: function() {
+        this.loadSettings(); 
+    },
+    watch: {
+        spaceId: function() {
+            this.loadSettings(); 
+            console.log(this.canEdit);
+        },
+    },
     computed: {
         items: function(): { [key: string]: { id: string, type: string }} {
             return store.getters['folders/root'];
         },
+        spaceId: function(): string {
+            return this.$route.params.spaceId as string;
+        },
+        canEdit: function(): boolean {
+            const myroles = store.getters['space/roles'];
+            const owner = store.getters['space/owner'];
+
+            const perms = Object.keys(this.roles).map((key: string) => {
+                return myroles.includes(this.roles[key].perm) ? (this.roles[key].level == "admin" || this.roles[key].level == "editor") : false;
+            })
+            Object.keys(this.ships).forEach((key: string) => {
+                perms.push(this.ships[key].perm == `~${(window as any).ship}` ? (this.ships[key].level == "admin" || this.ships[key].level == "editor") : false);
+            })
+            
+            console.log("perms: ", perms);
+
+            return `~${(window as any).ship}` == owner || perms.reduce((a: boolean, acc: boolean) => {
+                return acc || a;
+            }, false);
+      }
     },
     methods: {
+        loadSettings: function() {
+            (window as any).urbit.scry({ app: "engram", path: `/space${this.$route.query.spaceId}/settings`}).then((res: any) => {
+                console.log("loading settings: ", res);
+                this.roles = res.roles;
+                this.ships = res.ships;
+            });
+        },
         openMenu: function(event: MouseEvent) {
             event.preventDefault();
             (this as any).pushMenu(new Menu({ top: event.clientY, left: event.clientX}, [
@@ -110,19 +154,27 @@ export default defineComponent({
             ]))
         },
         handleDrop: function(event: DragEvent) {
-            event.preventDefault();
-            event.stopPropagation();
-            const raw = event.dataTransfer?.getData("text/plain");
+            console.log("can drop? ", this.canEdit);
+            if(this.canEdit) {
+                event.preventDefault();
+                //event.stopPropagation();
+                const raw = event.dataTransfer?.getData("text/plain");
                 if(raw) {
                     const data = JSON.parse(raw);
+                    console.log("dropping: ", data);
                     if(data.from != ".") {
                         store.dispatch("folders/remove", { index: data.index, from: data.from });
                         store.dispatch("folders/add", { item: { id: data.item.id, type: data.item.type, index: data.item.id }, to: "." });
                     }
                 }
+            }
+            
         }, 
         handleDragOver: function(event: DragEvent) {
-            event.preventDefault();
+            console.log("can dragover? ", this.canEdit);
+            if(this.canEdit) {
+                event.preventDefault();
+            }
         },
         canView: function(id: string, type: string): boolean {
             const item = store.getters[`${type}s/meta`](id);
@@ -130,7 +182,7 @@ export default defineComponent({
             const perms = Object.keys(item.roles).map((key: string) => item.roles[key].perm);
             const ships = Object.keys(item.ships).map((key: string) => item.ships[key].perm);
 
-            return ships.reduce((a: string, acc: boolean) => {
+            return `~${(window as any).ship}` == item.owner || ships.reduce((a: string, acc: boolean) => {
                 return a == `~${(window as any).ship}`;
             }, false) || roles.reduce((a: string, acc: boolean) => {
                 return acc || perms.includes(a);

@@ -26,18 +26,16 @@
         @level="(event: string) => { handleLevel(item, event, 'roles') }"
       />
     </div>
-    <div class="input">
+    <div class="input" v-if="isAdmin">
       <input 
         @keydown="addPermission"
         type="text" 
-        :editable="isAdmin"
         placeholder="add role or ship"
         v-model="newPermission"
         class="whitespace-nowrap overflow-hidden overflow-ellipsis realm-cursor-text-cursor text-azimuth" 
       >
       <select 
         v-model="newPermissionLevel"
-        :editable="isAdmin"
         class="whitespace-nowrap overflow-hidden overflow-ellipsis text-azimuth" 
       >
         <option value="editor">editor</option>
@@ -75,12 +73,20 @@ export default defineComponent({
       return store.getters['documents/roles'](`/${this.$route.params.author}/${this.$route.params.clock}`);
     },
     isAdmin: function(): boolean {
-      return store.getters['space/owner'] == `~${(window as any).ship}`
-      || store.getters['documents/meta'](`/${this.$route.params.author}/${this.$route.params.clock}`).owner == `~${(window as any).ship}`
-      || store.getters['space/roles'].reduce((role: string, acc: boolean) => {
-        return acc || Object.keys(this.roles).find(role => this.roles[role].perm == role && this.roles[role].level == 'admin');
-      }, false)
-      || Object.keys(this.ships).find(ship => this.ships[ship].perm == `~${(window as any).ship}` && this.ships[ship].level == 'admin');
+      const myroles = store.getters['space/roles'];
+      const owner = store.getters['documents/owner'](`/${this.$route.params.author}/${this.$route.params.clock}`);
+      const ships = store.getters['documents/ships'](`/${this.$route.params.author}/${this.$route.params.clock}`);
+      const roles = store.getters['documents/roles'](`/${this.$route.params.author}/${this.$route.params.clock}`);
+      const perms = Object.keys(roles).map((key: string) => {
+        return myroles.includes(roles[key].perm) ? (roles[key].level == "admin") : false;
+      })
+      Object.keys(ships).forEach((key: string) => {
+        perms.push(ships[key].perm == `~${(window as any).ship}` ? (ships[key].level == "editor" || ships[key].level == "admin") : false);
+      })
+
+      return `~${(window as any).ship}` == owner || perms.reduce((a: boolean, acc: boolean) => {
+          return acc || a;
+      }, false);
     },
     isOwner: function(): boolean {
       return store.getters['documents/meta'](`/${this.$route.params.author}/${this.$route.params.clock}`).owner == `~${(window as any).ship}`
