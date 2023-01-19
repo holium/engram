@@ -4,7 +4,7 @@
             class="flex py-1 hover:underline cursor-pointer items-center gap-2" 
             @click="open" 
             @contextmenu="openMenu" 
-            draggable="true" 
+            :draggable="editable" 
             dropzone="true"
             @dragstart="handleDragStart"
         >
@@ -51,6 +51,7 @@
             :index="i"
             :type="(meta as any).content[i].type" 
             :key="i" 
+            :editable="canEdit"
             v-for="i in expand ? Object.keys(meta.content == null ? {} : meta.content).filter((i: string) => canView(i, (meta.content as any)[i].type)) : []"
         />
     </div>
@@ -81,8 +82,13 @@ export default defineComponent({
         type: {
             required: true,
             type: String
+        },
+        editable: {
+            required: true,
+            type: Boolean
         }
     },
+    created: function() { console.log("is editable: ", this.editable )},
     inject: ["pushMenu", "pushFolderDock"],
     data() {
         return {
@@ -98,7 +104,23 @@ export default defineComponent({
             } else {
                 return store.getters['documents/meta'](this.item)
             }
-        }
+        },
+        canEdit: function(): boolean {
+            const myroles = store.getters['space/roles'];
+            const owner = this.meta.owner;
+            const ships = this.meta.ships;
+            const roles = this.meta.roles;
+            const perms = Object.keys(roles).map((key: string) => {
+                return myroles.includes(roles[key].perm) ? (roles[key].level == "editor" || roles[key].level == "admin") : false;
+            })
+            Object.keys(ships).forEach((key: string) => {
+                perms.push(ships[key].perm == `~${(window as any).ship}` ? (ships[key].level == "editor" || ships[key].level == "admin") : false);
+            })
+
+            return `~${(window as any).ship}` == owner || perms.reduce((a: boolean, acc: boolean) => {
+                return acc || a;
+            }, false);
+        },
     },
     methods: {
         open: function() {
@@ -111,7 +133,7 @@ export default defineComponent({
             const perms = Object.keys(item.roles).map((key: string) => item.roles[key].perm);
             const ships = Object.keys(item.ships).map((key: string) => item.ships[key].perm);
 
-            return ships.reduce((a: string, acc: boolean) => {
+            return `~${(window as any).ship}` == item.owner || ships.reduce((a: string, acc: boolean) => {
                 return a == `~${(window as any).ship}`;
             }, false) || roles.reduce((a: string, acc: boolean) => {
                 return acc || perms.includes(a);
@@ -177,10 +199,13 @@ export default defineComponent({
             this.rename = false;
         },
         handleDragStart: function(event: DragEvent) {
-            event.dataTransfer?.setData("text/plain", JSON.stringify({ item: {id: this.item, type: this.type}, index: this.index ? this.index : ".", from: this.parent ? this.parent : "." }));
+            console.log("can edit?", this.editable);
+            if(this.editable) {
+                event.dataTransfer?.setData("text/plain", JSON.stringify({ item: {id: this.item, type: this.type}, index: this.index ? this.index : ".", from: this.parent ? this.parent : "." }));
+            }
         },
         handleDrop: function(event: DragEvent) {
-            if(this.type == "folder") {
+            if(this.type == "folder" && this.canEdit) {
                 event.stopPropagation();
                 event.preventDefault();
                 const raw = event.dataTransfer?.getData("text/plain");
@@ -190,12 +215,12 @@ export default defineComponent({
                         store.dispatch("folders/remove", { index: data.index, from: data.from });
                         store.dispatch("folders/add", { item: { id: data.item.id, type: data.item.type }, to: this.item });
                     }
-                    
                 }
             }
         },
         handleDragOver: function(event: DragEvent) {
-            if(this.type == "folder") {
+            console.log("can edit?", this.canEdit);
+            if(this.type == "folder" && this.canEdit) {
                 event?.preventDefault();
             } 
         },

@@ -30,7 +30,7 @@ const getters: GetterTree<SpaceState, RootState> = {
     },
     roles(state) {
       return state.roles;
-    }
+    },
 }
 
 const mutations: MutationTree<SpaceState> = {

@@ -150,18 +150,19 @@ export default defineComponent({
     },
     editable: function(path: string): boolean {
         const myroles = store.getters['space/roles'];
+        const owner = store.getters['documents/owner'](path);
         const ships = store.getters['documents/ships'](path);
         const roles = store.getters['documents/roles'](path);
         const perms = Object.keys(roles).map((key: string) => {
-          return myroles.includes(roles[key].perm) ? null : roles[key].level
+          return myroles.includes(roles[key].perm) ? (roles[key].level == "editor" || roles[key].level == "admin") : false;
         })
         Object.keys(ships).forEach((key: string) => {
-          perms.push(ships[key].perm == `~${(window as any).ship}` ? ships[key].level : null);
+          perms.push(ships[key].perm == `~${(window as any).ship}` ? (ships[key].level == "editor" || ships[key].level == "admin") : false);
         })
 
-        return perms.filter((a) => a != null).reduce((a: string, acc: boolean) => {
-            return acc || a == "editor" || a == "admin";
-        }, false)
+        return `~${(window as any).ship}` == owner || perms.reduce((a: boolean, acc: boolean) => {
+            return acc || a;
+        }, false);
     }
   },
   computed: {

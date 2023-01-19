@@ -38,17 +38,15 @@
               @level="(event: any) => { handleLevel(item, event, 'roles'); }"
             />
             </div>
-            <div class="input">
+            <div class="input" v-if="isAdmin">
               <input 
                   @keydown="addPermission"
                   type="text" 
-                  :editable="isAdmin"
                   placeholder="add role or ship"
                   v-model="newPermission"
                   class="whitespace-nowrap overflow-hidden overflow-ellipsis realm-cursor-text-cursor text-azimuth" 
               >
               <select 
-                :editable="isAdmin"
                 v-model="newPermissionLevel"
                 class="whitespace-nowrap overflow-hidden overflow-ellipsis text-azimuth" 
               >
@@ -97,12 +95,19 @@ export default defineComponent({
   },
   computed: {
     isAdmin: function(): boolean {
-      return store.getters['space/owner'] == `~${(window as any).ship}`
-      || store.getters['folders/meta'](this.folder).owner  == `~${(window as any).ship}`
-      || store.getters['space/roles'].reduce((role: string, acc: boolean) => {
-        return acc || Object.keys(this.roles).find(role => this.roles[role].perm == role && this.roles[role].level == 'admin');
-      }, false) 
-      || Object.keys(this.ships).find(ship => this.ships[ship].perm == `~${(window as any).ship}` && this.ships[ship].level == 'admin');
+      const item = store.getters["folders/meta"](this.folder);
+      const myroles = store.getters['space/roles'];
+
+      const perms = Object.keys(this.roles).map((key: string) => {
+        return myroles.includes(this.roles[key].perm) ? (this.roles[key].level == "admin") : false;
+      })
+      Object.keys(this.ships).forEach((key: string) => {
+        perms.push(this.ships[key].perm == `~${(window as any).ship}` ? (this.ships[key].level == "admin") : false);
+      })
+
+      return `~${(window as any).ship}` == item.owner || perms.reduce((a: boolean, acc: boolean) => {
+          return acc || a;
+      }, false);
     },
     isOwner: function(): boolean {
       return store.getters['folders/meta'](this.folder).owner == `~${(window as any).ship}`
