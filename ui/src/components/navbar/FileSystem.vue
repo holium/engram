@@ -127,13 +127,14 @@ export default defineComponent({
         canView: function(id: string, type: string): boolean {
             const item = store.getters[`${type}s/meta`](id);
             const roles = store.getters['space/roles'];
-            const perms = Object.keys(item.roles).map((key: string) => item.roles[key].perm)
-            console.log(roles);
-            console.log(perms);
+            const perms = Object.keys(item.roles).map((key: string) => item.roles[key].perm);
+            const ships = Object.keys(item.ships).map((key: string) => item.ships[key].perm);
 
-            return typeof item.ships[(window as any).ship] != 'undefined' || roles.reduce((a: string, acc: boolean) => {
+            return ships.reduce((a: string, acc: boolean) => {
+                return a == `~${(window as any).ship}`;
+            }, false) || roles.reduce((a: string, acc: boolean) => {
                 return acc || perms.includes(a);
-            }, false)
+            }, false);
         }
     }
 })

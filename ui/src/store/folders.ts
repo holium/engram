@@ -377,6 +377,8 @@ const actions: ActionTree<FolderState, RootState> = {
           name: res.name,
           owner: res.owner,
           content: content,
+          roles: res.roles,
+          ships: res.ships,
         });
       });
     })
