@@ -1,6 +1,7 @@
 /-  spider
 /-  *engram
 /-  index
+/-  membership
 /+  engram
 /+  index
 /+  *strandio
@@ -10,10 +11,12 @@
 |=  [path=path peer=@p our=@p now=@da settings=dsettings update=[name=@t roles=(update:index [@tas @tas]) ships=(update:index [@p @tas]) content=(set dupdate)]]
 ^-  thread-res
 =/  id  [`@p`(slav %p -.path) `@u`(slav %ud -.+.path)]
-?>  ?|  (~(has by content.ships.settings.doc) src)
-      =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.settings.doc -.+.space.settings.doc ~.members ~.noun])
+?>  ?|  (~(has in (silt (turn ~(val by content.ships.settings) |=(a=[@p @tas] -.a)))) peer)
+      =/  spacemembers  .^(view:membership %gx ~[(scot %p our) ~.spaces (scot %da now) -.space.settings -.+.space.settings ~.members ~.noun])
       ?+  -.spacemembers  !!
-        %members  (~(has by +.spacemembers) src)
+        %members  (~(has by ^-(members:membership +.spacemembers)) peer)
+      ==
+    ==
 :*  %sync-document-success 
     path 
     peer
@@ -21,7 +24,7 @@
       name.update
       roles.update
       ships.update
-      +  turn  ~(tap in content.update)  |=  a=dupdate  [id a]
+      %+  turn  ~(tap in content.update)  |=  a=dupdate  [id a]
     ==
 ==
 --

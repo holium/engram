@@ -1,6 +1,7 @@
 /-  spider
 /-  *engram
 /-  index
+/-  membership
 /+  engram
 /+  index
 /+  *strandio
@@ -9,10 +10,12 @@
 ++  make-sync
 |=  [space=path peer=@p our=@p now=@da spc=space update=[roles=(update:index [@tas @tas]) ships=(update:index [@p @tas]) content=(update:index [id @tas])]]
 ^-  thread-res
-?>  ?|  (~(has by content.ships.spc) src)
-      =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.spc -.+.space.spc ~.members ~.noun])
+?>  ?|  (~(has in (silt (turn ~(val by content.ships.spc) |=(a=[@p @tas] -.a)))) peer)
+      =/  spacemembers  .^(view:membership %gx ~[(scot %p our) ~.spaces (scot %da now) -.space -.+.space ~.members ~.noun])
       ?+  -.spacemembers  !!
-        %members  (~(has by +.spacemembers) src)
+        %members  (~(has by ^-(members:membership +.spacemembers)) peer)
+      ==
+    ==
 :*  %sync-space-success 
     space 
     peer
@@ -26,7 +29,6 @@
 ^-  thread:spider
 |=  starter=vase
 =/  args  !<(sthread-sync starter)
-::~&  "extracted: {<args>}"
 =/  m  (strand ,vase)
 ^-  form:m
 ;<  our=@p   bind:m  get-our

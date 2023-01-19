@@ -1,6 +1,7 @@
 /-  spider
 /-  *engram
 /-  index
+/-  membership
 /+  engram
 /+  index
 /+  *strandio
@@ -8,10 +9,12 @@
 |%
 ++  make-delta
 |=  [path=path fol=folder version=version:index src=@p our=@p now=@da]
-?>  ?|  (~(has by content.ships.fol) src)
-      =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.fol -.+.space.fol ~.members ~.noun])
+?>  ?|  (~(has in (silt (turn ~(val by content.ships.fol) |=(a=[@p @tas] -.a)))) src)
+      =/  spacemembers  .^(view:membership %gx ~[(scot %p our) ~.spaces (scot %da now) -.space.fol -.+.space.fol ~.members ~.noun])
       ?+  -.spacemembers  !!
-        %members  (~(has by +.spacemembers) src)
+        %members  (~(has by ^-(members:membership +.spacemembers)) src)
+      ==
+    ==
 =/  updates  (delta:index content.fol version)
 =/  roles  (delta:index roles.fol ^*(version:index))
 =/  ships  (delta:index ships.fol ^*(version:index))

@@ -1,6 +1,7 @@
 /-  spider
 /-  *engram
 /-  index
+/-  membership
 /+  engram
 /+  index
 /+  *strandio
@@ -8,10 +9,12 @@
 |%
 ++  make-delta
 |=  [path=path doc=document src=@p our=@p now=@da]
-?>  ?|  (~(has by content.ships.settings.doc) src)
-      =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.settings.doc -.+.space.settings.doc ~.members ~.noun])
+?>  ?|  (~(has in (silt (turn ~(val by content.ships.settings.doc) |=(a=[@p @tas] -.a)))) src)
+      =/  spacemembers  .^(view:membership %gx ~[(scot %p our) ~.spaces (scot %da now) -.space.settings.doc -.+.space.settings.doc ~.members ~.noun])
       ?+  -.spacemembers  !!
-        %members  (~(has by +.spacemembers) src)
+        %members  (~(has by ^-(members:membership +.spacemembers)) src)
+      ==
+    ==
 =/  updates  (silt ~[[author=our timestamp=now content=content.doc]])
 =/  roles  (delta:index roles.settings.doc ^*(version:index))
 =/  ships  (delta:index ships.settings.doc ^*(version:index))
@@ -20,7 +23,6 @@
 ^-  thread:spider
 |=  starter=vase
 =/  args  !<(dthread-delta starter)
-::~&  "extracted: {<args>}"
 =/  m  (strand ,vase)
 ^-  form:m
 ;<  our=@p   bind:m  get-our

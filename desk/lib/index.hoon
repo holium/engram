@@ -28,7 +28,6 @@
 ++  apply
   |*  [state=(index) updt=(update)]
   ^+  state
-  ~&  "Aplying update: {<updt>}"
   =/  ldels  ~(val by (~(dif by dels.updt) dels.state))
   ~&  ldels
   =/  deleted  (silt (weld ~(val by dels.state) ldels))
@@ -57,7 +56,6 @@
         =/  idx  ?:  (~(has by version.state) client)
           (add (~(got by version.state) client) 1)
         0
-        ~&  "Examining item: {<item>} @ idx {<idx>}"
         ?:  ?&(=(idx +.item) !(~(has in deleted) [client idx]))
           :: insert
           ?:  (~(has by content.updt) item)
