@@ -85,7 +85,7 @@ export default defineComponent({
           this.updateCover, 
           this.updateStyling, 
           null, 
-          this.editable(`${to.params.author}/${to.params.clock}`)
+          this.editable(`/${to.params.author}/${to.params.clock}`)
         );
         this.loading = false;
       })
