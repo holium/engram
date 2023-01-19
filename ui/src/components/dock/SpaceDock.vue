@@ -25,7 +25,7 @@
               :key="item" 
               :ship="ships[item].perm" 
               :level="ships[item].level" 
-              @level="(event: any) => { handleLevel(item, event, 'ship'); }"
+              @level="(event: any) => { handleLevel(item, event, 'ships'); }"
               v-for="item in Object.keys(ships)" 
             />
             <RolePermission 
@@ -34,7 +34,7 @@
               :role="roles[item].perm" 
               :level="roles[item].level" 
               v-for="item in Object.keys(roles)" 
-              @level="(event: any) => { handleLevel(item, event, 'role'); }"
+              @level="(event: any) => { handleLevel(item, event, 'roles'); }"
             />
             </div>
             <div class="input">
@@ -112,31 +112,34 @@
       },
       handleLevel: function(item: string, level: string, type: string) {
         if(level == "-") {
-          store.dispatch("folders/removeperm", { 
+          store.dispatch("space/removeperm", { 
             id: this.$route.query.spaceId,
             timestamp: item,
             type: type,
             perm: (this as any)[type][item].perm,
             level: (this as any)[type][item].level
-          });
-        }
-        const perm = (this as any)[type][item];
-        store.dispatch("folders/removeperm", { 
-          id: this.$route.query.spaceId,
-          timestamp: item,
-          type: type,
-          perm: perm.perm,
-          level: perm.level
-        }).then(() => {
-          store.dispatch('folders/addperm', { 
-            id: this.$route.query.spaceId, 
-            perm: perm.perm, 
-            level: level,
-            type: type
           }).then(() => {
             this.loadSettings();
           })
-        })
+        } else {
+          const perm = (this as any)[type][item];
+          store.dispatch("space/removeperm", { 
+            id: this.$route.query.spaceId,
+            timestamp: item,
+            type: type,
+            perm: perm.perm,
+            level: perm.level
+          }).then(() => {
+            store.dispatch('space/addperm', { 
+              id: this.$route.query.spaceId, 
+              perm: perm.perm, 
+              level: level,
+              type: type
+            }).then(() => {
+              this.loadSettings();
+            })
+          })
+        }
       },
       addPermission: function(event: KeyboardEvent) {
         if(event.key == "Enter" && this.newPermission.length > 0 && this.newPermissionLevel.length > 0) {

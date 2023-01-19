@@ -10,17 +10,18 @@
 |=  [path=path peer=@p our=@p now=@da settings=dsettings update=[name=@t roles=(update:index [@tas @tas]) ships=(update:index [@p @tas]) content=(set dupdate)]]
 ^-  thread-res
 =/  id  [`@p`(slav %p -.path) `@u`(slav %ud -.+.path)]
-=/  passed-name      (guardspace:engram [space.settings (molt ~(val by content.roles.settings)) (molt ~(val by content.ships.settings)) (silt `(list @tas)`[~]) peer our now])
-=/  passed-settings  (guardspace:engram [space.settings (molt ~(val by content.roles.settings)) (molt ~(val by content.ships.settings)) (silt `(list @tas)`[%admin ~]) peer our now])
-=/  passed-content   (guardspace:engram [space.settings (molt ~(val by content.roles.settings)) (molt ~(val by content.ships.settings)) (silt `(list @tas)`[%admin %editor ~]) peer our now])
+?>  ?|  (~(has by content.ships.settings.doc) src)
+      =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.settings.doc -.+.space.settings.doc ~.members ~.noun])
+      ?+  -.spacemembers  !!
+        %members  (~(has by +.spacemembers) src)
 :*  %sync-document-success 
     path 
     peer
     :*
-      :-  passed-name      name.update
-      :-  passed-settings  roles.update
-      :-  passed-settings  ships.update
-      :-  passed-content   %+  turn  ~(tap in content.update)  |=  a=dupdate  [id a]
+      name.update
+      roles.update
+      ships.update
+      +  turn  ~(tap in content.update)  |=  a=dupdate  [id a]
     ==
 ==
 --

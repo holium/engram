@@ -14,7 +14,9 @@ const state: FolderState = {
     id: ".",
     name: "root",
     owner: "",
-    content: {}
+    content: {},
+    roles: {},
+    ships: {}
   }
 }
 
@@ -27,7 +29,9 @@ const getters: GetterTree<FolderState, RootState> = {
       id: id,
       name: state[id].name,
       owner: state[id].owner,
-      content: state[id].content
+      content: state[id].content,
+      roles: state[id].roles,
+      ships: state[id].ships
     }
   },
   content: (state) => (id: string): Array<string> => {
@@ -65,7 +69,9 @@ const mutations: MutationTree<FolderState> = {
       id: ".",
       name: "root",
       owner: "",
-      content: {}
+      content: {},
+      roles: {},
+      ships: {}
     }
   },
 
@@ -94,7 +100,9 @@ const actions: ActionTree<FolderState, RootState> = {
         id: payload.id,
         name: payload.name,
         owner: payload.owner,
-        content: payload.content
+        content: payload.content,
+        roles: payload.roles,
+        ships: payload.ships
       });
       resolve();
       (window as any).urbit.poke({ 
@@ -133,6 +141,8 @@ const actions: ActionTree<FolderState, RootState> = {
             name: payload.name,
             owner: `~${(window as any).ship}`,
             content: {},
+            roles: {},
+            ships: {}
           });
           resolve(path);
         });
@@ -327,11 +337,13 @@ const actions: ActionTree<FolderState, RootState> = {
     })
   },
   findremoveperm({ dispatch }, payload: { id: string, type: string, perm: string, level: string }): Promise<void> {
+    console.log("finding removeperm from folder: ", payload);
     return new Promise((resolve) => {
       (window as any).urbit.scry({
         app: "engram",
         path: `/folder${payload.id}/get/settings`
       }).then((res: any) => {
+        console.log("folder res: ", res);
         const closeenough = Object.keys(res[payload.type]).find((key: string) => {
           return res[payload.type][key].perm == payload.perm && res[payload.type][key].level == payload.level;
         });

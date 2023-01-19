@@ -119,31 +119,35 @@ export default defineComponent({
     },
     handleLevel: function(item: string, level: string, type: string) {
       if(level == "-") {
+        console.log("space settings: ", this.roles, this.ships);
         store.dispatch("folders/removeperm", { 
           id: this.folder,
           timestamp: item,
           type: type,
           perm: (this as any)[type][item].perm,
           level: (this as any)[type][item].level
-        });
-      }
-      const perm = (this as any)[type][item];
-      store.dispatch("folders/removeperm", { 
-        id: this.folder,
-        timestamp: item,
-        type: type,
-        perm: perm.perm,
-        level: perm.level
-      }).then(() => {
-        store.dispatch('folders/addperm', { 
-          id: this.folder, 
-          perm: perm.perm, 
-          level: level,
-          type: type
         }).then(() => {
           this.loadSettings();
         })
-      })
+      } else {
+        const perm = (this as any)[type][item];
+        store.dispatch("folders/removeperm", { 
+          id: this.folder,
+          timestamp: item,
+          type: type,
+          perm: perm.perm,
+          level: perm.level
+        }).then(() => {
+          store.dispatch('folders/addperm', { 
+            id: this.folder, 
+            perm: perm.perm, 
+            level: level,
+            type: type
+          }).then(() => {
+            this.loadSettings();
+          })
+        })
+      }
     },
     addPermission: function(event: KeyboardEvent) {
       if(event.key == "Enter" && this.newPermission.length > 0 && this.newPermissionLevel.length > 0) {

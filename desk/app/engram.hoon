@@ -289,13 +289,8 @@
           :~  [%pass /document/request %agent [our.bowl %engram] %poke %post !>([%document %request path.act peer.act])]
           ==
         =/  doc  (~(got by d) id)
-        =/  tid  `@ta`(cat 4 (cat 2 'document-sync-' (scot %p +.id)) (cat 2 (scot %ud -.id) (scot %uv (sham eny.bowl))))
-        =/  ta-now  `@ta`(scot %da now.bowl)
-        =/  start-args  [~ `tid byk.bowl(r da+now.bowl) %gather-document !>([path.act peer.act doc])]
         :_  this
-        :~
-          [%pass /engram/gather/document/[(cat 2 (scot %p -.id) (scot %ud +.id))]/[(scot %p peer.act)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
-          [%pass /engram/gather/document/[(cat 2 (scot %p -.id) (scot %ud +.id))]/[(scot %p peer.act)]/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
+        :~  [%pass /engram/delta %agent [our.bowl %engram] %poke %post !>([%document %delta path.act])]
         ==
         ::
         ::  Assemble and reply with updates (pokes their sync)
@@ -566,13 +561,8 @@
           :~  [%pass /folder/request %agent [our.bowl %engram] %poke %post !>([%folder %request path.act peer.act])]
           ==
         =/  fol  (~(got by f) id)
-        =/  tid  `@ta`(cat 4 (cat 2 'folder-sync-' (scot %p +.id)) (cat 2 (scot %ud -.id) (scot %uv (sham eny.bowl))))
-        =/  ta-now  `@ta`(scot %da now.bowl)
-        =/  start-args  [~ `tid byk.bowl(r da+now.bowl) %gather-folder !>([path.act peer.act fol])]
         :_  this
-        :~
-          [%pass /engram/gather/folder/[(cat 2 (scot %p -.id) (scot %ud +.id))]/[(scot %p peer.act)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
-          [%pass /engram/gather/folder/[(cat 2 (scot %p -.id) (scot %ud +.id))]/[(scot %p peer.act)]/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
+        :~  [%pass /engram/folder %agent [our.bowl %engram] %poke %post !>([%folder %delta path.act version.content.fol])]
         ==
         ::
         ::  Assemble and reply with updates (pokes their sync)
@@ -673,6 +663,7 @@
         =/  spc  (~(got by s) space.act)
         =/  id  [`@p`(slav %p -.item.act) `@u`(slav %ud -.+.item.act)]
         =/  nspc
+        ~&  type.act
         ?+  type.act  !!
             %roles
           =.  roles.spc  (remove:index roles.spc id our.bowl)
@@ -736,13 +727,8 @@
           `this
         ::~&  "GATHER-- {<space.act>} from: {<peer.act>}"
         =/  spc  (~(got by s) space.act)
-        =/  tid  `@ta`(cat 4 (cat 2 'space-sync-' -.+.space.act) (cat 2 -.space.act (scot %uv (sham eny.bowl))))
-        =/  ta-now  `@ta`(scot %da now.bowl)
-        =/  start-args  [~ `tid byk.bowl(r da+now.bowl) %gather-space !>([space.act peer.act spc])]
         :_  this
-        :~
-          [%pass /engram/gather/space/[(cat 2 (scot %p -.+.space.act) (scot %ud -.space.act))]/[(scot %p peer.act)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
-          [%pass /engram/gather/space/[(cat 2 (scot %p -.+.space.act) (scot %ud -.space.act))]/[(scot %p peer.act)]/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
+        :~  [%pass /engram/space %agent [our.bowl %engram] %poke %post !>([%space %delta space.act version.content.spc])]
         ==
         ::
         ::  Assemble and reply with updates (pokes their sync)
@@ -893,26 +879,17 @@
               %sync-document-success
             =/  id  [`@p`(slav %p -.path.res) `@u`(slav %ud -.+.path.res)]
             =/  doc  (~(got by d) id)
-            ::  Name Changes
-            =/  namedoc
-              ?.  -.name.update.res
-                doc
-              =.  name.settings.doc  +.name.update.res
-              doc
-            ::  Settings Changes
-            =/  settingsdoc
-              ?.  ?&(-.roles.update.res -.ships.update.res)
-                namedoc
-              =:  roles.settings.namedoc  (apply:index roles.settings.namedoc +.roles.update.res)
-                  ships.settings.namedoc  (apply:index ships.settings.namedoc +.ships.update.res)
+            ::  Document Changes
+            =/  ndoc
+              =:  name.settings.doc  name.update.res
+                  roles.settings.doc  (apply:index roles.settings.doc roles.update.res)
+                  ships.settings.doc  (apply:index ships.settings.doc ships.update.res)
                 ==
-              namedoc
-            =/  dstate  this(d (~(put by d) id namedoc))
-            ?.  -.content.update.res
-              ~&  "--- Sunk Document :) ---"  `dstate
-              ::  Update Changes
+              doc
+            =/  dstate  this(d (~(put by d) id ndoc))
+            ::  Update Changes
             ~&  "--- Sunk Document :) ---"  
-            :_  dstate(u (~(gas ju u) +.content.update.res))
+            :_  dstate(u (~(gas ju u) content.update.res))
             :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['type' (tape:enjs:format "document")] ['id' (path:enjs:format path.res)]]))]
             ==
             ::
@@ -921,28 +898,16 @@
               %sync-folder-success
             =/  id  [`@p`(slav %p -.path.res) `@u`(slav %ud -.+.path.res)]   
             =/  fol  (~(got by f) id)
-            ::  Name Changes
-            =/  namefol
-              ?.  -.name.update.res
-                fol
-              =.  name.fol  +.name.update.res
-              fol
-            ::  Settings Changes
-            =/  settingsfol
-              ?.  ?&(-.roles.update.res -.ships.update.res)
-                namefol
-              =:  roles.namefol  (apply:index roles.namefol +.roles.update.res)
-                  ships.namefol  (apply:index ships.namefol +.ships.update.res)
+            ::  Folder Changes
+            =/  nfol
+              =:  name.fol  name.update.res
+                  roles.fol  (apply:index roles.fol roles.update.res)
+                  ships.fol  (apply:index ships.fol ships.update.res)
+                  content.fol  (apply:index content.fol content.update.res)
                 ==
-              namefol
-            ::  Content  Changes
-            =/  contentfol  
-              ?.  -.content.update.res
-                settingsfol
-              =.  content.settingsfol  (apply:index content.settingsfol +.content.update.res)
-              settingsfol
-            ~&  "--- Sunk Folder @ {<version.content.contentfol>} :) ---"  
-            :_  this(f (~(put by f) id contentfol))
+              fol
+            ~&  "--- Sunk Folder :) ---"  
+            :_  this(f (~(put by f) id nfol))
             :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['type' (tape:enjs:format "folder")] ['id' (path:enjs:format path.res)]]))]
             ==
             ::
@@ -950,24 +915,16 @@
               %delta-space-success   `this
               %sync-space-success
             =/  spc  (~(got by s) space.res)
-            ::  Settings Changes
-            =/  settingsspc
-              ?.  ?&(-.roles.update.res -.ships.update.res)
-                spc
-              =:  roles.spc  (apply:index roles.spc +.roles.update.res)
-                  ships.spc  (apply:index ships.spc +.ships.update.res)
-                ==
-              spc
-            ::~&  "Take update? {<-.content.update.res>}"
-            =/  contentspc
-              ?.  -.content.update.res
-                settingsspc
-              =.  content.settingsspc  (apply:index content.settingsspc +.content.update.res)
-              settingsspc
-            =/  diff  (~(dif by content.content.contentspc) content.content.spc)
-            =/  sstate  this(s (~(put by s) space.res contentspc))
+            ::  Space Changes
+            =/  nspc
+            =:  roles.spc  (apply:index roles.spc roles.update.res)
+                ships.spc  (apply:index ships.spc ships.update.res)
+                content.spc  (apply:index content.spc content.update.res)
+              ==
+            spc
+            =/  diff  (~(dif by content.content.nspc) content.content.spc)
+            =/  sstate  this(s (~(put by s) space.res nspc))
             ~&  "--- Sunk Space :) ---" 
-            ::~&  content.contentspc
             :_  sstate
               %+  snoc  
                 %+  turn  ~(tap by diff)

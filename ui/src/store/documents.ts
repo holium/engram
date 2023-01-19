@@ -16,18 +16,26 @@ const state: DocumentState = {
 }
 
 const getters: GetterTree<DocumentState, RootState> = {
-  list: (state): Array<DocumentMeta> => {
+  list: (state, getters): Array<DocumentMeta> => {
     return Object.keys(state).map((id: string) => {
-      return {id: id, name: state[id].name, owner: state[id].owner}
+      return getters["meta"](id)
     })
   },
   meta: (state) => (id: string): ItemMeta => {
-    if(!state[id]) return { id: "missing document", name: "missing document", owner: "missing document"};
+    if(!state[id]) return { id: "missing document", name: "missing document", owner: "missing document", roles: {}, ships: {}};
     return {
       id: id,
       name: state[id].name,
       owner: state[id].owner,
+      roles: state[id].roles,
+      ships: state[id].ships,
     }
+  },
+  roles: (state) => (id: string): { [key: string]: string } => {
+    return state[id].roles;
+  },
+  ships: (state) => (id: string): { [key: string]: string } => {
+    return state[id].ships;
   },
   document: (state) => (id: string): DocumentMeta => {
     return state[id];
@@ -85,6 +93,8 @@ const actions: ActionTree<DocumentState, RootState> = {
         id: payload.id,
         name: payload.name,
         owner: payload.owner,
+        roles: payload.roles,
+        ships: payload.ships
       });
       dispatch("folders/add", { item: { index: payload.id, id: payload.id, type: "document" }, to: "." }, { root: true });
       resolve();
@@ -121,6 +131,8 @@ const actions: ActionTree<DocumentState, RootState> = {
             id: path,
             name: payload.name,
             owner: `~${(window as any).ship}`,
+            roles: {},
+            ships: {},
           });
           dispatch("folders/add", { item: { index: path, id: path, type: "document" }, to: "." }, { root: true });
           resolve(path);
@@ -177,7 +189,7 @@ const actions: ActionTree<DocumentState, RootState> = {
     })
   },
 
-  addperm({ }, payload: { id: string, perm: string, level: string, type: string}): Promise<void> {
+  addperm({ commit, state }, payload: { id: string, perm: string, level: string, type: string}): Promise<void> {
     return new Promise((resolve) => {
       (window as any).urbit.poke({
         app: "engram",
@@ -191,23 +203,40 @@ const actions: ActionTree<DocumentState, RootState> = {
           }}
         }
       }).then(() => {
+        (window as any).urbit.scry({ app: "engram", path: `/document${payload.id}/get/settings`}).then((response: any) => {
+          console.log("got settings: ", response);
+          commit("load", {
+            ...state[payload.id],
+            roles: response.roles,
+            ships: response.ships
+          });
+        })
         resolve();
       })
     })
   },
-  removeperm({ }, payload: { id: string, timestamp: string, type: string}): Promise<void> {
+  removeperm({ commit, state }, payload: { id: string, timestamp: string, type: string}): Promise<void> {
+    console.log("removing perm")
     return new Promise((resolve) => {
       (window as any).urbit.poke({
         app: "engram",
         mark: "post",
         json: {
-          document: { addperm: {
+          document: { removeperm: {
             id: payload.id,
             timestamp: payload.timestamp,
             type: payload.type
           }}
         }
       }).then(() => {
+        (window as any).urbit.scry({ app: "engram", path: `/document${payload.id}/get/settings`}).then((response: any) => {
+          console.log("got settings: ", response);
+          commit("load", {
+            ...state[payload.id],
+            roles: response.roles,
+            ships: response.ships
+          });
+        })
         resolve();
       })
     })
