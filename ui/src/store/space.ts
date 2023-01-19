@@ -41,6 +41,9 @@ const mutations: MutationTree<SpaceState> = {
         state.picture = payload.picture;
         state.color = payload.color;
         state.roles = payload.roles;
+        if(payload.roles.includes("owner")) state.roles.push("admin");
+        if(payload.roles.includes("admin")) state.roles.push("member");
+        if(payload.roles.includes("member")) state.roles.push("visitor")
     }
 }
 
@@ -97,7 +100,7 @@ const actions: ActionTree<SpaceState, RootState> = {
           mark: "post",
           json: {
             space: { removeperm: {
-              id: payload.id,
+              space: payload.id,
               timestamp: payload.timestamp,
               type: payload.type
             }}
@@ -109,7 +112,7 @@ const actions: ActionTree<SpaceState, RootState> = {
                 id: item, 
                 perm: payload.perm, 
                 level: payload.level, 
-                type: res[item].type
+                type: payload.type
               }, { root: true });
             })).then(() => { 
               resolve();

@@ -73,34 +73,20 @@ export default defineComponent({
   created: function() {
     this.loaded = store.dispatch("workspace/open", `${this.$route.params.author}/${this.$route.params.clock}`);
     this.loading = true;
-    /*
-    const sid = (window as any).urbit.subscribe({
-      app: "engram",
-      path: `/preview/${this.$route.params.author}/${this.$route.params.clock}`,
-      ship: (this.$route.params.author as string).substr(1),
-      event: (event: any) => {
-        console.log("preview res: ", event);
-        (window as any).urbit.unsubscribe(sid);
-      }
-    })
-    */
   },
   beforeRouteUpdate: function(to) {
     this.loaded = store.dispatch("workspace/open", `${to.params.author}/${to.params.clock}`);
     this.loading = true;
-    /*
-    const sid = (window as any).urbit.subscribe({
-      app: "engram",
-      path: `/preview/${to.params.author}/${to.params.clock}`,
-      ship: (to.params.author as string).substr(1),
-      event: (event: any) => {
-        console.log("preview res: ", event);
-        (window as any).urbit.unsubscribe(sid);
-      }
-    })
-    */
     this.loaded.then((res: any) => {
-        render(this.$refs["document"] as any, res.content, (this as any).pushMenu, this.updateCover, this.updateStyling, null);
+        render(
+          this.$refs["document"] as any, 
+          res.content, 
+          (this as any).pushMenu, 
+          this.updateCover, 
+          this.updateStyling, 
+          null, 
+          this.editable(`${to.params.author}/${to.params.clock}`)
+        );
         this.loading = false;
       })
   },
@@ -111,7 +97,15 @@ export default defineComponent({
       console.log("need to render document");
       this.loaded.then((res: any) => {
         console.log("loadded");
-        render(this.$refs["document"] as any, res.content, (this as any).pushMenu, this.updateCover, this.updateStyling, null);
+        render(
+          this.$refs["document"] as any, 
+          res.content, 
+          (this as any).pushMenu, 
+          this.updateCover, 
+          this.updateStyling, 
+          null, 
+          this.editable(`/${this.$route.params.author}/${this.$route.params.clock}`)
+        );
         this.loading = false;
         (window as any).urbit.poke({
           app: "engram", 
@@ -131,7 +125,15 @@ export default defineComponent({
     previewing: function(newRender: null | DocumentVersion) {
       if(this.loaded != null) {
         this.loaded.then((res: any) => {
-          render(this.$refs["document"] as any, res.content, (this as any).pushMenu, this.updateCover, this.updateStyling, newRender);
+          render(
+            this.$refs["document"] as any, 
+            res.content, 
+            (this as any).pushMenu, 
+            this.updateCover, 
+            this.updateStyling, 
+            newRender, 
+            this.editable(`/${this.$route.params.author}/${this.$route.params.clock}`)
+          );
         });
       }
     }
@@ -145,12 +147,25 @@ export default defineComponent({
     },
     updateStyling: function(styling: StylingUpdate) {
       this.styling = { ...this.styling, ...styling };
+    },
+    editable: function(path: string): boolean {
+        const myroles = store.getters['space/roles'];
+        const ships = store.getters['documents/ships'](path);
+        const roles = store.getters['documents/roles'](path);
+        const perms = Object.keys(roles).map((key: string) => {
+          return myroles.includes(roles[key].perm) ? null : roles[key].level
+        }).filter((a) => a);
+
+        return ships[(window as any).ship] == "editor" || ships[(window as any).ship] == "admin" || 
+          perms.reduce((a: string, acc: boolean) => {
+            return acc || a == "editor" || a == "admin";
+        }, false)
     }
   },
   computed: {
     previewing: function() {
       return store.getters['workspace/previewing'];
-    }
+    },
   }
 });
 </script>

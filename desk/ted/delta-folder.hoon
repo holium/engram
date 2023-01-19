@@ -8,15 +8,10 @@
 |%
 ++  make-delta
 |=  [path=path fol=folder version=version:index src=@p our=@p now=@da]
-?>  %:  guardspace:engram 
-    space.fol 
-    (molt ~(val by content.roles.fol)) 
-    (molt ~(val by content.ships.fol)) 
-    (silt `(list @tas)`[%admin %editor %visitor ~]) 
-    src 
-    our 
-    now
-  ==
+?>  ?|  (~(has by content.ships.fol) src)
+      =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.fol -.+.space.fol ~.members ~.noun])
+      ?+  -.spacemembers  !!
+        %members  (~(has by +.spacemembers) src)
 =/  updates  (delta:index content.fol version)
 =/  roles  (delta:index roles.fol ^*(version:index))
 =/  ships  (delta:index ships.fol ^*(version:index))

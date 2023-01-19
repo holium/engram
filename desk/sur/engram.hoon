@@ -130,12 +130,12 @@
   $%  [%none ~]
       [%gather-document-success ~]
       [%delta-document-success ~]
-      [%sync-document-success path=path peer=@p update=[name=[$?(%.n %.y) @t] roles=[$?(%.n %.y) (update:index [@tas @tas])] ships=[$?(%.n %.y) (update:index [@p @tas])] content=[$?(%.n %.y) (list [id:index dupdate])]]]
+      [%sync-document-success path=path peer=@p update=[name=@t roles=(update:index [@tas @tas]) ships=(update:index [@p @tas]) content=(list [id:index dupdate])]]
       [%gather-folder-success ~]
       [%delta-folder-success ~]
-      [%sync-folder-success path=path peer=@p update=[name=[$?(%.n %.y) @t] roles=[$?(%.n %.y) (update:index [@tas @tas])] ships=[$?(%.n %.y) (update:index [@p @tas])] content=[$?(%.n %.y) (update:index [id @tas])]]]
+      [%sync-folder-success path=path peer=@p update=[name=@t roles=(update:index [@tas @tas]) ships=(update:index [@p @tas]) content=(update:index [id @tas])]]
       [%gather-space-success ~]
       [%delta-space-success ~]
-      [%sync-space-success space=path peer=@p update=[roles=[$?(%.n %.y) (update:index [@tas @tas])] ships=[$?(%.n %.y) (update:index [@p @tas])] content=[$?(%.n %.y) (update:index [id @tas])]]]
+      [%sync-space-success space=path peer=@p update=[roles=(update:index [@tas @tas]) ships=(update:index [@p @tas]) content=(update:index [id @tas])]]
   ==
 --

@@ -69,10 +69,10 @@ export default defineComponent({
   },
   computed: {
     ships: function(): { [key: string]: { perm: string, level: string } } {
-      return store.getters['workspace/settings/ships'];
+      return store.getters['documents/ships'](`/${this.$route.params.author}/${this.$route.params.clock}`);
     },
     roles: function(): { [key: string]: { perm: string, level: string } } {
-      return store.getters['workspace/settings/roles'];
+      return store.getters['documents/roles'](`/${this.$route.params.author}/${this.$route.params.clock}`);
     },
     isAdmin: function(): boolean {
       return store.getters['space/owner'] == `~${(window as any).ship}`
@@ -88,28 +88,30 @@ export default defineComponent({
   },
   methods: {
     handleLevel: function(item: string, level: string, type: string) {
+      console.log("handling level: ", level);
       if(level == "-") {
         store.dispatch("documents/removeperm", { 
           id: `/${this.$route.params.author}/${this.$route.params.clock}`,
           timestamp: item,
           type: type
         });
-      }
-      const perm = (this as any)[type][item].perm;
-      store.dispatch("documents/removeperm", { 
-        id: `/${this.$route.params.author}/${this.$route.params.clock}`,
-        timestamp: item,
-        type: type
-      }).then(() => {
-        store.dispatch('documents/addperm', { 
-          id: `/${this.$route.params.author}/${this.$route.params.clock}`, 
-          perm: perm, 
-          level: level,
+      } else {
+        const perm = (this as any)[type][item].perm;
+        store.dispatch("documents/removeperm", { 
+          id: `/${this.$route.params.author}/${this.$route.params.clock}`,
+          timestamp: item,
           type: type
         }).then(() => {
-          store.dispatch("workspace/settings/open", `/${this.$route.params.author}/${this.$route.params.clock}`);
+          store.dispatch('documents/addperm', { 
+            id: `/${this.$route.params.author}/${this.$route.params.clock}`, 
+            perm: perm, 
+            level: level,
+            type: type
+          }).then(() => {
+            store.dispatch("workspace/settings/open", `/${this.$route.params.author}/${this.$route.params.clock}`);
+          })
         })
-      })
+      }
     },
     addPermission: function(event: KeyboardEvent) {
       if(event.key == "Enter" && this.newPermission.length > 0 && this.newPermissionLevel.length > 0) {
@@ -127,6 +129,7 @@ export default defineComponent({
           if(this.newPermission.length == 0) {
             if(event.key != '~' && event.key != '%') event.preventDefault();
           } else {
+            console.log((event.target as any).selectionStart);
             if((event.target as any).selectionStart == 0) event.preventDefault();
             else if(this.newPermission.charAt(0) == '~') {
               if(!"abcdefghijklmnopqrstuvwxyz-".includes(event.key)) event.preventDefault();

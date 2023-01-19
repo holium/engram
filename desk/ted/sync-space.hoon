@@ -9,16 +9,17 @@
 ++  make-sync
 |=  [space=path peer=@p our=@p now=@da spc=space update=[roles=(update:index [@tas @tas]) ships=(update:index [@p @tas]) content=(update:index [id @tas])]]
 ^-  thread-res
-=/  passed-name      (guardspace:engram [space (molt ~(val by content.roles.spc)) (molt ~(val by content.ships.spc)) (silt `(list @tas)`[~]) peer our now])
-=/  passed-settings  (guardspace:engram [space (molt ~(val by content.roles.spc)) (molt ~(val by content.ships.spc)) (silt `(list @tas)`[%admin ~]) peer our now])
-=/  passed-content   (guardspace:engram [space (molt ~(val by content.roles.spc)) (molt ~(val by content.ships.spc)) (silt `(list @tas)`[%admin %editor ~]) peer our now])
+?>  ?|  (~(has by content.ships.spc) src)
+      =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.spc -.+.space.spc ~.members ~.noun])
+      ?+  -.spacemembers  !!
+        %members  (~(has by +.spacemembers) src)
 :*  %sync-space-success 
     space 
     peer
     :*
-      :-  passed-settings  roles.update
-      :-  passed-settings  ships.update
-      :-  passed-content   content.update
+      roles.update
+      ships.update
+      content.update
     ==
 ==
 --

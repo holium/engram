@@ -20,7 +20,7 @@
             :index="i"
             :type="'folder'" 
             :key="i" 
-            v-for="i in Object.keys(items).filter((i: string) => items[i].type == 'folder')"
+            v-for="i in Object.keys(items).filter((i: string) => items[i].type == 'folder' && canView(i, items[i].type))"
         />
         <SystemItem 
             :parent="'.'" 
@@ -28,7 +28,7 @@
             :index="i"
             :type="'document'" 
             :key="i" 
-            v-for="i in Object.keys(items).filter((i: string) => items[i].type == 'document')"
+            v-for="i in Object.keys(items).filter((i: string) => items[i].type == 'document' && canView(i, items[i].type))"
         />
     </div>
 </template>
@@ -37,7 +37,7 @@
 import { defineComponent } from "vue";
 import store from "@/store/index";
 import SystemItem from "./SystemItem.vue";
-import type { DocumentMeta, FolderMeta } from "@/store/types";
+import type { ItemMeta } from "@/store/types";
 import { Menu } from "@/components/menus/types";
 export default defineComponent({
     name: "FileSystem",
@@ -123,6 +123,17 @@ export default defineComponent({
         }, 
         handleDragOver: function(event: DragEvent) {
             event.preventDefault();
+        },
+        canView: function(id: string, type: string): boolean {
+            const item = store.getters[`${type}s/meta`](id);
+            const roles = store.getters['space/roles'];
+            const perms = Object.keys(item.roles).map((key: string) => item.roles[key].perm)
+            console.log(roles);
+            console.log(perms);
+
+            return typeof item.ships[(window as any).ship] != 'undefined' || roles.reduce((a: string, acc: boolean) => {
+                return acc || perms.includes(a);
+            }, false)
         }
     }
 })
