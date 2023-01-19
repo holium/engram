@@ -154,10 +154,12 @@ export default defineComponent({
         const roles = store.getters['documents/roles'](path);
         const perms = Object.keys(roles).map((key: string) => {
           return myroles.includes(roles[key].perm) ? null : roles[key].level
-        }).filter((a) => a);
+        })
+        Object.keys(ships).forEach((key: string) => {
+          perms.push(ships[key].perm == `~${(window as any).ship}` ? ships[key].level : null);
+        })
 
-        return ships[(window as any).ship] == "editor" || ships[(window as any).ship] == "admin" || 
-          perms.reduce((a: string, acc: boolean) => {
+        return perms.filter((a) => a != null).reduce((a: string, acc: boolean) => {
             return acc || a == "editor" || a == "admin";
         }, false)
     }

@@ -10,7 +10,7 @@
 :: -> first search requests if not exists
 :: -> in the front end will need to hide the space when viewing a document added via-ship
 :: -> removing or changing a ship MUST PUSH TO THAT SHIP so they know to hide themselves
-:: When hidden in a space (you are in the space but do not have permission)
+:: When hidden in a space (you are in a space but do not have permission to view it)
 :: -> documents are hidden in the front end
 |%
 +$  versioned-state
@@ -286,11 +286,11 @@
         ?.  (~(has by d) id)
           :: If we do not have this document request it
           :_  this
-          :~  [%pass /document/request %agent [our.bowl %engram] %poke %post !>([%document %request path.act peer.act])]
+          :~  [%pass /document/request %agent [peer.act %engram] %poke %post !>([%document %request path.act peer.act])]
           ==
         =/  doc  (~(got by d) id)
         :_  this
-        :~  [%pass /engram/delta %agent [our.bowl %engram] %poke %post !>([%document %delta path.act])]
+        :~  [%pass /engram/delta %agent [peer.act %engram] %poke %post !>([%document %delta path.act])]
         ==
         ::
         ::  Assemble and reply with updates (pokes their sync)
@@ -312,7 +312,7 @@
         ::  Sync updates with current document
         ::
           %sync
-        ~&  "SYNC-- from {<src.bowl>}  for {<path.act>}"
+        ::~&  "SYNC-- from {<src.bowl>}  for {<path.act>}"
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  doc  (~(got by d) id)
         =/  tid  `@ta`(cat 4 (cat 2 'document-sync-' (scot %p +.id)) (cat 2 (scot %ud -.id) (scot %uv (sham eny.bowl))))
@@ -558,11 +558,11 @@
         ?.  (~(has by f) id)
           :: If we do not have this folder request it
           :_  this
-          :~  [%pass /folder/request %agent [our.bowl %engram] %poke %post !>([%folder %request path.act peer.act])]
+          :~  [%pass /folder/request %agent [peer.act %engram] %poke %post !>([%folder %request path.act peer.act])]
           ==
         =/  fol  (~(got by f) id)
         :_  this
-        :~  [%pass /engram/folder %agent [our.bowl %engram] %poke %post !>([%folder %delta path.act version.content.fol])]
+        :~  [%pass /engram/folder %agent [peer.act %engram] %poke %post !>([%folder %delta path.act version.content.fol])]
         ==
         ::
         ::  Assemble and reply with updates (pokes their sync)
@@ -728,7 +728,7 @@
         ::~&  "GATHER-- {<space.act>} from: {<peer.act>}"
         =/  spc  (~(got by s) space.act)
         :_  this
-        :~  [%pass /engram/space %agent [our.bowl %engram] %poke %post !>([%space %delta space.act version.content.spc])]
+        :~  [%pass /engram/space %agent [peer.act %engram] %poke %post !>([%space %delta space.act version.content.spc])]
         ==
         ::
         ::  Assemble and reply with updates (pokes their sync)
@@ -852,10 +852,12 @@
     ^-  (quip card _this)
     ?+    -.wire  (on-agent:def wire sign)
         %engram
-      ?+    -.sign  ~&  "Request on wire: {<wire>} with sign {<-.sign>}"  (on-agent:def wire sign)
+        ::~&  "Request on wire: {<wire>} with sign {<-.sign>}"
+      ?+    -.sign  (on-agent:def wire sign)
           %watch-ack
         ?~  p.sign
-          ((slog '%engram: Subscribe succeeded!' ~) `this)
+          ::((slog '%engram: Subscribe succeeded!' ~) `this)
+          `this
         ((slog '%engram: Subscribe failed!' ~) `this)
       ::
           %kick
@@ -888,7 +890,7 @@
               doc
             =/  dstate  this(d (~(put by d) id ndoc))
             ::  Update Changes
-            ~&  "--- Sunk Document :) ---"  
+            ::~&  "--- Sunk Document :) ---"  
             :_  dstate(u (~(gas ju u) content.update.res))
             :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['type' (tape:enjs:format "document")] ['id' (path:enjs:format path.res)]]))]
             ==
@@ -906,7 +908,7 @@
                   content.fol  (apply:index content.fol content.update.res)
                 ==
               fol
-            ~&  "--- Sunk Folder :) ---"  
+            ::~&  "--- Sunk Folder :) ---"  
             :_  this(f (~(put by f) id nfol))
             :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['type' (tape:enjs:format "folder")] ['id' (path:enjs:format path.res)]]))]
             ==
@@ -924,7 +926,7 @@
             spc
             =/  diff  (~(dif by content.content.nspc) content.content.spc)
             =/  sstate  this(s (~(put by s) space.res nspc))
-            ~&  "--- Sunk Space :) ---" 
+            ::~&  "--- Sunk Space :) ---" 
             :_  sstate
               %+  snoc  
                 %+  turn  ~(tap by diff)

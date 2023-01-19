@@ -276,7 +276,9 @@ const actions: ActionTree<DocumentState, RootState> = {
       commit("load", {
         id: payload,
         name: res.name,
-        owner: res.owner
+        owner: res.owner,
+        roles: res.roles,
+        ships: res.ships,
       });
     })
     if(payload == `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`) {

@@ -132,8 +132,8 @@ export default function (
 
   
   view = new EditorView(place, {
+    editable: () => { return editable },
     state,
   });
-  if(!editable) view.editable = false;
   return view;
 }

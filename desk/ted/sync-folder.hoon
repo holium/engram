@@ -1,6 +1,7 @@
 /-  spider
 /-  *engram
 /-  index
+/-  membership
 /+  engram
 /+  index
 /+  *strandio
@@ -10,10 +11,12 @@
 |=  [path=path peer=@p our=@p now=@da fol=folder update=[name=@t roles=(update:index [@tas @tas]) ships=(update:index [@p @tas]) content=(update:index [id @tas])]]
 ^-  thread-res
 =/  id  [`@p`(slav %p -.path) `@u`(slav %ud -.+.path)]
-?>  ?|  (~(has by content.ships.fol) src)
-    =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.fol -.+.space.fol ~.members ~.noun])
-    ?+  -.spacemembers  !!
-      %members  (~(has by +.spacemembers) src)
+?>  ?|  (~(has in (silt (turn ~(val by content.ships.fol) |=(a=[@p @tas] -.a)))) peer)
+      =/  spacemembers  .^(view:membership %gx ~[(scot %p our) ~.spaces (scot %da now) -.space.fol -.+.space.fol ~.members ~.noun])
+      ?+  -.spacemembers  !!
+        %members  (~(has by ^-(members:membership +.spacemembers)) peer)
+      ==
+    ==
 :*  %sync-folder-success 
     path 
     peer
