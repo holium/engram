@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-row items-stretch">
-    <div class="flex flex-col flex-grow relative" :class="{'loading-document': loading}">
+  <div class="flex flex-row items-stretch overflow-hidden">
+    <div class="flex flex-col flex-grow relative" :class="{'loading-document': loading}" style="width: 100%">
       <Toolbar />
       <div class="flex justify-center items-center flex-grow" v-if="loading">
         <img class="loading-animation" src="@/assets/engram.svg" />
@@ -179,13 +179,9 @@ export default defineComponent({
 }
 
 #document {
-  @apply bg-paper flex flex-col flex-grow items-center overflow-hidden relative;
+  @apply flex flex-col flex-grow items-center overflow-hidden relative;
   width: 100%;
   min-height: calc(100% - 32vh);
-  border-width: 1px 1px 0px 1px;
-  border-style: solid;
-  border-color: theme(colors.border);
-  border-radius: 16px 16px 0px 0px;
   z-index: 1;
 }
 
