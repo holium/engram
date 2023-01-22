@@ -24,13 +24,12 @@ export const find = (openFinder: (querier: (query: string) => void) => void) => 
             const searcher = (offset: number) => (node: any, pos: number) => {
                 if(node.type.name == "text") {
                     const finder = (str: string, finderOffset: number) => {
-                        console.log(`finding "${search}" in: ${str}`);
                         const res = str.search(search);
                         if(res >= 0) {
                             decos.push(Decoration.inline(
                                 offset + pos + res + finderOffset, 
                                 offset + pos + res + finderOffset + search.length ,
-                                { style: "background-color: var(--rlm-accent-color, #4e9efd88" }
+                                { class: "found-text" }
                             ));
                             finder(str.substring(finderOffset + res + search.length), finderOffset + res + search.length);
                         }

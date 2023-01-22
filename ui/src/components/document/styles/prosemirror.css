@@ -70,3 +70,7 @@ header p.Prosemirror-placeholder:before {
   outline: 2px solid var(--type-color);
   outline-offset: 2px;
 }
+
+.ProseMirror .found-text {
+  background-color: var(--rlm-accent-color, #4e9efd88);
+}
