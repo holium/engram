@@ -23,6 +23,7 @@ import highlightmenu from "./highlightmenu"
 import engram from "./engramview";
 import comments from "./comments";
 import imageview from "./imageview";
+import find from "./find";
 
 
 export let view: EditorView;
@@ -36,6 +37,7 @@ export default function (
   pushMenu: (menu: Menu | null) => void,
   updateCover: (cover: CoverUpdate) => void,
   updateStyling: (styling: StylingUpdate) => void,
+  openFinder: (querier: (query: string) => void) => void,
   snapshot: null | DocumentVersion,
   editable: boolean,
 ): EditorView {
@@ -85,6 +87,7 @@ export default function (
         keymap,
         shortcuts,
         imageview,
+        find(openFinder),
         save((view) => {
           const version = Y.encodeStateVector(doc);
           const content = Y.encodeStateAsUpdate(doc);
@@ -120,6 +123,7 @@ export default function (
     state = EditorState.create({
       schema: schema,
       plugins: [
+        find(openFinder),
         // CRDT
         ySyncPlugin(type, {}),
         // Views

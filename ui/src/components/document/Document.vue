@@ -2,6 +2,15 @@
   <div class="flex flex-row items-stretch overflow-hidden">
     <div class="flex flex-col flex-grow relative" :class="{'loading-document': loading}" style="width: 100%">
       <Toolbar />
+      <div class="search-bar input" v-if="finder">
+        <input 
+          ref="finder"
+          type="text" 
+          placeholder="find in document..." 
+          v-model="finding"
+          @keydown="closeFinder"
+        />
+      </div>
       <div class="flex justify-center items-center flex-grow" v-if="loading">
         <img class="loading-animation" src="@/assets/engram.svg" />
       </div>
@@ -52,6 +61,9 @@ export default defineComponent({
     return {
       loaded: null as null | Promise<DocumentContent>,
       loading: false,
+      finder: false,
+      finding: "",
+      queirier: null as any,
       cover: {
         pos: 0,
         src: "",
@@ -84,6 +96,7 @@ export default defineComponent({
           (this as any).pushMenu, 
           this.updateCover, 
           this.updateStyling, 
+          this.openFinder,
           null, 
           this.editable(`/${to.params.author}/${to.params.clock}`)
         );
@@ -96,13 +109,13 @@ export default defineComponent({
     else {
       console.log("need to render document");
       this.loaded.then((res: any) => {
-        console.log("loadded");
         render(
           this.$refs["document"] as any, 
           res.content, 
           (this as any).pushMenu, 
           this.updateCover, 
           this.updateStyling, 
+          this.openFinder,
           null, 
           this.editable(`/${this.$route.params.author}/${this.$route.params.clock}`)
         );
@@ -131,11 +144,16 @@ export default defineComponent({
             (this as any).pushMenu, 
             this.updateCover, 
             this.updateStyling, 
+            this.openFinder,
             newRender, 
             this.editable(`/${this.$route.params.author}/${this.$route.params.clock}`)
           );
         });
       }
+    },
+    finding: function(nowFinding: string) {
+      console.log("handing find: ", this.finding);
+      this.queirier(this.finding);
     }
   },
   methods: {
@@ -147,6 +165,22 @@ export default defineComponent({
     },
     updateStyling: function(styling: StylingUpdate) {
       this.styling = { ...this.styling, ...styling };
+    },
+    openFinder: function(querier: (query: string) => void) {
+      this.finder = true;
+      this.queirier = querier;
+      querier(this.finding);
+      setTimeout(() => {
+        (this.$refs['finder'] as any).focus();
+      }, 80)
+    },
+    closeFinder: function(event: KeyboardEvent) {
+      if(event.key == "Escape") {
+        this.finder = false;
+        this.finding = "";
+        this.queirier("");
+        this.queirier = null;
+      }
     },
     editable: function(path: string): boolean {
         const myroles = store.getters['space/roles'];
@@ -187,6 +221,12 @@ export default defineComponent({
 
 .no-cover #document {
   min-height: calc(100% - calc(2.5em + 32px));
+}
+
+.search-bar {
+  @apply bg-paper rounded-2;
+  position: absolute;
+  z-index: 2;
 }
 
 </style>
