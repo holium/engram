@@ -8,3 +8,9 @@
 #app {
   @apply bg-window text-type w-window h-window;
 }
+
+* {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}

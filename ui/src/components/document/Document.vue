@@ -1,7 +1,37 @@
 <template>
-  <div class="flex flex-row items-stretch">
-    <div class="flex flex-col flex-grow relative" :class="{'loading-document': loading}">
+  <div class="flex flex-row items-stretch overflow-hidden">
+    <div class="flex flex-col flex-grow relative" :class="{'loading-document': loading}" style="width: 100%">
       <Toolbar />
+      <div class="search-bar input" :style="finder ? { 'top': '0'} : {}">
+        <input 
+          :disables="!finder"
+          ref="finder"
+          type="text" 
+          placeholder="find in document..." 
+          v-model="finding"
+          @keydown="closeFinder"
+        />
+        <svg 
+          @click="handleFinderDown"
+          viewBox="0 0 16 16" 
+          fill="var(--rlm-icon-color, #333333)"
+          xmlns="http://www.w3.org/2000/svg"
+          class="icon clickable"
+          style="transform: rotate(90deg);"
+        >
+          <path d="M6 3.99995L9.99998 7.99245L5.99997 11.9999C5.49995 12.4999 6.07812 13.2999 6.70718 12.6712L10.7072 8.69933C11.0978 8.3087 11.0978 7.67589 10.7072 7.28527L6.70718 3.31341C6.07812 2.65716 5.5 3.50005 6 3.99995Z" fill="#333333"/>
+        </svg>
+        <svg 
+          @click="handleFinderUp"
+          viewBox="0 0 16 16" 
+          fill="var(--rlm-icon-color, #333333)"
+          xmlns="http://www.w3.org/2000/svg"
+          class="icon clickable"
+          style="transform: rotate(-90deg);"
+        >
+          <path d="M6 3.99995L9.99998 7.99245L5.99997 11.9999C5.49995 12.4999 6.07812 13.2999 6.70718 12.6712L10.7072 8.69933C11.0978 8.3087 11.0978 7.67589 10.7072 7.28527L6.70718 3.31341C6.07812 2.65716 5.5 3.50005 6 3.99995Z" fill="#333333"/>
+        </svg>
+      </div>
       <div class="flex justify-center items-center flex-grow" v-if="loading">
         <img class="loading-animation" src="@/assets/engram.svg" />
       </div>
@@ -52,6 +82,11 @@ export default defineComponent({
     return {
       loaded: null as null | Promise<DocumentContent>,
       loading: false,
+      finder: false,
+      finding: "",
+      queirier: null as any,
+      foundNodes: [] as any,
+      foundIndex: 0,
       cover: {
         pos: 0,
         src: "",
@@ -84,6 +119,7 @@ export default defineComponent({
           (this as any).pushMenu, 
           this.updateCover, 
           this.updateStyling, 
+          this.openFinder,
           null, 
           this.editable(`/${to.params.author}/${to.params.clock}`)
         );
@@ -96,13 +132,13 @@ export default defineComponent({
     else {
       console.log("need to render document");
       this.loaded.then((res: any) => {
-        console.log("loadded");
         render(
           this.$refs["document"] as any, 
           res.content, 
           (this as any).pushMenu, 
           this.updateCover, 
           this.updateStyling, 
+          this.openFinder,
           null, 
           this.editable(`/${this.$route.params.author}/${this.$route.params.clock}`)
         );
@@ -131,10 +167,18 @@ export default defineComponent({
             (this as any).pushMenu, 
             this.updateCover, 
             this.updateStyling, 
+            this.openFinder,
             newRender, 
             this.editable(`/${this.$route.params.author}/${this.$route.params.clock}`)
           );
         });
+      }
+    },
+    finding: function(nowFinding: string) {
+      if(this.queirier !== null) {
+        this.queirier(this.finding);
+        this.foundNodes = document.querySelector(".ProseMirror")?.querySelectorAll(".found-text");
+        this.foundIndex = this.foundIndex % this.foundNodes.length;
       }
     }
   },
@@ -147,6 +191,39 @@ export default defineComponent({
     },
     updateStyling: function(styling: StylingUpdate) {
       this.styling = { ...this.styling, ...styling };
+    },
+    openFinder: function(querier: (query: string) => void) {
+      this.finder = true;
+      this.queirier = querier;
+      querier(this.finding);
+      setTimeout(() => {
+        (this.$refs['finder'] as any).focus();
+      }, 80);
+    },
+    handleFinderUp: function() {
+      this.foundIndex = (this.foundIndex == 0 ? this.foundNodes.length : this.foundIndex) - 1;
+      this.foundNodes[this.foundIndex].scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      })
+    },
+    handleFinderDown: function() {
+      this.foundIndex = (this.foundIndex + 1) % this.foundNodes.length;
+      this.foundNodes[this.foundIndex].scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      })
+    },
+    closeFinder: function(event: KeyboardEvent) {
+      if(event.key == "Escape") {
+        this.finder = false;
+        this.finding = "";
+        this.foundIndex = 0;
+        this.queirier("");
+        this.queirier = null;
+      } else if(event.key == "Enter") {
+        this.handleFinderDown();
+      }
     },
     editable: function(path: string): boolean {
         const myroles = store.getters['space/roles'];
@@ -179,18 +256,24 @@ export default defineComponent({
 }
 
 #document {
-  @apply bg-paper flex flex-col flex-grow items-center overflow-hidden relative;
+  @apply flex flex-col flex-grow items-center overflow-hidden relative;
   width: 100%;
   min-height: calc(100% - 32vh);
-  border-width: 1px 1px 0px 1px;
-  border-style: solid;
-  border-color: theme(colors.border);
-  border-radius: 16px 16px 0px 0px;
   z-index: 1;
 }
 
 .no-cover #document {
   min-height: calc(100% - calc(2.5em + 32px));
+}
+
+.search-bar {
+  @apply bg-paper rounded-2 gap-2;
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  transform: translate(-50%);
+  top: calc(-1.68rem - 16px);
+  transition: top 200ms ease;
 }
 
 </style>

@@ -30,7 +30,7 @@ export default defineComponent({
     },
     computed: {
         items: function() {
-            return store.getters['documents/list'].filter((item: any) => { return item.name.search(this.search) > -1});
+            return store.getters['documents/list'].filter((item: any) => { return item.name.search(this.search) > -1 || item.id.search(this.search) > -1 });
         }
     },
     methods: {
