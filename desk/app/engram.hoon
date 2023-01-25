@@ -116,8 +116,6 @@
           %-  ~(run by s)  |=  spc=space
           ?:  (~(has in (silt ~(val by content.content.spc))) [id %document])
             =/  spclist  ~(tap by content.content.spc) 
-            ~&  (turn spclist |=(a=[[@p @u] [[@p @u] @tas]] +.a))
-            ~&  [[id %document]]
             =/  idx  (find ~[[id %document]] (turn spclist |=(a=[[@p @u] [[@p @u] @tas]] +.a)))
             =/  todel  (snag (need idx) spclist)
             =.  content.spc  (remove:index content.spc -.todel our.bowl)
@@ -277,14 +275,12 @@
           :_  this
           %+  turn  (weld (weld directpeers spacepeers) ~[owner.settings.doc])
             |=  peer=@p 
-            ~&  "Passing update to {<peer>}"
             [%pass /document/update %agent [peer %engram] %poke %post !>([%document %update path.act])]
         ==
         ::
         ::  Poked when a remote update is availible
         ::
           %update
-        ~&  "Update msg from: {<src.bowl>}"
         :_  this
         :~  [%pass /document/gather %agent [our.bowl %engram] %poke %post !>([%document %gather path.act src.bowl])]
         ==
@@ -559,7 +555,7 @@
         ::  Poked when a remote update is availible
         ::
           %update
-        ~&  "Update msg from {<src.bowl>}"
+        ::~&  "Update msg from {<src.bowl>}"
         :_  this
         :~  [%pass /folder/gather %agent [our.bowl %engram] %poke %post !>([%folder %gather path.act src.bowl])]
         ==
@@ -818,7 +814,6 @@
     ``noun+!>((list:document:enjs:engram d))
   ::
       [%x %document @ @ %get ~]
-    ~&  d
     ?>  =(src.bowl our.bowl)
     =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
     ?.  (~(has by d) id)
