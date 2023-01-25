@@ -312,7 +312,7 @@
         =/  doc  (~(got by d) id)
         =/  tid  `@ta`(cat 4 (cat 2 'document-delta-' (scot %p +.id)) (cat 2 (scot %ud -.id) (scot %uv (sham eny.bowl))))
         =/  ta-now  `@ta`(scot %da now.bowl)
-        =/  start-args  [~ `tid byk.bowl(r da+now.bowl) %delta-document !>([path.act src.bowl doc])]
+        =/  start-args  [~ `tid byk.bowl(r da+now.bowl) %delta-document !>([path.act src.bowl doc (~(has by s) space.settings.doc)])]
         :_  this
         :~
           [%pass /engram/delta/document/[(cat 2 (scot %p -.id) (scot %ud +.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
@@ -327,7 +327,7 @@
         =/  doc  (~(got by d) id)
         =/  tid  `@ta`(cat 4 (cat 2 'document-sync-' (scot %p +.id)) (cat 2 (scot %ud -.id) (scot %uv (sham eny.bowl))))
         =/  ta-now  `@ta`(scot %da now.bowl)
-        =/  start-args  [~ `tid byk.bowl(r da+now.bowl) %sync-document !>([path.act src.bowl settings.doc update.act])]
+        =/  start-args  [~ `tid byk.bowl(r da+now.bowl) %sync-document !>([path.act src.bowl settings.doc update.act (~(has by s) space.settings.doc)])]
         :_  this
         :~  
           [%pass /engram/sync/document/[(cat 2 (scot %p -.id) (scot %ud +.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
