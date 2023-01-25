@@ -29,7 +29,8 @@ const schema = new Schema({
 
     // Header -----------------------------------------------------------------
     header: {
-      content: "cover styling title description{0, 1}",
+      //content: "cover styling title description{0, 1}",
+      content: "cover title description{0, 1}",
       group: "header",
       attrs: { id: { default: null } },
       parseDOM: [{ tag: "header" }],
