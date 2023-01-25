@@ -10,6 +10,10 @@ import type { Module, GetterTree, MutationTree, ActionTree } from "vuex"
 import * as Y from "yjs"
 import router from "@/router/index";
 import { pushUpdate } from "@/components/document/prosemirror/render";
+import { EditorState } from "prosemirror-state";
+import { EditorView } from "prosemirror-view";
+import schema from "@/components/document/prosemirror/schema";
+import { ySyncPlugin } from "y-prosemirror";
 
 const state: DocumentState = {
 
@@ -58,7 +62,42 @@ const getters: GetterTree<DocumentState, RootState> = {
         }));
       })
     })
-    
+  },
+  export: (state) => (id: string): Promise<string> => {
+    console.log("exporting: ", id);
+    return new Promise((resolve) => {
+      (window as any).urbit.scry({ 
+        app: "engram", 
+        path: `/document${id}/get`
+      }).then((res: any) => {
+        //console.log("scry res: ", res);
+        const doc = new Y.Doc();
+        doc.clientID = 0;
+        doc.gc = false;
+        const content = new Uint8Array(JSON.parse(res.content));
+        if(content.length > 0) {
+          console.log("applying update?", content);
+          Y.applyUpdate(doc, content);
+        }
+        const type = doc.getXmlFragment("prosemirror");
+        console.log("creating prosemirror doc");
+        const state = EditorState.create({
+          schema: schema,
+          plugins: [
+            // CRDT
+            ySyncPlugin(type, {}),
+          ],
+        });
+        const el = document.createElement("body");
+        const view = new EditorView(el, {
+          state,
+        });
+        setTimeout(() => {
+          console.log(el.outerHTML);
+          resolve(el.outerHTML);
+        }, 80);
+      })
+    })
   }
 }
 

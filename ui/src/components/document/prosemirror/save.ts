@@ -12,7 +12,7 @@ export const save = (save: (view: EditorView) => void) =>
         },
       },
       handleKeyDown: (view, event) => {
-        if (event.ctrlKey && event.key == "s") {
+        if ((event.ctrlKey || event.metaKey) && event.key == "s") {
           event.preventDefault();
           save(view);
         }

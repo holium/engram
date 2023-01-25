@@ -9,7 +9,7 @@ export const find = (openFinder: (querier: (query: string) => void) => void) => 
     key: FindPluginKey,
     props: {
         handleKeyDown(view, event) {
-            if(event.key == "f" && event.ctrlKey) {
+            if(event.key == "f" && (event.ctrlKey || event.metaKey)) {
                 event.preventDefault();
                 openFinder((query: string) => {
                     search = query;

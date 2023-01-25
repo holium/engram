@@ -1,11 +1,11 @@
 <template>
   <div class="flex flex-col">
-    <div class="py-2 heading-2 opacity-50 flex">
-      <div class="flex-grow">
+    <div class="flex">
+      <div class="flex-grow py-2 heading-2 opacity-50">
         Permission Rules 
       </div>
-      <div class="opacity-50" v-if="isAdmin">
-        admin view
+      <div class="rounded-1 py-2 px-3 border clickable" @click="exportDocument">
+        export
       </div>
     </div>
     <div class="flex flex-col gap-1">
@@ -93,6 +93,13 @@ export default defineComponent({
     }
   },
   methods: {
+    exportDocument: async function() {
+      const content = await store.getters['documents/export'](`/${this.$route.params.author}/${this.$route.params.clock}`);
+      const dummy = document.createElement("a");
+      dummy.setAttribute("href", "data:text/html;charset=utf-8," + encodeURIComponent(content));
+      dummy.setAttribute("download", `_${this.$route.params.author}_${this.$route.params.clock}`);
+      dummy.click();
+    },
     handleLevel: function(item: string, level: string, type: string) {
       console.log("handling level: ", level);
       if(level == "-") {
