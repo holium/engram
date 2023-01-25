@@ -16,8 +16,11 @@
         {{ doc.owner }}
       </div>
       /
-      <div class="">
+      <div class="flex-grow">
         {{ doc.name }}
+      </div>
+      <div class="font-azimuth hover:underline cursor-pointer" @click="copyPath">
+        {{ path }}
       </div>
     </div>
 
@@ -55,11 +58,17 @@ export default defineComponent({
     toggleHideDock: function() {
       (this as any).toggleDock();
     },
+    copyPath: function() {
+      navigator.clipboard.writeText(this.path);
+    }
   },
   computed: {
     space: function(): Space {
       return store.getters["space/get"]
     },
+    path: function(): string {
+      return `/${this.$route.params.author}/${this.$route.params.clock}`;
+    }
   }
 });
 </script>
