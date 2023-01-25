@@ -22,6 +22,7 @@
         [%addperm (ot ~[id+pa perm+so level+(se %tas) type+(se %tas)])]
         [%removeperm (ot ~[id+pa timestamp+pa type+(se %tas)])]
         [%gatherall (ot ~[id+pa])]
+        [%gather (ot ~[id+pa peer+(se %p)])]
         [%accept (ot ~[id+pa update+(ot ~[author+(se %p) timestamp+(se %da) content+sa])])]
       ==
       :-  %folder  %-  of  :~
@@ -134,6 +135,8 @@
       ^-  json
       %-  pairs  :~ 
         ['id' (path ~[(scot %p -.id.doc) (scot %u +.id.doc)])]
+        ['name' (tape (trip name.settings.doc))]
+        ['owner' (tape (scow %p owner.settings.doc))]
         ['version' (tape version.doc)]
         ['content' (tape content.doc)]
         :-  'roles'  %-  pairs  %+  turn  ~(tap by content.roles.settings.doc)

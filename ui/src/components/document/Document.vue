@@ -1,8 +1,8 @@
 <template>
   <div class="flex flex-row items-stretch overflow-hidden">
     <div class="flex flex-col flex-grow relative" :class="{'loading-document': loading}" style="width: 100%">
-      <Toolbar />
-      <div class="search-bar input" :style="finder ? { 'top': '0'} : {}">
+      <Toolbar :doc="doc"/>
+      <div class="search-bar input" :style="finder ? { 'top': '0'} : {}" v-if="!missing">
         <input 
           :disables="!finder"
           ref="finder"
@@ -32,22 +32,23 @@
           <path d="M6 3.99995L9.99998 7.99245L5.99997 11.9999C5.49995 12.4999 6.07812 13.2999 6.70718 12.6712L10.7072 8.69933C11.0978 8.3087 11.0978 7.67589 10.7072 7.28527L6.70718 3.31341C6.07812 2.65716 5.5 3.50005 6 3.99995Z" fill="#333333"/>
         </svg>
       </div>
-      <div class="flex justify-center items-center flex-grow" v-if="loading">
+      <div class="flex flex-col gap-3 justify-center items-center flex-grow" v-if="loading || missing">
         <img class="loading-animation" src="@/assets/engram.svg" />
+        <div v-if="missing">Can't find this document</div>
       </div>
-      <div class="relative items-center scrollbar-small flex-grow" id="main" :class="{'no-cover': cover.src.length == 0}">
+      <div class="relative items-center scrollbar-small flex-grow" id="main" :class="{'no-cover': cover.src.length == 0}" v-if="!missing">
         <Cover :cover="cover" />
         <div id="document" ref="document"> </div>
       </div>
     </div>
-    <DocumentDock :styling="styling" />
+    <DocumentDock :styling="styling" :doc="doc" v-if="!missing"/>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 import store from "@/store/index";
-import type { DocumentContent, DocumentVersion } from "@/store/types"
+import type { DocumentContent, DocumentVersion, ItemMeta } from "@/store/types"
 
 import Toolbar from "@/components/Toolbar.vue";
 import DocumentDock from "@/components/dock/DocumentDock.vue";
@@ -80,6 +81,14 @@ export default defineComponent({
   inject: ['pushMenu'],
   data() {
     return {
+      missing: false,
+      doc: {
+        id: "",
+        owner: "",
+        name: "",
+        ships: {},
+        roles: {},
+      },
       loaded: null as null | Promise<DocumentContent>,
       loading: false,
       finder: false,
@@ -113,17 +122,26 @@ export default defineComponent({
     this.loaded = store.dispatch("workspace/open", `${to.params.author}/${to.params.clock}`);
     this.loading = true;
     this.loaded.then((res: any) => {
-        render(
-          this.$refs["document"] as any, 
-          res.content, 
-          (this as any).pushMenu, 
-          this.updateCover, 
-          this.updateStyling, 
-          this.openFinder,
-          null, 
-          this.editable(`/${to.params.author}/${to.params.clock}`)
-        );
-        this.loading = false;
+        console.log("loaded res: ", res);
+        if(res == "missing document") {
+          this.missing = true;
+        } else {
+          this.missing = false;
+          this.doc = res;
+          render(
+            this.$refs["document"] as any, 
+            res.content, 
+            (this as any).pushMenu, 
+            this.updateCover, 
+            this.updateStyling, 
+            this.openFinder,
+            null, 
+            this.editable(this.doc)
+          );
+          this.loading = false;
+        }
+      }).catch(() => {
+        this.missing = true;
       })
   },
   mounted: function () {
@@ -132,28 +150,36 @@ export default defineComponent({
     else {
       console.log("need to render document");
       this.loaded.then((res: any) => {
-        render(
-          this.$refs["document"] as any, 
-          res.content, 
-          (this as any).pushMenu, 
-          this.updateCover, 
-          this.updateStyling, 
-          this.openFinder,
-          null, 
-          this.editable(`/${this.$route.params.author}/${this.$route.params.clock}`)
-        );
-        this.loading = false;
-        (window as any).urbit.poke({
-          app: "engram", 
-          mark: "post",
-          json: {
-            document: {
-              gatherall: {
-                id: `/${this.$route.params.author}/${this.$route.params.clock}`
+        if(res == "missing document") {
+          this.missing = true;
+        } else {
+          this.missing = false;
+          this.doc = res;
+          render(
+            this.$refs["document"] as any, 
+            res.content, 
+            (this as any).pushMenu, 
+            this.updateCover, 
+            this.updateStyling, 
+            this.openFinder,
+            null, 
+            this.editable(this.doc)
+          );
+          this.loading = false;
+          (window as any).urbit.poke({
+            app: "engram", 
+            mark: "post",
+            json: {
+              document: {
+                gatherall: {
+                  id: `/${this.$route.params.author}/${this.$route.params.clock}`
+                }
               }
             }
-          }
-        })
+          })
+        }
+      }).catch(() => {
+        this.missing = true;
       })
     }
   },
@@ -161,6 +187,7 @@ export default defineComponent({
     previewing: function(newRender: null | DocumentVersion) {
       if(this.loaded != null) {
         this.loaded.then((res: any) => {
+
           render(
             this.$refs["document"] as any, 
             res.content, 
@@ -169,7 +196,7 @@ export default defineComponent({
             this.updateStyling, 
             this.openFinder,
             newRender, 
-            this.editable(`/${this.$route.params.author}/${this.$route.params.clock}`)
+            this.editable(this.doc)
           );
         });
       }
@@ -184,6 +211,7 @@ export default defineComponent({
   },
   methods: {
     loadDocument: function(document: string) {
+      
       store.dispatch("workspace/load", document);
     },
     updateCover: function (cover: CoverUpdate) {
@@ -225,11 +253,11 @@ export default defineComponent({
         this.handleFinderDown();
       }
     },
-    editable: function(path: string): boolean {
+    editable: function(doc: ItemMeta): boolean {
         const myroles = store.getters['space/roles'];
-        const owner = store.getters['documents/owner'](path);
-        const ships = store.getters['documents/ships'](path);
-        const roles = store.getters['documents/roles'](path);
+        const owner = doc.owner;
+        const ships = doc.ships;
+        const roles = doc.roles;
         const perms = Object.keys(roles).map((key: string) => {
           return myroles.includes(roles[key].perm) ? (roles[key].level == "editor" || roles[key].level == "admin") : false;
         })
