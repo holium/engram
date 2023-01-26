@@ -43,6 +43,7 @@ export default function (
 ): EditorView {
   if(view) view.destroy();
   const doc = new Y.Doc();
+  const path = `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`;
   doc.clientID = 0;
   doc.gc = false;
   if(content.length > 0) Y.applyUpdate(doc, content);
@@ -50,19 +51,19 @@ export default function (
   let state;
   if(snapshot == null) {
     const type = doc.getXmlFragment("prosemirror");
-    store.getters["documents/updates"](`/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`).then((updates: Array<DocumentUpdate>) => {
+    store.getters["documents/updates"](path).then((updates: Array<DocumentUpdate>) => {
       console.log("updates: ", updates);
       pushUpdate = (update: DocumentUpdate) => {
         if(update.content.length > 0) {
           Y.applyUpdate(doc, update.content);
           const snapshot = Y.snapshot(doc);
           store.dispatch("workspace/revisions/snap", {
-            id: `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`,
+            id: path,
             author: update.author,
             snapshot: snapshot
           });
           store.dispatch("workspace/reveisions/accept", {
-            id: `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`,
+            id: path,
             update: update,
           })
         }
@@ -74,7 +75,7 @@ export default function (
         const content = Y.encodeStateAsUpdate(doc);
     
         store.dispatch("documents/save", {
-          id: `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`,
+          id: path,
           version: version,
           content: content
         });
@@ -93,13 +94,13 @@ export default function (
           const content = Y.encodeStateAsUpdate(doc);
           const snapshot = Y.snapshot(doc);
           store.dispatch("documents/save", {
-            id: `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`,
+            id: path,
             version: version,
             content: content
           });
   
           store.dispatch("workspace/revisions/snap", {
-            id: `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`,
+            id: path,
             snapshot: snapshot
           });
         }),
