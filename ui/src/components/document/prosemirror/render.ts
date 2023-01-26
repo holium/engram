@@ -133,8 +133,7 @@ export default function (
     });
   }
   
-
-  console.log("editable: ", editable);
+  if(view) view.destroy();
   view = new EditorView(place, {
     editable: () => { return editable },
     state,
