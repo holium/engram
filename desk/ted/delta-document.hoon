@@ -8,8 +8,10 @@
 =,  strand=strand:spider
 |%
 ++  make-delta
-|=  [path=path doc=document src=@p our=@p now=@da]
-?>  ?|  (~(has in (silt (turn ~(val by content.ships.settings.doc) |=(a=[@p @tas] -.a)))) src)
+|=  [path=path doc=document src=@p our=@p now=@da check-space=$?(%.y %.n)]
+?>  ?|  =(owner.settings.doc src)  
+      (~(has in (silt (turn ~(val by content.ships.settings.doc) |=(a=[@p @tas] -.a)))) src)
+      ?.  check-space  %.n
       =/  spacemembers  .^(view:membership %gx ~[(scot %p our) ~.spaces (scot %da now) -.space.settings.doc -.+.space.settings.doc ~.members ~.noun])
       ?+  -.spacemembers  !!
         %members  (~(has by ^-(members:membership +.spacemembers)) src)
@@ -27,5 +29,5 @@
 ^-  form:m
 ;<  our=@p   bind:m  get-our
 ;<  now=@da  bind:m  get-time
-;<  ~        bind:m  (poke [src.args %engram] (make-delta [path.args doc.args src.args our now]))
+;<  ~        bind:m  (poke [src.args %engram] (make-delta [path.args doc.args src.args our now check-space.args]))
 (pure:m !>([%delta-document-success ~]))

@@ -13,9 +13,20 @@ const slashmenu = (pushMenu: (menu: SlashMenu | null) => void) => new Plugin({
     key: SlahsMenuPluginKey,
     props: {
         handleDOMEvents: {
+            blur: () => {
+                setTimeout(() => {
+                    pushMenu(null);
+                    search = "";
+                    selected = 0;
+                    top = 0;
+                    left = 0;
+                    type = "";
+                }, 80);
+            },
             keydown: (view, event) => {
                 const sel = view.state.selection;
-                if(event.key == "/") {
+                console.log(event.key);
+                if(event.key == "/" && type != "engram") {
                     const start = view.coordsAtPos(sel.from);
                     const end = view.coordsAtPos(sel.to);
                     left =
@@ -32,8 +43,8 @@ const slashmenu = (pushMenu: (menu: SlashMenu | null) => void) => new Plugin({
 
                     type = "engram"
                     pushMenu(new EngramMenu({ top: top, left: left }, search, selected));
-                } else if(top != 0 && "abcdefghijklmnop".includes(event.key)) {
-                    search = search + event.key;
+                } else if(top != 0 && !(event.key == "Backspace" || event.key == "Space")) {
+                    if(event.key.length == 1) search = search + event.key;
                     type == "slash" ? pushMenu(new SlashMenu({ top: top, left: left }, search, selected)) :
                             "engram" ? pushMenu(new EngramMenu({ top: top, left: left }, search, selected)) : null;
                 } else if(top != 0 && event.key == "ArrowDown") {

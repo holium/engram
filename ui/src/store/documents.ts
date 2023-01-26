@@ -26,14 +26,47 @@ const getters: GetterTree<DocumentState, RootState> = {
     })
   },
   meta: (state) => (id: string): ItemMeta => {
-    if(!state[id]) return { id: "missing document", name: "missing document", owner: "missing document", roles: {}, ships: {}};
-    return {
-      id: id,
-      name: state[id].name,
-      owner: state[id].owner,
-      roles: state[id].roles,
-      ships: state[id].ships,
-    }
+    if(state[id]) return {
+        id: id,
+        name: state[id].name,
+        owner: state[id].owner,
+        roles: state[id].roles,
+        ships: state[id].ships,
+      };
+    else return {
+        id: "missing document",
+        name: "missing document",
+        owner: "missing document",
+        roles: {},
+        ships: {}
+      }
+  },
+  smeta: (state) => (id: string): Promise<ItemMeta> => {
+    return new Promise((resolve) => {
+      if(!state[id]) {
+        console.log("falling back to scry");
+        (window as any).urbit.scry({ app: "engram", path: `/document${id}/get`}).then((res: any) => {
+          console.log("res: ", res);
+          resolve({
+            id: id,
+            name: res.name,
+            owner: res.owner,
+            roles: res.roles,
+            ships: res.ships
+          })
+        }).catch(() => {
+          resolve({ id: "missing document", name: "missing document", owner: "missing document", roles: {}, ships: {}});
+        })
+      }
+      resolve({
+        id: id,
+        name: state[id].name,
+        owner: state[id].owner,
+        roles: state[id].roles,
+        ships: state[id].ships,
+      })
+    })
+    
   },
   owner: (state) => (id: string): string => {
     return state[id].owner;

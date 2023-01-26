@@ -1,6 +1,6 @@
 <template>
     <div class="input relative">
-        <input type="text" placeholder="Search Documents..." v-model="search" @focus="on = true" @blur="handleBlur">
+        <input type="text" placeholder="Search Documents..." v-model="search" @focus="on = true" @blur="handleBlur" @keydown="handleKeypress">
         <div id="results" class="flex flex-col bg-paper outline-none shadow-menu overflow-auto rounded-2 scrollbar-small" v-if="on">
             <div 
                 class="clickable px-3 py-1"
@@ -41,7 +41,23 @@ export default defineComponent({
         },
         handleKeypress: function(event: KeyboardEvent) {
             if(event.key == "Enter") {
-                this.open(this.items[this.selected].id)
+                console.log("enter");
+                if(this.items.length == 0) {
+                    const fullpath = this.search.match(/^\/(~[\w-]+)\/(\d+)$/);
+                    console.log("search path: ", fullpath);
+                    if(fullpath) {
+                        (window as any).urbit.poke({
+                            app: "engram",
+                            mark: "post",
+                            json: {
+                                document: { gather: { id: this.search, peer: fullpath["1"] }}
+                            }
+                        })
+                        this.open(this.search);
+                    }
+                } else {
+                    this.open(this.items[this.selected].id);
+                }
             } else if(event.key == "ArrowDown") {
                 this.selected = (this.selected + 1) % this.items.length;
             } else if(event.key == "ArrowUp") {

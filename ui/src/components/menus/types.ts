@@ -70,7 +70,7 @@ export class EngramMenu extends Menu {
     constructor(location:  { top: number, left: number }, search: string, selected: number) {
         super(
             location, 
-            store.getters['documents/list'].filter((doc: DocumentMeta) => {
+            [...store.getters['documents/list'].filter((doc: DocumentMeta) => {
                 return doc.name.search(search) > -1;
             }).map((doc: DocumentMeta) => {
                 return {
@@ -78,7 +78,6 @@ export class EngramMenu extends Menu {
                     display: doc.name,
                     icon: "",
                     command: () => {
-                        console.log("runnign command");
                         const pos = insertPoint(view.state.doc, view.state.selection.head, schema.nodes.engramlink);
                         if(pos) {
                             const tr = view.state.tr.insert(pos, schema.nodes.engramlink.create({ href: doc.id }));
@@ -86,8 +85,20 @@ export class EngramMenu extends Menu {
                         }
                     }
                 }
-            }), 
+            }), ...(search.match(/\/~[\w-]+\/\d/) == null ? [] : [{
+                key: "wild",
+                display: `link: ${search}`,
+                icon: "",
+                command: () => {
+                    const pos = insertPoint(view.state.doc, view.state.selection.head, schema.nodes.engramlink);
+                    if(pos) {
+                        const tr = view.state.tr.insert(pos, schema.nodes.engramlink.create({ href: search }));
+                        view.dispatch(tr);
+                    }
+                }
+            }])],
             false);
+        console.log("searching...: ", search);
         this.search = search;
         this.selected = selected;
     }

@@ -59,29 +59,40 @@ export default defineComponent({
     ShipPermission,
     RolePermission
   },
+  props: {
+    doc: {
+      type: Object,
+      required: true,
+    }
+  },
   data() {
     return {
       newPermission: "",
       newPermissionLevel: "",
+      ships: {} as { [key: string]: { perm: string, level: string }},
+      roles: {} as { [key: string]: { perm: string, level: string }},
+    }
+  },
+  created: function() {
+    this.loadPerms();
+  },
+  watch: {
+    path: function() {
+      this.loadPerms();
     }
   },
   computed: {
-    ships: function(): { [key: string]: { perm: string, level: string } } {
-      return store.getters['documents/ships'](`/${this.$route.params.author}/${this.$route.params.clock}`);
-    },
-    roles: function(): { [key: string]: { perm: string, level: string } } {
-      return store.getters['documents/roles'](`/${this.$route.params.author}/${this.$route.params.clock}`);
+    path: function(): string {
+      return `/${this.$route.params.author}/${this.$route.params.clock}`;
     },
     isAdmin: function(): boolean {
       const myroles = store.getters['space/roles'];
-      const owner = store.getters['documents/owner'](`/${this.$route.params.author}/${this.$route.params.clock}`);
-      const ships = store.getters['documents/ships'](`/${this.$route.params.author}/${this.$route.params.clock}`);
-      const roles = store.getters['documents/roles'](`/${this.$route.params.author}/${this.$route.params.clock}`);
-      const perms = Object.keys(roles).map((key: string) => {
-        return myroles.includes(roles[key].perm) ? (roles[key].level == "admin") : false;
+      const owner = this.doc.owner;
+      const perms = Object.keys(this.roles).map((key: string) => {
+        return myroles.includes(this.roles[key].perm) ? (this.roles[key].level == "admin") : false;
       })
-      Object.keys(ships).forEach((key: string) => {
-        perms.push(ships[key].perm == `~${(window as any).ship}` ? (ships[key].level == "editor" || ships[key].level == "admin") : false);
+      Object.keys(this.ships).forEach((key: string) => {
+        perms.push(this.ships[key].perm == `~${(window as any).ship}` ? (this.ships[key].level == "editor" || this.ships[key].level == "admin") : false);
       })
 
       return `~${(window as any).ship}` == owner || perms.reduce((a: boolean, acc: boolean) => {
@@ -89,10 +100,19 @@ export default defineComponent({
       }, false);
     },
     isOwner: function(): boolean {
-      return store.getters['documents/meta'](`/${this.$route.params.author}/${this.$route.params.clock}`).owner == `~${(window as any).ship}`
+      return this.doc.owner == `~${(window as any).ship}`
     }
   },
   methods: {
+    loadPerms: async function() {
+      (window as any).urbit.scry({
+        app: "engram",
+        path: `/document/${this.$route.params.author}/${this.$route.params.clock}/get`,
+      }).then((res: any) => {
+        this.ships = res.ships;
+        this.roles = res.roles;
+      })
+    },
     exportDocument: async function() {
       const content = await store.getters['documents/export'](`/${this.$route.params.author}/${this.$route.params.clock}`);
       const dummy = document.createElement("a");
@@ -107,7 +127,9 @@ export default defineComponent({
           id: `/${this.$route.params.author}/${this.$route.params.clock}`,
           timestamp: item,
           type: type
-        });
+        }).then(() => {
+          this.loadPerms();
+        })
       } else {
         const perm = (this as any)[type][item].perm;
         store.dispatch("documents/removeperm", { 
@@ -122,6 +144,7 @@ export default defineComponent({
             type: type
           }).then(() => {
             store.dispatch("workspace/settings/open", `/${this.$route.params.author}/${this.$route.params.clock}`);
+            this.loadPerms
           })
         })
       }
@@ -134,7 +157,9 @@ export default defineComponent({
           perm: ship ? this.newPermission : this.newPermission.substring(1),
           level: this.newPermissionLevel,
           type: ship ? "ships" : "roles"
-        });
+        }).then(() => {
+          this.loadPerms();
+        })
         this.newPermission = "";
         this.newPermissionLevel = "";
       } else {

@@ -56,18 +56,46 @@ const actions: ActionTree<WorkspaceState, RootState> = {
   },
 
   open({ commit, dispatch }, payload: string): Promise<DocumentContent> {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       console.log("opening");
       (window as any).urbit.scry({ app: "engram", path: `/document/${payload}/get`}).then((response: any) => {
-        console.log("got urbit response");
-        const content = {
-          version: new Uint8Array(JSON.parse(response.version)),
-          content: new Uint8Array(JSON.parse(response.content))
+        console.log("response: ", response);
+        if(response == "missing document") {
+          console.log("missing!")
+          setTimeout(() => {
+            (window as any).urbit.scry({ app: "engram", path: `/document/${payload}/get`}).then((response2: any) => {
+              if(response == "missing document") {
+                reject("missing document");
+              } else {
+                const content = {
+                  name: response.name,
+                  owner: response.owner,
+                  version: new Uint8Array(JSON.parse(response.version)),
+                  content: new Uint8Array(JSON.parse(response.content)),
+                  ships: response.ships,
+                  roles: response.roles
+                }
+                commit('open', content);
+                resolve(content);
+                dispatch("settings/open", payload);
+                dispatch("revisions/open", payload);
+              }
+            });
+          }, 5000);
+        } else {
+          const content = {
+            name: response.name,
+            owner: response.owner,
+            version: new Uint8Array(JSON.parse(response.version)),
+            content: new Uint8Array(JSON.parse(response.content)),
+            ships: response.ships,
+            roles: response.roles
+          }
+          commit('open', content);
+          resolve(content);
+          dispatch("settings/open", payload);
+          dispatch("revisions/open", payload);
         }
-        commit('open', content);
-        resolve(content);
-        dispatch("settings/open", payload);
-        dispatch("revisions/open", payload);
       });
     })
   },

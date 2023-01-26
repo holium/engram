@@ -15,17 +15,9 @@ export const engram = new Plugin({
                 dom.setAttribute("href", node.attrs.href);
                 dom.classList.add("engram-link");
                 const meta = store.getters['documents/meta'](node.attrs.href)
-                if(meta.id == "missing document") {
-                    dom.setAttribute("disabled", "true");
-                    dom.addEventListener("click", () => {
-                        const tr = view.state.tr.delete(getPos(), getPos() + node.nodeSize);
-                        view.dispatch(tr);
-                    });
-                } else {
-                    dom.addEventListener("click", () => {
-                        router.push(`/apps/engram${node.attrs.href}?spaceId=${router.currentRoute.value.query.spaceId}`);
-                    });
-                }
+                dom.addEventListener("click", () => {
+                    router.push(`/apps/engram${node.attrs.href}?spaceId=${router.currentRoute.value.query.spaceId}`);
+                });
                 dom.innerHTML = `
                     <svg 
                         v-if="type == 'document'"
@@ -37,7 +29,7 @@ export const engram = new Plugin({
                         <circle cx="8" cy="8" r="3"/>
                     </svg>
                     <div class="heading-1">
-                        ${meta.name}
+                        ${(meta.name == "missing document" ? node.attrs.href : meta.name)}
                     </div>
                 `
                 return { dom };

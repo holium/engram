@@ -118,8 +118,8 @@
     ==
   ==
 +$  dthread-gather  [path=path peer=@p doc=document]
-+$  dthread-delta   [path=path src=@p doc=document]
-+$  dthread-sync    [path=path peer=@p settings=dsettings update=[name=@t roles=(update:index [@tas @tas]) ships=(update:index [@p @tas]) content=(set dupdate)]]
++$  dthread-delta   [path=path src=@p doc=document check-space=$?(%.y %.n)]
++$  dthread-sync    [path=path peer=@p settings=dsettings update=[name=@t roles=(update:index [@tas @tas]) ships=(update:index [@p @tas]) content=(set dupdate)] check-space=$?(%.y %.n)]
 +$  fthread-gather  [path=path peer=@p fol=folder]
 +$  fthread-delta   [path=path src=@p fol=folder version=version]
 +$  fthread-sync    [path=path peer=@p fol=folder update=[name=@t roles=(update:index [@tas @tas]) ships=(update:index [@p @tas]) content=(update:index [id @tas])]]

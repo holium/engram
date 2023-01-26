@@ -72,8 +72,8 @@
           </div>
       </div>
         <!-- <StylingDock class="dock-body scrollbar-small" :styling="styling" v-if="open == 'styling'" /> -->
-        <SharingDock class="dock-body scrollbar-small" v-if="open == 'sharing'" />
-        <VersionDock class="dock-body scrollbar-small" v-if="open == 'revisions'" />
+        <SharingDock class="dock-body scrollbar-small" v-if="open == 'sharing'" :doc="doc"/>
+        <VersionDock class="dock-body scrollbar-small" v-if="open == 'revisions'" :doc="doc"/>
     </div>
   </div>
 </template>
@@ -92,6 +92,10 @@ export default defineComponent({
   },
   props: {
     styling: {
+      type: Object,
+      required: true,
+    },
+    doc: {
       type: Object,
       required: true,
     }

@@ -13,11 +13,14 @@
 
     <div class="flex flex-grow px-3 gap-2 items-center opacity-50">
       <div class="heading-2">
-        {{ space.name }}
+        {{ doc.owner }}
       </div>
       /
-      <div class="">
+      <div class="flex-grow">
         {{ doc.name }}
+      </div>
+      <div class="font-azimuth hover:underline cursor-pointer" @click="copyPath">
+        {{ path }}
       </div>
     </div>
 
@@ -38,10 +41,16 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import store from "@/store/index"
-import type { Space } from "@/store/types"
+import type { Space, ItemMeta } from "@/store/types"
 export default defineComponent({
   name: "Toolbar",
   inject: ["toggleNav", "toggleDock"],
+  props: {
+    doc: {
+      type: Object,
+      required: true,
+    }
+  },
   methods: {
     toggleHideNav: function() {
       (this as any).toggleNav();
@@ -49,13 +58,16 @@ export default defineComponent({
     toggleHideDock: function() {
       (this as any).toggleDock();
     },
+    copyPath: function() {
+      navigator.clipboard.writeText(this.path);
+    }
   },
   computed: {
     space: function(): Space {
       return store.getters["space/get"]
     },
-    doc: function() {
-      return store.getters['documents/meta'](`/${this.$route.params.author}/${this.$route.params.clock}`)
+    path: function(): string {
+      return `/${this.$route.params.author}/${this.$route.params.clock}`;
     }
   }
 });

@@ -116,8 +116,6 @@
           %-  ~(run by s)  |=  spc=space
           ?:  (~(has in (silt ~(val by content.content.spc))) [id %document])
             =/  spclist  ~(tap by content.content.spc) 
-            ~&  (turn spclist |=(a=[[@p @u] [[@p @u] @tas]] +.a))
-            ~&  [[id %document]]
             =/  idx  (find ~[[id %document]] (turn spclist |=(a=[[@p @u] [[@p @u] @tas]] +.a)))
             =/  todel  (snag (need idx) spclist)
             =.  content.spc  (remove:index content.spc -.todel our.bowl)
@@ -238,6 +236,12 @@
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  doc  (~(got by d) id)
         ?:  =(space.settings.doc /null/space)  ~&  "Document does not belong to a space"  `this
+        ?.  (~(has by s) space.settings.doc)
+          =/  directpeers  %+  turn  ~(val by content.ships.settings.doc)  |=  a=[@p @tas]  -.a
+          :_  this
+          %+  turn  (weld directpeers ~[owner.settings.doc])
+            |=  peer=@p 
+            [%pass /document/gather %agent [our.bowl %engram] %poke %post !>([%document %gather path.act peer])]
         =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.settings.doc -.+.space.settings.doc ~.members ~.noun])
         ?+  -.spacemembers  !!
             %members
@@ -253,17 +257,23 @@
         ::
           %updateall
         ?>  =(src.bowl our.bowl)
-        ::~&  "GATHERALL-- {<path.act>}"
+        ~&  "Update All-- {<path.act>}"
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  doc  (~(got by d) id)
         ?:  =(space.settings.doc /null/space)  ~&  "Document does not belong to a space"  `this
+        ?.  (~(has by s) space.settings.doc)
+          =/  directpeers  %+  turn  ~(val by content.ships.settings.doc)  |=  a=[@p @tas]  -.a
+          :_  this
+          %+  turn  (weld directpeers ~[owner.settings.doc])
+            |=  peer=@p 
+            [%pass /document/update %agent [peer %engram] %poke %post !>([%document %update path.act])]
         =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.settings.doc -.+.space.settings.doc ~.members ~.noun])
         ?+  -.spacemembers  !!
             %members
           =/  directpeers  %+  turn  ~(val by content.ships.settings.doc)  |=  a=[@p @tas]  -.a
           =/  spacepeers  %~  tap  in  %~  key  by  ^-  members:membership  +.spacemembers
           :_  this
-          %+  turn  (weld directpeers spacepeers)
+          %+  turn  (weld (weld directpeers spacepeers) ~[owner.settings.doc])
             |=  peer=@p 
             [%pass /document/update %agent [peer %engram] %poke %post !>([%document %update path.act])]
         ==
@@ -286,7 +296,7 @@
         ?.  (~(has by d) id)
           :: If we do not have this document request it
           :_  this
-          :~  [%pass /document/request %agent [peer.act %engram] %poke %post !>([%document %request path.act peer.act])]
+          :~  [%pass /document/request %agent [our.bowl %engram] %poke %post !>([%document %request path.act peer.act])]
           ==
         =/  doc  (~(got by d) id)
         :_  this
@@ -302,7 +312,7 @@
         =/  doc  (~(got by d) id)
         =/  tid  `@ta`(cat 4 (cat 2 'document-delta-' (scot %p +.id)) (cat 2 (scot %ud -.id) (scot %uv (sham eny.bowl))))
         =/  ta-now  `@ta`(scot %da now.bowl)
-        =/  start-args  [~ `tid byk.bowl(r da+now.bowl) %delta-document !>([path.act src.bowl doc])]
+        =/  start-args  [~ `tid byk.bowl(r da+now.bowl) %delta-document !>([path.act src.bowl doc (~(has by s) space.settings.doc)])]
         :_  this
         :~
           [%pass /engram/delta/document/[(cat 2 (scot %p -.id) (scot %ud +.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
@@ -317,7 +327,7 @@
         =/  doc  (~(got by d) id)
         =/  tid  `@ta`(cat 4 (cat 2 'document-sync-' (scot %p +.id)) (cat 2 (scot %ud -.id) (scot %uv (sham eny.bowl))))
         =/  ta-now  `@ta`(scot %da now.bowl)
-        =/  start-args  [~ `tid byk.bowl(r da+now.bowl) %sync-document !>([path.act src.bowl settings.doc update.act])]
+        =/  start-args  [~ `tid byk.bowl(r da+now.bowl) %sync-document !>([path.act src.bowl settings.doc update.act (~(has by s) space.settings.doc)])]
         :_  this
         :~  
           [%pass /engram/sync/document/[(cat 2 (scot %p -.id) (scot %ud +.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
@@ -327,6 +337,7 @@
         :: Request a document you don't have
         ::
           %request
+        ~&  act
         ?>  =(src.bowl our.bowl)
         :_  this
         :~  [%pass /document/answer %agent [peer.act %engram] %poke %post !>([%document %answer path.act])]
@@ -335,9 +346,10 @@
         :: Answer a request for a document
         ::
           %answer
+        ~&  "Request from: {<src.bowl>}"
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  doc  (~(got by d) id)
-        ?>  (guardspace:engram [space.settings.doc (molt ~(val by content.roles.settings.doc)) (molt ~(val by content.ships.settings.doc)) (silt `(list @tas)`[%admin %editor %visitor ~]) src.bowl our.bowl now.bowl])
+        ::?>  (guardspace:engram [space.settings.doc (molt ~(val by content.roles.settings.doc)) (molt ~(val by content.ships.settings.doc)) (silt `(list @tas)`[%admin %editor %visitor ~]) src.bowl our.bowl now.bowl])
         :_  this
         :~  [%pass /document/populate %agent [src.bowl %engram] %poke %post !>([%document %populate path.act doc])]
         ==
@@ -535,7 +547,7 @@
           =/  directpeers  %+  turn  ~(val by content.ships.fol)  |=  a=[@p @tas]  -.a
           =/  spacepeers  %~  tap  in  %~  key  by  ^-  members:membership  +.spacemembers
           :_  this
-          %+  turn  (weld directpeers spacepeers)
+          %+  turn  (weld (weld directpeers spacepeers) ~[owner.fol])
             |=  peer=@p 
             [%pass /folder/update %agent [peer %engram] %poke %post !>([%folder %update path.act])]
         ==
@@ -543,6 +555,7 @@
         ::  Poked when a remote update is availible
         ::
           %update
+        ::~&  "Update msg from {<src.bowl>}"
         :_  this
         :~  [%pass /folder/gather %agent [our.bowl %engram] %poke %post !>([%folder %gather path.act src.bowl])]
         ==
