@@ -51,36 +51,7 @@ export default function (
   let state;
   if(snapshot == null) {
     const type = doc.getXmlFragment("prosemirror");
-    store.getters["documents/updates"](path).then((updates: Array<DocumentUpdate>) => {
-      console.log("updates: ", updates);
-      pushUpdate = (update: DocumentUpdate) => {
-        if(update.content.length > 0) {
-          Y.applyUpdate(doc, update.content);
-          const snapshot = Y.snapshot(doc);
-          store.dispatch("workspace/revisions/snap", {
-            id: path,
-            author: update.author,
-            snapshot: snapshot
-          });
-          store.dispatch("workspace/reveisions/accept", {
-            id: path,
-            update: update,
-          })
-        }
-      }
-      updates.forEach(pushUpdate);
-
-      if(updates.length > 0) {
-        const version = Y.encodeStateVector(doc);
-        const content = Y.encodeStateAsUpdate(doc);
     
-        store.dispatch("documents/save", {
-          id: path,
-          version: version,
-          content: content
-        });
-      }
-    })
 
     state = EditorState.create({
       schema: schema,
@@ -118,6 +89,38 @@ export default function (
         comments,
       ],
     });
+    (async (activepath: string) => {
+      store.getters["documents/updates"](path).then((updates: Array<DocumentUpdate>) => {
+        console.log("updates: ", updates);
+        pushUpdate = (update: DocumentUpdate) => {
+          if(update.content.length > 0 && activepath == path) {
+            Y.applyUpdate(doc, update.content);
+            const snapshot = Y.snapshot(doc);
+            store.dispatch("workspace/revisions/snap", {
+              id: path,
+              author: update.author,
+              snapshot: snapshot
+            });
+            store.dispatch("workspace/reveisions/accept", {
+              id: path,
+              update: update,
+            })
+          }
+        }
+        updates.forEach(pushUpdate);
+  
+        if(updates.length > 0) {
+          const version = Y.encodeStateVector(doc);
+          const content = Y.encodeStateAsUpdate(doc);
+      
+          store.dispatch("documents/save", {
+            id: path,
+            version: version,
+            content: content
+          });
+        }
+      })
+    })(path)
   } else {
     const preview = Y.createDocFromSnapshot(doc, snapshot.snapshot)
     const type = preview.getXmlFragment("prosemirror");
