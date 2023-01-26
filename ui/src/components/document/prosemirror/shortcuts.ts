@@ -9,6 +9,15 @@ import {
 import schema from "./schema";
 
 // Nodes -----------------------------------------------------------------------
+const engramRule = textblockTypeInputRule(
+  new RegExp("@\/~[\w-]+\/\d+\s"),
+  schema.nodes["engramlink"],
+  (match) => {
+    console.log("matched? ", match);
+    return { href: `/~${match}/`}
+  }
+)
+
 const headingRule = textblockTypeInputRule(
   new RegExp("^(#{1,6})\\s$"),
   schema.nodes["heading"],
@@ -79,14 +88,6 @@ const codeRule = markInputRule(
   schema.marks["code"],
   null
 );
-
-const engramRule = textblockTypeInputRule(
-  new RegExp("@\/~[\w\-]+\/\d+"),
-  schema.nodes["engramlink"],
-  (match) => {
-    return { href: `/~${match}/`}
-  }
-)
 
 export default inputRules({
   rules: [
