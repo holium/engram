@@ -23,7 +23,7 @@
         [%removeperm (ot ~[id+pa timestamp+pa type+(se %tas)])]
         [%gatherall (ot ~[id+pa])]
         [%gather (ot ~[id+pa peer+(se %p)])]
-        [%accept (ot ~[id+pa update+(ot ~[author+(se %p) timestamp+(se %da) content+sa])])]
+        [%accept (ot ~[id+pa])]
       ==
       :-  %folder  %-  of  :~
         [%make (ot ~[owner+(se %p) name+so space+pa roles+(op sym (se %tas)) ships+(op fed:ag (se %tas))])]
@@ -151,7 +151,6 @@
       |=  settings=dsettings:engram
       ^-  json
       %-  pairs  :~
-        ['id' (path ~[(scot %p -.id.doc) (scot %u +.id.doc)])]
         ['name' (tape (trip name.settings))]
         ['owner' (tape (scow %p owner.settings))]
         :-  'ships'  %-  pairs  %+  turn  ~(tap by content.ships.settings)  

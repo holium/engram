@@ -102,13 +102,12 @@ export default function (
               author: update.author,
               snapshot: snapshot
             });
-            store.dispatch("workspace/revisions/accept", {
-              id: path,
-              update: update,
-            })
           }
         }
         updates.forEach(pushUpdate);
+        store.dispatch("workspace/revisions/accept", {
+          id: path,
+        })
   
         if(updates.length > 0) {
           const version = Y.encodeStateVector(doc);
