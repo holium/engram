@@ -151,6 +151,7 @@
       |=  settings=dsettings:engram
       ^-  json
       %-  pairs  :~
+        ['id' (path ~[(scot %p -.id.doc) (scot %u +.id.doc)])]
         ['name' (tape (trip name.settings))]
         ['owner' (tape (scow %p owner.settings))]
         :-  'ships'  %-  pairs  %+  turn  ~(tap by content.ships.settings)  

@@ -107,7 +107,7 @@ export default defineComponent({
     loadPerms: async function() {
       (window as any).urbit.scry({
         app: "engram",
-        path: `/document/${this.$route.params.author}/${this.$route.params.clock}/get`,
+        path: `/document/${this.$route.params.author}/${this.$route.params.clock}/settings`,
       }).then((res: any) => {
         this.ships = res.ships;
         this.roles = res.roles;
@@ -117,7 +117,7 @@ export default defineComponent({
       const content = await store.getters['documents/export'](`/${this.$route.params.author}/${this.$route.params.clock}`);
       const dummy = document.createElement("a");
       dummy.setAttribute("href", "data:text/html;charset=utf-8," + encodeURIComponent(content));
-      dummy.setAttribute("download", `_${this.$route.params.author}_${this.$route.params.clock}`);
+      dummy.setAttribute("download", `${this.$route.params.author}_${this.$route.params.clock}`);
       dummy.click();
     },
     handleLevel: function(item: string, level: string, type: string) {
@@ -144,7 +144,7 @@ export default defineComponent({
             type: type
           }).then(() => {
             store.dispatch("workspace/settings/open", `/${this.$route.params.author}/${this.$route.params.clock}`);
-            this.loadPerms
+            this.loadPerms();
           })
         })
       }
