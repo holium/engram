@@ -43,6 +43,8 @@ export default function (
 ): EditorView {
   if(view) view.destroy();
   const doc = new Y.Doc();
+  const path = `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`;
+  Object.assign(doc, {documentId: path});
   doc.clientID = 0;
   doc.gc = false;
   if(content.length > 0) Y.applyUpdate(doc, content);
@@ -50,36 +52,7 @@ export default function (
   let state;
   if(snapshot == null) {
     const type = doc.getXmlFragment("prosemirror");
-    store.getters["documents/updates"](`/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`).then((updates: Array<DocumentUpdate>) => {
-      console.log("updates: ", updates);
-      pushUpdate = (update: DocumentUpdate) => {
-        if(update.content.length > 0) {
-          Y.applyUpdate(doc, update.content);
-          const snapshot = Y.snapshot(doc);
-          store.dispatch("workspace/revisions/snap", {
-            id: `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`,
-            author: update.author,
-            snapshot: snapshot
-          });
-          store.dispatch("workspace/reveisions/accept", {
-            id: `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`,
-            update: update,
-          })
-        }
-      }
-      updates.forEach(pushUpdate);
-
-      if(updates.length > 0) {
-        const version = Y.encodeStateVector(doc);
-        const content = Y.encodeStateAsUpdate(doc);
     
-        store.dispatch("documents/save", {
-          id: `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`,
-          version: version,
-          content: content
-        });
-      }
-    })
 
     state = EditorState.create({
       schema: schema,
@@ -93,13 +66,13 @@ export default function (
           const content = Y.encodeStateAsUpdate(doc);
           const snapshot = Y.snapshot(doc);
           store.dispatch("documents/save", {
-            id: `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`,
+            id: path,
             version: version,
             content: content
           });
   
           store.dispatch("workspace/revisions/snap", {
-            id: `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`,
+            id: path,
             snapshot: snapshot
           });
         }),
@@ -117,6 +90,37 @@ export default function (
         comments,
       ],
     });
+    (async (activepath: string) => {
+      store.getters["documents/updates"](path).then((updates: Array<DocumentUpdate>) => {
+        console.log("updates: ", updates);
+        pushUpdate = (update: DocumentUpdate) => {
+          if(update.content.length > 0 && activepath == (doc as any).documentId) {
+            Y.applyUpdate(doc, update.content);
+            const snapshot = Y.snapshot(doc);
+            store.dispatch("workspace/revisions/snap", {
+              id: path,
+              author: update.author,
+              snapshot: snapshot
+            });
+          }
+        }
+        updates.forEach(pushUpdate);
+        store.dispatch("workspace/revisions/accept", {
+          id: path,
+        })
+  
+        if(updates.length > 0) {
+          const version = Y.encodeStateVector(doc);
+          const content = Y.encodeStateAsUpdate(doc);
+      
+          store.dispatch("documents/save", {
+            id: path,
+            version: version,
+            content: content
+          });
+        }
+      })
+    })(path)
   } else {
     const preview = Y.createDocFromSnapshot(doc, snapshot.snapshot)
     const type = preview.getXmlFragment("prosemirror");
@@ -133,8 +137,7 @@ export default function (
     });
   }
   
-
-  console.log("editable: ", editable);
+  if(view) view.destroy();
   view = new EditorView(place, {
     editable: () => { return editable },
     state,

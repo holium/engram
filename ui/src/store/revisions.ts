@@ -106,7 +106,7 @@ const actions: ActionTree<RevisionState, RootState> = {
           update: {
             author: payload.update.author,
             timestamp: payload.update.timestamp,
-            data: JSON.stringify(Array.from(payload.update.content))
+            content: JSON.stringify(Array.from(payload.update.content))
           }
         }}}
       }).then(() => {

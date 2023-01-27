@@ -166,17 +166,21 @@ export default defineComponent({
             this.editable(this.doc)
           );
           this.loading = false;
-          (window as any).urbit.poke({
-            app: "engram", 
-            mark: "post",
-            json: {
-              document: {
-                gatherall: {
-                  id: `/${this.$route.params.author}/${this.$route.params.clock}`
+          /*
+          (async () => {
+            (window as any).urbit.poke({
+              app: "engram", 
+              mark: "post",
+              json: {
+                document: {
+                  gatherall: {
+                    id: `/${this.$route.params.author}/${this.$route.params.clock}`
+                  }
                 }
               }
-            }
-          })
+            })
+          });
+          */
         }
       }).catch(() => {
         this.missing = true;

@@ -60,25 +60,25 @@ const orderedListRule = wrappingInputRule(
 // Marks -----------------------------------------------------------------------
 
 const boldRule = markInputRule(
-  /(?:^|\s)((?:\*\*)(?<content>(?:[^*]+))(?:\*\*))$/,
+  /((?:\*\*)(?<content>(?:[^*]+))(?:\*\*))$/,
   schema.marks["strong"],
   null
 );
 
 const italicRule = markInputRule(
-  /(?:^|\s)((?:\*)(?<content>(?:[^*]+))(?:\*))$/,
+  /((?:\*)(?<content>(?:[^*]+))(?:\*))$/,
   schema.marks["italic"],
   null
 );
 
 const underlineRule = markInputRule(
-  /(?:^|\s)((?:_)((?<content>[^~]+))(?:_))$/,
+  /((?:_)((?<content>[^~]+))(?:_))$/,
   schema.marks["underline"],
   null
 );
 
 const strikeRule = markInputRule(
-  /(?:^|\s)((?:~~)((?<content>[^~]+))(?:~~))$/,
+  /((?:~~)((?<content>[^~]+))(?:~~))$/,
   schema.marks["strike"],
   null
 );

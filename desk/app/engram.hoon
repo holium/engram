@@ -187,7 +187,7 @@
           %accept
         ?>  =(src.bowl our.bowl)
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
-        `this(u (~(del ju u) id update.act))
+        `this(u (~(del by u) id))
         ::
         :: Add a permission to a document
         ::
