@@ -44,6 +44,7 @@ export default function (
   if(view) view.destroy();
   const doc = new Y.Doc();
   const path = `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`;
+  Object.assign(doc, {documentId: path});
   doc.clientID = 0;
   doc.gc = false;
   if(content.length > 0) Y.applyUpdate(doc, content);
@@ -93,7 +94,7 @@ export default function (
       store.getters["documents/updates"](path).then((updates: Array<DocumentUpdate>) => {
         console.log("updates: ", updates);
         pushUpdate = (update: DocumentUpdate) => {
-          if(update.content.length > 0 && activepath == path) {
+          if(update.content.length > 0 && activepath == (doc as any).documentId) {
             Y.applyUpdate(doc, update.content);
             const snapshot = Y.snapshot(doc);
             store.dispatch("workspace/revisions/snap", {
@@ -101,7 +102,7 @@ export default function (
               author: update.author,
               snapshot: snapshot
             });
-            store.dispatch("workspace/reveisions/accept", {
+            store.dispatch("workspace/revisions/accept", {
               id: path,
               update: update,
             })
