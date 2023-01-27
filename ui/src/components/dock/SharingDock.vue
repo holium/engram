@@ -107,7 +107,7 @@ export default defineComponent({
     loadPerms: async function() {
       (window as any).urbit.scry({
         app: "engram",
-        path: `/document/${this.$route.params.author}/${this.$route.params.clock}/settings`,
+        path: `/document/${this.$route.params.author}/${this.$route.params.clock}/get/settings`,
       }).then((res: any) => {
         this.ships = res.ships;
         this.roles = res.roles;
