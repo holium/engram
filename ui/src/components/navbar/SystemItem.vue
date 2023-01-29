@@ -122,7 +122,7 @@ export default defineComponent({
     methods: {
         open: function() {
             if(this.item.type == "folder") this.expand = !this.expand;
-            else this.$router.push(`/apps/engram${this.item}?spaceId=${this.$route.query.spaceId}`); 
+            else this.$router.push(`/apps/engram${this.item.id}?spaceId=${this.$route.query.spaceId}`); 
         },
         canView: function(id: string, type: string): boolean {
             return true;

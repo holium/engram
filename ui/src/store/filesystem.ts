@@ -160,7 +160,7 @@ const actions: ActionTree<FileSysState, RootState> = {
     // get like the getter but it loads the item if it's not already loaded 
     protectedget({ state, dispatch }, payload: SysRecord): Promise<SysItem> {
         return typeof state[payload.id] == "undefined" ?
-            dispatch("load", payload) : new Promise((resolve) => { return state[payload.id] }); 
+            dispatch("load", payload) : new Promise((resolve) => { resolve(state[payload.id]); }); 
     },
 
     // Modifications
