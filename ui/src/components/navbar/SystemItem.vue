@@ -83,10 +83,6 @@ export default defineComponent({
             type: Boolean
         }
     },
-    created: function() { 
-        console.log("item: ", this.item);
-        console.log("name: ", this.itemname);
-    },
     inject: ["pushMenu", "pushFolderDock"],
     data() {
         return {
@@ -155,7 +151,7 @@ export default defineComponent({
                     display: "Delete", 
                     icon: "", 
                     command: () => {
-                        store.dispatch("filesys/remove", { from: this.parent, index: this.index, soft: true })
+                        store.dispatch("filesys/remove", { from: this.parent, index: this.index, soft: true });
                         store.dispatch("filesys/delete", this.item);
                     }
                 },
@@ -209,47 +205,18 @@ export default defineComponent({
                 if(raw) {
                     const data = JSON.parse(raw);
                     if(this.item != data.from) {
-                        store.dispatch("folders/remove", { index: data.index, from: data.from });
-                        store.dispatch("folders/add", { item: { id: data.item.id, type: data.item.type }, to: this.item });
+                        store.dispatch("filesys/remove", { index: data.index, from: data.from });
+                        store.dispatch("filesys/add", { item: data.item, to: this.item.id });
                     }
                 }
             }
         },
         handleDragOver: function(event: DragEvent) {
-            console.log("can edit?", this.canEdit);
+            //console.log("can edit?", this.canEdit);
             if(this.item.type == "folder" && this.canEdit) {
                 event?.preventDefault();
             } 
         },
-        gather: function() {
-            if(this.$route.query.spaceId != "/null/space") {
-                if(this.item.type == "folder") {
-                    (window as any).urbit.poke({ 
-                        app: "engram", 
-                        mark: "post",
-                        json: {
-                            folder: {
-                                gatherall: {
-                                    path: this.item
-                                }
-                            }
-                        }
-                    })
-                } else {
-                    (window as any).urbit.poke({ 
-                        app: "engram", 
-                        mark: "post",
-                        json: {
-                            document: {
-                                gatherall: {
-                                    path: this.item
-                                }
-                            }
-                        }
-                    })
-                }
-            }
-        }
     }
 })
 </script>

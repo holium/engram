@@ -2,6 +2,7 @@ import type { GetterTree, MutationTree, ActionTree, Module } from "vuex"
 import type {
     RootState,
 } from "./types"
+import * as Y from "yjs";
 
 export interface SysRecord {
     id: string,
@@ -58,7 +59,7 @@ const getters: GetterTree<FileSysState, RootState> = {
 
     // Scries
 
-    last: (): Promise<string> => {
+    last: () => (): Promise<string> => {
         return (window as any).urbit.scry({ app: "engram", path: "/history"});
     }
 }
@@ -76,8 +77,8 @@ const mutations: MutationTree<FileSysState> = {
             }
         });
         if(root) state["."].children[payload.id] = payload;
-        if(payload.children)
-            Object.keys(payload.children).forEach((child: string) => {
+        if(payload.type == "folder")
+            Object.keys((payload.children as any)).forEach((child: string) => {
                 delete state["."].children[(payload.children as any)[child].id];
             })
     },
@@ -94,6 +95,12 @@ const mutations: MutationTree<FileSysState> = {
     },
     delete(state, payload: SysRecord) {
         delete state[payload.id];
+    },
+    add(state, payload: { to: string, item: SysRecord, index: string}) {
+        (state[payload.to].children as any)[payload.index] = payload.item;
+    },
+    remove(state, payload: { from: "string", index: string}) {
+        delete (state[payload.from].children as any)[payload.index];
     }
 }
 
@@ -107,7 +114,6 @@ const actions: ActionTree<FileSysState, RootState> = {
             (window as any).urbit.scry({ app: "engram", path: `/space${payload}/list` }).then((res: any) => {
                 if(res == "Missing Space") {
                     // handle if the space is missing
-                    console.log("making space...");
                     (window as any).urbit.poke({
                         app: "engram",
                         mark: "post",
@@ -176,16 +182,47 @@ const actions: ActionTree<FileSysState, RootState> = {
         });
     },
 
-    make({ getters, dispatch }, payload: { type: "document" | "folder", name: string }): Promise<SysItem> {
+    make({ getters, dispatch }, payload: { type: "document" | "folder", name: string, spaceId: string }): Promise<SysItem> {
         return new Promise((resolve) => {
             (async () => {
                 if(payload.type == "document") {
-
+                    const doc = new Y.Doc();
+                    doc.clientID = 0;
+                    doc.gc = false;
+                    const type = doc.getXmlFragment("prosemirror");
+                    const version = Y.encodeStateVector(doc);
+                    const content = Y.encodeStateAsUpdate(doc);
+                    const clock = 0;
+                    await (window as any).urbit.poke({
+                        app: "engram",
+                        mark: "post",
+                        json: { "document": { "make": {
+                            owner: `~${(window as any).ship}`,
+                            name: payload.name,
+                            space: `${payload.spaceId}`,
+                            content: "[]",
+                            version: "[]",
+                            roles: {},
+                            ships: {},
+                        }}}
+                    });
+                    return;
                 } else if(payload.type == "folder") {
-    
+                    await (window as any).urbit.poke({
+                        app: "engram",
+                        mark: "post",
+                        json: { "folder": { "make": {
+                          owner: `~${(window as any).ship}`,
+                          name: payload.name,
+                          space: payload.spaceId,
+                          roles: {},
+                          ships: {},
+                        }}}
+                    });
+                    return;
                 }
             })().then(() => {
-                getters['last'].then((path: string) => {
+                getters['last']().then((path: string) => {
                     dispatch("load", {
                       id: path,
                       type: payload.type
@@ -216,7 +253,7 @@ const actions: ActionTree<FileSysState, RootState> = {
     },
 
     // add an item to a folder
-    add({ commit, dispatch }, payload: { to: string, item: SysRecord, index?: string }): Promise<void> {
+    add({ state, commit, dispatch }, payload: { to: string, item: SysRecord, index?: string }): Promise<void> {
         return new Promise((resolve, reject) => {
             // reject if it's not being added to a folder
             if(state[payload.to].type != "folder") {
@@ -236,9 +273,9 @@ const actions: ActionTree<FileSysState, RootState> = {
                             json: {
                             "folder": {
                                 "add": {
-                                to: payload.to,
-                                id: payload.item.id,
-                                type: payload.item.type
+                                    to: payload.to,
+                                    id: payload.item.id,
+                                    type: payload.item.type
                                 }
                             }
                             }
@@ -274,7 +311,7 @@ const actions: ActionTree<FileSysState, RootState> = {
     },
 
     // remove an item from a folder
-    remove({ commit, dispatch }, payload: { from: string, index: string, soft?: boolean}): Promise<void> {
+    remove({ state, commit, dispatch }, payload: { from: string, index: string, soft?: boolean}): Promise<void> {
         return new Promise((resolve, reject) => {
             if(state[payload.from].type != "folder") {
                 // reject 

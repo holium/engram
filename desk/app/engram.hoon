@@ -379,6 +379,11 @@
           ^*  (index:index [id @tas])
         ==
         =/  id  [our.bowl t]
+        ~&  "Making folder:"
+        ~&  act
+        ~&  "=="
+        ~&  fold
+        ~&  "--"
         =/  fstate  this(f (~(put by f) id fold))
         =/  oldspc
         ?:  (~(has by s) space.act)

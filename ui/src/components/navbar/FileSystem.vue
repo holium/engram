@@ -20,7 +20,9 @@
             :index="i"
             :key="i" 
             :editable="canEdit"
-            v-for="i in Object.keys(items)"
+            v-for="i in Object.keys(items).sort((a, b) => {
+                return (items[a].type == 'document' ? (items[b].type == 'folder' ? 1 : -1) : -1)
+            })"
         />
         <!--
         <SystemItem 
@@ -64,7 +66,6 @@ export default defineComponent({
         }
     },
     created: function() {
-        console.log("items: ", this.items);
         //this.loadSettings(); 
     },
     watch: {
@@ -118,7 +119,8 @@ export default defineComponent({
                     display: "New Document",
                     icon: "",
                     command: () => {
-                        store.dispatch("documents/make", { name: "Untitled Document" }).then((path: string) => {
+                        store.dispatch("filesys/make", { type: "document", name: "Untitled Document", spaceId: this.$route.query.spaceId }).then((path: string) => {
+                            /*
                             (window as any).urbit.scry({ app: "engram", path: `/space${this.$route.query.spaceId}/settings`}).then((res: any) => {
                                 Object.keys(res.roles).forEach((role: string) => {
                                     console.log("adding role");
@@ -138,6 +140,7 @@ export default defineComponent({
                                     }, { root: true})
                                 });
                             });
+                            */
                         })
                     }
                 },
@@ -145,7 +148,8 @@ export default defineComponent({
                     display: "New Folder",
                     icon: "",
                     command: () => {
-                        store.dispatch("folders/make", { name: "Untitled Folder" }).then((path: string) => {
+                        store.dispatch("filesys/make", { type: "folder", name: "Untitled Folder", spaceId: this.$route.query.spaceId }).then((path: string) => {
+                            /*
                             (window as any).urbit.scry({ app: "engram", path: `/space${this.$route.query.spaceId}/settings`}).then((res: any) => {
                                 Object.keys(res.roles).forEach((role: string) => {
                                     store.dispatch(`folders/addperm`, {
@@ -164,13 +168,14 @@ export default defineComponent({
                                     }, { root: true})
                                 });
                             });
+                            */
                         })
                     }
                 }
             ]))
         },
         handleDrop: function(event: DragEvent) {
-            console.log("can drop? ", this.canEdit);
+            //console.log("can drop? ", this.canEdit);
             if(this.canEdit) {
                 event.preventDefault();
                 //event.stopPropagation();
@@ -179,15 +184,15 @@ export default defineComponent({
                     const data = JSON.parse(raw);
                     console.log("dropping: ", data);
                     if(data.from != ".") {
-                        store.dispatch("folders/remove", { index: data.index, from: data.from });
-                        store.dispatch("folders/add", { item: { id: data.item.id, type: data.item.type, index: data.item.id }, to: "." });
+                        store.dispatch("filesys/remove", { index: data.index, from: data.from });
+                        store.dispatch("filesys/add", { item: { id: data.item.id, type: data.item.type }, to: ".", index: data.item.id });
                     }
                 }
             }
             
         }, 
         handleDragOver: function(event: DragEvent) {
-            console.log("can dragover? ", this.canEdit);
+            //console.log("can dragover? ", this.canEdit);
             if(this.canEdit) {
                 event.preventDefault();
             }
