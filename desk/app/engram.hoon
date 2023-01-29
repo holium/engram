@@ -821,19 +821,27 @@
     =/  doc  (~(got by d) id)
     ``noun+!>((get:document:enjs:engram doc))
   ::
-      [%x %document @ @ %get %settings ~]
+      [%x %document @ @ %meta ~]
+    ?>  =(src.bowl our.bowl)
+    =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
+    ?.  (~(has by d) id)
+      ``noun+!>((tape:enjs:format "missing document"))
+    =/  doc  (~(got by d) id)
+    ``noun+!>((meta:document:enjs:engram doc))
+  ::
+      [%x %document @ @ %settings ~]
     ?>  =(src.bowl our.bowl)
     =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
     =/  doc  (~(got by d) id)
     ``noun+!>((settings:document:enjs:engram settings.doc))
   ::
-      [%x %document @ @ %get %snapshots ~]
+      [%x %document @ @ %snapshots ~]
     ?>  =(src.bowl our.bowl)
     =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
     =/  doc  (~(got by d) id)
     ``noun+!>((snapshots:document:enjs:engram snapshots.doc))
   ::
-      [%x %document @ @ %get %updates ~]
+      [%x %document @ @ %updates ~]
     ?>  =(src.bowl our.bowl)
     =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
     ?:  (~(has by u) id)
@@ -853,7 +861,13 @@
     =/  fold  (~(got by f) id)
     ``noun+!>((list:folder:enjs:engram fold))
   ::
-      [%x %folder @ @ %get %settings ~]
+      [%x %folder @ @ %meta ~]
+    ?>  =(src.bowl our.bowl)
+    =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
+    =/  fold  (~(got by f) id)
+    ``noun+!>((meta:folder:enjs:engram fold))
+  ::
+      [%x %folder @ @ %settings ~]
     ?>  =(src.bowl our.bowl)
     =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
     =/  fold  (~(got by f) id)

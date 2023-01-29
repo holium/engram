@@ -16,6 +16,15 @@
         </div>
         <SystemItem 
             :parent="'.'" 
+            :item="items[i]" 
+            :index="i"
+            :key="i" 
+            :editable="canEdit"
+            v-for="i in Object.keys(items)"
+        />
+        <!--
+        <SystemItem 
+            :parent="'.'" 
             :item="items[i].id" 
             :index="i"
             :type="'folder'" 
@@ -32,6 +41,7 @@
             :editable="canEdit"
             v-for="i in Object.keys(items).filter((i: string) => items[i].type == 'document' && canView(i, items[i].type))"
         />
+        -->
     </div>
 </template>
 
@@ -54,22 +64,25 @@ export default defineComponent({
         }
     },
     created: function() {
-        this.loadSettings(); 
+        console.log("items: ", this.items);
+        //this.loadSettings(); 
     },
     watch: {
         spaceId: function() {
-            this.loadSettings(); 
-            console.log(this.canEdit);
+            //this.loadSettings(); 
+            //console.log(this.canEdit);
         },
     },
     computed: {
         items: function(): { [key: string]: { id: string, type: string }} {
-            return store.getters['folders/root'];
+            return store.getters['filesys/root'].children;
         },
         spaceId: function(): string {
             return this.$route.params.spaceId as string;
         },
         canEdit: function(): boolean {
+            return true;
+            /*
             const myroles = store.getters['space/roles'];
             const owner = store.getters['space/owner'];
 
@@ -85,9 +98,11 @@ export default defineComponent({
             return `~${(window as any).ship}` == owner || perms.reduce((a: boolean, acc: boolean) => {
                 return acc || a;
             }, false);
+            */
       }
     },
     methods: {
+        /*
         loadSettings: function() {
             (window as any).urbit.scry({ app: "engram", path: `/space${this.$route.query.spaceId}/settings`}).then((res: any) => {
                 console.log("loading settings: ", res);
@@ -95,6 +110,7 @@ export default defineComponent({
                 this.ships = res.ships;
             });
         },
+        */
         openMenu: function(event: MouseEvent) {
             event.preventDefault();
             (this as any).pushMenu(new Menu({ top: event.clientY, left: event.clientX}, [
@@ -177,6 +193,8 @@ export default defineComponent({
             }
         },
         canView: function(id: string, type: string): boolean {
+            return true;
+            /*
             const item = store.getters[`${type}s/meta`](id);
             const roles = store.getters['space/roles'];
             const perms = Object.keys(item.roles).map((key: string) => item.roles[key].perm);
@@ -187,6 +205,7 @@ export default defineComponent({
             }, false) || roles.reduce((a: string, acc: boolean) => {
                 return acc || perms.includes(a);
             }, false);
+            */
         }
     }
 })

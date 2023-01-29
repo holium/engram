@@ -5,6 +5,7 @@ import type { RootState, Space } from "./types"
 import space from "./space"
 import documents from './documents';
 import folders from "./folders";
+import filesys from "./filesystem"
 import workspace from "./workspace"
 
 export const nullspace = {
@@ -32,6 +33,33 @@ const getters: GetterTree<RootState, RootState> = {
 }
 
 const actions: ActionTree<RootState, RootState> = {
+  load({ dispatch, state }): Promise<void> {
+    return new Promise((resolve) => {
+      let delay = 1;
+      const spaceId = router.currentRoute.value.query.spaceId;
+      //dispatch("workspace/close", {}, { root: true });
+      dispatch("space/load", spaceId, { root: true });
+      (window as any).urbit.poke({
+        app: "engram",
+        mark: "post",
+        json: { leave: { self: `~${(window as any).ship}` } }
+      }).then(() => {
+        dispatch("filesys/reset", {}, { root: true });
+        dispatch("filesys/boot", spaceId, { root: true }).then(() => {
+          resolve();
+          (window as any).urbit.subscribe({
+            app: "engram",
+            path: "/updates",
+            event: (event: any) => {
+              console.log("received event: ", event);
+              if(event.type == "filesys") dispatch("filesys/getupdate", event.item, { root: true });
+            }
+          });
+        });
+      })
+    });
+  }
+  /*
   load({ dispatch, state }): Promise<void> {
     return new Promise((resolve) => {
       let delay = 1;
@@ -127,6 +155,7 @@ const actions: ActionTree<RootState, RootState> = {
       })
     })
   }
+  */
 }
 
 export default createStore({
@@ -134,8 +163,9 @@ export default createStore({
   actions,
   modules: {
     space,
-    documents,
-    folders,
+    filesys,
+    //documents,
+    //folders,
     workspace,
   }
 })

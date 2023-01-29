@@ -1,14 +1,14 @@
-import type { GetterTree, MutationTree, ActionTree } from "vuex"
+import type { GetterTree, MutationTree, ActionTree, Module } from "vuex"
 import type {
     RootState,
 } from "./types"
 
-interface SysRecord {
+export interface SysRecord {
     id: string,
     type: "document" | "folder"
 }
 
-interface SysItem {
+export interface SysItem {
     id: string,
     type: "document" | "folder",
     name: string,
@@ -17,27 +17,43 @@ interface SysItem {
     }
 }
 
-interface FileSysState {
-    [key: string] : SysItem
+export interface FileSysState {
+    [key: string] : SysItem,
+    ".": {
+        id: string,
+        type: "folder",
+        name: "root",
+        children: { [id: string]: SysRecord },
+    },
 }
 
-const state: FileSysState = {}
+const state: FileSysState = {
+    ".": {
+        id: ".",
+        type: "folder",
+        name: "root",
+        children: {},
+    }
+}
 
 const getters: GetterTree<FileSysState, RootState> = {
 
-    // Fields
+    root: (state) => {
+        return state["."];
+    },
 
+    // Fields
     get: (state) => (id: string): undefined | SysItem => {
         return state[id];
     },
     type: (state) => (id: string): undefined | string => {
-        return state[id]?.type;
+        return state[id].type;
     },
     name: (state) => (id: string): undefined | string => {
-        return state[id]?.name;
+        return state[id].name;
     },
     children: (state) => (id: string): undefined | {[id: string]: SysRecord} => {
-        return state[id]?.children;
+        return state[id].children;
     },
 
     // Scries
@@ -50,11 +66,31 @@ const getters: GetterTree<FileSysState, RootState> = {
 const mutations: MutationTree<FileSysState> = {
     load(state, payload: SysItem) {
         state[payload.id] = payload;
+        let root = true;
+        Object.keys(state).forEach((key: string) => {
+            if(state[key].children && root) {
+                if(Object.keys((state[key].children as any)).map((item: string) => { 
+                    return (state[key].children as any)[item].id;
+                }).includes(payload.id))
+                    root = false;
+            }
+        });
+        if(root) state["."].children[payload.id] = payload;
+        if(payload.children)
+            Object.keys(payload.children).forEach((child: string) => {
+                delete state["."].children[(payload.children as any)[child].id];
+            })
     },
     reset(state) {
         Object.keys(state).forEach((key: string) => {
             delete state[key];
-        })
+        });
+        state["."] = {
+            id: ".",
+            type: "folder",
+            name: "root",
+            children: {},
+        }
     },
     delete(state, payload: SysRecord) {
         delete state[payload.id];
@@ -66,11 +102,39 @@ const actions: ActionTree<FileSysState, RootState> = {
     // Loading...
 
     // Load the full lifesystem of a space
-    boot({ commit }, payload: string): Promise<SysItem> {
+    boot({ commit, dispatch }, payload: string): Promise<void> {
         return new Promise((resolve, reject) => {
-            (window as any).urbt.scry({ app: "engram", path: `/space${payload}/list` }).then((res: any) => {
-                commit('load', res);
-                resolve(res);
+            (window as any).urbit.scry({ app: "engram", path: `/space${payload}/list` }).then((res: any) => {
+                if(res == "Missing Space") {
+                    // handle if the space is missing
+                    console.log("making space...");
+                    (window as any).urbit.poke({
+                        app: "engram",
+                        mark: "post",
+                        json: {
+                            space: { "make": { "space": payload }}
+                        }
+                    }).then(() => {
+                        // Gather updates
+                        (window as any).urbit.poke({
+                            app: "engram",
+                            mark: "post",
+                            json: {
+                                space: { "gatherall": { "space": payload }}
+                            }
+                        }).then(() => {
+                            // & try loading agains
+                            dispatch("boot").then(() => {
+                                resolve();
+                            })
+                        })
+                    });
+                } else {
+                    Object.keys((res)).forEach((item: string) => {
+                        commit('load', res[item]);
+                    });
+                    resolve();
+                }
             })
         })
     },
@@ -81,7 +145,7 @@ const actions: ActionTree<FileSysState, RootState> = {
     // Load an individual item 
     load({ commit }, payload: SysRecord): Promise<SysItem> {
         return new Promise((resolve, reject) => {
-            (window as any).urbt.scry({ app: "engram", path: `/${payload.type}${payload.id}/meta` }).then((res: any) => {
+            (window as any).urbit.scry({ app: "engram", path: `/${payload.type}${payload.id}/meta` }).then((res: any) => {
                 commit('load', { ...res, type: payload.type});
                 resolve(res);
             })
@@ -265,3 +329,11 @@ const actions: ActionTree<FileSysState, RootState> = {
           })
     }
 }
+
+export default {
+    namespaced: true,
+    state,
+    getters,
+    mutations,
+    actions,
+} as Module<FileSysState, RootState>

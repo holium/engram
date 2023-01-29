@@ -10,7 +10,7 @@
         >
             <!-- Document Icon -->
             <svg 
-                v-if="type == 'document'"
+                v-if="item.type == 'document'"
                 viewBox="0 0 16 16" 
                 class="icon"
                 fill="var(--rlm-icon-color, #333333)"
@@ -20,7 +20,7 @@
             </svg>
             <!-- Folder Icon -->
             <svg 
-                v-if="type == 'folder'"
+                v-if="item.type == 'folder'"
                 viewBox="0 0 16 16" 
                 fill="var(--rlm-icon-color, #333333)"
                 xmlns="http://www.w3.org/2000/svg"
@@ -32,7 +32,7 @@
             <input 
                 type="text" 
                 v-if="rename" 
-                v-model="name" 
+                v-model="newname" 
                 class="text-sm px-2 py-2 bg-none min-w-0 flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis outline-none border-type realm-cursor-text-cursor" 
                 :style="{'padding-bottom': '3px', 'border-bottom-width': '1px'}"
                 @blur="renameItem" 
@@ -41,18 +41,17 @@
                 ref="rename"
             />
             <div class="flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis text-sm px-2 py-2" v-else>
-                {{ meta.name }}
+                {{ itemname }}
             </div>
         </div>
         <SystemItem 
             class="pl-4" 
-            :parent="item"
-            :item="(meta as any).content[i].id" 
+            :parent="item.id"
+            :item="(children as any)[i]" 
             :index="i"
-            :type="(meta as any).content[i].type" 
             :key="i" 
             :editable="canEdit"
-            v-for="i in expand ? Object.keys(meta.content == null ? {} : meta.content).filter((i: string) => canView(i, (meta.content as any)[i].type)) : []"
+            v-for="i in expand ? Object.keys(children) : []"
         />
     </div>
     
@@ -61,7 +60,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import store from "@/store/index";
-import type { ItemMeta } from "@/store/types"
+import type { SysRecord } from "@/store/filesystem"
 import { Menu } from "@/components/menus/types";
 
 export default defineComponent({
@@ -77,35 +76,36 @@ export default defineComponent({
         },
         item: {
             required: true,
-            type: String,
-        },
-        type: {
-            required: true,
-            type: String
+            type: Object,
         },
         editable: {
             required: true,
             type: Boolean
         }
     },
-    created: function() { console.log("is editable: ", this.editable )},
+    created: function() { 
+        console.log("item: ", this.item);
+        console.log("name: ", this.itemname);
+    },
     inject: ["pushMenu", "pushFolderDock"],
     data() {
         return {
             expand: false,
             rename: false,
-            name: "",
+            newname: "",
         }
     },
     computed: {
-        meta: function(): ItemMeta {
-            if(this.type == "folder") {
-                return store.getters["folders/meta"](this.item);
-            } else {
-                return store.getters['documents/meta'](this.item)
-            }
+        itemname: function(): string {
+            return store.getters['filesys/name'](this.item.id);
+        },
+        children: function(): { [key: string]: SysRecord } {
+            const children = store.getters['filesys/children'](this.item.id);
+            return children ? children : {};
         },
         canEdit: function(): boolean {
+            return true;
+            /*
             const myroles = store.getters['space/roles'];
             const owner = this.meta.owner;
             const ships = this.meta.ships;
@@ -120,14 +120,17 @@ export default defineComponent({
             return `~${(window as any).ship}` == owner || perms.reduce((a: boolean, acc: boolean) => {
                 return acc || a;
             }, false);
+            */
         },
     },
     methods: {
         open: function() {
-            if(this.type == "folder") this.expand = !this.expand;
+            if(this.item.type == "folder") this.expand = !this.expand;
             else this.$router.push(`/apps/engram${this.item}?spaceId=${this.$route.query.spaceId}`); 
         },
         canView: function(id: string, type: string): boolean {
+            return true;
+            /*
             const item = store.getters[`${type}s/meta`](id);
             const roles = store.getters['space/roles'];
             const perms = Object.keys(item.roles).map((key: string) => item.roles[key].perm);
@@ -138,6 +141,7 @@ export default defineComponent({
             }, false) || roles.reduce((a: string, acc: boolean) => {
                 return acc || perms.includes(a);
             }, false);
+            */
         },
         openMenu: function(event: MouseEvent) {
             event.preventDefault();
@@ -151,14 +155,11 @@ export default defineComponent({
                     display: "Delete", 
                     icon: "", 
                     command: () => {
-                        store.dispatch("folders/softremove", { from: this.parent, index: this.index })
-                        if(this.type == "folder") {
-                            store.dispatch("folders/delete", this.item);
-                        } else {
-                            store.dispatch("documents/delete", this.item);
-                        }
+                        store.dispatch("filesys/remove", { from: this.parent, index: this.index, soft: true })
+                        store.dispatch("filesys/delete", this.item);
                     }
                 },
+                /*
                 ...(`~${(window as any).ship}` == this.meta.owner ? [{
                     display: "Rename",
                     icon: "",
@@ -170,7 +171,8 @@ export default defineComponent({
                         }, 10);
                     }
                 }] : []),
-                ...(this.type == 'folder' ? [{
+                */
+                ...(this.item.type == 'folder' ? [{
                     display: "Settings",
                     icon: "",
                     command: () => {
@@ -185,27 +187,22 @@ export default defineComponent({
                 (event.target as any).blur();
             }
             if(event.key == "Escape") {
-                this.name = this.meta.name;
-                (event.target as any).value = this.meta.name;
+                (event.target as any).value = this.itemname;
                 (event.target as any).blur();
             }
         },
         renameItem: function(event: FocusEvent) {
-            if(this.type == "document") {
-                store.dispatch("documents/rename", { id: this.item, name: (event.target as any).value});
-            } else {
-                store.dispatch("folders/rename", { id: this.item, name: (event.target as any).value});
-            }
+            store.dispatch("filesys/rename", { item: this.item, name: (event.target as any).value});
             this.rename = false;
         },
         handleDragStart: function(event: DragEvent) {
             console.log("can edit?", this.editable);
             if(this.editable) {
-                event.dataTransfer?.setData("text/plain", JSON.stringify({ item: {id: this.item, type: this.type}, index: this.index ? this.index : ".", from: this.parent ? this.parent : "." }));
+                event.dataTransfer?.setData("text/plain", JSON.stringify({ item: this.item, index: this.index ? this.index : ".", from: this.parent ? this.parent : "." }));
             }
         },
         handleDrop: function(event: DragEvent) {
-            if(this.type == "folder" && this.canEdit) {
+            if(this.item.type == "folder" && this.canEdit) {
                 event.stopPropagation();
                 event.preventDefault();
                 const raw = event.dataTransfer?.getData("text/plain");
@@ -220,13 +217,13 @@ export default defineComponent({
         },
         handleDragOver: function(event: DragEvent) {
             console.log("can edit?", this.canEdit);
-            if(this.type == "folder" && this.canEdit) {
+            if(this.item.type == "folder" && this.canEdit) {
                 event?.preventDefault();
             } 
         },
         gather: function() {
             if(this.$route.query.spaceId != "/null/space") {
-                if(this.type == "folder") {
+                if(this.item.type == "folder") {
                     (window as any).urbit.poke({ 
                         app: "engram", 
                         mark: "post",

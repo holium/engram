@@ -56,7 +56,7 @@ const actions: ActionTree<SpaceState, RootState> = {
                 resolve(response.space);
               })
             }).catch((err: any) => {
-              console.warn("spaces agent missing!!", err);
+              console.warn("space missing!!", err);
               const nullspace = {
                   path: `/~${(window as any).ship}/our`, 
                   name: "Local", 
