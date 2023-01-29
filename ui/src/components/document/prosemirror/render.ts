@@ -36,7 +36,7 @@ export default function (
   content: Uint8Array,
   pushMenu: (menu: Menu | null) => void,
   updateCover: (cover: CoverUpdate) => void,
-  updateStyling: (styling: StylingUpdate) => void,
+  //updateStyling: (styling: StylingUpdate) => void,
   openFinder: (querier: (query: string) => void) => void,
   snapshot: null | DocumentVersion,
   editable: boolean,
@@ -81,7 +81,7 @@ export default function (
         yUndoPlugin(),
         // Views
         cover(updateCover),
-        styling(updateStyling),
+        //styling(updateStyling),
         // ux
         slashmenu(pushMenu),
         highlightmenu(pushMenu),
@@ -132,7 +132,7 @@ export default function (
         ySyncPlugin(type, {}),
         // Views
         cover(updateCover),
-        styling(updateStyling),
+        //styling(updateStyling),
       ],
     });
   }

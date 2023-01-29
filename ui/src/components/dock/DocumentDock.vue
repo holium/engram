@@ -91,10 +91,12 @@ export default defineComponent({
     VersionDock,
   },
   props: {
+    /*
     styling: {
       type: Object,
       required: true,
     },
+    */
     doc: {
       type: Object,
       required: true,
