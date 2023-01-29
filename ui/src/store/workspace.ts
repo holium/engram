@@ -40,6 +40,7 @@ const mutations: MutationTree<WorkspaceState> = {
 
 const actions: ActionTree<WorkspaceState, RootState> = {
   // Management
+  /*
   close({ commit, dispatch }): Promise<void> {
     return new Promise((resolve, reject) => {
       commit("close");
@@ -52,9 +53,10 @@ const actions: ActionTree<WorkspaceState, RootState> = {
         reject();
       })
     })
-
   },
+  */
 
+  /*
   open({ commit, dispatch }, payload: string): Promise<DocumentContent> {
     return new Promise((resolve, reject) => {
       console.log("opening");
@@ -99,6 +101,7 @@ const actions: ActionTree<WorkspaceState, RootState> = {
       });
     })
   },
+  */
 
   preview({ commit }, payload: DocumentVersion| null): Promise<void> {
     return new Promise((resolve, reject) => {

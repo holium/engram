@@ -17,7 +17,7 @@
       </div>
     </div>
     <!-- <DocumentDock :styling="styling" :doc="doc" v-if="!missing"/> -->
-    <DocumentDock :doc="doc" />
+    <!-- <DocumentDock :doc="doc" /> -->
   </div>
 </template>
 
@@ -62,7 +62,7 @@ export default defineComponent({
         ships: {},
         roles: {},
       },
-      loaded: null as null | Promise<DocumentContent>,
+      loaded: null as null | Promise<EditorView>,
       loading: false,
       finder: false,
       querier: null as any,
@@ -74,37 +74,14 @@ export default defineComponent({
       } as ICover,
     };
   },
-  created: function() {
-    this.loaded = store.dispatch("workspace/open", `${this.$route.params.author}/${this.$route.params.clock}`);
-    this.loading = true;
+  watch: {
+    path: function(newpath: string) {
+      this.open(newpath);
+    }
   },
-  beforeRouteUpdate: function(to) {
-    this.loaded = store.dispatch("workspace/open", `${to.params.author}/${to.params.clock}`);
-    this.loading = true;
-    this.loaded.then((res: any) => {
-        console.log("loaded res: ", res);
-        if(res == "missing document") {
-          this.missing = true;
-        } else {
-          this.missing = false;
-          this.doc = res;
-          render(
-            this.$refs["document"] as any, 
-            res.content, 
-            (this as any).pushMenu, 
-            this.updateCover, 
-            //this.updateStyling, 
-            this.openFinder,
-            null, 
-            this.editable(this.doc)
-          );
-          this.loading = false;
-        }
-      }).catch(() => {
-        this.missing = true;
-      })
-  },
+  /*
   mounted: function () {
+    this.open(this.path);
     //render document
     if(this.loaded == null) console.warn("no document");
     else {
@@ -132,6 +109,7 @@ export default defineComponent({
       })
     }
   },
+  */
   watch: {
     previewing: function(newRender: null | DocumentVersion) {
       if(this.loaded != null) {
@@ -152,8 +130,28 @@ export default defineComponent({
     },
   },
   methods: {
-    loadDocument: function(document: string) {
-      store.dispatch("workspace/load", document);
+    open: function(docId: string) {
+      console.log("opening document: ", docId);
+      this.loading = true;
+      this.loaded = render(
+              this.$refs["document"] as any, 
+              docId, 
+              (this as any).pushMenu, 
+              this.updateCover, 
+              //this.updateStyling, 
+              this.openFinder,
+              null, 
+              this.editable(this.doc)
+            );
+      this.loaded.then(() => {
+        console.log("loaded document");
+        this.loading = false;
+      })
+      this.loaded.catch(() => {
+        console.error("problem loading document");
+        this.missing = true;
+      })
+
     },
     updateCover: function (cover: CoverUpdate) {
       this.cover = { ...this.cover, ...cover };
@@ -189,6 +187,9 @@ export default defineComponent({
     }
   },
   computed: {
+    path: function(): string {
+      return `/${this.$route.params.author}/${this.$route.params.clock}`
+    },
     previewing: function() {
       return store.getters['workspace/previewing'];
     },

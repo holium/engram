@@ -8,6 +8,11 @@ import folders from "./folders";
 import filesys from "./filesystem"
 import workspace from "./workspace"
 
+export interface DocumentContent {
+  content: string,
+  updates: string,
+}
+
 export const nullspace = {
   path: `/~${(window as any).ship}/our`, 
   name: "Local", 
@@ -29,6 +34,9 @@ const getters: GetterTree<RootState, RootState> = {
   },
   lastOrganism: () => (): Promise<string> => {
     return (window as any).urbit.scry({ app: "engram", path: "/history"});
+  },
+  document: () => (docId: string): Promise<DocumentContent> {
+    return (window as any).urbit.scry({ app: "engram", path: `/document${docId}/content`})
   }
 }
 
