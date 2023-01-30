@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col">
-        <div class="flex" @click="closePreview">
+        <div class="flex cursor-pointer" @click="closePreview">
             <svg
                 width="25"
                 height="25"

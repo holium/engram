@@ -174,7 +174,7 @@ export default defineComponent({
     },
     computed: {
         viewing: function() {
-            const previewing = store.getters['workspace/previewing'];
+            const previewing = store.getters['document/previewing'];
             return previewing != null && previewing.date.getTime() == this.meta.date.getTime()
         },
         me: function() {
