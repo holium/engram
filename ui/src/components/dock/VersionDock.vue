@@ -67,15 +67,15 @@ export default defineComponent({
     },
     computed: {
         previewing: function() {
-            return store.getters['workspace/previewing'];
+            return store.getters['document/previewing'];
         },
         snapshots: function(): Array<VersionMeta> {
-            return store.getters['workspace/revisions/versions'];
+            return store.getters['document/versions'];
         },
         ships: function(): Array<Patp> {
             return Array.from(
                 new Set(
-                    store.getters['workspace/revisions/versions'].map((revision: VersionMeta) => revision.author)
+                    store.getters['document/versions'].map((revision: VersionMeta) => revision.author)
                     .filter((ship: string) => ship != `~${(window as any).ship}`)
                 )
             )
@@ -91,7 +91,7 @@ export default defineComponent({
     },
     methods: {
         closePreview: function() {
-            store.dispatch("workspace/preview", null);
+            store.dispatch("document/preview", null);
         }
     }
 })

@@ -17,7 +17,7 @@
         [%make (ot ~[owner+(se %p) name+so space+pa content+sa version+sa roles+(op sym (se %tas)) ships+(op fed:ag (se %tas))])]
         [%delete (ot ~[id+pa])]
         [%save (ot ~[id+pa content+sa version+sa])]
-        [%snap (ot ~[id+pa snapshot+(ot ~[timestamp+di author+(se %p) data+sa])])]
+        [%snap (ot ~[id+pa snapshot+(ot ~[timestamp+di author+(se %p) content+sa])])]
         [%rename (ot ~[id+pa name+so])]
         [%addperm (ot ~[id+pa perm+so level+(se %tas) type+(se %tas)])]
         [%removeperm (ot ~[id+pa timestamp+pa type+(se %tas)])]

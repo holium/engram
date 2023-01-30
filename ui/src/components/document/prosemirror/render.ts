@@ -43,7 +43,6 @@ export default function (
 ): Promise<EditorView> {
   return new Promise((resolve, reject) => {
     store.getters["document/get"](path).then((res: any) => {
-      console.log("document get result", res);
       if(res == "missing") {
         reject("missing");
       } else {
@@ -74,11 +73,10 @@ export default function (
 
         // Push current updates
         Object.keys(res.updates).map((key: string) => { return res.updates[key] }).forEach(pushUpdate);
-        store.dispatch("document/acceptupdates", {
-          id: path,
-        })
+        store.dispatch("document/acceptupdates", path);
 
         let state;
+        console.log("rendering: ", snapshot);
         if(snapshot == null) {
           const type = doc.getXmlFragment("prosemirror");     
 

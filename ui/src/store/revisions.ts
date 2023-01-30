@@ -64,7 +64,7 @@ const actions: ActionTree<RevisionState, RootState> = {
           date: new Date(response[timestamp].timestamp),
         }
       }))
-    })
+    });
   },
   close({ commit }) {
     commit("close");

@@ -17,7 +17,7 @@
       </div>
     </div>
     <!-- <DocumentDock :styling="styling" :doc="doc" v-if="!missing"/> -->
-    <!-- <DocumentDock :doc="doc" /> -->
+    <DocumentDock :doc="doc" />
   </div>
 </template>
 
@@ -112,29 +112,29 @@ export default defineComponent({
   },
   */
     previewing: function(newRender: null | DocumentVersion) {
-      if(this.loaded != null) {
-        this.loaded.then((res: any) => {
-
-          render(
-            this.$refs["document"] as any, 
-            res.content, 
-            (this as any).pushMenu, 
-            this.updateCover, 
-            //this.updateStyling, 
-            this.openFinder,
-            newRender, 
-            this.editable(this.doc)
-          );
-        });
-      }
+      this.loading = true;
+      this.loaded = render(
+              this.$refs["document"] as any, 
+              this.path, 
+              (this as any).pushMenu, 
+              this.updateCover, 
+              //this.updateStyling, 
+              this.openFinder,
+              newRender, 
+              this.editable(this.doc)
+            );
+      this.loaded.then(() => {
+        console.log("loaded document");
+        this.loading = false;
+      })
     },
   },
   mounted: function() {
     this.open(this.path);
   },
   methods: {
-    open: function(docId: string) {
-      console.log("opening document: ", docId);
+    open: function(docId: string, snapshot: null | DocumentVersion = null) {
+      store.dispatch("document/versions", docId);
       this.loading = true;
       this.loaded = render(
               this.$refs["document"] as any, 
@@ -143,7 +143,7 @@ export default defineComponent({
               this.updateCover, 
               //this.updateStyling, 
               this.openFinder,
-              null, 
+              snapshot, 
               this.editable(this.doc)
             );
       this.loaded.then(() => {
@@ -194,7 +194,7 @@ export default defineComponent({
       return `/${this.$route.params.author}/${this.$route.params.clock}`
     },
     previewing: function() {
-      return store.getters['workspace/previewing'];
+      return store.getters['document/previewing'];
     },
   }
 });

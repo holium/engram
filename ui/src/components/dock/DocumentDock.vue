@@ -72,7 +72,7 @@
           </div>
       </div>
         <!-- <StylingDock class="dock-body scrollbar-small" :styling="styling" v-if="open == 'styling'" /> -->
-        <SharingDock class="dock-body scrollbar-small" v-if="open == 'sharing'" :doc="doc"/>
+        <!-- <SharingDock class="dock-body scrollbar-small" v-if="open == 'sharing'" :doc="doc"/> -->
         <VersionDock class="dock-body scrollbar-small" v-if="open == 'revisions'" :doc="doc"/>
     </div>
   </div>
@@ -105,7 +105,7 @@ export default defineComponent({
   inject: ["toggleDock"],
   data() {
     return {
-      open: "sharing" as "sharing" | "revisions",
+      open: "revisions" as "sharing" | "revisions",
       dockWidth: 420,
       dragStart: 0,
     }

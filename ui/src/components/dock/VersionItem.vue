@@ -144,7 +144,7 @@ export default defineComponent({
     },
     methods: {
         preview: function() {
-            store.dispatch('workspace/preview', store.getters['workspace/revisions/version'](this.index))
+            store.dispatch('document/preview', store.getters['document/version'](this.index))
         },
         pallet: function(ship: string) {
             let sum = 0;
