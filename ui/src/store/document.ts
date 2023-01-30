@@ -1,4 +1,4 @@
-import type { GetterTree, MutationTree, ActionTree } from "vuex"
+import type { GetterTree, MutationTree, ActionTree, Module, Getter } from "vuex"
 import type { Snapshot } from "yjs";
 import { encodeSnapshot } from "yjs";
 import type { Patp } from "@urbit/http-api"
@@ -19,13 +19,24 @@ const state: DocumentState = {
     revisions: [],
 }
 
+export interface DocumentContent {
+  content: string,
+  updates: string,
+}
+
+const getters: GetterTree<DocumentState, RootState> = {
+  get: () => (docId: string): Promise<DocumentContent> => {
+    return (window as any).urbit.scry({ app: "engram", path: `/document${docId}/content`})
+  },
+}
+
 const mutations: MutationTree<DocumentState> = {
-    reset(state) {
-        state.revisions = [];
-    },
-    snap(state, payload: DocumentVersion) {
-        state.revisions.push(payload);
-    }
+  reset(state) {
+      state.revisions = [];
+  },
+  snap(state, payload: DocumentVersion) {
+      state.revisions.push(payload);
+  }
 }
 
 const actions: ActionTree<DocumentState, RootState> = {
@@ -80,3 +91,11 @@ const actions: ActionTree<DocumentState, RootState> = {
     },
 
 }
+
+export default {
+  namespaced: true,
+  state,
+  getters,
+  mutations,
+  actions,
+} as Module<DocumentState, RootState>

@@ -24,13 +24,14 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import store from "@/store/index";
-import type { DocumentContent, DocumentVersion, ItemMeta } from "@/store/types"
+import type { DocumentVersion, ItemMeta } from "@/store/types"
 
 import Toolbar from "@/components/Toolbar.vue";
 import Finder from "./Finder.vue"
 import DocumentDock from "@/components/dock/DocumentDock.vue";
 
 import render from "./prosemirror/render";
+import type { EditorView } from "prosemirror-view";
 import Cover from "./Cover.vue"
 import type {
   CoverUpdate,
@@ -76,9 +77,9 @@ export default defineComponent({
   },
   watch: {
     path: function(newpath: string) {
+      console.log("new path: ", newpath);
       this.open(newpath);
-    }
-  },
+    },
   /*
   mounted: function () {
     this.open(this.path);
@@ -110,7 +111,6 @@ export default defineComponent({
     }
   },
   */
-  watch: {
     previewing: function(newRender: null | DocumentVersion) {
       if(this.loaded != null) {
         this.loaded.then((res: any) => {
@@ -128,6 +128,9 @@ export default defineComponent({
         });
       }
     },
+  },
+  mounted: function() {
+    this.open(this.path);
   },
   methods: {
     open: function(docId: string) {

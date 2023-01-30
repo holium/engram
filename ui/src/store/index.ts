@@ -7,11 +7,7 @@ import documents from './documents';
 import folders from "./folders";
 import filesys from "./filesystem"
 import workspace from "./workspace"
-
-export interface DocumentContent {
-  content: string,
-  updates: string,
-}
+import document from "./document"
 
 export const nullspace = {
   path: `/~${(window as any).ship}/our`, 
@@ -35,9 +31,6 @@ const getters: GetterTree<RootState, RootState> = {
   lastOrganism: () => (): Promise<string> => {
     return (window as any).urbit.scry({ app: "engram", path: "/history"});
   },
-  document: () => (docId: string): Promise<DocumentContent> {
-    return (window as any).urbit.scry({ app: "engram", path: `/document${docId}/content`})
-  }
 }
 
 const actions: ActionTree<RootState, RootState> = {
@@ -172,8 +165,9 @@ export default createStore({
   modules: {
     space,
     filesys,
+    document,
     //documents,
     //folders,
-    workspace,
+    //workspace,
   }
 })

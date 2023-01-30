@@ -42,8 +42,8 @@ export default function (
   editable: boolean,
 ): Promise<EditorView> {
   return new Promise((resolve, reject) => {
-    store.getters["document"](path).then((res: any) => {
-      console.log("document get result", res)
+    store.getters["document/get"](path).then((res: any) => {
+      console.log("document get result", res);
       if(res == "missing") {
         reject("missing");
       } else {
@@ -52,8 +52,9 @@ export default function (
         Object.assign(doc, {documentId: path});
         doc.clientID = 0;
         doc.gc = false;
+        const cont = new Uint8Array(JSON.parse(res.content));
         // Load the document
-        if(res.content.length > 0) Y.applyUpdate(doc, res.content);
+        if(cont.length > 0) Y.applyUpdate(doc, cont);
 
         // Publish the push update
         pushUpdate = (update: DocumentUpdate, clear?: boolean) => {
@@ -67,14 +68,12 @@ export default function (
             });
 
             if(clear) 
-              store.dispatch("document/acceptupdates", {
-                id: path,
-              })
+              store.dispatch("document/acceptupdates", path);
           }
         }
 
         // Push current updates
-        res.updates.forEach(pushUpdate);
+        Object.keys(res.updates).map((key: string) => { return res.updates[key] }).forEach(pushUpdate);
         store.dispatch("document/acceptupdates", {
           id: path,
         })

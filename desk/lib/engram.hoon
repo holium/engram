@@ -157,15 +157,18 @@
           |=  [id=id:index [role=@tas level=@tas]]  
           [(crip (stringify:index id)) (pairs ~[['perm' (tape (trip role))] ['level' (tape (trip level))]])]
       ==
-    ++  updates
+    ++  content
       =,  enjs:format
-      |=  updts=(set dupdate:engram)
+      |=  [doc=document:engram updts=(set dupdate:engram)]
       ^-  json
-      %-  pairs  %~  tap  in
-        ^-  (set [@t json])
-        %-  ~(run in updts)
-        |=  updt=dupdate:engram
-        [(scot %da timestamp.updt) (pairs ~[['author' (tape (scow %p author.updt))] ['content' (tape content.updt)]])]
+      %-  pairs  :~
+        ['content' (tape content.doc)]
+        :-  'updates'  %-  pairs  %~  tap  in
+          ^-  (set [@t json])
+          %-  ~(run in updts)
+          |=  updt=dupdate:engram
+          [(scot %da timestamp.updt) (pairs ~[['author' (tape (scow %p author.updt))] ['content' (tape content.updt)]])]
+      ==
     ++  snapshots
       =,  enjs:format
       |=  snaps=(set dsnapshot:engram)

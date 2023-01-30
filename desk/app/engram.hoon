@@ -846,13 +846,14 @@
     =/  doc  (~(got by d) id)
     ``noun+!>((snapshots:document:enjs:engram snapshots.doc))
   ::
-      [%x %document @ @ %updates ~]
+      [%x %document @ @ %content ~]
     ?>  =(src.bowl our.bowl)
     =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
+    =/  doc  (~(got by d) id)
     ?:  (~(has by u) id)
       =/  updts  (need (~(get by u) id))
-      ``noun+!>((updates:document:enjs:engram updts))
-    ``noun+!>((updates:document:enjs:engram ^*((set dupdate))))
+      ``noun+!>((content:document:enjs:engram [doc updts]))
+    ``noun+!>((content:document:enjs:engram [doc ^*((set dupdate))]))
   ::
       [%x %folder @ @ %list ~]
     ?>  =(src.bowl our.bowl)
