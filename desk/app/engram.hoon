@@ -307,6 +307,7 @@
         ::
           %delta
         ::~&  "DELTA-- from {<src.bowl>} for {<path.act>}"
+        ?:  =(src.bowl our.bowl)  `this
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         ?.  (~(has by d) id)  ~&  "{<our.bowl>} does not know about {<path.act>} yet"  `this
         =/  doc  (~(got by d) id)
@@ -337,7 +338,6 @@
         :: Request a document you don't have
         ::
           %request
-        ~&  act
         ?>  =(src.bowl our.bowl)
         :_  this
         :~  [%pass /document/answer %agent [peer.act %engram] %poke %post !>([%document %answer path.act])]
@@ -346,7 +346,8 @@
         :: Answer a request for a document
         ::
           %answer
-        ~&  "Request from: {<src.bowl>}"
+        ::~&  "Request from: {<src.bowl>}"
+        ?:  =(src.bowl our.bowl)  `this
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  doc  (~(got by d) id)
         ::?>  (guardspace:engram [space.settings.doc (molt ~(val by content.roles.settings.doc)) (molt ~(val by content.ships.settings.doc)) (silt `(list @tas)`[%admin %editor %visitor ~]) src.bowl our.bowl now.bowl])
@@ -587,6 +588,7 @@
         ::
           %delta
         ::~&  "DELTA-- from {<src.bowl>} for {<path.act>}"
+        ?:  =(src.bowl our.bowl)  `this
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         ?.  (~(has by f) id)  ~&  "{<our.bowl>} does not know about {<path.act>} yet"  `this
         =/  fol  (~(got by f) id)
@@ -625,6 +627,7 @@
         :: Answer a request for a folder
         ::
           %answer
+        ?:  =(src.bowl our.bowl)  `this
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  fold  (~(got by f) id)
         ?>  (guardspace:engram [space.fold (molt ~(val by content.roles.fold)) (molt ~(val by content.ships.fold)) (silt `(list @tas)`[%admin %editor %visitor ~]) src.bowl our.bowl now.bowl])
@@ -753,6 +756,7 @@
         ::
           %delta
         ::~&  "DELTA-- from {<src.bowl>} for {<space.act>}"
+        ?:  =(src.bowl our.bowl)  `this
         =/  spc  (~(got by s) space.act)
         =/  tid  `@ta`(cat 4 (cat 2 'space-delta-' -.+.space.act) (cat 2 -.space.act (scot %uv (sham eny.bowl))))
         =/  ta-now  `@ta`(scot %da now.bowl)
