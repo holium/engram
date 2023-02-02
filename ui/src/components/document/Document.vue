@@ -128,7 +128,7 @@ export default defineComponent({
       this.querier = null;
     },
     editable: function(id: string): boolean {
-      const myroles = store.getters['space/roles'];
+      const myroles = store.getters['space/myroles'];
       const owner = store.getters['filesys/owner'](id);
       const roles = store.getters['filesys/roles'](id);
       const ships = store.getters['filesys/ships'](id);
