@@ -7,22 +7,6 @@ export interface RootState {
   workspace: WorkspaceState
 }
 
-export interface Space {
-  path: string;
-  name: string;
-  picture: string;
-  color: string;
-  roles: Array<string>;
-}
-
-export interface SpaceState {
-  path: string,
-  name: string,
-  picture: string,
-  color: string,
-  roles: Array<string>,
-}
-
 // File Management -------------------------------------------------------------
 
 export interface DocumentState {

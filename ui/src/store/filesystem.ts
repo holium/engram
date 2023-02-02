@@ -16,6 +16,10 @@ export interface SysItem {
     children?: {
         [id: string]: SysRecord
     }
+
+    owner: string,
+    ships: { [key: string]: ShipPermission },
+    roles: { [key: string]: RolePermission }
 }
 
 export interface FileSysState {
@@ -25,7 +29,20 @@ export interface FileSysState {
         type: "folder",
         name: "root",
         children: { [id: string]: SysRecord },
+        owner: "",
+        ships: {},
+        roles: {},
     },
+}
+
+export interface ShipPermission {
+    ship: string,
+    level: string,
+}
+
+export interface RolePermission {
+    role: string,
+    level: string,
 }
 
 const state: FileSysState = {
@@ -34,6 +51,9 @@ const state: FileSysState = {
         type: "folder",
         name: "root",
         children: {},
+        owner: "",
+        ships: {},
+        roles: {},
     }
 }
 
@@ -57,6 +77,17 @@ const getters: GetterTree<FileSysState, RootState> = {
         return state[id].children;
     },
 
+    // Permissions
+    owner: (state) => (id: string): undefined | string => {
+        return state[id].owner;
+    },
+    ships: (state) => (id: string): undefined | { [key: string]: ShipPermission } => {
+        return state[id].ships;
+    },
+    roles: (state) => (id: string): undefined | { [key: string]: RolePermission } => {
+        return state[id].roles;
+    },
+
     // Scries
 
     last: () => (): Promise<string> => {
@@ -66,7 +97,11 @@ const getters: GetterTree<FileSysState, RootState> = {
 
 const mutations: MutationTree<FileSysState> = {
     load(state, payload: SysItem) {
-        state[payload.id] = payload;
+        console.warn("loading...", payload);
+        if(state[payload.id]) state[payload.id] = {...state[payload.id], ...payload};
+        else state[payload.id] = payload;
+        console.warn("loaded");
+
         let root = true;
         Object.keys(state).forEach((key: string) => {
             if(state[key].children && root) {
@@ -78,8 +113,8 @@ const mutations: MutationTree<FileSysState> = {
         });
         if(root) state["."].children[payload.id] = payload;
         if(payload.type == "folder")
-            Object.keys((payload.children as any)).forEach((child: string) => {
-                delete state["."].children[(payload.children as any)[child].id];
+            Object.keys((state[payload.id].children as any)).forEach((child: string) => {
+                delete state["."].children[(state[payload.id].children as any)[child].id];
             })
     },
     reset(state) {
@@ -91,6 +126,9 @@ const mutations: MutationTree<FileSysState> = {
             type: "folder",
             name: "root",
             children: {},
+            owner: "",
+            ships: {},
+            roles: {}
         }
     },
     delete(state, payload: SysRecord) {
@@ -111,7 +149,7 @@ const actions: ActionTree<FileSysState, RootState> = {
     // Load the full lifesystem of a space
     boot({ commit, dispatch }, payload: string): Promise<void> {
         return new Promise((resolve, reject) => {
-            (window as any).urbit.scry({ app: "engram", path: `/space${payload}/list` }).then((res: any) => {
+            (window as any).urbit.scry({ app: "engram", path: `/space${payload}/content` }).then((res: any) => {
                 if(res == "Missing Space") {
                     // handle if the space is missing
                     (window as any).urbit.poke({
@@ -129,7 +167,7 @@ const actions: ActionTree<FileSysState, RootState> = {
                                 space: { "gatherall": { "space": payload }}
                             }
                         }).then(() => {
-                            // & try loading agains
+                            // & try loading again
                             dispatch("boot").then(() => {
                                 resolve();
                             })
@@ -157,10 +195,27 @@ const actions: ActionTree<FileSysState, RootState> = {
             })
         })
     },
+    perms({ commit }, payload: SysRecord): Promise<SysItem> {
+        return new Promise((resolve, reject) => {
+            (window as any).urbit.scry({ app: "engram", path: `/${payload.type}${payload.id}/perms` }).then((res: any) => {
+                console.log("retrieved perms: ", res);
+                commit('load', { ...res, type: payload.type, id: payload.id });
+                resolve(res);
+            })
+        })
+    },
     // get like the getter but it loads the item if it's not already loaded 
     protectedget({ state, dispatch }, payload: SysRecord): Promise<SysItem> {
         return typeof state[payload.id] == "undefined" ?
-            dispatch("load", payload) : new Promise((resolve) => { resolve(state[payload.id]); }); 
+            new Promise((resolve) => {
+                dispatch("load", payload).then((res) => {
+                    dispatch("perms", payload).then(() => {
+                        resolve(state[payload.id]);
+                    });
+                })
+            }) : new Promise((resolve) => { 
+                resolve(state[payload.id]); 
+            }); 
     },
 
     // Modifications
@@ -227,7 +282,6 @@ const actions: ActionTree<FileSysState, RootState> = {
                       id: path,
                       type: payload.type
                     }).then((res: any) => {
-                        dispatch("add", { item: { id: res.id, type: res.type }, to: "." }, { root: true });
                         resolve(res);
                     })
                   });
@@ -364,7 +418,106 @@ const actions: ActionTree<FileSysState, RootState> = {
                 } 
             }
           })
-    }
+    },
+
+    //add perm
+    addperm({ dispatch }, payload: { item: SysRecord, perm: string, level: string, type: string}): Promise<void> {
+        console.warn("adding perm: ", payload);
+        return new Promise((resolve) => {
+          (window as any).urbit.poke({
+            app: "engram",
+            mark: "post",
+            json: {
+              [payload.item.type]: { addperm: {
+                id: payload.item.id,
+                perm: payload.perm,
+                level: payload.level,
+                type: payload.type
+              }}
+            }
+          }).then(() => {
+            console.warn("added perm");
+            dispatch("perms", payload.item);
+            if(payload.item.type == "folder") {
+                console.warn("tryna add to children: ", state[payload.item.id].children);
+                Promise.all(Object.keys((state[payload.item.id].children as any)).map((item: string) => {
+                    dispatch("addperm", { 
+                      item: (state[payload.item.id].children as any)[item], 
+                      perm: payload.perm, 
+                      level: payload.level, 
+                      type: payload.type
+                    })
+                  })).then(() => { 
+                    resolve();
+                  });
+            } else {
+                resolve();
+            }
+          })
+        })
+    },
+
+    //remove perm
+    removeperm({ state, dispatch }, payload: { item: SysRecord, timestamp: string, type: "ships" | "roles"}): Promise<void> {
+        console.warn("removing perm: ", payload);
+        return new Promise((resolve) => {
+            const perm = state[payload.item.id][payload.type];
+            (window as any).urbit.poke({
+                app: "engram",
+                mark: "post",
+                json: {
+                [payload.item.type]: { removeperm: {
+                    id: payload.item.id,
+                    timestamp: payload.timestamp,
+                    type: payload.type
+                }}
+                }
+            }).then(() => {
+                console.warn("removed perm");
+                dispatch("perms", payload.item);
+                if(payload.item.type == "folder") {
+                    Promise.all(Object.keys((state[payload.item.id].children as any)).map((item: string) => {
+                        dispatch("findremoveperm", { 
+                        item: (state[payload.item.id].children as any)[item], 
+                        perm: perm[payload.type == "ships" ? "ship" : "role"], 
+                        level: perm.level, 
+                        type: payload.type
+                        });
+                    })).then(() => { 
+                        resolve();
+                    });
+                } else {
+                    resolve();
+                }
+            })
+        })
+      },
+
+    //find remove perm
+    findremoveperm({ dispatch }, payload: { item: SysRecord, type: string, perm: string, level: string }): Promise<void> {
+        console.warn("finding remove perm: ", payload);
+        return new Promise((resolve) => {
+          dispatch("protectedget", payload.item).then((res: any) => {
+            console.warn("protected got: ", res);
+            const closeenough = Object.keys(res[payload.type]).find((key: string) => {
+              return res[payload.type][key].perm == payload.perm && res[payload.type][key].level == payload.level;
+            });
+            if(closeenough) {
+                dispatch("removeperm", {
+                    item: payload.item,
+                    timestamp: closeenough,
+                    type: payload.type,
+                  }).then(() => {
+                    resolve();
+                  })
+            } else {
+                resolve();
+            }
+            
+          })
+          
+        })
+      },
 }
 
 export default {

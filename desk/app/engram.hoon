@@ -802,19 +802,28 @@
     ~_  [%leaf "empty history"]
     ``noun+!>((timestamp:enjs:engram (rear h)))
     ::
+      [%x %space @ @ %content ~]
+    ?>  =(src.bowl our.bowl)
+    ?:  (~(has by s) ~[i.t.t.p i.t.t.t.p])
+      =/  spc  (~(got by s) ~[i.t.t.p i.t.t.t.p])
+      ``noun+!>((content:space:enjs:engram [d f content.content.spc]))
+    ~&  "No space of path: {<`path`~[i.t.t.p i.t.t.t.p]>}"
+    ``noun+!>((tape:enjs:format "Missing Space"))
+    ::
       [%x %space @ @ %list ~]
     ?>  =(src.bowl our.bowl)
     ?:  (~(has by s) ~[i.t.t.p i.t.t.t.p])
       =/  spc  (~(got by s) ~[i.t.t.p i.t.t.t.p])
-      ``noun+!>((list:space:enjs:engram [d f content.content.spc]))
+      ``noun+!>((list:space:enjs:engram spc))
     ~&  "No space of path: {<`path`~[i.t.t.p i.t.t.t.p]>}"
     ``noun+!>((tape:enjs:format "Missing Space"))
     ::
-      [%x %space @ @ %settings ~]
+      [%x %space @ @ %perms ~]
     ?:  (~(has by s) ~[i.t.t.p i.t.t.t.p])
       =/  spc  (~(got by s) ~[i.t.t.p i.t.t.t.p])
-      ``noun+!>((settings:space:enjs:engram spc))
+      ``noun+!>((perms:space:enjs:engram spc))
     ~&  "No space of path: {<`path`~[i.t.t.p i.t.t.t.p]>}"  !!
+    ::
       [%x %document %list ~]
     ``noun+!>((list:document:enjs:engram d))
   ::
@@ -834,11 +843,11 @@
     =/  doc  (~(got by d) id)
     ``noun+!>((meta:document:enjs:engram doc))
   ::
-      [%x %document @ @ %settings ~]
+      [%x %document @ @ %perms ~]
     ?>  =(src.bowl our.bowl)
     =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
     =/  doc  (~(got by d) id)
-    ``noun+!>((settings:document:enjs:engram settings.doc))
+    ``noun+!>((perms:document:enjs:engram settings.doc))
   ::
       [%x %document @ @ %snapshots ~]
     ?>  =(src.bowl our.bowl)
@@ -873,11 +882,11 @@
     =/  fold  (~(got by f) id)
     ``noun+!>((meta:folder:enjs:engram fold))
   ::
-      [%x %folder @ @ %settings ~]
+      [%x %folder @ @ %perms ~]
     ?>  =(src.bowl our.bowl)
     =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
     =/  fold  (~(got by f) id)
-    ``noun+!>((settings:folder:enjs:engram fold))
+    ``noun+!>((perms:folder:enjs:engram fold))
   ==
 ::
 ++  on-agent

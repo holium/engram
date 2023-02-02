@@ -17,14 +17,15 @@
       </div>
     </div>
     <!-- <DocumentDock :styling="styling" :doc="doc" v-if="!missing"/> -->
-    <DocumentDock :doc="doc" />
+    <DocumentDock />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 import store from "@/store/index";
-import type { DocumentVersion, ItemMeta } from "@/store/types"
+import type { ShipPermission, RolePermission } from "@/store/filesystem"
+import type { DocumentVersion } from "@/store/document"
 
 import Toolbar from "@/components/Toolbar.vue";
 import Finder from "./Finder.vue"
@@ -56,13 +57,6 @@ export default defineComponent({
   data() {
     return {
       missing: false,
-      doc: {
-        id: "",
-        owner: "",
-        name: "",
-        ships: {},
-        roles: {},
-      },
       loaded: null as null | Promise<EditorView>,
       loading: false,
       finder: false,
@@ -77,40 +71,8 @@ export default defineComponent({
   },
   watch: {
     path: function(newpath: string) {
-      console.log("new path: ", newpath);
       this.open(newpath);
     },
-  /*
-  mounted: function () {
-    this.open(this.path);
-    //render document
-    if(this.loaded == null) console.warn("no document");
-    else {
-      console.log("need to render document");
-      this.loaded.then((res: any) => {
-        if(res == "missing document") {
-          this.missing = true;
-        } else {
-          this.missing = false;
-          this.doc = res;
-          render(
-            this.$refs["document"] as any, 
-            res.content, 
-            (this as any).pushMenu, 
-            this.updateCover, 
-            //this.updateStyling, 
-            this.openFinder,
-            null, 
-            this.editable(this.doc)
-          );
-          this.loading = false;
-        }
-      }).catch(() => {
-        this.missing = true;
-      })
-    }
-  },
-  */
     previewing: function(newRender: null | DocumentVersion) {
       this.loading = true;
       this.loaded = render(
@@ -118,13 +80,11 @@ export default defineComponent({
               this.path, 
               (this as any).pushMenu, 
               this.updateCover, 
-              //this.updateStyling, 
               this.openFinder,
               newRender, 
-              this.editable(this.doc)
+              this.editable(this.path)
             );
       this.loaded.then(() => {
-        console.log("loaded document");
         this.loading = false;
       })
     },
@@ -141,13 +101,11 @@ export default defineComponent({
               docId, 
               (this as any).pushMenu, 
               this.updateCover, 
-              //this.updateStyling, 
               this.openFinder,
               snapshot, 
-              this.editable(this.doc)
+              this.editable(this.path)
             );
       this.loaded.then(() => {
-        console.log("loaded document");
         this.loading = false;
       })
       this.loaded.catch(() => {
@@ -169,24 +127,23 @@ export default defineComponent({
       this.querier("");
       this.querier = null;
     },
-    editable: function(doc: ItemMeta): boolean {
-      return true;
-        /*
-        const myroles = store.getters['space/roles'];
-        const owner = doc.owner;
-        const ships = doc.ships;
-        const roles = doc.roles;
-        const perms = Object.keys(roles).map((key: string) => {
-          return myroles.includes(roles[key].perm) ? (roles[key].level == "editor" || roles[key].level == "admin") : false;
-        })
-        Object.keys(ships).forEach((key: string) => {
-          perms.push(ships[key].perm == `~${(window as any).ship}` ? (ships[key].level == "editor" || ships[key].level == "admin") : false);
-        })
+    editable: function(id: string): boolean {
+      const myroles = store.getters['space/roles'];
+      const owner = store.getters['filesys/owner'](id);
+      const roles = store.getters['filesys/roles'](id);
+      const ships = store.getters['filesys/ships'](id);
 
-        return `~${(window as any).ship}` == owner || perms.reduce((a: boolean, acc: boolean) => {
-            return acc || a;
-        }, false);
-        */
+      return owner == `~${(window as any).ship}` || 
+          Object.keys(ships)
+              .map((timestamp: string) => { return ships[timestamp] })
+                  .reduce((a: ShipPermission, acc: boolean) => {
+                      return acc || (a.ship == `~${(window as any).ship}` && (a.level == "editor" || a.level == "admin"));
+                  }, false) || 
+          Object.keys(roles)
+              .map((timestamp: string) => { return roles[timestamp].role })
+                  .reduce((a: RolePermission, acc: boolean) => {
+                      return acc || (myroles.includes(a.role) && (a.level == "editor" || a.level == "admin"));
+                  }, false);
     }
   },
   computed: {

@@ -1,21 +1,15 @@
 import {createStore, storeKey} from 'vuex'
 import type { GetterTree, ActionTree } from "vuex"
 import router from "@/router/index"
-import type { RootState, Space } from "./types"
+import type { RootState } from "./types"
+import type { Space } from "./space"
+import { nullspace } from "./space"
 import space from "./space"
 import documents from './documents';
 import folders from "./folders";
 import filesys from "./filesystem"
 import workspace from "./workspace"
 import document from "./document"
-
-export const nullspace = {
-  path: `/~${(window as any).ship}/our`, 
-  name: "Local", 
-  color: "#262626",
-  picture: "",
-  roles: [],
-}
 
 const getters: GetterTree<RootState, RootState> = {
   spaces: (): Promise<Array<Space>> => {

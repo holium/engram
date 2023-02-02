@@ -60,7 +60,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import store from "@/store/index";
-import type { SysRecord } from "@/store/filesystem"
+import type { SysRecord, ShipPermission, RolePermission } from "@/store/filesystem"
 import { Menu } from "@/components/menus/types";
 
 export default defineComponent({
@@ -95,28 +95,30 @@ export default defineComponent({
         itemname: function(): string {
             return store.getters['filesys/name'](this.item.id);
         },
+        owner: function(): boolean {
+            return store.getters['filesys/owner'](this.item.id) == `~${(window as any).ship}`
+        },
         children: function(): { [key: string]: SysRecord } {
             const children = store.getters['filesys/children'](this.item.id);
             return children ? children : {};
         },
         canEdit: function(): boolean {
-            return true;
-            /*
             const myroles = store.getters['space/roles'];
-            const owner = this.meta.owner;
-            const ships = this.meta.ships;
-            const roles = this.meta.roles;
-            const perms = Object.keys(roles).map((key: string) => {
-                return myroles.includes(roles[key].perm) ? (roles[key].level == "editor" || roles[key].level == "admin") : false;
-            })
-            Object.keys(ships).forEach((key: string) => {
-                perms.push(ships[key].perm == `~${(window as any).ship}` ? (ships[key].level == "editor" || ships[key].level == "admin") : false);
-            })
+            const owner = store.getters['filesys/owner'](this.item.id);
+            const roles = store.getters['filesys/roles'](this.item.id);
+            const ships = store.getters['filesys/ships'](this.item.id);
 
-            return `~${(window as any).ship}` == owner || perms.reduce((a: boolean, acc: boolean) => {
-                return acc || a;
-            }, false);
-            */
+            return owner == `~${(window as any).ship}` || 
+                Object.keys(ships)
+                    .map((timestamp: string) => { return ships[timestamp] })
+                        .reduce((a: ShipPermission, acc: boolean) => {
+                            return acc || (a.ship == `~${(window as any).ship}` && (a.level == "editor" || a.level == "admin"));
+                        }, false) || 
+                Object.keys(roles)
+                    .map((timestamp: string) => { return roles[timestamp].role })
+                        .reduce((a: RolePermission, acc: boolean) => {
+                            return acc || (myroles.includes(a.role) && (a.level == "editor" || a.level == "admin"));
+                        }, false);
         },
     },
     methods: {
@@ -124,20 +126,23 @@ export default defineComponent({
             if(this.item.type == "folder") this.expand = !this.expand;
             else this.$router.push(`/apps/engram${this.item.id}?spaceId=${this.$route.query.spaceId}`); 
         },
-        canView: function(id: string, type: string): boolean {
-            return true;
-            /*
-            const item = store.getters[`${type}s/meta`](id);
-            const roles = store.getters['space/roles'];
-            const perms = Object.keys(item.roles).map((key: string) => item.roles[key].perm);
-            const ships = Object.keys(item.ships).map((key: string) => item.ships[key].perm);
+        canView: function(id: string): boolean {
+            const myroles = store.getters['space/roles'];
+            const owner = store.getters['filesys/owner'](id);
+            const roles = store.getters['filesys/roles'](id);
+            const ships = store.getters['filesys/ships'](id);
 
-            return `~${(window as any).ship}` == item.owner || ships.reduce((a: string, acc: boolean) => {
-                return a == `~${(window as any).ship}`;
-            }, false) || roles.reduce((a: string, acc: boolean) => {
-                return acc || perms.includes(a);
-            }, false);
-            */
+            return owner == `~${(window as any).ship}` || 
+                Object.keys(ships)
+                    .map((timestamp: string) => { return ships[timestamp].ship })
+                        .reduce((a: string, acc: boolean) => {
+                            return a == `~${(window as any).ship}`;
+                        }, false) || 
+                Object.keys(roles)
+                    .map((timestamp: string) => { return roles[timestamp].role })
+                        .reduce((a: string, acc: boolean) => {
+                            return acc || myroles.includes(a);
+                        }, false);
         },
         openMenu: function(event: MouseEvent) {
             event.preventDefault();
@@ -155,19 +160,17 @@ export default defineComponent({
                         store.dispatch("filesys/delete", this.item);
                     }
                 },
-                /*
-                ...(`~${(window as any).ship}` == this.meta.owner ? [{
+                ...(this.owner ? [{
                     display: "Rename",
                     icon: "",
                     command: () => {
-                        this.name = this.meta.name;
+                        this.newname = this.itemname;
                         this.rename = true;
                         setTimeout(() => {
                             (this.$refs["rename"] as any).focus();
                         }, 10);
                     }
                 }] : []),
-                */
                 ...(this.item.type == 'folder' ? [{
                     display: "Settings",
                     icon: "",
@@ -212,7 +215,6 @@ export default defineComponent({
             }
         },
         handleDragOver: function(event: DragEvent) {
-            //console.log("can edit?", this.canEdit);
             if(this.item.type == "folder" && this.canEdit) {
                 event?.preventDefault();
             } 

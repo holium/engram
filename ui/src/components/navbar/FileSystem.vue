@@ -24,26 +24,6 @@
                 return (items[a].type == 'document' ? (items[b].type == 'folder' ? 1 : -1) : -1)
             })"
         />
-        <!--
-        <SystemItem 
-            :parent="'.'" 
-            :item="items[i].id" 
-            :index="i"
-            :type="'folder'" 
-            :key="i" 
-            :editable="canEdit"
-            v-for="i in Object.keys(items).filter((i: string) => items[i].type == 'folder' && canView(i, items[i].type))"
-        />
-        <SystemItem 
-            :parent="'.'" 
-            :item="items[i].id" 
-            :index="i"
-            :type="'document'" 
-            :key="i" 
-            :editable="canEdit"
-            v-for="i in Object.keys(items).filter((i: string) => items[i].type == 'document' && canView(i, items[i].type))"
-        />
-        -->
     </div>
 </template>
 
@@ -51,7 +31,7 @@
 import { defineComponent } from "vue";
 import store from "@/store/index";
 import SystemItem from "./SystemItem.vue";
-import type { ItemMeta } from "@/store/types";
+import type { ShipPermission, RolePermission } from "@/store/filesystem";
 import { Menu } from "@/components/menus/types";
 export default defineComponent({
     name: "FileSystem",
@@ -65,15 +45,6 @@ export default defineComponent({
             roles: {} as any,
         }
     },
-    created: function() {
-        //this.loadSettings(); 
-    },
-    watch: {
-        spaceId: function() {
-            //this.loadSettings(); 
-            //console.log(this.canEdit);
-        },
-    },
     computed: {
         items: function(): { [key: string]: { id: string, type: string }} {
             return store.getters['filesys/root'].children;
@@ -82,36 +53,24 @@ export default defineComponent({
             return this.$route.params.spaceId as string;
         },
         canEdit: function(): boolean {
-            return true;
-            /*
-            const myroles = store.getters['space/roles'];
-            const owner = store.getters['space/owner'];
+            const myroles = store.getters['space/myroles'];
+            const roles = store.getters['space/roles'];
+            const ships = store.getters['space/ships'];
 
-            const perms = Object.keys(this.roles).map((key: string) => {
-                return myroles.includes(this.roles[key].perm) ? (this.roles[key].level == "admin" || this.roles[key].level == "editor") : false;
-            })
-            Object.keys(this.ships).forEach((key: string) => {
-                perms.push(this.ships[key].perm == `~${(window as any).ship}` ? (this.ships[key].level == "admin" || this.ships[key].level == "editor") : false);
-            })
-            
-            console.log("perms: ", perms);
-
-            return `~${(window as any).ship}` == owner || perms.reduce((a: boolean, acc: boolean) => {
-                return acc || a;
-            }, false);
-            */
+            return myroles.includes("owner") || 
+                Object.keys(ships)
+                    .map((timestamp: string) => { return ships[timestamp] })
+                        .reduce((a: ShipPermission, acc: boolean) => {
+                            return acc || (a.ship == `~${(window as any).ship}` && (a.level == "editor" || a.level == "admin"));
+                        }, false) || 
+                Object.keys(roles)
+                    .map((timestamp: string) => { return roles[timestamp].role })
+                        .reduce((a: RolePermission, acc: boolean) => {
+                            return acc || (myroles.includes(a.role) && (a.level == "editor" || a.level == "admin"));
+                        }, false);
       }
     },
     methods: {
-        /*
-        loadSettings: function() {
-            (window as any).urbit.scry({ app: "engram", path: `/space${this.$route.query.spaceId}/settings`}).then((res: any) => {
-                console.log("loading settings: ", res);
-                this.roles = res.roles;
-                this.ships = res.ships;
-            });
-        },
-        */
         openMenu: function(event: MouseEvent) {
             event.preventDefault();
             (this as any).pushMenu(new Menu({ top: event.clientY, left: event.clientX}, [
@@ -120,27 +79,24 @@ export default defineComponent({
                     icon: "",
                     command: () => {
                         store.dispatch("filesys/make", { type: "document", name: "Untitled Document", spaceId: this.$route.query.spaceId }).then((path: string) => {
-                            /*
-                            (window as any).urbit.scry({ app: "engram", path: `/space${this.$route.query.spaceId}/settings`}).then((res: any) => {
-                                Object.keys(res.roles).forEach((role: string) => {
-                                    console.log("adding role");
-                                    store.dispatch(`documents/addperm`, {
-                                    id: path,
+                            const roles = store.getters['space/roles'];
+                            const ships = store.getters['space/ships'];
+                            Object.keys(roles).forEach((timestamp: string) => {
+                                store.dispatch("filesys/addperm", {
+                                    item: { id: path, type: "document" },
                                     type: "roles",
-                                    perm: res.roles[role].perm,
-                                    level: res.roles[role].level
-                                    }, { root: true})
-                                });
-                                Object.keys(res.ships).forEach((ship: string) => {
-                                    store.dispatch(`documents/addperm`, {
-                                    id: path,
-                                    type: "ships",
-                                    perm: res.ships[ship].perm,
-                                    level: res.ships[ship].level
-                                    }, { root: true})
-                                });
+                                    perm: roles[timestamp].perm,
+                                    level: roles[timestamp].level
+                                })
                             });
-                            */
+                            Object.keys(ships).forEach((timestamp: string) => {
+                                store.dispatch("filesys/addperm", {
+                                    item: { id: path, type: "document"},
+                                    type: "ships",
+                                    perm: ships[timestamp].perm,
+                                    level: ships[timestamp].level
+                                })
+                            });
                         })
                     }
                 },
@@ -149,36 +105,32 @@ export default defineComponent({
                     icon: "",
                     command: () => {
                         store.dispatch("filesys/make", { type: "folder", name: "Untitled Folder", spaceId: this.$route.query.spaceId }).then((path: string) => {
-                            /*
-                            (window as any).urbit.scry({ app: "engram", path: `/space${this.$route.query.spaceId}/settings`}).then((res: any) => {
-                                Object.keys(res.roles).forEach((role: string) => {
-                                    store.dispatch(`folders/addperm`, {
-                                    id: path,
+                            const roles = store.getters['space/roles'];
+                            const ships = store.getters['space/ships'];
+                            Object.keys(roles).forEach((timestamp: string) => {
+                                store.dispatch("filesys/addperm", {
+                                    item: { id: path, type: "folder" },
                                     type: "roles",
-                                    perm: res.roles[role].perm,
-                                    level: res.roles[role].level
-                                    }, { root: true})
-                                });
-                                Object.keys(res.ships).forEach((ship: string) => {
-                                    store.dispatch(`folders/addperm`, {
-                                    id: path,
-                                    type: "ships",
-                                    perm: res.ships[ship].perm,
-                                    level: res.ships[ship].level
-                                    }, { root: true})
-                                });
+                                    perm: roles[timestamp].perm,
+                                    level: roles[timestamp].level
+                                })
                             });
-                            */
+                            Object.keys(ships).forEach((timestamp: string) => {
+                                store.dispatch("filesys/addperm", {
+                                    item: { id: path, type: "folder"},
+                                    type: "ships",
+                                    perm: ships[timestamp].perm,
+                                    level: ships[timestamp].level
+                                })
+                            });
                         })
                     }
                 }
             ]))
         },
         handleDrop: function(event: DragEvent) {
-            //console.log("can drop? ", this.canEdit);
             if(this.canEdit) {
                 event.preventDefault();
-                //event.stopPropagation();
                 const raw = event.dataTransfer?.getData("text/plain");
                 if(raw) {
                     const data = JSON.parse(raw);
@@ -192,26 +144,28 @@ export default defineComponent({
             
         }, 
         handleDragOver: function(event: DragEvent) {
-            //console.log("can dragover? ", this.canEdit);
             if(this.canEdit) {
                 event.preventDefault();
             }
         },
-        canView: function(id: string, type: string): boolean {
-            return true;
-            /*
-            const item = store.getters[`${type}s/meta`](id);
-            const roles = store.getters['space/roles'];
-            const perms = Object.keys(item.roles).map((key: string) => item.roles[key].perm);
-            const ships = Object.keys(item.ships).map((key: string) => item.ships[key].perm);
+        canView: function(id: string): boolean {
+            const myroles = store.getters['space/roles'];
+            const owner = store.getters['filesys/owner'](id);
+            const roles = store.getters['filesys/roles'](id);
+            const ships = store.getters['filesys/ships'](id);
 
-            return `~${(window as any).ship}` == item.owner || ships.reduce((a: string, acc: boolean) => {
-                return a == `~${(window as any).ship}`;
-            }, false) || roles.reduce((a: string, acc: boolean) => {
-                return acc || perms.includes(a);
-            }, false);
-            */
-        }
+            return owner == `~${(window as any).ship}` || 
+                Object.keys(ships)
+                    .map((timestamp: string) => { return ships[timestamp].ship })
+                        .reduce((a: string, acc: boolean) => {
+                            return a == `~${(window as any).ship}`;
+                        }, false) || 
+                Object.keys(roles)
+                    .map((timestamp: string) => { return roles[timestamp].role })
+                        .reduce((a: string, acc: boolean) => {
+                            return acc || myroles.includes(a);
+                        }, false);
+        },
     }
 })
 </script>

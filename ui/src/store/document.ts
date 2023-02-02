@@ -3,6 +3,11 @@ import type { Snapshot } from "yjs";
 import { encodeSnapshot, decodeSnapshot } from "yjs";
 import type { Patp } from "@urbit/http-api"
 import type { RootState } from "./types"
+import schema from "@/components/document/prosemirror/schema";
+import { EditorState } from "prosemirror-state";
+import { EditorView } from "prosemirror-view";
+import * as Y from "yjs";
+import { ySyncPlugin } from "y-prosemirror";
 
 export interface DocumentState {
     revisions: Array<DocumentVersion>,
@@ -38,6 +43,43 @@ const getters: GetterTree<DocumentState, RootState> = {
   },
   previewing: (state): DocumentVersion | null => {
     return state.snapshot
+  },
+
+  export: (state) => (id: string): Promise<string> => {
+    console.log("exporting: ", id);
+    return new Promise((resolve) => {
+      (window as any).urbit.scry({ 
+        app: "engram", 
+        path: `/document${id}/get`
+      }).then((res: any) => {
+        //console.log("scry res: ", res);
+        const doc = new Y.Doc();
+        doc.clientID = 0;
+        doc.gc = false;
+        const content = new Uint8Array(JSON.parse(res.content));
+        if(content.length > 0) {
+          console.log("applying update?", content);
+          Y.applyUpdate(doc, content);
+        }
+        const type = doc.getXmlFragment("prosemirror");
+        console.log("creating prosemirror doc");
+        const state = EditorState.create({
+          schema: schema,
+          plugins: [
+            // CRDT
+            ySyncPlugin(type, {}),
+          ],
+        });
+        const el = document.createElement("body");
+        const view = new EditorView(el, {
+          state,
+        });
+        setTimeout(() => {
+          console.log(el.outerHTML);
+          resolve(el.outerHTML);
+        }, 80);
+      })
+    })
   }
 }
 
@@ -64,7 +106,7 @@ const actions: ActionTree<DocumentState, RootState> = {
             }}}
           })
     },
-    save({}, payload: { id: string, content: Uint8Array, version: Uint8Array }): Promise<void> {
+    save({ rootGetters }, payload: { id: string, content: Uint8Array, version: Uint8Array }): Promise<void> {
       return new Promise((resolve) => {
           (window as any).urbit.poke({
               app: "engram",
@@ -76,6 +118,15 @@ const actions: ActionTree<DocumentState, RootState> = {
               }}}
           }).then(() => {
               resolve();
+              // NEED TO PUSH UPDATES
+              /*
+              rootGetters["filesys/ships"](payload.id).then(() => {
+                
+              })
+              rootGetters["filesys/roles"](payload.id).then(() => {
+                
+              })
+              */
           })
       });
     },
@@ -84,7 +135,7 @@ const actions: ActionTree<DocumentState, RootState> = {
       return new Promise((resolve) => {
         commit("reset");
         (window as any).urbit.scry({ app: "engram", path: `/document${payload}/snapshots`}).then((response: any) => {
-          Object.keys(response).forEach((timestamp: string) => {
+          Object.keys(response).sort((a, b) => { return response[b].timestamp - response[a].timestamp}).forEach((timestamp: string) => {
             commit("snap", {
               author: response[timestamp].author,
               snapshot: decodeSnapshot(new Uint8Array(JSON.parse(response[timestamp].content))),
@@ -95,29 +146,38 @@ const actions: ActionTree<DocumentState, RootState> = {
         });
       })
     },
-    snap({ commit }, payload: { id: string, snapshot: Snapshot, author?: Patp }): Promise<void> {
+    snap({ state, commit }, payload: { id: string, snapshot: Snapshot, author?: Patp }): Promise<void> {
         return new Promise((resolve, reject) => {
-          const version: DocumentVersion = {
-            author: payload.author ? payload.author : `~${(window as any).ship}`,
-            timestamp: Date.now(),
-            snapshot: payload.snapshot,
-            date: new Date()
-          }
-          commit("snap", version);
-          (window as any).urbit.poke({
-            app: "engram",
-            mark: "post",
-            json: { "document": { "snap": {
-              id: payload.id,
-              snapshot: {
-                author: version.author,
-                timestamp: version.timestamp,
-                content: JSON.stringify(Array.from(encodeSnapshot(payload.snapshot)))
-              }
-            }}}
-          }).then(() => {
-            resolve();
+          let novel = true;
+          const timestamp = Date.now();
+          state.revisions.forEach((version: DocumentVersion) => {
+            if(novel && version.author == `~${(window as any).ship}`) {
+              novel = timestamp > version.timestamp + 1000 * 60 * 60;
+            }
           })
+          if(novel) {
+            const version: DocumentVersion = {
+              author: payload.author ? payload.author : `~${(window as any).ship}`,
+              timestamp: timestamp,
+              snapshot: payload.snapshot,
+              date: new Date()
+            }
+            commit("snap", version);
+            (window as any).urbit.poke({
+              app: "engram",
+              mark: "post",
+              json: { "document": { "snap": {
+                id: payload.id,
+                snapshot: {
+                  author: version.author,
+                  timestamp: version.timestamp,
+                  content: JSON.stringify(Array.from(encodeSnapshot(payload.snapshot)))
+                }
+              }}}
+            }).then(() => {
+              resolve();
+            })
+          }
         })
     },
     preview({ commit }, payload: DocumentVersion | null): Promise<void> {
