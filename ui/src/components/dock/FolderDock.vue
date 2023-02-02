@@ -65,6 +65,7 @@ import { defineComponent } from "vue";
 import store from "@/store/index"
 import ShipPermission from "./ShipPermission.vue";
 import RolePermission from "./RolePermission.vue";
+import type { ShipPermission as ShipPerm, RolePermission as RolePerm } from "@/store/filesystem";
 export default defineComponent({
   name: "Dock",
   components: {
@@ -81,75 +82,55 @@ export default defineComponent({
     return {
       dockWidth: 420,
       dragStart: 0,
-      roles: { } as { [key: string]: { perm: string, level: string} },
-      ships: { } as { [key: string]: { perm: string, level: string} },
 
       newPermission: "",
       newPermissionLevel: "",
     }
   },
-  watch: {
-    folder: function() {
-      this.loadSettings();
-    }
-  },
   computed: {
-    isAdmin: function(): boolean {
-      const item = store.getters["folders/meta"](this.folder);
-      const myroles = store.getters['space/roles'];
-
-      const perms = Object.keys(this.roles).map((key: string) => {
-        return myroles.includes(this.roles[key].perm) ? (this.roles[key].level == "admin") : false;
-      })
-      Object.keys(this.ships).forEach((key: string) => {
-        perms.push(this.ships[key].perm == `~${(window as any).ship}` ? (this.ships[key].level == "admin") : false);
-      })
-
-      return `~${(window as any).ship}` == item.owner || perms.reduce((a: boolean, acc: boolean) => {
-          return acc || a;
-      }, false);
+    roles: function() {
+      return store.getters['filesys/roles'](this.folder);
     },
-    isOwner: function(): boolean {
-      return store.getters['folders/meta'](this.folder).owner == `~${(window as any).ship}`
-    }
+    ships: function() {
+      return store.getters['filesys/ships'](this.folder);
+    },
+    isAdmin: function(): boolean {
+      const myroles = store.getters['space/roles'];
+      const owner = store.getters['filesys/owner'](this.folder);
+
+      return owner == `~${(window as any).ship}` || 
+          Object.keys(this.ships)
+              .map((timestamp: string) => { return this.ships[timestamp] })
+                  .reduce((a: ShipPerm, acc: boolean) => {
+                      return acc || (a.ship == `~${(window as any).ship}` && a.level == "admin");
+                  }, false) || 
+          Object.keys(this.roles)
+              .map((timestamp: string) => { return this.roles[timestamp].role })
+                  .reduce((a: RolePerm, acc: boolean) => {
+                      return acc || (myroles.includes(a.role) && a.level == "admin");
+                  }, false);
+    },
   },
   methods: {
-    loadSettings: function() {
-      if(this.folder.length > 0) {
-        (window as any).urbit.scry({ app: "engram", path: `/folder${this.folder}/get/settings`}).then((res: any) => {
-          this.roles = res.roles;
-          this.ships = res.ships;
-        });
-      }
-    },
     handleLevel: function(item: string, level: string, type: string) {
       if(level == "-") {
-        console.log("space settings: ", this.roles, this.ships);
-        store.dispatch("folders/removeperm", { 
-          id: this.folder,
+        store.dispatch("filesys/removeperm", { 
+          item: { id: this.folder, type: "folder" },
           timestamp: item,
           type: type,
-          perm: (this as any)[type][item].perm,
-          level: (this as any)[type][item].level
-        }).then(() => {
-          this.loadSettings();
         })
       } else {
         const perm = (this as any)[type][item];
-        store.dispatch("folders/removeperm", { 
+        store.dispatch("filesys/removeperm", { 
           id: this.folder,
           timestamp: item,
           type: type,
-          perm: perm.perm,
-          level: perm.level
         }).then(() => {
-          store.dispatch('folders/addperm', { 
+          store.dispatch('filesys/addperm', { 
             id: this.folder, 
             perm: perm.perm, 
             level: level,
             type: type
-          }).then(() => {
-            this.loadSettings();
           })
         })
       }
@@ -157,15 +138,14 @@ export default defineComponent({
     addPermission: function(event: KeyboardEvent) {
       if(event.key == "Enter" && this.newPermission.length > 0 && this.newPermissionLevel.length > 0) {
         const ship = this.newPermission.charAt(0) == "~";
-        store.dispatch('folders/addperm', { 
-          id: this.folder, 
+        store.dispatch('filesys/addperm', { 
+          item: { id: this.folder, type: "folder" }, 
           perm: ship ? this.newPermission : this.newPermission.substring(1),
           level: this.newPermissionLevel,
           type: ship ? "ships" : "roles"
         });
         this.newPermission = "";
         this.newPermissionLevel = "";
-        this.loadSettings();
       } else {
         if(event.key != "ArrowLeft" && event.key != "ArrowRight" && event.key != "Backspace" && event.key != "Delete") {
           if(this.newPermission.length == 0) {

@@ -97,10 +97,8 @@ const getters: GetterTree<FileSysState, RootState> = {
 
 const mutations: MutationTree<FileSysState> = {
     load(state, payload: SysItem) {
-        console.warn("loading...", payload);
         if(state[payload.id]) state[payload.id] = {...state[payload.id], ...payload};
         else state[payload.id] = payload;
-        console.warn("loaded");
 
         let root = true;
         Object.keys(state).forEach((key: string) => {
@@ -422,7 +420,6 @@ const actions: ActionTree<FileSysState, RootState> = {
 
     //add perm
     addperm({ dispatch }, payload: { item: SysRecord, perm: string, level: string, type: string}): Promise<void> {
-        console.warn("adding perm: ", payload);
         return new Promise((resolve) => {
           (window as any).urbit.poke({
             app: "engram",
@@ -436,10 +433,8 @@ const actions: ActionTree<FileSysState, RootState> = {
               }}
             }
           }).then(() => {
-            console.warn("added perm");
             dispatch("perms", payload.item);
             if(payload.item.type == "folder") {
-                console.warn("tryna add to children: ", state[payload.item.id].children);
                 Promise.all(Object.keys((state[payload.item.id].children as any)).map((item: string) => {
                     dispatch("addperm", { 
                       item: (state[payload.item.id].children as any)[item], 
@@ -459,7 +454,6 @@ const actions: ActionTree<FileSysState, RootState> = {
 
     //remove perm
     removeperm({ state, dispatch }, payload: { item: SysRecord, timestamp: string, type: "ships" | "roles"}): Promise<void> {
-        console.warn("removing perm: ", payload);
         return new Promise((resolve) => {
             const perm = state[payload.item.id][payload.type];
             (window as any).urbit.poke({
@@ -473,7 +467,6 @@ const actions: ActionTree<FileSysState, RootState> = {
                 }}
                 }
             }).then(() => {
-                console.warn("removed perm");
                 dispatch("perms", payload.item);
                 if(payload.item.type == "folder") {
                     Promise.all(Object.keys((state[payload.item.id].children as any)).map((item: string) => {
@@ -495,10 +488,8 @@ const actions: ActionTree<FileSysState, RootState> = {
 
     //find remove perm
     findremoveperm({ dispatch }, payload: { item: SysRecord, type: string, perm: string, level: string }): Promise<void> {
-        console.warn("finding remove perm: ", payload);
         return new Promise((resolve) => {
           dispatch("protectedget", payload.item).then((res: any) => {
-            console.warn("protected got: ", res);
             const closeenough = Object.keys(res[payload.type]).find((key: string) => {
               return res[payload.type][key].perm == payload.perm && res[payload.type][key].level == payload.level;
             });

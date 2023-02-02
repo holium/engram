@@ -175,7 +175,7 @@ export default defineComponent({
                     display: "Settings",
                     icon: "",
                     command: () => {
-                        (this as any).pushFolderDock(this.item);
+                        (this as any).pushFolderDock(this.item.id);
                     }
                 }]: [])
             ]
