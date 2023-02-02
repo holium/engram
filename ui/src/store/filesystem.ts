@@ -148,7 +148,9 @@ const actions: ActionTree<FileSysState, RootState> = {
     boot({ commit, dispatch }, payload: string): Promise<void> {
         return new Promise((resolve, reject) => {
             (window as any).urbit.scry({ app: "engram", path: `/space${payload}/content` }).then((res: any) => {
+                console.log("space res: ", res);
                 if(res == "Missing Space") {
+                    console.warn("trying again");
                     // handle if the space is missing
                     (window as any).urbit.poke({
                         app: "engram",
@@ -166,7 +168,7 @@ const actions: ActionTree<FileSysState, RootState> = {
                             }
                         }).then(() => {
                             // & try loading again
-                            dispatch("boot").then(() => {
+                            dispatch("boot", payload).then(() => {
                                 resolve();
                             })
                         })
@@ -220,12 +222,12 @@ const actions: ActionTree<FileSysState, RootState> = {
     rename({ commit, dispatch }, payload: { item: SysRecord, name: string}): Promise<void> {
         return new Promise((resolve) => {
             commit("rename", payload);
-            (window as any).poke({
+            (window as any).urbit.poke({
                 app: "engram",
                 mark: "post",
                 json: {
                     [payload.item.type]: {
-                        rename: { id: payload.item.id, name: name }
+                        rename: { id: payload.item.id, name: payload.name }
                     }
                 }
             }).then(() => {
