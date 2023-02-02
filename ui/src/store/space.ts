@@ -74,7 +74,6 @@ const getters: GetterTree<SpaceState, RootState> = {
 
 const mutations: MutationTree<SpaceState> = {
     load(state, payload: Space) {
-        console.warn("loading space: ", payload);
         state.path = payload.path;
         state.name = payload.name;
         state.picture = payload.picture;
@@ -87,7 +86,6 @@ const mutations: MutationTree<SpaceState> = {
         if(payload.myroles.includes("member")) state.myroles.push("visitor")
     },
     loadperms(state, payload: { roles: { [key: string]: RolePermission }, ships: { [key: string]: ShipPermission }}) {
-      console.warn("loading space perms: ", payload);
       state.ships = payload.ships;
       state.roles = payload.roles;
     }
@@ -151,9 +149,6 @@ const actions: ActionTree<SpaceState, RootState> = {
     removeperm({ state, dispatch }, payload: { id: string, timestamp: string, type: "roles" | "ships" }): Promise<void> {
       return new Promise((resolve) => {
         const perm = (state as any)[payload.type][payload.timestamp];
-        console.warn("removing perm: ", perm);
-        console.warn((state as any)[payload.type]);
-        console.warn((state as any)[payload.type][payload.timestamp]);
         (window as any).urbit.poke({
           app: "engram",
           mark: "post",
@@ -167,9 +162,7 @@ const actions: ActionTree<SpaceState, RootState> = {
         }).then(() => {
           dispatch("perms", payload.id);
           (window as any).urbit.scry({app: "engram", path: `/space${payload.id}/list`}).then((res: any) => {
-            console.warn("got list: ", res);
             Promise.all(Object.keys(res).map((item: string) => {
-              console.log("sending find remove perm: ", item);
               dispatch("filesys/findremoveperm", { 
                 item: res[item], 
                 perm: perm[payload.type == "ships" ? "ship":"role"], 

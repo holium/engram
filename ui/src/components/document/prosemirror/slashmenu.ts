@@ -25,7 +25,6 @@ const slashmenu = (pushMenu: (menu: SlashMenu | null) => void) => new Plugin({
             },
             keydown: (view, event) => {
                 const sel = view.state.selection;
-                console.log(event.key);
                 if(event.key == "/" && type != "engram") {
                     const start = view.coordsAtPos(sel.from);
                     const end = view.coordsAtPos(sel.to);

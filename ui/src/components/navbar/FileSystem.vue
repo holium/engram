@@ -31,7 +31,7 @@
 import { defineComponent } from "vue";
 import store from "@/store/index";
 import SystemItem from "./SystemItem.vue";
-import type { ShipPermission, RolePermission } from "@/store/filesystem";
+import type { ShipPermission, RolePermission, SysItem } from "@/store/filesystem";
 import { Menu } from "@/components/menus/types";
 export default defineComponent({
     name: "FileSystem",
@@ -78,12 +78,12 @@ export default defineComponent({
                     display: "New Document",
                     icon: "",
                     command: () => {
-                        store.dispatch("filesys/make", { type: "document", name: "Untitled Document", spaceId: this.$route.query.spaceId }).then((path: string) => {
+                        store.dispatch("filesys/make", { type: "document", name: "Untitled Document", spaceId: this.$route.query.spaceId }).then((path: SysItem) => {
                             const roles = store.getters['space/roles'];
                             const ships = store.getters['space/ships'];
                             Object.keys(roles).forEach((timestamp: string) => {
                                 store.dispatch("filesys/addperm", {
-                                    item: { id: path, type: "document" },
+                                    item: path,
                                     type: "roles",
                                     perm: roles[timestamp].perm,
                                     level: roles[timestamp].level
@@ -91,7 +91,7 @@ export default defineComponent({
                             });
                             Object.keys(ships).forEach((timestamp: string) => {
                                 store.dispatch("filesys/addperm", {
-                                    item: { id: path, type: "document"},
+                                    item: path,
                                     type: "ships",
                                     perm: ships[timestamp].perm,
                                     level: ships[timestamp].level
@@ -104,12 +104,12 @@ export default defineComponent({
                     display: "New Folder",
                     icon: "",
                     command: () => {
-                        store.dispatch("filesys/make", { type: "folder", name: "Untitled Folder", spaceId: this.$route.query.spaceId }).then((path: string) => {
+                        store.dispatch("filesys/make", { type: "folder", name: "Untitled Folder", spaceId: this.$route.query.spaceId }).then((path: SysItem) => {
                             const roles = store.getters['space/roles'];
                             const ships = store.getters['space/ships'];
                             Object.keys(roles).forEach((timestamp: string) => {
                                 store.dispatch("filesys/addperm", {
-                                    item: { id: path, type: "folder" },
+                                    item: { id: path.id, type: "folder" },
                                     type: "roles",
                                     perm: roles[timestamp].perm,
                                     level: roles[timestamp].level
@@ -117,7 +117,7 @@ export default defineComponent({
                             });
                             Object.keys(ships).forEach((timestamp: string) => {
                                 store.dispatch("filesys/addperm", {
-                                    item: { id: path, type: "folder"},
+                                    item: { id: path.id, type: "folder"},
                                     type: "ships",
                                     perm: ships[timestamp].perm,
                                     level: ships[timestamp].level

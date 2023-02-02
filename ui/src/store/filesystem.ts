@@ -196,7 +196,6 @@ const actions: ActionTree<FileSysState, RootState> = {
     perms({ commit }, payload: SysRecord): Promise<SysItem> {
         return new Promise((resolve, reject) => {
             (window as any).urbit.scry({ app: "engram", path: `/${payload.type}${payload.id}/perms` }).then((res: any) => {
-                console.log("retrieved perms: ", res);
                 commit('load', { ...res, type: payload.type, id: payload.id });
                 resolve(res);
             })

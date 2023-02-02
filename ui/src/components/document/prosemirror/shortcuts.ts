@@ -13,7 +13,6 @@ const engramRule = textblockTypeInputRule(
   new RegExp("@\/~[\w-]+\/\d+\s"),
   schema.nodes["engramlink"],
   (match) => {
-    console.log("matched? ", match);
     return { href: `/~${match}/`}
   }
 )
