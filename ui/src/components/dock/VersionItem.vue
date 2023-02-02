@@ -178,7 +178,7 @@ export default defineComponent({
             return previewing != null && previewing.date.getTime() == this.meta.date.getTime()
         },
         me: function() {
-            return (window as any).ship
+            return `~${(window as any).ship}`
         },
         shipIndex: function() {
             return Array.from(this.ships).indexOf(this.meta.author);

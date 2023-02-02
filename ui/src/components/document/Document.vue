@@ -82,7 +82,7 @@ export default defineComponent({
               this.updateCover, 
               this.openFinder,
               newRender, 
-              this.editable(this.path)
+              newRender == null ? this.editable(this.path) : false
             );
       this.loaded.then(() => {
         this.loading = false;
