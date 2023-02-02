@@ -94,6 +94,7 @@ const mutations: MutationTree<SpaceState> = {
 const actions: ActionTree<SpaceState, RootState> = {
     load({ commit, dispatch }, payload: string): Promise<Space> {
         return new Promise((resolve, reject) => {
+          console.log("loading space...", payload);
           (window as any).urbit.scry({ app: "spaces", path: `${payload}/members/~${(window as any).ship}` }).then((member: any) => {
               console.log("member res: ", member);
             (window as any).urbit.scry({ app: "spaces", path: `${payload}` }).then((response: any) => {

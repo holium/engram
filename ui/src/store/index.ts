@@ -28,19 +28,17 @@ const getters: GetterTree<RootState, RootState> = {
 }
 
 const actions: ActionTree<RootState, RootState> = {
-  load({ dispatch, state }): Promise<void> {
+  load({ dispatch, state }, payload: string): Promise<void> {
     return new Promise((resolve) => {
       let delay = 1;
-      const spaceId = router.currentRoute.value.query.spaceId;
-      //dispatch("workspace/close", {}, { root: true });
-      dispatch("space/load", spaceId, { root: true });
+      dispatch("space/load", payload, { root: true });
       (window as any).urbit.poke({
         app: "engram",
         mark: "post",
         json: { leave: { self: `~${(window as any).ship}` } }
       }).then(() => {
         dispatch("filesys/reset", {}, { root: true });
-        dispatch("filesys/boot", spaceId, { root: true }).then(() => {
+        dispatch("filesys/boot", payload, { root: true }).then(() => {
           resolve();
           (window as any).urbit.subscribe({
             app: "engram",
