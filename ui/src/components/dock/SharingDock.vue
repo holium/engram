@@ -87,7 +87,7 @@ export default defineComponent({
                       return acc || (a.ship == `~${(window as any).ship}` && a.level == "admin");
                   }, false) || 
           Object.keys(this.roles)
-              .map((timestamp: string) => { return this.roles[timestamp].role })
+              .map((timestamp: string) => { return this.roles[timestamp] })
                   .reduce((a: RolePerm, acc: boolean) => {
                       return acc || (myroles.includes(a.role) && a.level == "admin");
                   }, false);
