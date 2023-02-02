@@ -46,7 +46,7 @@
             viewBox="0 0 25 25"
             xmlns="http://www.w3.org/2000/svg"
         ></svg>
-        <div class="flex items-center text-right flex-1 font-mono relative">
+        <div class="flex items-center text-right flex-1 font-mono relative overflow-hidden">
             <div class="whitespace-nowrap overflow-hidden overflow-ellipsis" style="max-width: 100%;">{{ ship }}</div>
         </div>
         
