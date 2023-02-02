@@ -11,7 +11,7 @@
       >
         <!-- Branch -->
         <svg
-            v-if="(me == meta.author)"
+            v-if="(me != meta.author)"
             :style="{ position: 'absolute', top: '19px', left: '0' }"
             :width="`${50 + 25 * shipIndex}`"
             height="12.5"
