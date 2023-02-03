@@ -56,7 +56,7 @@
 import { defineComponent } from 'vue';
 import store from "@/store/index";
 import type { Patp } from "@urbit/http-api"
-import type { VersionMeta } from '@/store/types';
+import type { VersionMeta } from '@/store/document';
 import VersionItem from "./VersionItem.vue";
 import VersionShipLabel from './VersionShipLabel.vue';
 export default defineComponent({

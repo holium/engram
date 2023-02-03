@@ -2,7 +2,7 @@ import type { GetterTree, MutationTree, ActionTree, Module, Getter } from "vuex"
 import type { Snapshot } from "yjs";
 import { encodeSnapshot, decodeSnapshot } from "yjs";
 import type { Patp } from "@urbit/http-api"
-import type { RootState } from "./types"
+import type { RootState } from "./index"
 import schema from "@/components/document/prosemirror/schema";
 import { EditorState } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
@@ -19,6 +19,17 @@ export interface DocumentVersion {
     snapshot: Snapshot,
     timestamp: number,
     date: Date
+}
+
+export interface VersionMeta {
+  author: Patp;
+  date: Date;
+}
+
+export interface DocumentUpdate {
+  timestamp: string,
+  author: Patp,
+  content: Uint8Array
 }
 
 const state: DocumentState = {

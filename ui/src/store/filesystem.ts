@@ -1,7 +1,7 @@
 import type { GetterTree, MutationTree, ActionTree, Module } from "vuex"
 import type {
     RootState,
-} from "./types"
+} from "./index"
 import * as Y from "yjs";
 
 export interface SysRecord {
@@ -333,28 +333,24 @@ const actions: ActionTree<FileSysState, RootState> = {
                             }
                             }
                         }).then(() => {
-                            dispatch("load", { id: payload.to, type: "folder"});
-                            // handle this in perms
-                            /*
-                            (window as any).urbit.scry({ app: "engram", path: `/folder${payload.to}/get/settings`}).then((res: any) => {
-                            Object.keys(res.roles).forEach((role: string) => {
-                                dispatch(`${payload.item.type}s/addperm`, {
-                                id: payload.item.id,
-                                type: "roles",
-                                perm: res.roles[role].perm,
-                                level: res.roles[role].level
-                                }, { root: true})
-                            });
-                            Object.keys(res.ships).forEach((ship: string) => {
-                                dispatch(`${payload.item.type}s/addperm`, {
-                                id: payload.item.id,
-                                type: "ships",
-                                perm: res.ships[ship].perm,
-                                level: res.ships[ship].level
-                                }, { root: true})
-                            });
-                            });
-                            */
+                            dispatch("load", { id: payload.to, type: "folder"}).then(() => {
+                                Object.keys(state[payload.to].roles).forEach((role: string) => {
+                                    dispatch(`${payload.item.type}s/addperm`, {
+                                    id: payload.item.id,
+                                    type: "roles",
+                                    perm: state[payload.to].roles[role].role,
+                                    level: state[payload.to].roles[role].level
+                                    }, { root: true})
+                                });
+                                Object.keys(state[payload.to].ships).forEach((ship: string) => {
+                                    dispatch(`${payload.item.type}s/addperm`, {
+                                    id: payload.item.id,
+                                    type: "ships",
+                                    perm: state[payload.to].ships[ship].ship,
+                                    level: state[payload.to].ships[ship].level
+                                    }, { root: true})
+                                });
+                            })
                             resolve();
                         })
                     }
@@ -505,11 +501,13 @@ const actions: ActionTree<FileSysState, RootState> = {
             } else {
                 resolve();
             }
-            
           })
-          
         })
-      },
+    },
+    getupdate({ dispatch }, payload: SysItem) {
+        dispatch("load", payload);
+        dispatch("perms", payload);
+      }
 }
 
 export default {

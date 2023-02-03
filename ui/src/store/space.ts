@@ -1,7 +1,7 @@
 import type { Module, GetterTree, MutationTree, ActionTree, Action } from "vuex"
 import type {
     RootState,
-  } from "./types"
+  } from "./index"
 import type { RolePermission, ShipPermission } from "./filesystem";
 import router from "@/router/index";
 

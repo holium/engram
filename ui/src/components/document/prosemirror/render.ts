@@ -5,7 +5,7 @@ import { ySyncPlugin, yUndoPlugin } from "y-prosemirror";
 import { dropCursor } from "prosemirror-dropcursor";
 
 import store from "@/store/index";
-import router from "@/router/index";
+import type { DocumentUpdate, DocumentVersion } from "@/store/document";
 
 import schema from "./schema";
 import keymap from "./keymap";
@@ -13,9 +13,6 @@ import shortcuts from "./shortcuts";
 import save from "./save";
 import cover from "./cover";
 import type { CoverUpdate } from "./cover"
-import styling from "./styling";
-import type { StylingUpdate } from "./styling"
-import type { DocumentUpdate, DocumentVersion } from "@/store/types";
 import type { Menu } from "../../menus/types";
 
 import slashmenu from "./slashmenu";
@@ -116,28 +113,6 @@ export default function (
               comments,
             ],
           });
-          /*
-        (async (activepath: string) => {
-          store.getters["documents/updates"](path).then((updates: Array<DocumentUpdate>) => {
-            console.log("updates: ", updates);
-            updates.forEach(pushUpdate);
-            store.dispatch("workspace/revisions/accept", {
-              id: path,
-            })
-      
-            if(updates.length > 0) {
-              const version = Y.encodeStateVector(doc);
-              const content = Y.encodeStateAsUpdate(doc);
-          
-              store.dispatch("documents/save", {
-                id: path,
-                version: version,
-                content: content
-              });
-            }
-          })
-        })(path)
-        */
       } else {
         const preview = Y.createDocFromSnapshot(doc, snapshot.snapshot)
         const type = preview.getXmlFragment("prosemirror");
@@ -149,7 +124,6 @@ export default function (
             ySyncPlugin(type, {}),
             // Views
             cover(updateCover),
-            //styling(updateStyling),
           ],
         });
       }
