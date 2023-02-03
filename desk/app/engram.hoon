@@ -307,6 +307,7 @@
         ::
           %delta
         ::~&  "DELTA-- from {<src.bowl>} for {<path.act>}"
+        ?:  =(src.bowl our.bowl)  `this
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         ?.  (~(has by d) id)  ~&  "{<our.bowl>} does not know about {<path.act>} yet"  `this
         =/  doc  (~(got by d) id)
@@ -337,7 +338,6 @@
         :: Request a document you don't have
         ::
           %request
-        ~&  act
         ?>  =(src.bowl our.bowl)
         :_  this
         :~  [%pass /document/answer %agent [peer.act %engram] %poke %post !>([%document %answer path.act])]
@@ -346,7 +346,8 @@
         :: Answer a request for a document
         ::
           %answer
-        ~&  "Request from: {<src.bowl>}"
+        ::~&  "Request from: {<src.bowl>}"
+        ?:  =(src.bowl our.bowl)  `this
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  doc  (~(got by d) id)
         ::?>  (guardspace:engram [space.settings.doc (molt ~(val by content.roles.settings.doc)) (molt ~(val by content.ships.settings.doc)) (silt `(list @tas)`[%admin %editor %visitor ~]) src.bowl our.bowl now.bowl])
@@ -379,6 +380,11 @@
           ^*  (index:index [id @tas])
         ==
         =/  id  [our.bowl t]
+        ~&  "Making folder:"
+        ~&  act
+        ~&  "=="
+        ~&  fold
+        ~&  "--"
         =/  fstate  this(f (~(put by f) id fold))
         =/  oldspc
         ?:  (~(has by s) space.act)
@@ -582,6 +588,7 @@
         ::
           %delta
         ::~&  "DELTA-- from {<src.bowl>} for {<path.act>}"
+        ?:  =(src.bowl our.bowl)  `this
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         ?.  (~(has by f) id)  ~&  "{<our.bowl>} does not know about {<path.act>} yet"  `this
         =/  fol  (~(got by f) id)
@@ -620,6 +627,7 @@
         :: Answer a request for a folder
         ::
           %answer
+        ?:  =(src.bowl our.bowl)  `this
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  fold  (~(got by f) id)
         ?>  (guardspace:engram [space.fold (molt ~(val by content.roles.fold)) (molt ~(val by content.ships.fold)) (silt `(list @tas)`[%admin %editor %visitor ~]) src.bowl our.bowl now.bowl])
@@ -748,6 +756,7 @@
         ::
           %delta
         ::~&  "DELTA-- from {<src.bowl>} for {<space.act>}"
+        ?:  =(src.bowl our.bowl)  `this
         =/  spc  (~(got by s) space.act)
         =/  tid  `@ta`(cat 4 (cat 2 'space-delta-' -.+.space.act) (cat 2 -.space.act (scot %uv (sham eny.bowl))))
         =/  ta-now  `@ta`(scot %da now.bowl)
@@ -797,19 +806,28 @@
     ~_  [%leaf "empty history"]
     ``noun+!>((timestamp:enjs:engram (rear h)))
     ::
+      [%x %space @ @ %content ~]
+    ?>  =(src.bowl our.bowl)
+    ?:  (~(has by s) ~[i.t.t.p i.t.t.t.p])
+      =/  spc  (~(got by s) ~[i.t.t.p i.t.t.t.p])
+      ``noun+!>((content:space:enjs:engram [d f content.content.spc]))
+    ~&  "No space of path: {<`path`~[i.t.t.p i.t.t.t.p]>}"
+    ``noun+!>((tape:enjs:format "Missing Space"))
+    ::
       [%x %space @ @ %list ~]
     ?>  =(src.bowl our.bowl)
     ?:  (~(has by s) ~[i.t.t.p i.t.t.t.p])
       =/  spc  (~(got by s) ~[i.t.t.p i.t.t.t.p])
-      ``noun+!>((list:space:enjs:engram [d f content.content.spc]))
+      ``noun+!>((list:space:enjs:engram spc))
     ~&  "No space of path: {<`path`~[i.t.t.p i.t.t.t.p]>}"
     ``noun+!>((tape:enjs:format "Missing Space"))
     ::
-      [%x %space @ @ %settings ~]
+      [%x %space @ @ %perms ~]
     ?:  (~(has by s) ~[i.t.t.p i.t.t.t.p])
       =/  spc  (~(got by s) ~[i.t.t.p i.t.t.t.p])
-      ``noun+!>((settings:space:enjs:engram spc))
+      ``noun+!>((perms:space:enjs:engram spc))
     ~&  "No space of path: {<`path`~[i.t.t.p i.t.t.t.p]>}"  !!
+    ::
       [%x %document %list ~]
     ``noun+!>((list:document:enjs:engram d))
   ::
@@ -821,25 +839,34 @@
     =/  doc  (~(got by d) id)
     ``noun+!>((get:document:enjs:engram doc))
   ::
-      [%x %document @ @ %get %settings ~]
+      [%x %document @ @ %meta ~]
+    ?>  =(src.bowl our.bowl)
+    =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
+    ?.  (~(has by d) id)
+      ``noun+!>((tape:enjs:format "missing document"))
+    =/  doc  (~(got by d) id)
+    ``noun+!>((meta:document:enjs:engram doc))
+  ::
+      [%x %document @ @ %perms ~]
     ?>  =(src.bowl our.bowl)
     =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
     =/  doc  (~(got by d) id)
-    ``noun+!>((settings:document:enjs:engram settings.doc))
+    ``noun+!>((perms:document:enjs:engram settings.doc))
   ::
-      [%x %document @ @ %get %snapshots ~]
+      [%x %document @ @ %snapshots ~]
     ?>  =(src.bowl our.bowl)
     =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
     =/  doc  (~(got by d) id)
     ``noun+!>((snapshots:document:enjs:engram snapshots.doc))
   ::
-      [%x %document @ @ %get %updates ~]
+      [%x %document @ @ %content ~]
     ?>  =(src.bowl our.bowl)
     =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
+    =/  doc  (~(got by d) id)
     ?:  (~(has by u) id)
       =/  updts  (need (~(get by u) id))
-      ``noun+!>((updates:document:enjs:engram updts))
-    ``noun+!>((updates:document:enjs:engram ^*((set dupdate))))
+      ``noun+!>((content:document:enjs:engram [doc updts]))
+    ``noun+!>((content:document:enjs:engram [doc ^*((set dupdate))]))
   ::
       [%x %folder @ @ %list ~]
     ?>  =(src.bowl our.bowl)
@@ -853,11 +880,17 @@
     =/  fold  (~(got by f) id)
     ``noun+!>((list:folder:enjs:engram fold))
   ::
-      [%x %folder @ @ %get %settings ~]
+      [%x %folder @ @ %meta ~]
     ?>  =(src.bowl our.bowl)
     =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
     =/  fold  (~(got by f) id)
-    ``noun+!>((settings:folder:enjs:engram fold))
+    ``noun+!>((meta:folder:enjs:engram fold))
+  ::
+      [%x %folder @ @ %perms ~]
+    ?>  =(src.bowl our.bowl)
+    =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
+    =/  fold  (~(got by f) id)
+    ``noun+!>((perms:folder:enjs:engram fold))
   ==
 ::
 ++  on-agent

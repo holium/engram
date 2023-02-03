@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col">
-        <div class="flex" @click="closePreview">
+        <div class="flex cursor-pointer" @click="closePreview">
             <svg
                 width="25"
                 height="25"
@@ -15,7 +15,7 @@
                 <path 
                     v-if="previewing == null"
                     d="M16.8 12.5C16.8 10.082 14.918 8.125 12.5 8.125C10.082 8.125 8.2 10.082 8.2 12.5C8.2 14.918 10.082 16.875 12.5 16.875C14.918 16.875 16.8 14.918 16.8 12.5Z" 
-                    fill="black"
+                    fill="var(--rlm-text-color, #261f1f)"
                 />
             </svg>
             <!-- Other Ships -->
@@ -56,7 +56,7 @@
 import { defineComponent } from 'vue';
 import store from "@/store/index";
 import type { Patp } from "@urbit/http-api"
-import type { VersionMeta } from '@/store/types';
+import type { VersionMeta } from '@/store/document';
 import VersionItem from "./VersionItem.vue";
 import VersionShipLabel from './VersionShipLabel.vue';
 export default defineComponent({
@@ -67,15 +67,15 @@ export default defineComponent({
     },
     computed: {
         previewing: function() {
-            return store.getters['workspace/previewing'];
+            return store.getters['document/previewing'];
         },
         snapshots: function(): Array<VersionMeta> {
-            return store.getters['workspace/revisions/versions'];
+            return store.getters['document/versions'];
         },
         ships: function(): Array<Patp> {
             return Array.from(
                 new Set(
-                    store.getters['workspace/revisions/versions'].map((revision: VersionMeta) => revision.author)
+                    store.getters['document/versions'].map((revision: VersionMeta) => revision.author)
                     .filter((ship: string) => ship != `~${(window as any).ship}`)
                 )
             )
@@ -91,7 +91,7 @@ export default defineComponent({
     },
     methods: {
         closePreview: function() {
-            store.dispatch("workspace/preview", null);
+            store.dispatch("document/preview", null);
         }
     }
 })

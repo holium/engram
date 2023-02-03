@@ -5,23 +5,6 @@
     </div>
     <div id="dock" :style="{width: `${dockWidth}px`}">
       <div class="toolbar">
-          <!-- Styling -->
-          <!--
-          <svg
-            class="icon clickable"
-            :class="open =='styling' ? 'bg-border' : ''"
-            viewBox="0 0 16 16"
-            fill="var(--rlm-icon-color, #333333)"
-            xmlns="http://www.w3.org/2000/svg"
-            @click="() => {
-              open = 'styling'
-            }"
-          >
-            <path
-              d="M14.8277 12.2048L8.92384 7.59047L9.82906 3.25218H13.6586V4.71306C13.6586 5.06002 13.9404 5.33915 14.2847 5.33915C14.6291 5.33915 14.9108 5.06002 14.9108 4.71306V2.62609C14.9108 2.28044 14.6317 2 14.2847 2H3.84993C3.50558 2 3.22384 2.28044 3.22384 2.62609V3.12201L2.01264 2.13691C1.89786 2.04722 1.76168 2.00308 1.62708 2.00308C1.44134 2.00308 1.25674 2.08567 1.13364 2.243C0.920036 2.51535 0.967593 2.90874 1.23989 3.12188L14.0317 13.1671C14.3056 13.3811 14.6987 13.3324 14.9108 13.0609C15.1485 12.8126 15.099 12.4187 14.8277 12.2048ZM4.47602 3.25218H8.54819L7.82559 6.72959L4.47602 4.10262V3.25218ZM9.90211 13.0609C9.90211 13.4066 9.62167 13.687 9.27602 13.687H5.51949C5.17514 13.687 4.89341 13.4079 4.89341 13.0609C4.89341 12.714 5.17384 12.4349 5.51949 12.4349H6.63628L7.2655 9.41395L8.36533 10.2759L7.9169 12.4349H9.27602C9.62298 12.4349 9.90211 12.7166 9.90211 13.0609Z"
-            />
-          </svg>
-          -->
           <!-- Sharing -->
           <svg
             class="icon clickable"
@@ -72,8 +55,8 @@
           </div>
       </div>
         <!-- <StylingDock class="dock-body scrollbar-small" :styling="styling" v-if="open == 'styling'" /> -->
-        <SharingDock class="dock-body scrollbar-small" v-if="open == 'sharing'" :doc="doc"/>
-        <VersionDock class="dock-body scrollbar-small" v-if="open == 'revisions'" :doc="doc"/>
+        <SharingDock class="dock-body scrollbar-small" v-if="open == 'sharing'" />
+        <VersionDock class="dock-body scrollbar-small" v-if="open == 'revisions'" />
     </div>
   </div>
 </template>
@@ -90,20 +73,10 @@ export default defineComponent({
     SharingDock,
     VersionDock,
   },
-  props: {
-    styling: {
-      type: Object,
-      required: true,
-    },
-    doc: {
-      type: Object,
-      required: true,
-    }
-  },
   inject: ["toggleDock"],
   data() {
     return {
-      open: "sharing" as "sharing" | "revisions",
+      open: "revisions" as "sharing" | "revisions",
       dockWidth: 420,
       dragStart: 0,
     }

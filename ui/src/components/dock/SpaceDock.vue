@@ -80,22 +80,20 @@
       return {
         dockWidth: 420,
         dragStart: 0,
-        roles: { } as { [key: string]: { perm: string, level: string} },
-        ships: { } as { [key: string]: { perm: string, level: string} },
 
         newPermission: "",
         newPermissionLevel: "",
       }
     },
-    watch: {
-      open: function() {
-        this.loadSettings();
-      }
-    },
     computed: {
+      roles: function() {
+        return store.getters['space/roles'];
+      },
+      ships: function() {
+        return store.getters['space/ships'];
+      },
       isAdmin: function(): boolean {
-        const myroles = store.getters['space/roles'];
-        const owner = store.getters['space/owner'];
+        const myroles = store.getters['space/myroles'];
 
         const perms = Object.keys(this.roles).map((key: string) => {
           return myroles.includes(this.roles[key].perm) ? (this.roles[key].level == "admin") : false;
@@ -104,46 +102,32 @@
           perms.push(this.ships[key].perm == `~${(window as any).ship}` ? (this.ships[key].level == "admin") : false);
         })
 
-        return `~${(window as any).ship}` == owner || perms.reduce((a: boolean, acc: boolean) => {
+        return myroles.includes("owner") || perms.reduce((a: boolean, acc: boolean) => {
             return acc || a;
         }, false);
       }
     },
     methods: {
-      loadSettings: function() {
-        (window as any).urbit.scry({ app: "engram", path: `/space${this.$route.query.spaceId}/settings`}).then((res: any) => {
-            this.roles = res.roles;
-            this.ships = res.ships;
-        });
-      },
       handleLevel: function(item: string, level: string, type: string) {
         if(level == "-") {
           store.dispatch("space/removeperm", { 
             id: this.$route.query.spaceId,
             timestamp: item,
             type: type,
-            perm: (this as any)[type][item].perm,
-            level: (this as any)[type][item].level
-          }).then(() => {
-            this.loadSettings();
-          })
+          });
         } else {
           const perm = (this as any)[type][item];
           store.dispatch("space/removeperm", { 
             id: this.$route.query.spaceId,
             timestamp: item,
             type: type,
-            perm: perm.perm,
-            level: perm.level
           }).then(() => {
             store.dispatch('space/addperm', { 
               id: this.$route.query.spaceId, 
               perm: perm.perm, 
               level: level,
               type: type
-            }).then(() => {
-              this.loadSettings();
-            })
+            });
           })
         }
       },
@@ -158,7 +142,6 @@
           });
           this.newPermission = "";
           this.newPermissionLevel = "";
-          this.loadSettings();
         } else {
           if(event.key != "ArrowLeft" && event.key != "ArrowRight" && event.key != "Backspace" && event.key != "Delete") {
             if(this.newPermission.length == 0) {

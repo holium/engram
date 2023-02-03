@@ -5,7 +5,7 @@ import { ySyncPlugin, yUndoPlugin } from "y-prosemirror";
 import { dropCursor } from "prosemirror-dropcursor";
 
 import store from "@/store/index";
-import router from "@/router/index";
+import type { DocumentUpdate, DocumentVersion } from "@/store/document";
 
 import schema from "./schema";
 import keymap from "./keymap";
@@ -13,9 +13,6 @@ import shortcuts from "./shortcuts";
 import save from "./save";
 import cover from "./cover";
 import type { CoverUpdate } from "./cover"
-import styling from "./styling";
-import type { StylingUpdate } from "./styling"
-import type { DocumentUpdate, DocumentVersion } from "@/store/types";
 import type { Menu } from "../../menus/types";
 
 import slashmenu from "./slashmenu";
@@ -33,114 +30,110 @@ export let pushUpdate = (update: DocumentUpdate) => {
 
 export default function (
   place: HTMLElement,
-  content: Uint8Array,
+  path: string,
   pushMenu: (menu: Menu | null) => void,
   updateCover: (cover: CoverUpdate) => void,
-  updateStyling: (styling: StylingUpdate) => void,
+  //updateStyling: (styling: StylingUpdate) => void,
   openFinder: (querier: (query: string) => void) => void,
   snapshot: null | DocumentVersion,
   editable: boolean,
-): EditorView {
-  if(view) view.destroy();
-  const doc = new Y.Doc();
-  const path = `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`;
-  Object.assign(doc, {documentId: path});
-  doc.clientID = 0;
-  doc.gc = false;
-  if(content.length > 0) Y.applyUpdate(doc, content);
+): Promise<EditorView> {
+  return new Promise((resolve, reject) => {
+    store.getters["document/get"](path).then((res: any) => {
+      if(res == "missing") {
+        reject("missing");
+      } else {
+        if(view) view.destroy();
+        const doc = new Y.Doc();
+        Object.assign(doc, {documentId: path});
+        doc.clientID = 0;
+        doc.gc = false;
+        const cont = new Uint8Array(JSON.parse(res.content));
+        // Load the document
+        if(cont.length > 0) Y.applyUpdate(doc, cont);
 
-  let state;
-  if(snapshot == null) {
-    const type = doc.getXmlFragment("prosemirror");
-    
-
-    state = EditorState.create({
-      schema: schema,
-      plugins: [
-        keymap,
-        shortcuts,
-        imageview,
-        find(openFinder),
-        save((view) => {
-          const version = Y.encodeStateVector(doc);
-          const content = Y.encodeStateAsUpdate(doc);
-          const snapshot = Y.snapshot(doc);
-          store.dispatch("documents/save", {
-            id: path,
-            version: version,
-            content: content
-          });
-  
-          store.dispatch("workspace/revisions/snap", {
-            id: path,
-            snapshot: snapshot
-          });
-        }),
-        // CRDT
-        ySyncPlugin(type),
-        yUndoPlugin(),
-        // Views
-        cover(updateCover),
-        styling(updateStyling),
-        // ux
-        slashmenu(pushMenu),
-        highlightmenu(pushMenu),
-        dropCursor(),
-        engram,
-        comments,
-      ],
-    });
-    (async (activepath: string) => {
-      store.getters["documents/updates"](path).then((updates: Array<DocumentUpdate>) => {
-        console.log("updates: ", updates);
-        pushUpdate = (update: DocumentUpdate) => {
-          if(update.content.length > 0 && activepath == (doc as any).documentId) {
+        // Publish the push update
+        pushUpdate = (update: DocumentUpdate, clear?: boolean) => {
+          if(update.content.length > 0) {
             Y.applyUpdate(doc, update.content);
             const snapshot = Y.snapshot(doc);
-            store.dispatch("workspace/revisions/snap", {
+            store.dispatch("document/snap", {
               id: path,
               author: update.author,
               snapshot: snapshot
             });
+
+            if(clear) 
+              store.dispatch("document/acceptupdates", path);
           }
         }
-        updates.forEach(pushUpdate);
-        store.dispatch("workspace/revisions/accept", {
-          id: path,
-        })
-  
-        if(updates.length > 0) {
-          const version = Y.encodeStateVector(doc);
-          const content = Y.encodeStateAsUpdate(doc);
-      
-          store.dispatch("documents/save", {
-            id: path,
-            version: version,
-            content: content
+
+        // Push current updates
+        Object.keys(res.updates).map((key: string) => { return res.updates[key] }).forEach(pushUpdate);
+        store.dispatch("document/acceptupdates", path);
+
+        let state;
+        console.log("rendering: ", snapshot);
+        if(snapshot == null) {
+          const type = doc.getXmlFragment("prosemirror");     
+
+          state = EditorState.create({
+            schema: schema,
+            plugins: [
+              keymap,
+              shortcuts,
+              imageview,
+              find(openFinder),
+              save((view) => {
+                const version = Y.encodeStateVector(doc);
+                const content = Y.encodeStateAsUpdate(doc);
+                const snapshot = Y.snapshot(doc);
+                store.dispatch("document/save", {
+                  id: path,
+                  version: version,
+                  content: content
+                });
+        
+                store.dispatch("document/snap", {
+                  id: path,
+                  snapshot: snapshot
+                });
+              }),
+              // CRDT
+              ySyncPlugin(type),
+              yUndoPlugin(),
+              // Views
+              cover(updateCover),
+              //styling(updateStyling),
+              // ux
+              slashmenu(pushMenu),
+              highlightmenu(pushMenu),
+              dropCursor(),
+              engram,
+              comments,
+            ],
           });
-        }
-      })
-    })(path)
-  } else {
-    const preview = Y.createDocFromSnapshot(doc, snapshot.snapshot)
-    const type = preview.getXmlFragment("prosemirror");
-    state = EditorState.create({
-      schema: schema,
-      plugins: [
-        find(openFinder),
-        // CRDT
-        ySyncPlugin(type, {}),
-        // Views
-        cover(updateCover),
-        styling(updateStyling),
-      ],
-    });
-  }
-  
-  if(view) view.destroy();
-  view = new EditorView(place, {
-    editable: () => { return editable },
-    state,
-  });
-  return view;
+      } else {
+        const preview = Y.createDocFromSnapshot(doc, snapshot.snapshot)
+        const type = preview.getXmlFragment("prosemirror");
+        state = EditorState.create({
+          schema: schema,
+          plugins: [
+            find(openFinder),
+            // CRDT
+            ySyncPlugin(type, {}),
+            // Views
+            cover(updateCover),
+          ],
+        });
+      }
+      
+      view = new EditorView(place, {
+        editable: () => { return editable },
+        state,
+      });
+      resolve(view);
+      }
+    })
+  })
 }

@@ -17,7 +17,7 @@
         [%make (ot ~[owner+(se %p) name+so space+pa content+sa version+sa roles+(op sym (se %tas)) ships+(op fed:ag (se %tas))])]
         [%delete (ot ~[id+pa])]
         [%save (ot ~[id+pa content+sa version+sa])]
-        [%snap (ot ~[id+pa snapshot+(ot ~[timestamp+di author+(se %p) data+sa])])]
+        [%snap (ot ~[id+pa snapshot+(ot ~[timestamp+di author+(se %p) content+sa])])]
         [%rename (ot ~[id+pa name+so])]
         [%addperm (ot ~[id+pa perm+so level+(se %tas) type+(se %tas)])]
         [%removeperm (ot ~[id+pa timestamp+pa type+(se %tas)])]
@@ -52,7 +52,7 @@
     (path ~[(scot %p -.timestamp) (scot %u +.timestamp)])
   ++  space
     |%
-    ++  list
+    ++  content
       =,  enjs:format
       |=  [docs=documents:engram fols=folders:engram items=(map id:index [id:index @tas])]
       ^-  json
@@ -72,7 +72,8 @@
           (pairs ~[['type' (tape "document")] ['name' (tape "Missing Document")] ['owner' (tape "Missing Document")]])
         =/  doc  (~(got by docs) id)
         %-  pairs 
-          :~  ['type' (tape "document")] 
+          :~  ['id' (path ~[(scot %p -.id) (scot %u +.id)])]
+              ['type' (tape "document")] 
               ['name' (tape (trip name.settings.doc))] 
               ['owner' (tape (scow %p owner.settings.doc))]
               :-  'roles'  %-  pairs  %+  turn  ~(tap by content.roles.settings.doc)
@@ -85,25 +86,34 @@
           %folder
         :-  (spat ~[(scot %p -.id) (scot %u +.id)])
         ?.  (~(has by fols) id)
-          (pairs ~[['type' (tape "folder")] ['name' (tape "Missing Folder")] ['owner' (tape "Missing Folder")] ['content' (pairs [~])]])
+          (pairs ~[['type' (tape "folder")] ['name' (tape "Missing Folder")] ['owner' (tape "Missing Folder")] ['children' (pairs [~])]])
         =/  fol  (~(got by fols) id)
         =/  folcont  %-  ~(rut by content.content.fol)  
           |=  [key=id:index v=[id=id:index type=@tas]]  
           [(spat ~[(scot %p -.key) (scot %u +.key)]) (pairs ~[['id' (path ~[(scot %p -.id.v) (scot %u +.id.v)])] ['type' (tape (trip type.v))]])]
         %-  pairs 
-          :~  ['type' (tape "folder")] 
+          :~  ['id' (path ~[(scot %p -.id) (scot %u +.id)])]
+              ['type' (tape "folder")] 
               ['name' (tape (trip name.fol))] 
-              ['owner' (tape (scow %p owner.fol))] 
-              :-  'roles'  %-  pairs  %+  turn  ~(tap by content.roles.fol)
-                |=  [id=id:index [role=@tas level=@tas]]
-                [(crip (stringify:index id)) (pairs ~[['perm' (tape (trip role))] ['level' (tape (trip level))]])]
-              :-  'ships'  %-  pairs  %+  turn  ~(tap by content.ships.fol)
-                |=  [id=id:index [ship=@p level=@tas]]
+              ['children' (pairs ~(val by folcont))]
+              ['owner' (tape (scow %p owner.fol))]
+              :-  'ships'  %-  pairs  %+  turn  ~(tap by content.ships.fol)  
+                |=  [id=id:index [ship=@p level=@tas]]  
                 [(crip (stringify:index id)) (pairs ~[['perm' (tape (trip (scot %p ship)))] ['level' (tape (trip level))]])]
-              ['content' (pairs ~(val by folcont))]
+              :-  'roles'  %-  pairs  %+  turn  ~(tap by content.roles.fol)  
+                |=  [id=id:index [role=@tas level=@tas]]  
+                [(crip (stringify:index id)) (pairs ~[['perm' (tape (trip role))] ['level' (tape (trip level))]])]
           ==
       ==
-    ++  settings
+    ++  list
+      =,  enjs:format
+      |=  spc=space:engram
+      ^-  json
+      %-  pairs  
+      %+  turn  ~(tap by content.content.spc)
+      |=  [key=id:index v=[id=id:index type=@tas]]
+      [(crip (stringify:index key)) (pairs ~[['id' (tape (stringify:index id.v))] ['type' (tape (trip type.v))]])]
+    ++  perms
       =,  enjs:format  
       |=  spc=space:engram
       ^-  json
@@ -146,12 +156,20 @@
           |=  [id=id:index [ship=@p level=@tas]]
           [(crip (stringify:index id)) (pairs ~[['perm' (tape (trip (scot %p ship)))] ['level' (tape (trip level))]])]
       ==
-    ++  settings
+    ++  meta
+      =,  enjs:format
+      |=  doc=document:engram
+      ^-  json
+      %-  pairs  :~ 
+        ['id' (path ~[(scot %p -.id.doc) (scot %u +.id.doc)])]
+        ['type' (tape "document")]
+        ['name' (tape (trip name.settings.doc))]
+      ==
+    ++  perms
       =,  enjs:format
       |=  settings=dsettings:engram
       ^-  json
       %-  pairs  :~
-        ['name' (tape (trip name.settings))]
         ['owner' (tape (scow %p owner.settings))]
         :-  'ships'  %-  pairs  %+  turn  ~(tap by content.ships.settings)  
           |=  [id=id:index [ship=@p level=@tas]]  
@@ -160,15 +178,18 @@
           |=  [id=id:index [role=@tas level=@tas]]  
           [(crip (stringify:index id)) (pairs ~[['perm' (tape (trip role))] ['level' (tape (trip level))]])]
       ==
-    ++  updates
+    ++  content
       =,  enjs:format
-      |=  updts=(set dupdate:engram)
+      |=  [doc=document:engram updts=(set dupdate:engram)]
       ^-  json
-      %-  pairs  %~  tap  in
-        ^-  (set [@t json])
-        %-  ~(run in updts)
-        |=  updt=dupdate:engram
-        [(scot %da timestamp.updt) (pairs ~[['author' (tape (scow %p author.updt))] ['content' (tape content.updt)]])]
+      %-  pairs  :~
+        ['content' (tape content.doc)]
+        :-  'updates'  %-  pairs  %~  tap  in
+          ^-  (set [@t json])
+          %-  ~(run in updts)
+          |=  updt=dupdate:engram
+          [(scot %da timestamp.updt) (pairs ~[['author' (tape (scow %p author.updt))] ['content' (tape content.updt)]])]
+      ==
     ++  snapshots
       =,  enjs:format
       |=  snaps=(set dsnapshot:engram)
@@ -189,12 +210,24 @@
       %+  turn  ~(tap by content.content.fold)
       |=  [key=id:index v=[id=id:index type=@tas]]
       [(crip (stringify:index key)) (pairs ~[['id' (tape (stringify:index id.v))] ['type' (tape (trip type.v))]])]
-    ++  settings
+    ++  meta
+      =,  enjs:format
+      |=  fol=folder:engram
+      ^-  json
+      =/  folcont  %-  ~(rut by content.content.fol)  
+          |=  [key=id:index v=[id=id:index type=@tas]]  
+          [(spat ~[(scot %p -.key) (scot %u +.key)]) (pairs ~[['id' (path ~[(scot %p -.id.v) (scot %u +.id.v)])] ['type' (tape (trip type.v))]])]
+      %-  pairs  :~
+        ['id' (path ~[(scot %p -.id.fol) (scot %u +.id.fol)])]
+        ['type' (tape "folder")]
+        ['name' (tape (trip name.fol))]
+        ['children' (pairs ~(val by folcont))]
+      ==
+    ++  perms
       =,  enjs:format
       |=  fol=folder:engram
       ^-  json
       %-  pairs  :~
-        ['name' (tape (trip name.fol))]
         ['owner' (tape (scow %p owner.fol))]
         :-  'ships'  %-  pairs  %+  turn  ~(tap by content.ships.fol)  
           |=  [id=id:index [ship=@p level=@tas]]  

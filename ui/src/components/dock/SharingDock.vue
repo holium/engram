@@ -52,6 +52,7 @@ import store from "@/store/index";
 import Toggle from "./Toggle.vue"
 import ShipPermission from "./ShipPermission.vue";
 import RolePermission from "./RolePermission.vue";
+import type { ShipPermission as ShipPerm, RolePermission as RolePerm } from "@/store/filesystem";
 export default defineComponent({
   name: "SharingDock",
   components: {
@@ -59,92 +60,66 @@ export default defineComponent({
     ShipPermission,
     RolePermission
   },
-  props: {
-    doc: {
-      type: Object,
-      required: true,
-    }
-  },
   data() {
     return {
       newPermission: "",
       newPermissionLevel: "",
-      ships: {} as { [key: string]: { perm: string, level: string }},
-      roles: {} as { [key: string]: { perm: string, level: string }},
-    }
-  },
-  created: function() {
-    this.loadPerms();
-  },
-  watch: {
-    path: function() {
-      this.loadPerms();
     }
   },
   computed: {
-    path: function(): string {
+    docId: function() {
       return `/${this.$route.params.author}/${this.$route.params.clock}`;
+    },
+    roles: function() {
+      return store.getters['filesys/roles'](this.docId);
+    },
+    ships: function() {
+      return store.getters['filesys/ships'](this.docId);
     },
     isAdmin: function(): boolean {
       const myroles = store.getters['space/roles'];
-      const owner = this.doc.owner;
-      const perms = Object.keys(this.roles).map((key: string) => {
-        return myroles.includes(this.roles[key].perm) ? (this.roles[key].level == "admin") : false;
-      })
-      Object.keys(this.ships).forEach((key: string) => {
-        perms.push(this.ships[key].perm == `~${(window as any).ship}` ? (this.ships[key].level == "editor" || this.ships[key].level == "admin") : false);
-      })
+      const owner = store.getters['filesys/owner'](this.docId);
 
-      return `~${(window as any).ship}` == owner || perms.reduce((a: boolean, acc: boolean) => {
-          return acc || a;
-      }, false);
+      return owner == `~${(window as any).ship}` || 
+          Object.keys(this.ships)
+              .map((timestamp: string) => { return this.ships[timestamp] })
+                  .reduce((a: ShipPerm, acc: boolean) => {
+                      return acc || (a.ship == `~${(window as any).ship}` && a.level == "admin");
+                  }, false) || 
+          Object.keys(this.roles)
+              .map((timestamp: string) => { return this.roles[timestamp] })
+                  .reduce((a: RolePerm, acc: boolean) => {
+                      return acc || (myroles.includes(a.role) && a.level == "admin");
+                  }, false);
     },
-    isOwner: function(): boolean {
-      return this.doc.owner == `~${(window as any).ship}`
-    }
   },
   methods: {
-    loadPerms: async function() {
-      (window as any).urbit.scry({
-        app: "engram",
-        path: `/document/${this.$route.params.author}/${this.$route.params.clock}/get/settings`,
-      }).then((res: any) => {
-        this.ships = res.ships;
-        this.roles = res.roles;
-      })
-    },
     exportDocument: async function() {
-      const content = await store.getters['documents/export'](`/${this.$route.params.author}/${this.$route.params.clock}`);
+      const content = await store.getters['document/export'](this.docId);
       const dummy = document.createElement("a");
       dummy.setAttribute("href", "data:text/html;charset=utf-8," + encodeURIComponent(content));
       dummy.setAttribute("download", `${this.$route.params.author}_${this.$route.params.clock}`);
       dummy.click();
     },
     handleLevel: function(item: string, level: string, type: string) {
-      console.log("handling level: ", level);
       if(level == "-") {
-        store.dispatch("documents/removeperm", { 
-          id: `/${this.$route.params.author}/${this.$route.params.clock}`,
+        store.dispatch("filesys/removeperm", { 
+          item: {id: this.docId, type: "document"},
           timestamp: item,
           type: type
-        }).then(() => {
-          this.loadPerms();
         })
       } else {
         const perm = (this as any)[type][item].perm;
-        store.dispatch("documents/removeperm", { 
-          id: `/${this.$route.params.author}/${this.$route.params.clock}`,
+        store.dispatch("filesys/removeperm", { 
+          item: {id: this.docId, type: "document"},
           timestamp: item,
           type: type
         }).then(() => {
-          store.dispatch('documents/addperm', { 
-            id: `/${this.$route.params.author}/${this.$route.params.clock}`, 
+          store.dispatch('filesys/addperm', { 
+            item: {id: this.docId, type: "document"}, 
             perm: perm, 
             level: level,
             type: type
-          }).then(() => {
-            store.dispatch("workspace/settings/open", `/${this.$route.params.author}/${this.$route.params.clock}`);
-            this.loadPerms();
           })
         })
       }
@@ -152,14 +127,12 @@ export default defineComponent({
     addPermission: function(event: KeyboardEvent) {
       if(event.key == "Enter" && this.newPermission.length > 0 && this.newPermissionLevel.length > 0) {
         const ship = this.newPermission.charAt(0) == "~";
-        store.dispatch('documents/addperm', { 
-          id: `/${this.$route.params.author}/${this.$route.params.clock}`, 
+        store.dispatch('filesys/addperm', { 
+          item: {id: this.docId, type: "document"}, 
           perm: ship ? this.newPermission : this.newPermission.substring(1),
           level: this.newPermissionLevel,
           type: ship ? "ships" : "roles"
-        }).then(() => {
-          this.loadPerms();
-        })
+        });
         this.newPermission = "";
         this.newPermissionLevel = "";
       } else {

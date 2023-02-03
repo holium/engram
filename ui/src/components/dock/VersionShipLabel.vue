@@ -7,11 +7,11 @@
             xmlns="http://www.w3.org/2000/svg"
         >
             <line
-            x1="12.5"
-            x2="12.5"
-            y2="25"
-            stroke="var(--rlm-text-color, #261f1f)"
-            stroke-width="2px"
+                x1="12.5"
+                x2="12.5"
+                y2="25"
+                stroke="var(--rlm-text-color, #261f1f)"
+                stroke-width="2px"
             />
         </svg>
         <!-- Before -->
@@ -46,8 +46,10 @@
             viewBox="0 0 25 25"
             xmlns="http://www.w3.org/2000/svg"
         ></svg>
-        <div class="flex items-center text-right flex-grow font-mono">
-            {{ ship }}
+        <div class="flex items-center text-right flex-1 font-mono relative overflow-hidden">
+            <div class="whitespace-nowrap overflow-hidden overflow-ellipsis" style="max-width: 100%;">
+                {{ ship }}
+            </div>
         </div>
         
     </div>

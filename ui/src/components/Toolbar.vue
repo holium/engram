@@ -12,16 +12,16 @@
     </svg>
 
     <div class="flex flex-grow px-3 gap-2 items-center opacity-50">
-      <div class="heading-2">
-        {{ doc.owner }}
-      </div>
-      /
-      <div class="flex-grow">
-        {{ doc.name }}
-      </div>
       <div class="font-azimuth hover:underline cursor-pointer" @click="copyPath">
         {{ path }}
       </div>
+      <div v-if="title.length > 0">
+        :
+      </div>
+      <div class="flex-grow">
+        {{ title }}
+      </div>
+      
     </div>
 
     <!-- Dock Show / hide -->
@@ -41,14 +41,22 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import store from "@/store/index"
-import type { Space, ItemMeta } from "@/store/types"
+import type { Space } from "@/store/space"
+import type { SysItem } from "@/store/filesystem";
 export default defineComponent({
   name: "Toolbar",
   inject: ["toggleNav", "toggleDock"],
-  props: {
-    doc: {
-      type: Object,
-      required: true,
+  data() {
+    return {
+      title: "",
+    }
+  },
+  created: function() {
+    this.getTitle(this.path);
+  },
+  watch: {
+    path: function(newpath: string) {
+      this.getTitle(newpath);
     }
   },
   methods: {
@@ -60,6 +68,12 @@ export default defineComponent({
     },
     copyPath: function() {
       navigator.clipboard.writeText(this.path);
+    },
+    getTitle: function(docId: string) {
+      this.title = "";
+      store.dispatch("filesys/protectedget", { id: docId, type: "document" }).then((res: SysItem) => {
+        this.title = res.name;
+      })
     }
   },
   computed: {

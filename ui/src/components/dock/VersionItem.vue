@@ -11,7 +11,7 @@
       >
         <!-- Branch -->
         <svg
-            v-if="(me == meta.author)"
+            v-if="(me != meta.author)"
             :style="{ position: 'absolute', top: '19px', left: '0' }"
             :width="`${50 + 25 * shipIndex}`"
             height="12.5"
@@ -144,7 +144,7 @@ export default defineComponent({
     },
     methods: {
         preview: function() {
-            store.dispatch('workspace/preview', store.getters['workspace/revisions/version'](this.index))
+            store.dispatch('document/preview', store.getters['document/version'](this.index))
         },
         pallet: function(ship: string) {
             let sum = 0;
@@ -174,11 +174,11 @@ export default defineComponent({
     },
     computed: {
         viewing: function() {
-            const previewing = store.getters['workspace/previewing'];
+            const previewing = store.getters['document/previewing'];
             return previewing != null && previewing.date.getTime() == this.meta.date.getTime()
         },
         me: function() {
-            return (window as any).ship
+            return `~${(window as any).ship}`
         },
         shipIndex: function() {
             return Array.from(this.ships).indexOf(this.meta.author);

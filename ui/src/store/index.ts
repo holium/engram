@@ -1,19 +1,12 @@
 import {createStore, storeKey} from 'vuex'
 import type { GetterTree, ActionTree } from "vuex"
-import router from "@/router/index"
-import type { RootState, Space } from "./types"
+import type { Space } from "./space"
+import { nullspace } from "./space"
 import space from "./space"
-import documents from './documents';
-import folders from "./folders";
-import workspace from "./workspace"
+import filesys from "./filesystem"
+import document from "./document"
 
-export const nullspace = {
-  path: `/~${(window as any).ship}/our`, 
-  name: "Local", 
-  color: "#262626",
-  picture: "",
-  roles: [],
-}
+export interface RootState { }
 
 const getters: GetterTree<RootState, RootState> = {
   spaces: (): Promise<Array<Space>> => {
@@ -28,10 +21,35 @@ const getters: GetterTree<RootState, RootState> = {
   },
   lastOrganism: () => (): Promise<string> => {
     return (window as any).urbit.scry({ app: "engram", path: "/history"});
-  }
+  },
 }
 
 const actions: ActionTree<RootState, RootState> = {
+  load({ dispatch, state }, payload: string): Promise<void> {
+    return new Promise((resolve) => {
+      let delay = 1;
+      dispatch("space/load", payload, { root: true });
+      (window as any).urbit.poke({
+        app: "engram",
+        mark: "post",
+        json: { leave: { self: `~${(window as any).ship}` } }
+      }).then(() => {
+        dispatch("filesys/reset", {}, { root: true });
+        dispatch("filesys/boot", payload, { root: true }).then(() => {
+          resolve();
+          (window as any).urbit.subscribe({
+            app: "engram",
+            path: "/updates",
+            event: (event: any) => {
+              console.log("received event: ", event);
+              if(event.type == "filesys") dispatch("filesys/getupdate", event.item, { root: true });
+            }
+          });
+        });
+      })
+    });
+  }
+  /*
   load({ dispatch, state }): Promise<void> {
     return new Promise((resolve) => {
       let delay = 1;
@@ -127,6 +145,7 @@ const actions: ActionTree<RootState, RootState> = {
       })
     })
   }
+  */
 }
 
 export default createStore({
@@ -134,8 +153,10 @@ export default createStore({
   actions,
   modules: {
     space,
-    documents,
-    folders,
-    workspace,
+    filesys,
+    document,
+    //documents,
+    //folders,
+    //workspace,
   }
 })

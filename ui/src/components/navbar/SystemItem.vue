@@ -10,7 +10,7 @@
         >
             <!-- Document Icon -->
             <svg 
-                v-if="type == 'document'"
+                v-if="item.type == 'document'"
                 viewBox="0 0 16 16" 
                 class="icon"
                 fill="var(--rlm-icon-color, #333333)"
@@ -20,7 +20,7 @@
             </svg>
             <!-- Folder Icon -->
             <svg 
-                v-if="type == 'folder'"
+                v-if="item.type == 'folder'"
                 viewBox="0 0 16 16" 
                 fill="var(--rlm-icon-color, #333333)"
                 xmlns="http://www.w3.org/2000/svg"
@@ -32,7 +32,7 @@
             <input 
                 type="text" 
                 v-if="rename" 
-                v-model="name" 
+                v-model="newname" 
                 class="text-sm px-2 py-2 bg-none min-w-0 flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis outline-none border-type realm-cursor-text-cursor" 
                 :style="{'padding-bottom': '3px', 'border-bottom-width': '1px'}"
                 @blur="renameItem" 
@@ -41,18 +41,17 @@
                 ref="rename"
             />
             <div class="flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis text-sm px-2 py-2" v-else>
-                {{ meta.name }}
+                {{ itemname }}
             </div>
         </div>
         <SystemItem 
             class="pl-4" 
-            :parent="item"
-            :item="(meta as any).content[i].id" 
+            :parent="item.id"
+            :item="(children as any)[i]" 
             :index="i"
-            :type="(meta as any).content[i].type" 
             :key="i" 
             :editable="canEdit"
-            v-for="i in expand ? Object.keys(meta.content == null ? {} : meta.content).filter((i: string) => canView(i, (meta.content as any)[i].type)) : []"
+            v-for="i in expand ? Object.keys(children) : []"
         />
     </div>
     
@@ -61,7 +60,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import store from "@/store/index";
-import type { ItemMeta } from "@/store/types"
+import type { SysRecord, ShipPermission, RolePermission } from "@/store/filesystem"
 import { Menu } from "@/components/menus/types";
 
 export default defineComponent({
@@ -77,67 +76,73 @@ export default defineComponent({
         },
         item: {
             required: true,
-            type: String,
-        },
-        type: {
-            required: true,
-            type: String
+            type: Object,
         },
         editable: {
             required: true,
             type: Boolean
         }
     },
-    created: function() { console.log("is editable: ", this.editable )},
     inject: ["pushMenu", "pushFolderDock"],
     data() {
         return {
             expand: false,
             rename: false,
-            name: "",
+            newname: "",
         }
     },
     computed: {
-        meta: function(): ItemMeta {
-            if(this.type == "folder") {
-                return store.getters["folders/meta"](this.item);
-            } else {
-                return store.getters['documents/meta'](this.item)
-            }
+        itemname: function(): string {
+            return store.getters['filesys/name'](this.item.id);
+        },
+        owner: function(): boolean {
+            return store.getters['filesys/owner'](this.item.id) == `~${(window as any).ship}`
+        },
+        children: function(): { [key: string]: SysRecord } {
+            const children = store.getters['filesys/children'](this.item.id);
+            return children ? children : {};
         },
         canEdit: function(): boolean {
             const myroles = store.getters['space/roles'];
-            const owner = this.meta.owner;
-            const ships = this.meta.ships;
-            const roles = this.meta.roles;
-            const perms = Object.keys(roles).map((key: string) => {
-                return myroles.includes(roles[key].perm) ? (roles[key].level == "editor" || roles[key].level == "admin") : false;
-            })
-            Object.keys(ships).forEach((key: string) => {
-                perms.push(ships[key].perm == `~${(window as any).ship}` ? (ships[key].level == "editor" || ships[key].level == "admin") : false);
-            })
+            const owner = store.getters['filesys/owner'](this.item.id);
+            const roles = store.getters['filesys/roles'](this.item.id);
+            const ships = store.getters['filesys/ships'](this.item.id);
 
-            return `~${(window as any).ship}` == owner || perms.reduce((a: boolean, acc: boolean) => {
-                return acc || a;
-            }, false);
+            return owner == `~${(window as any).ship}` || 
+                Object.keys(ships)
+                    .map((timestamp: string) => { return ships[timestamp] })
+                        .reduce((a: ShipPermission, acc: boolean) => {
+                            return acc || (a.ship == `~${(window as any).ship}` && (a.level == "editor" || a.level == "admin"));
+                        }, false) || 
+                Object.keys(roles)
+                    .map((timestamp: string) => { return roles[timestamp].role })
+                        .reduce((a: RolePermission, acc: boolean) => {
+                            return acc || (myroles.includes(a.role) && (a.level == "editor" || a.level == "admin"));
+                        }, false);
         },
     },
     methods: {
         open: function() {
-            if(this.type == "folder") this.expand = !this.expand;
-            else this.$router.push(`/apps/engram${this.item}?spaceId=${this.$route.query.spaceId}`); 
+            if(this.item.type == "folder") this.expand = !this.expand;
+            else this.$router.push(`/apps/engram${this.item.id}?spaceId=${this.$route.query.spaceId}`); 
         },
-        canView: function(id: string, type: string): boolean {
-            const item = store.getters[`${type}s/meta`](id);
-            const roles = store.getters['space/roles'];
-            const perms = Object.keys(item.roles).map((key: string) => item.roles[key].perm);
-            const ships = Object.keys(item.ships).map((key: string) => item.ships[key].perm);
+        canView: function(id: string): boolean {
+            const myroles = store.getters['space/roles'];
+            const owner = store.getters['filesys/owner'](id);
+            const roles = store.getters['filesys/roles'](id);
+            const ships = store.getters['filesys/ships'](id);
 
-            return `~${(window as any).ship}` == item.owner || ships.reduce((a: string, acc: boolean) => {
-                return a == `~${(window as any).ship}`;
-            }, false) || roles.reduce((a: string, acc: boolean) => {
-                return acc || perms.includes(a);
-            }, false);
+            return owner == `~${(window as any).ship}` || 
+                Object.keys(ships)
+                    .map((timestamp: string) => { return ships[timestamp].ship })
+                        .reduce((a: string, acc: boolean) => {
+                            return a == `~${(window as any).ship}`;
+                        }, false) || 
+                Object.keys(roles)
+                    .map((timestamp: string) => { return roles[timestamp].role })
+                        .reduce((a: string, acc: boolean) => {
+                            return acc || myroles.includes(a);
+                        }, false);
         },
         openMenu: function(event: MouseEvent) {
             event.preventDefault();
@@ -151,30 +156,26 @@ export default defineComponent({
                     display: "Delete", 
                     icon: "", 
                     command: () => {
-                        store.dispatch("folders/softremove", { from: this.parent, index: this.index })
-                        if(this.type == "folder") {
-                            store.dispatch("folders/delete", this.item);
-                        } else {
-                            store.dispatch("documents/delete", this.item);
-                        }
+                        store.dispatch("filesys/remove", { from: this.parent, index: this.index, soft: true });
+                        store.dispatch("filesys/delete", this.item);
                     }
                 },
-                ...(`~${(window as any).ship}` == this.meta.owner ? [{
+                ...(this.owner ? [{
                     display: "Rename",
                     icon: "",
                     command: () => {
-                        this.name = this.meta.name;
+                        this.newname = this.itemname;
                         this.rename = true;
                         setTimeout(() => {
                             (this.$refs["rename"] as any).focus();
                         }, 10);
                     }
                 }] : []),
-                ...(this.type == 'folder' ? [{
+                ...(this.item.type == 'folder' ? [{
                     display: "Settings",
                     icon: "",
                     command: () => {
-                        (this as any).pushFolderDock(this.item);
+                        (this as any).pushFolderDock(this.item.id);
                     }
                 }]: [])
             ]
@@ -185,74 +186,39 @@ export default defineComponent({
                 (event.target as any).blur();
             }
             if(event.key == "Escape") {
-                this.name = this.meta.name;
-                (event.target as any).value = this.meta.name;
+                (event.target as any).value = this.itemname;
                 (event.target as any).blur();
             }
         },
         renameItem: function(event: FocusEvent) {
-            if(this.type == "document") {
-                store.dispatch("documents/rename", { id: this.item, name: (event.target as any).value});
-            } else {
-                store.dispatch("folders/rename", { id: this.item, name: (event.target as any).value});
-            }
+            store.dispatch("filesys/rename", { item: this.item, name: (event.target as any).value});
             this.rename = false;
         },
         handleDragStart: function(event: DragEvent) {
             console.log("can edit?", this.editable);
             if(this.editable) {
-                event.dataTransfer?.setData("text/plain", JSON.stringify({ item: {id: this.item, type: this.type}, index: this.index ? this.index : ".", from: this.parent ? this.parent : "." }));
+                event.dataTransfer?.setData("text/plain", JSON.stringify({ item: this.item, index: this.index ? this.index : ".", from: this.parent ? this.parent : "." }));
             }
         },
         handleDrop: function(event: DragEvent) {
-            if(this.type == "folder" && this.canEdit) {
+            if(this.item.type == "folder" && this.canEdit) {
                 event.stopPropagation();
                 event.preventDefault();
                 const raw = event.dataTransfer?.getData("text/plain");
                 if(raw) {
                     const data = JSON.parse(raw);
                     if(this.item != data.from) {
-                        store.dispatch("folders/remove", { index: data.index, from: data.from });
-                        store.dispatch("folders/add", { item: { id: data.item.id, type: data.item.type }, to: this.item });
+                        store.dispatch("filesys/remove", { index: data.index, from: data.from });
+                        store.dispatch("filesys/add", { item: data.item, to: this.item.id });
                     }
                 }
             }
         },
         handleDragOver: function(event: DragEvent) {
-            console.log("can edit?", this.canEdit);
-            if(this.type == "folder" && this.canEdit) {
+            if(this.item.type == "folder" && this.canEdit) {
                 event?.preventDefault();
             } 
         },
-        gather: function() {
-            if(this.$route.query.spaceId != "/null/space") {
-                if(this.type == "folder") {
-                    (window as any).urbit.poke({ 
-                        app: "engram", 
-                        mark: "post",
-                        json: {
-                            folder: {
-                                gatherall: {
-                                    path: this.item
-                                }
-                            }
-                        }
-                    })
-                } else {
-                    (window as any).urbit.poke({ 
-                        app: "engram", 
-                        mark: "post",
-                        json: {
-                            document: {
-                                gatherall: {
-                                    path: this.item
-                                }
-                            }
-                        }
-                    })
-                }
-            }
-        }
     }
 })
 </script>

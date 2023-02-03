@@ -7,7 +7,7 @@ import ContextMenuNode from "./ContextMenu.vue";
 import SlashMenuNode from "./SlashMenu.vue";
 import HighlightMenuNode from "./HighlightMenu.vue";
 import EngramMenuNode from "./EngramMenu.vue";
-import type { DocumentMeta } from "@/store/types";
+import type { SysItem } from "@/store/filesystem";
 import { insertPoint } from "prosemirror-transform";
 import schema from "../document/prosemirror/schema";
 
@@ -70,9 +70,9 @@ export class EngramMenu extends Menu {
     constructor(location:  { top: number, left: number }, search: string, selected: number) {
         super(
             location, 
-            [...store.getters['documents/list'].filter((doc: DocumentMeta) => {
+            [...store.getters['filesys/documents'].filter((doc: SysItem) => {
                 return doc.name.search(search) > -1;
-            }).map((doc: DocumentMeta) => {
+            }).map((doc: SysItem) => {
                 return {
                     key: doc.id,
                     display: doc.name,
