@@ -13,7 +13,8 @@ export interface Space {
   color: string;
   myroles: Array<string>,
   roles: { [key: string]: RolePermission },
-  ships: { [key: string]: ShipPermission }
+  ships: { [key: string]: ShipPermission },
+  members: Array<string>
 }
 
 export interface SpaceState {
@@ -23,7 +24,8 @@ export interface SpaceState {
   color: string,
   myroles: Array<string>,
   roles: { [key: string]: RolePermission },
-  ships: { [key: string]: ShipPermission }
+  ships: { [key: string]: ShipPermission },
+  members: Array<string>
 }
 
 export const nullspace = {
@@ -33,7 +35,8 @@ export const nullspace = {
   picture: "",
   myroles: ["admin"],
   ships: {},
-  roles: {}
+  roles: {},
+  members: []
 }
 
 const state: SpaceState = {
@@ -43,7 +46,8 @@ const state: SpaceState = {
     color: "",
     myroles: [],
     ships: {},
-    roles: {}
+    roles: {},
+    members: []
 }
 
 
@@ -69,6 +73,9 @@ const getters: GetterTree<SpaceState, RootState> = {
     },
     roles(state) {
       return state.roles;
+    },
+    members(state) {
+      return state.members
     }
 }
 
@@ -88,7 +95,10 @@ const mutations: MutationTree<SpaceState> = {
     loadperms(state, payload: { roles: { [key: string]: RolePermission }, ships: { [key: string]: ShipPermission }}) {
       state.ships = payload.ships;
       state.roles = payload.roles;
-    }
+    },
+    loadmembers(state, payload: Array<string>) {
+      state.members = payload;
+    },
 }
 
 const actions: ActionTree<SpaceState, RootState> = {
@@ -101,23 +111,15 @@ const actions: ActionTree<SpaceState, RootState> = {
                 commit("load", { ...response.space, myroles: member.member.roles});
                 resolve(response.space);
               });
+              (window as any).urbit.scry({ app: "spaces", path: `${payload}/members` }).then((res: any) => {
+                commit("loadmembers", Object.keys(res.members));
+              });
 
               (window as any).urbit.scry({ app: "engram", path: `/space${payload}/perms`}).then((res: any) => {
                 commit("loadperms", res);
               }).catch(() => {
                 console.warn("space missing... retrying");
                 setTimeout(() => {
-                  /*
-                  (window as any).urbit.poke({ 
-                    app: "engram", 
-                    mark: "post", 
-                    json: {
-                      "space": { "make": {
-                        space: payload,
-                      }}
-                    }
-                  })
-                  */
                   dispatch("load", payload).then((res) => { resolve(res); });
                 }, 200);
               })
