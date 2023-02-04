@@ -78,7 +78,6 @@ export default function (
         store.dispatch("document/acceptupdates", path);
 
         let state;
-        console.log("rendering: ", snapshot);
         if(snapshot == null) {
           const type = doc.getXmlFragment("prosemirror");     
 
