@@ -191,6 +191,15 @@
           |=  updt=dupdate:engram
           [(scot %da timestamp.updt) (pairs ~[['author' (tape (scow %p author.updt))] ['content' (tape content.updt)]])]
       ==
+    ++  updates
+      =,  enjs:format
+      |=  updts=(set dupdate:engram)
+      ^-  json
+      %-  pairs  %~  tap  in
+          ^-  (set [@t json])
+          %-  ~(run in updts)
+          |=  updt=dupdate:engram
+          [(scot %da timestamp.updt) (pairs ~[['author' (tape (scow %p author.updt))] ['content' (tape content.updt)]])]
     ++  snapshots
       =,  enjs:format
       |=  snaps=(set dsnapshot:engram)

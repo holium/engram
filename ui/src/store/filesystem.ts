@@ -3,6 +3,7 @@ import type {
     RootState,
 } from "./index"
 import * as Y from "yjs";
+import { pushUpdate } from "@/components/document/prosemirror/render";
 
 export interface SysRecord {
     id: string,
@@ -542,7 +543,14 @@ const actions: ActionTree<FileSysState, RootState> = {
     getupdate({ dispatch }, payload: SysItem) {
         dispatch("load", payload);
         dispatch("perms", payload);
-      }
+        if(payload.type == "document") {
+            if(payload.id == "") {
+                (window as any).urbit.scry({ app: "engram", path: `/document${payload.id}/updates`}).then((res: any) => {
+                    Object.keys(res).map((key: string) => { return res[key] }).forEach(pushUpdate);
+                })
+            }
+        }
+    }
 }
 
 export default {
