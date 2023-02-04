@@ -328,13 +328,16 @@ const actions: ActionTree<FileSysState, RootState> = {
             ];
             console.warn("pushing updates...", payload, ships);
             ships.forEach((ship) => {
-                console.warn(`updating: ${ship.substring(1)}...`);
                 (window as any).urbit.poke({
                     app: "engram",
                     mark: "post",
                     json: { [payload.type]: { "update": { id: payload.id } } },
                     ship: ship.substring(1),
-                });
+                }).catch(() => {
+                    //offline?
+                }).then(() => {
+                    console.log("successfully updated: ", ship);
+                })
             })
         })
     },
