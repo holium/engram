@@ -82,14 +82,15 @@ export default defineComponent({
 
       return owner == `~${(window as any).ship}` || 
           Object.keys(this.ships)
-              .map((timestamp: string) => { return this.ships[timestamp] })
-                  .reduce((a: ShipPerm, acc: boolean) => {
-                      return acc || (a.ship == `~${(window as any).ship}` && a.level == "admin");
+              .map((timestamp: string) => { 
+                return this.ships[timestamp].ship == `~${(window as any).ship}` && this.ships[timestamp].level == "admin" 
+              }).reduce((a: boolean, acc: boolean) => {
+                      return acc || a;
                   }, false) || 
           Object.keys(this.roles)
-              .map((timestamp: string) => { return this.roles[timestamp] })
-                  .reduce((a: RolePerm, acc: boolean) => {
-                      return acc || (myroles.includes(a.role) && a.level == "admin");
+              .map((timestamp: string) => { return myroles.includes(this.roles[timestamp].role) && this.roles[timestamp].level == "admin" })
+                  .reduce((a: boolean, acc: boolean) => {
+                      return acc || a;
                   }, false);
     },
   },
