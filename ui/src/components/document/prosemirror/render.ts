@@ -55,7 +55,6 @@ export default function (
         // Publish the push update
         pushUpdate = (id: string, update: DocumentUpdate, clear?: boolean) => {
           if((doc as any).documentId == id) {
-            console.warn("pushing update: ", update);
             const ucont = new Uint8Array(JSON.parse(update.content));
             if(ucont.length > 0) {
               Y.applyUpdate(doc, ucont);
