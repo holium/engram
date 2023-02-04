@@ -954,7 +954,7 @@
             ::  Update Changes
             ::~&  "--- Sunk Document :) ---"  
             :_  dstate(u (~(gas ju u) content.update.res))
-            :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['type' (tape:enjs:format "filesys")] ['id' (path:enjs:format path.res)]]))]
+            :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['type' (tape:enjs:format "document")] ['id' (path:enjs:format path.res)]]))]
             ==
             ::
               %gather-folder-success  `this
@@ -972,7 +972,7 @@
               fol
             ::~&  "--- Sunk Folder :) ---"  
             :_  this(f (~(put by f) id nfol))
-            :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['type' (tape:enjs:format "filesys")] ['id' (path:enjs:format path.res)]]))]
+            :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['type' (tape:enjs:format "folder")] ['id' (path:enjs:format path.res)]]))]
             ==
             ::
               %gather-space-success  `this

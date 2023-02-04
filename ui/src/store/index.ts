@@ -42,7 +42,7 @@ const actions: ActionTree<RootState, RootState> = {
             path: "/updates",
             event: (event: any) => {
               console.log("received event: ", event);
-              if(event.type == "filesys") dispatch("filesys/getupdate", event.item, { root: true });
+              if(event.type == "document" || event.type == "folder") dispatch("filesys/getupdate", event, { root: true });
             }
           });
         });
