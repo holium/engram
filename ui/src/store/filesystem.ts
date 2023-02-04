@@ -4,6 +4,7 @@ import type {
 } from "./index"
 import * as Y from "yjs";
 import { pushUpdate } from "@/components/document/prosemirror/render";
+import router from "@/router/index"
 
 export interface SysRecord {
     id: string,
@@ -544,8 +545,9 @@ const actions: ActionTree<FileSysState, RootState> = {
         dispatch("load", payload);
         dispatch("perms", payload);
         if(payload.type == "document") {
-            if(payload.id == "") {
+            if(payload.id == `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`) {
                 (window as any).urbit.scry({ app: "engram", path: `/document${payload.id}/updates`}).then((res: any) => {
+                    console.warn("live update: ", res);
                     Object.keys(res).map((key: string) => { return res[key] }).forEach(pushUpdate);
                 })
             }
