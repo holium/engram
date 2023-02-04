@@ -326,7 +326,6 @@ const actions: ActionTree<FileSysState, RootState> = {
                     return state[payload.id].ships[timestamp].ship;
                 })))
             ];
-            console.warn("pushing updates...", payload, ships);
             ships.forEach((ship) => {
                 try {
                     (window as any).urbit.poke({
@@ -336,12 +335,16 @@ const actions: ActionTree<FileSysState, RootState> = {
                         ship: ship.substring(1),
                     }).then(() => {
                         console.log("successfully updated: ", ship);
+                    }).catch((err: any) => {
+                        console.warn("caught error one: ", err);
                     })
                 } catch(err) {
                     // oh well
+                    console.warn("caught error two: ", err);
                 }
                 
             })
+            resolve();
         })
     },
 
