@@ -24,7 +24,7 @@ import find from "./find";
 
 
 export let view: EditorView;
-export let pushUpdate = (update: DocumentUpdate, clear?: boolean) => {
+export let pushUpdate = (id: string, update: DocumentUpdate, clear?: boolean) => {
   //
 } 
 
@@ -48,31 +48,34 @@ export default function (
         Object.assign(doc, {documentId: path});
         doc.clientID = 0;
         doc.gc = false;
-        console.log("got document: ", res);
         const cont = new Uint8Array(JSON.parse(res.content));
         // Load the document
         if(cont.length > 0) Y.applyUpdate(doc, cont);
 
         // Publish the push update
-        pushUpdate = (update: DocumentUpdate, clear?: boolean) => {
-          console.warn("pushing update: ", update);
-          const ucont = new Uint8Array(JSON.parse(update.content));
-          if(ucont.length > 0) {
-            Y.applyUpdate(doc, ucont);
-            const snapshot = Y.snapshot(doc);
-            store.dispatch("document/snap", {
-              id: path,
-              author: update.author,
-              snapshot: snapshot
-            });
+        pushUpdate = (id: string, update: DocumentUpdate, clear?: boolean) => {
+          if((doc as any).documentId == id) {
+            console.warn("pushing update: ", update);
+            const ucont = new Uint8Array(JSON.parse(update.content));
+            if(ucont.length > 0) {
+              Y.applyUpdate(doc, ucont);
+              const snapshot = Y.snapshot(doc);
+              store.dispatch("document/snap", {
+                id: path,
+                author: update.author,
+                snapshot: snapshot
+              });
 
-            if(clear) 
-              store.dispatch("document/acceptupdates", path);
+              if(clear) 
+                store.dispatch("document/acceptupdates", path);
+            }
           }
         }
 
         // Push current updates
-        Object.keys(res.updates).map((key: string) => { return res.updates[key] }).forEach(pushUpdate);
+        Object.keys(res.updates).map((key: string) => { return res.updates[key] }).forEach((update: any) => {
+          pushUpdate(path, update);
+        });
         store.dispatch("document/acceptupdates", path);
 
         let state;

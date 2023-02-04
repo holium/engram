@@ -549,7 +549,7 @@ const actions: ActionTree<FileSysState, RootState> = {
                 (window as any).urbit.scry({ app: "engram", path: `/document${payload.id}/updates`}).then((res: any) => {
                     console.warn("live update: ", res);
                     Object.keys(res).map((key: string) => { return res[key] }).forEach((update: any) => {
-                        pushUpdate(update, true);
+                        pushUpdate(payload.id, update, true);
                     });
                 })
             }

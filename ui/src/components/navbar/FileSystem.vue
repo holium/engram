@@ -45,6 +45,9 @@ export default defineComponent({
             roles: {} as any,
         }
     },
+    created: function() {
+        console.warn("why can't edit: ", this.canEdit, store.getters["space/myroles"]);
+    },
     computed: {
         items: function(): { [key: string]: { id: string, type: string }} {
             return store.getters['filesys/root'].children;
