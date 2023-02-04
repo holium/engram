@@ -334,13 +334,13 @@ const actions: ActionTree<FileSysState, RootState> = {
                         json: { [payload.type]: { "update": { id: payload.id } } },
                         ship: ship.substring(1),
                     }).then(() => {
-                        console.log("successfully updated: ", ship);
+                        //console.log("successfully updated: ", ship);
                     }).catch((err: any) => {
-                        console.warn("caught error one: ", err);
+                        //console.warn("caught error one: ", err);
                     })
                 } catch(err) {
                     // oh well
-                    console.warn("caught error two: ", err);
+                    //console.warn("caught error two: ", err);
                 }
                 
             })
