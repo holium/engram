@@ -24,7 +24,7 @@ import find from "./find";
 
 
 export let view: EditorView;
-export let pushUpdate = (update: DocumentUpdate) => {
+export let pushUpdate = (update: DocumentUpdate, clear?: boolean) => {
   //
 } 
 
