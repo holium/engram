@@ -132,6 +132,9 @@ const mutations: MutationTree<FileSysState> = {
     delete(state, payload: SysRecord) {
         delete state[payload.id];
     },
+    rename(state, payload: { item: SysRecord, name: string}) {
+        state[payload.item.id].name = payload.name;
+    },
     add(state, payload: { to: string, item: SysRecord, index: string}) {
         (state[payload.to].children as any)[payload.index] = payload.item;
     },
@@ -203,15 +206,23 @@ const actions: ActionTree<FileSysState, RootState> = {
             })
         })
     },
+    get({ commit, state }, payload: SysRecord): Promise<SysItem> {
+        return new Promise((resolve) => {
+            (window as any).urbit.scry({ app: "engram", path: `/${payload.type}${payload.id}/meta` }).then((meta: any) => {
+                (window as any).urbit.scry({ app: "engram", path: `/${payload.type}${payload.id}/perms` }).then((perms: any) => {
+                    commit('load', { ...meta, ...perms, type: payload.type, id: payload.id });
+                    resolve(state[payload.id]);
+                })
+            })
+        });
+    },
     // get like the getter but it loads the item if it's not already loaded 
     protectedget({ state, dispatch }, payload: SysRecord): Promise<SysItem> {
         return typeof state[payload.id] == "undefined" ?
             new Promise((resolve) => {
-                dispatch("load", payload).then((res) => {
-                    dispatch("perms", payload).then(() => {
-                        resolve(state[payload.id]);
-                    });
-                })
+                dispatch("get", payload).then((res) => {
+                    resolve(state[payload.id]);
+                });
             }) : new Promise((resolve) => { 
                 resolve(state[payload.id]); 
             }); 
@@ -232,6 +243,7 @@ const actions: ActionTree<FileSysState, RootState> = {
                 }
             }).then(() => {
                 dispatch("load", payload.item).then(() => { resolve() });
+                dispatch("update", payload.item);
             })
         });
     },
@@ -277,7 +289,7 @@ const actions: ActionTree<FileSysState, RootState> = {
                 }
             })().then(() => {
                 getters['last']().then((path: string) => {
-                    dispatch("load", {
+                    dispatch("get", {
                       id: path,
                       type: payload.type
                     }).then((res: any) => {
@@ -303,6 +315,29 @@ const actions: ActionTree<FileSysState, RootState> = {
                 resolve();
             });
         });
+    },
+    update({ state, rootGetters }, payload: SysRecord): Promise<void> {
+        return new Promise((resolve) => {
+            const ships = [
+                ...Array.from(new Set(Object.keys(state[payload.id].roles).map((timestamp: string) => {
+                    return state[payload.id].roles[timestamp].role
+                }))).reduce((acc: Array<string>, v: string) => {
+                    return [...acc, rootGetters["space/memebers"].filter((member: any) => member.roles.includes(v))]
+                }, []),
+                ...Array.from(new Set(Object.keys(state[payload.id].ships).map((timestamp: string) => {
+                    return state[payload.id].ships[timestamp].ship;
+                })))
+            ];
+            ships.forEach((ship) => {
+                console.warn(`updating: ${ship.substring(1)}...`);
+                (window as any).urbit.poke({
+                    app: "engram",
+                    mark: "post",
+                    json: { [payload.type]: { "update": { id: payload.id } } },
+                    ship: ship.substring(1),
+                });
+            })
+        })
     },
 
     // add an item to a folder
@@ -350,7 +385,8 @@ const actions: ActionTree<FileSysState, RootState> = {
                                     level: state[payload.to].ships[ship].level
                                     }, { root: true})
                                 });
-                            })
+                            });
+                            dispatch("update", { id: payload.to, type: "folder" });
                             resolve();
                         })
                     }
@@ -385,28 +421,25 @@ const actions: ActionTree<FileSysState, RootState> = {
                             }
                           }
                         }).then(() => {
-                            dispatch("load", { id: payload.from, type: "folder"});
-                            // handle in perms
-                            /*
-                            (window as any).urbit.scry({ app: "engram", path: `/folder${payload.from}/get/settings`}).then((res: any) => {
-                                Object.keys(res.roles).forEach((role: string) => {
-                                dispatch(`${item.type}s/findremoveperm`, {
+                            dispatch("load", { id: payload.from, type: "folder"}).then(() => {
+                                Object.keys(state[payload.from].roles).forEach((role: string) => {
+                                    dispatch(`${item.type}s/findremoveperm`, {
                                     id: item.id,
                                     type: "roles",
-                                    perm: res.roles[role].perm,
-                                    level: res.roles[role].level
-                                }, { root: true})
+                                    perm: state[payload.from].roles[role].role,
+                                    level: state[payload.from].roles[role].level
+                                    }, { root: true})
                                 });
-                                Object.keys(res.ships).forEach((ship: string) => {
-                                dispatch(`${item.type}s/findremoveperm`, {
+                                Object.keys(state[payload.from].ships).forEach((ship: string) => {
+                                    dispatch(`${item.type}s/findremoveperm`, {
                                     id: item.id,
                                     type: "ships",
-                                    perm: res.ships[ship].perm,
-                                    level: res.ships[ship].level
-                                }, { root: true})
+                                    perm: state[payload.from].ships[ship].ship,
+                                    level: state[payload.from].ships[ship].level
+                                    }, { root: true})
                                 });
-                            });
-                            */
+                            })
+                            dispatch("update", { id: payload.from, type: "folder" });
                           resolve();
                         })
                       }
@@ -445,6 +478,7 @@ const actions: ActionTree<FileSysState, RootState> = {
             } else {
                 resolve();
             }
+            dispatch("update", payload.item);
           })
         })
     },
@@ -479,6 +513,7 @@ const actions: ActionTree<FileSysState, RootState> = {
                 } else {
                     resolve();
                 }
+                dispatch("update", payload.item);
             })
         })
       },

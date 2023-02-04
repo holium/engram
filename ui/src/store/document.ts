@@ -117,7 +117,7 @@ const actions: ActionTree<DocumentState, RootState> = {
             }}}
           })
     },
-    save({ rootGetters }, payload: { id: string, content: Uint8Array, version: Uint8Array }): Promise<void> {
+    save({ dispatch }, payload: { id: string, content: Uint8Array, version: Uint8Array }): Promise<void> {
       return new Promise((resolve) => {
           (window as any).urbit.poke({
               app: "engram",
@@ -129,15 +129,7 @@ const actions: ActionTree<DocumentState, RootState> = {
               }}}
           }).then(() => {
               resolve();
-              // NEED TO PUSH UPDATES
-              /*
-              rootGetters["filesys/ships"](payload.id).then(() => {
-                
-              })
-              rootGetters["filesys/roles"](payload.id).then(() => {
-                
-              })
-              */
+              this.dispatch("filesys/updates", payload.id);
           })
       });
     },

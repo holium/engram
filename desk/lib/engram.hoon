@@ -21,6 +21,7 @@
         [%rename (ot ~[id+pa name+so])]
         [%addperm (ot ~[id+pa perm+so level+(se %tas) type+(se %tas)])]
         [%removeperm (ot ~[id+pa timestamp+pa type+(se %tas)])]
+        [%update (ot ~[id+pa])]
         [%gatherall (ot ~[id+pa])]
         [%gather (ot ~[id+pa peer+(se %p)])]
         [%accept (ot ~[id+pa])]

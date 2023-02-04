@@ -25,7 +25,7 @@ export interface SpaceState {
   myroles: Array<string>,
   roles: { [key: string]: RolePermission },
   ships: { [key: string]: ShipPermission },
-  members: Array<string>
+  members: Array<any>
 }
 
 export const nullspace = {
