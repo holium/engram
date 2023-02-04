@@ -77,7 +77,7 @@ export default defineComponent({
       return store.getters['filesys/ships'](this.docId);
     },
     isAdmin: function(): boolean {
-      const myroles = store.getters['space/roles'];
+      const myroles = store.getters['space/myroles'];
       const owner = store.getters['filesys/owner'](this.docId);
 
       return owner == `~${(window as any).ship}` || 
