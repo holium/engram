@@ -328,16 +328,19 @@ const actions: ActionTree<FileSysState, RootState> = {
             ];
             console.warn("pushing updates...", payload, ships);
             ships.forEach((ship) => {
-                (window as any).urbit.poke({
-                    app: "engram",
-                    mark: "post",
-                    json: { [payload.type]: { "update": { id: payload.id } } },
-                    ship: ship.substring(1),
-                }).catch(() => {
-                    //offline?
-                }).then(() => {
-                    console.log("successfully updated: ", ship);
-                })
+                try {
+                    (window as any).urbit.poke({
+                        app: "engram",
+                        mark: "post",
+                        json: { [payload.type]: { "update": { id: payload.id } } },
+                        ship: ship.substring(1),
+                    }).then(() => {
+                        console.log("successfully updated: ", ship);
+                    })
+                } catch(err) {
+                    // oh well
+                }
+                
             })
         })
     },
