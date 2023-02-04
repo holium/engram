@@ -321,11 +321,7 @@ const actions: ActionTree<FileSysState, RootState> = {
     update({ state, rootGetters }, payload: SysRecord): Promise<void> {
         return new Promise((resolve) => {
             const ships = [
-                ...Array.from(new Set(Object.keys(state[payload.id].roles).map((timestamp: string) => {
-                    return state[payload.id].roles[timestamp].role
-                }))).reduce((acc: Array<string>, v: string) => {
-                    return [...acc, rootGetters["space/members"].filter((member: any) => { console.warn("member: ", member); return member.roles.includes(v)})]
-                }, []),
+                ...rootGetters["space/members"],
                 ...Array.from(new Set(Object.keys(state[payload.id].ships).map((timestamp: string) => {
                     return state[payload.id].ships[timestamp].ship;
                 })))
