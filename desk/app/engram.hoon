@@ -881,8 +881,8 @@
     =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
     ?:  (~(has by u) id)
       =/  updts  (need (~(get by u) id))
-      ``noun+!>((updates:document:enjs:engram [doc updts]))
-    ``noun+!>((updates:document:enjs:engram [doc ^*((set dupdate))]))
+      ``noun+!>((updates:document:enjs:engram updts))
+    ``noun+!>((updates:document:enjs:engram ^*((set dupdate))))
   ::
       [%x %folder @ @ %list ~]
     ?>  =(src.bowl our.bowl)
