@@ -56,9 +56,9 @@ export default function (
         // Publish the push update
         pushUpdate = (update: DocumentUpdate, clear?: boolean) => {
           console.warn("pushing update: ", update);
-          /*
-          if(update.content.length > 0) {
-            Y.applyUpdate(doc, update.content);
+          const ucont = new Uint8Array(JSON.parse(update.content));
+          if(ucont.length > 0) {
+            Y.applyUpdate(doc, ucont);
             const snapshot = Y.snapshot(doc);
             store.dispatch("document/snap", {
               id: path,
@@ -69,7 +69,6 @@ export default function (
             if(clear) 
               store.dispatch("document/acceptupdates", path);
           }
-          */
         }
 
         // Push current updates

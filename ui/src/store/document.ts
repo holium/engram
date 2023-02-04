@@ -29,7 +29,7 @@ export interface VersionMeta {
 export interface DocumentUpdate {
   timestamp: string,
   author: Patp,
-  content: Uint8Array
+  content: string
 }
 
 const state: DocumentState = {
