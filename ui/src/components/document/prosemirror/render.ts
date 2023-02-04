@@ -48,12 +48,15 @@ export default function (
         Object.assign(doc, {documentId: path});
         doc.clientID = 0;
         doc.gc = false;
+        console.log("got document: ", res);
         const cont = new Uint8Array(JSON.parse(res.content));
         // Load the document
         if(cont.length > 0) Y.applyUpdate(doc, cont);
 
         // Publish the push update
         pushUpdate = (update: DocumentUpdate, clear?: boolean) => {
+          console.warn("pushing update: ", update);
+          /*
           if(update.content.length > 0) {
             Y.applyUpdate(doc, update.content);
             const snapshot = Y.snapshot(doc);
@@ -66,6 +69,7 @@ export default function (
             if(clear) 
               store.dispatch("document/acceptupdates", path);
           }
+          */
         }
 
         // Push current updates

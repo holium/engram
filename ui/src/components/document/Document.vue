@@ -94,7 +94,6 @@ export default defineComponent({
   },
   methods: {
     open: function(docId: string, snapshot: null | DocumentVersion = null) {
-      //store.dispatch("document/versions", docId);
       this.loading = true;
       this.loaded = render(
               this.$refs["document"] as any, 
