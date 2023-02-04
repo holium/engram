@@ -37,14 +37,20 @@ const actions: ActionTree<RootState, RootState> = {
         dispatch("filesys/reset", {}, { root: true });
         dispatch("filesys/boot", payload, { root: true }).then(() => {
           resolve();
-          (window as any).urbit.subscribe({
+          (window as any).urbit.poke({
             app: "engram",
-            path: "/updates",
-            event: (event: any) => {
-              console.log("received event: ", event);
-              if(event.type == "document" || event.type == "folder") dispatch("filesys/getupdate", event, { root: true });
-            }
-          });
+            mark: "post",
+            json: { leave: `~${(window as any).ship}`}
+          }).then(() => {
+            (window as any).urbit.subscribe({
+              app: "engram",
+              path: "/updates",
+              event: (event: any) => {
+                console.log("received event: ", event);
+                if(event.type == "document" || event.type == "folder") dispatch("filesys/getupdate", event, { root: true });
+              }
+            });
+          })
         });
       })
     });
