@@ -46,7 +46,6 @@ const actions: ActionTree<RootState, RootState> = {
               app: "engram",
               path: "/updates",
               event: (event: any) => {
-                console.log("received event: ", event);
                 if(event.type == "document" || event.type == "folder") dispatch("filesys/getupdate", event, { root: true });
               }
             });
