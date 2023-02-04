@@ -79,10 +79,10 @@
               ['owner' (tape (scow %p owner.settings.doc))]
               :-  'roles'  %-  pairs  %+  turn  ~(tap by content.roles.settings.doc)
                 |=  [id=id:index [role=@tas level=@tas]]
-                [(crip (stringify:index id)) (pairs ~[['perm' (tape (trip role))] ['level' (tape (trip level))]])]
+                [(crip (stringify:index id)) (pairs ~[['role' (tape (trip role))] ['level' (tape (trip level))]])]
               :-  'ships'  %-  pairs  %+  turn  ~(tap by content.ships.settings.doc)
                 |=  [id=id:index [ship=@p level=@tas]]
-                [(crip (stringify:index id)) (pairs ~[['perm' (tape (trip (scot %p ship)))] ['level' (tape (trip level))]])]
+                [(crip (stringify:index id)) (pairs ~[['ship' (tape (trip (scot %p ship)))] ['level' (tape (trip level))]])]
           ==
           %folder
         :-  (spat ~[(scot %p -.id) (scot %u +.id)])
@@ -100,10 +100,10 @@
               ['owner' (tape (scow %p owner.fol))]
               :-  'ships'  %-  pairs  %+  turn  ~(tap by content.ships.fol)  
                 |=  [id=id:index [ship=@p level=@tas]]  
-                [(crip (stringify:index id)) (pairs ~[['perm' (tape (trip (scot %p ship)))] ['level' (tape (trip level))]])]
+                [(crip (stringify:index id)) (pairs ~[['ship' (tape (trip (scot %p ship)))] ['level' (tape (trip level))]])]
               :-  'roles'  %-  pairs  %+  turn  ~(tap by content.roles.fol)  
                 |=  [id=id:index [role=@tas level=@tas]]  
-                [(crip (stringify:index id)) (pairs ~[['perm' (tape (trip role))] ['level' (tape (trip level))]])]
+                [(crip (stringify:index id)) (pairs ~[['role' (tape (trip role))] ['level' (tape (trip level))]])]
           ==
       ==
     ++  list
@@ -121,10 +121,10 @@
       %-  pairs  :~
         :-  'roles'  %-  pairs  %+  turn  ~(tap by content.roles.spc)
           |=  [id=id:index [role=@tas level=@tas]]
-          [(crip (stringify:index id)) (pairs ~[['perm' (tape (trip role))] ['level' (tape (trip level))]])]
+          [(crip (stringify:index id)) (pairs ~[['role' (tape (trip role))] ['level' (tape (trip level))]])]
         :-  'ships'  %-  pairs  %+  turn  ~(tap by content.ships.spc)
           |=  [id=id:index [ship=@p level=@tas]]
-          [(crip (stringify:index id)) (pairs ~[['perm' (tape (trip (scot %p ship)))] ['level' (tape (trip level))]])]
+          [(crip (stringify:index id)) (pairs ~[['ship' (tape (trip (scot %p ship)))] ['level' (tape (trip level))]])]
       ==
     --
   ++  document
@@ -152,10 +152,10 @@
         ['content' (tape content.doc)]
         :-  'roles'  %-  pairs  %+  turn  ~(tap by content.roles.settings.doc)
           |=  [id=id:index [role=@tas level=@tas]]
-          [(crip (stringify:index id)) (pairs ~[['perm' (tape (trip role))] ['level' (tape (trip level))]])]
+          [(crip (stringify:index id)) (pairs ~[['role' (tape (trip role))] ['level' (tape (trip level))]])]
         :-  'ships'  %-  pairs  %+  turn  ~(tap by content.ships.settings.doc)
           |=  [id=id:index [ship=@p level=@tas]]
-          [(crip (stringify:index id)) (pairs ~[['perm' (tape (trip (scot %p ship)))] ['level' (tape (trip level))]])]
+          [(crip (stringify:index id)) (pairs ~[['ship' (tape (trip (scot %p ship)))] ['level' (tape (trip level))]])]
       ==
     ++  meta
       =,  enjs:format
@@ -174,10 +174,10 @@
         ['owner' (tape (scow %p owner.settings))]
         :-  'ships'  %-  pairs  %+  turn  ~(tap by content.ships.settings)  
           |=  [id=id:index [ship=@p level=@tas]]  
-          [(crip (stringify:index id)) (pairs ~[['perm' (tape (trip (scot %p ship)))] ['level' (tape (trip level))]])]
+          [(crip (stringify:index id)) (pairs ~[['ship' (tape (trip (scot %p ship)))] ['level' (tape (trip level))]])]
         :-  'roles'  %-  pairs  %+  turn  ~(tap by content.roles.settings)  
           |=  [id=id:index [role=@tas level=@tas]]  
-          [(crip (stringify:index id)) (pairs ~[['perm' (tape (trip role))] ['level' (tape (trip level))]])]
+          [(crip (stringify:index id)) (pairs ~[['role' (tape (trip role))] ['level' (tape (trip level))]])]
       ==
     ++  content
       =,  enjs:format
@@ -241,10 +241,10 @@
         ['owner' (tape (scow %p owner.fol))]
         :-  'ships'  %-  pairs  %+  turn  ~(tap by content.ships.fol)  
           |=  [id=id:index [ship=@p level=@tas]]  
-          [(crip (stringify:index id)) (pairs ~[['perm' (tape (trip (scot %p ship)))] ['level' (tape (trip level))]])]
+          [(crip (stringify:index id)) (pairs ~[['ship' (tape (trip (scot %p ship)))] ['level' (tape (trip level))]])]
         :-  'roles'  %-  pairs  %+  turn  ~(tap by content.roles.fol)  
           |=  [id=id:index [role=@tas level=@tas]]  
-          [(crip (stringify:index id)) (pairs ~[['perm' (tape (trip role))] ['level' (tape (trip level))]])]
+          [(crip (stringify:index id)) (pairs ~[['role' (tape (trip role))] ['level' (tape (trip level))]])]
       ==
     --
   --
