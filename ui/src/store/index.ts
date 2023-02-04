@@ -40,7 +40,7 @@ const actions: ActionTree<RootState, RootState> = {
           (window as any).urbit.poke({
             app: "engram",
             mark: "post",
-            json: { leave: `~${(window as any).ship}`}
+            json: { leave: { self: `~${(window as any).ship}`}}
           }).then(() => {
             (window as any).urbit.subscribe({
               app: "engram",

@@ -141,7 +141,6 @@ export default defineComponent({
           if(this.newPermission.length == 0) {
             if(event.key != '~' && event.key != '%') event.preventDefault();
           } else {
-            console.log((event.target as any).selectionStart);
             if((event.target as any).selectionStart == 0) event.preventDefault();
             else if(this.newPermission.charAt(0) == '~') {
               if(!"abcdefghijklmnopqrstuvwxyz-".includes(event.key)) event.preventDefault();

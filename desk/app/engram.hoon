@@ -91,7 +91,6 @@
         =/  oldspc
         ?:  (~(has by s) space.act)
           (~(got by s) space.act)
-        ~&  "Initializing space"
         =/  initspc  ^*  space
         =.  roles.initspc  (insert:index roles.initspc ^-([@tas @tas] [%member %editor]) our.bowl)
         initspc
@@ -260,7 +259,7 @@
         ::
           %updateall
         ?>  =(src.bowl our.bowl)
-        ~&  "Update All-- {<path.act>}"
+        ::~&  "Update All-- {<path.act>}"
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  doc  (~(got by d) id)
         ?:  =(space.settings.doc /null/space)  ~&  "Document does not belong to a space"  `this
@@ -294,7 +293,7 @@
         ?>  =(src.bowl our.bowl)
         ?:  =(our.bowl peer.act)
           `this
-        ::~&  "GATHER-- {<path.act>} from: {<peer.act>}"
+        ~&  "GATHER-- {<path.act>} from: {<peer.act>}"
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         ?.  (~(has by d) id)
           :: If we do not have this document request it
@@ -383,11 +382,6 @@
           ^*  (index:index [id @tas])
         ==
         =/  id  [our.bowl t]
-        ~&  "Making folder:"
-        ~&  act
-        ~&  "=="
-        ~&  fold
-        ~&  "--"
         =/  fstate  this(f (~(put by f) id fold))
         =/  oldspc
         ?:  (~(has by s) space.act)
@@ -692,7 +686,6 @@
         =/  spc  (~(got by s) space.act)
         =/  id  [`@p`(slav %p -.item.act) `@u`(slav %ud -.+.item.act)]
         =/  nspc
-        ~&  type.act
         ?+  type.act  !!
             %roles
           =.  roles.spc  (remove:index roles.spc id our.bowl)
@@ -793,13 +786,11 @@
 ++  on-watch
   |=  p=path
   ^-  (quip card _this)
-  ~&  "Watching: {<p>}"
   ?+  p  (on-watch:def p)
     [%updates ~]  `this
     [%preview @ @ ~]  
     =/  id=id  [`@p`(slav %p i.t.p) `@u`(slav %ud i.t.t.p)]
     =/  doc  (~(got by d) id)
-    ~&  "Previewing: {<id>}"
     :_  this
     :~  [%give %fact ~ %json !>((get:document:enjs:engram doc))]
     ==

@@ -46,9 +46,6 @@ export default defineComponent({
             roles: {} as any,
         }
     },
-    created: function() {
-        console.warn("why can't edit: ", this.canEdit, store.getters["space/myroles"]);
-    },
     computed: {
         items: function(): { [key: string]: { id: string, type: string }} {
             return store.getters['filesys/root'].children;
@@ -140,7 +137,6 @@ export default defineComponent({
                 const raw = event.dataTransfer?.getData("text/plain");
                 if(raw) {
                     const data = JSON.parse(raw);
-                    console.log("dropping: ", data);
                     if(data.from != ".") {
                         store.dispatch("filesys/remove", { index: data.index, from: data.from });
                         store.dispatch("filesys/add", { item: { id: data.item.id, type: data.item.type }, to: ".", index: data.item.id });

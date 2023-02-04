@@ -198,7 +198,6 @@ export default defineComponent({
             this.rename = false;
         },
         handleDragStart: function(event: DragEvent) {
-            console.log("can edit?", this.editable);
             if(this.editable) {
                 event.dataTransfer?.setData("text/plain", JSON.stringify({ item: this.item, index: this.index ? this.index : ".", from: this.parent ? this.parent : "." }));
             }
