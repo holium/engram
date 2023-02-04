@@ -330,6 +330,7 @@ const actions: ActionTree<FileSysState, RootState> = {
                     return state[payload.id].ships[timestamp].ship;
                 })))
             ];
+            console.warn("pushing updates...", payload, ships);
             ships.forEach((ship) => {
                 console.warn(`updating: ${ship.substring(1)}...`);
                 (window as any).urbit.poke({
