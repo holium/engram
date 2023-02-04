@@ -65,6 +65,14 @@ export default defineComponent({
         VersionItem,
         VersionShipLabel,
     },
+    created: function() {
+        store.dispatch("document/versions", this.docId);
+    },
+    watch: {
+        docId: function(newId: string) {
+            store.dispatch("document/versions", this.docId);
+        }
+    },
     computed: {
         previewing: function() {
             return store.getters['document/previewing'];
@@ -87,6 +95,9 @@ export default defineComponent({
             return this.ships.map((ship: string) => {
                 return this.snapshots.findIndex((snapshot: VersionMeta) => snapshot.author == ship);
             })
+        },
+        docId: function(): string {
+            return `/${this.$route.params.author}/${this.$route.params.clock}`;
         }
     },
     methods: {

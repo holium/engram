@@ -5,6 +5,7 @@
                 workspace
             </div>
             <svg 
+                v-if="canEdit"
                 @click="openMenu"
                 class="icon clickable new-item-button"
                 viewBox="0 0 16 16" 
@@ -59,14 +60,16 @@ export default defineComponent({
 
             return myroles.includes("owner") || 
                 Object.keys(ships)
-                    .map((timestamp: string) => { return ships[timestamp] })
-                        .reduce((a: ShipPermission, acc: boolean) => {
-                            return acc || (a.ship == `~${(window as any).ship}` && (a.level == "editor" || a.level == "admin"));
+                    .map((timestamp: string) => { 
+                        return ships[timestamp].ship == `~${(window as any).ship}` && (ships[timestamp].level == "editor" || ships[timestamp].level == "admin") 
+                    }).reduce((a: boolean, acc: boolean) => {
+                            return acc || a;
                         }, false) || 
                 Object.keys(roles)
-                    .map((timestamp: string) => { return roles[timestamp].role })
-                        .reduce((a: RolePermission, acc: boolean) => {
-                            return acc || (myroles.includes(a.role) && (a.level == "editor" || a.level == "admin"));
+                    .map((timestamp: string) => { 
+                        return myroles.includes(roles[timestamp].role) && (roles[timestamp].level == "editor" || roles[timestamp].level == "admin") 
+                    }).reduce((a: boolean, acc: boolean) => {
+                            return acc || a;
                         }, false);
       }
     },
@@ -134,7 +137,6 @@ export default defineComponent({
                 const raw = event.dataTransfer?.getData("text/plain");
                 if(raw) {
                     const data = JSON.parse(raw);
-                    console.log("dropping: ", data);
                     if(data.from != ".") {
                         store.dispatch("filesys/remove", { index: data.index, from: data.from });
                         store.dispatch("filesys/add", { item: { id: data.item.id, type: data.item.type }, to: ".", index: data.item.id });
@@ -156,14 +158,15 @@ export default defineComponent({
 
             return owner == `~${(window as any).ship}` || 
                 Object.keys(ships)
-                    .map((timestamp: string) => { return ships[timestamp].ship })
-                        .reduce((a: string, acc: boolean) => {
-                            return a == `~${(window as any).ship}`;
+                    .map((timestamp: string) => { 
+                        return ships[timestamp].ship == `~${(window as any).ship}`;
+                    }).reduce((a: boolean, acc: boolean) => {
+                            return acc || a;
                         }, false) || 
                 Object.keys(roles)
-                    .map((timestamp: string) => { return roles[timestamp].role })
-                        .reduce((a: string, acc: boolean) => {
-                            return acc || myroles.includes(a);
+                    .map((timestamp: string) => { return myroles.includes(roles[timestamp].role) })
+                        .reduce((a: boolean, acc: boolean) => {
+                            return acc || a;
                         }, false);
         },
     }

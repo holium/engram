@@ -79,8 +79,8 @@
         >
 
         </div>
-        <div class="flex flex-col gap-2">
-          <div class="heading-1">
+        <div class="flex flex-col gap-2 overflow-hidden flex-1">
+          <div class="heading-1 whitespace-nowrap overflow-ellipsis overflow-hidden">
             {{ option.name }}
           </div>
         </div>

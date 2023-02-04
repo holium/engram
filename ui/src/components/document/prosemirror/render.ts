@@ -24,7 +24,7 @@ import find from "./find";
 
 
 export let view: EditorView;
-export let pushUpdate = (update: DocumentUpdate) => {
+export let pushUpdate = (id: string, update: DocumentUpdate, clear?: boolean) => {
   //
 } 
 
@@ -53,27 +53,31 @@ export default function (
         if(cont.length > 0) Y.applyUpdate(doc, cont);
 
         // Publish the push update
-        pushUpdate = (update: DocumentUpdate, clear?: boolean) => {
-          if(update.content.length > 0) {
-            Y.applyUpdate(doc, update.content);
-            const snapshot = Y.snapshot(doc);
-            store.dispatch("document/snap", {
-              id: path,
-              author: update.author,
-              snapshot: snapshot
-            });
+        pushUpdate = (id: string, update: DocumentUpdate, clear?: boolean) => {
+          if((doc as any).documentId == id) {
+            const ucont = new Uint8Array(JSON.parse(update.content));
+            if(ucont.length > 0) {
+              Y.applyUpdate(doc, ucont);
+              const snapshot = Y.snapshot(doc);
+              store.dispatch("document/snap", {
+                id: path,
+                author: update.author,
+                snapshot: snapshot
+              });
 
-            if(clear) 
-              store.dispatch("document/acceptupdates", path);
+              if(clear) 
+                store.dispatch("document/acceptupdates", path);
+            }
           }
         }
 
         // Push current updates
-        Object.keys(res.updates).map((key: string) => { return res.updates[key] }).forEach(pushUpdate);
+        Object.keys(res.updates).map((key: string) => { return res.updates[key] }).forEach((update: any) => {
+          pushUpdate(path, update);
+        });
         store.dispatch("document/acceptupdates", path);
 
         let state;
-        console.log("rendering: ", snapshot);
         if(snapshot == null) {
           const type = doc.getXmlFragment("prosemirror");     
 

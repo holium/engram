@@ -54,7 +54,6 @@
             close
           </div>
       </div>
-        <!-- <StylingDock class="dock-body scrollbar-small" :styling="styling" v-if="open == 'styling'" /> -->
         <SharingDock class="dock-body scrollbar-small" v-if="open == 'sharing'" />
         <VersionDock class="dock-body scrollbar-small" v-if="open == 'revisions'" />
     </div>
@@ -63,7 +62,6 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import StylingDock from "./StylingDock.vue";
 import SharingDock from "./SharingDock.vue";
 import VersionDock from "./VersionDock.vue";
 export default defineComponent({
@@ -76,7 +74,7 @@ export default defineComponent({
   inject: ["toggleDock"],
   data() {
     return {
-      open: "revisions" as "sharing" | "revisions",
+      open: "sharing" as "sharing" | "revisions",
       dockWidth: 420,
       dragStart: 0,
     }
@@ -98,6 +96,7 @@ export default defineComponent({
     },
     closeDock: function() {
       (this as any).toggleDock();
+      this.open = "sharing";
     }
   }
 });

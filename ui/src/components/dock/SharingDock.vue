@@ -77,19 +77,20 @@ export default defineComponent({
       return store.getters['filesys/ships'](this.docId);
     },
     isAdmin: function(): boolean {
-      const myroles = store.getters['space/roles'];
+      const myroles = store.getters['space/myroles'];
       const owner = store.getters['filesys/owner'](this.docId);
 
       return owner == `~${(window as any).ship}` || 
           Object.keys(this.ships)
-              .map((timestamp: string) => { return this.ships[timestamp] })
-                  .reduce((a: ShipPerm, acc: boolean) => {
-                      return acc || (a.ship == `~${(window as any).ship}` && a.level == "admin");
+              .map((timestamp: string) => { 
+                return this.ships[timestamp].ship == `~${(window as any).ship}` && this.ships[timestamp].level == "admin" 
+              }).reduce((a: boolean, acc: boolean) => {
+                      return acc || a;
                   }, false) || 
           Object.keys(this.roles)
-              .map((timestamp: string) => { return this.roles[timestamp] })
-                  .reduce((a: RolePerm, acc: boolean) => {
-                      return acc || (myroles.includes(a.role) && a.level == "admin");
+              .map((timestamp: string) => { return myroles.includes(this.roles[timestamp].role) && this.roles[timestamp].level == "admin" })
+                  .reduce((a: boolean, acc: boolean) => {
+                      return acc || a;
                   }, false);
     },
   },
@@ -140,7 +141,6 @@ export default defineComponent({
           if(this.newPermission.length == 0) {
             if(event.key != '~' && event.key != '%') event.preventDefault();
           } else {
-            console.log((event.target as any).selectionStart);
             if((event.target as any).selectionStart == 0) event.preventDefault();
             else if(this.newPermission.charAt(0) == '~') {
               if(!"abcdefghijklmnopqrstuvwxyz-".includes(event.key)) event.preventDefault();

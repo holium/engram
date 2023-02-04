@@ -29,7 +29,6 @@
   |*  [state=(index) updt=(update)]
   ^+  state
   =/  ldels  ~(val by (~(dif by dels.updt) dels.state))
-  ~&  ldels
   =/  deleted  (silt (weld ~(val by dels.state) ldels))
   =/  lcont  
       %+  skim  ~(tap in (~(dif in ~(key by content.updt)) ~(key by content.state)))
