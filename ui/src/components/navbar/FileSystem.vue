@@ -5,6 +5,7 @@
                 workspace
             </div>
             <svg 
+                v-if="canEdit"
                 @click="openMenu"
                 class="icon clickable new-item-button"
                 viewBox="0 0 16 16" 
@@ -161,14 +162,15 @@ export default defineComponent({
 
             return owner == `~${(window as any).ship}` || 
                 Object.keys(ships)
-                    .map((timestamp: string) => { return ships[timestamp].ship })
-                        .reduce((a: string, acc: boolean) => {
-                            return a == `~${(window as any).ship}`;
+                    .map((timestamp: string) => { 
+                        return ships[timestamp].ship == `~${(window as any).ship}`;
+                    }).reduce((a: boolean, acc: boolean) => {
+                            return acc || a;
                         }, false) || 
                 Object.keys(roles)
-                    .map((timestamp: string) => { return roles[timestamp].role })
-                        .reduce((a: string, acc: boolean) => {
-                            return acc || myroles.includes(a);
+                    .map((timestamp: string) => { return myroles.includes(roles[timestamp].role) })
+                        .reduce((a: boolean, acc: boolean) => {
+                            return acc || a;
                         }, false);
         },
     }
