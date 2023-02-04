@@ -324,7 +324,7 @@ const actions: ActionTree<FileSysState, RootState> = {
                 ...Array.from(new Set(Object.keys(state[payload.id].roles).map((timestamp: string) => {
                     return state[payload.id].roles[timestamp].role
                 }))).reduce((acc: Array<string>, v: string) => {
-                    return [...acc, rootGetters["space/memebers"].filter((member: any) => member.roles.includes(v))]
+                    return [...acc, rootGetters["space/members"].filter((member: any) => member.roles.includes(v))]
                 }, []),
                 ...Array.from(new Set(Object.keys(state[payload.id].ships).map((timestamp: string) => {
                     return state[payload.id].ships[timestamp].ship;
