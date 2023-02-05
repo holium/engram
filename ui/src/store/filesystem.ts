@@ -21,7 +21,9 @@ export interface SysItem {
 
     owner: string,
     ships: { [key: string]: ShipPermission },
-    roles: { [key: string]: RolePermission }
+    roles: { [key: string]: RolePermission },
+
+    hidden?: boolean //whether to inject into a folder or not
 }
 
 export interface FileSysState {
@@ -94,6 +96,13 @@ const getters: GetterTree<FileSysState, RootState> = {
 
     last: () => (): Promise<string> => {
         return (window as any).urbit.scry({ app: "engram", path: "/history"});
+    },
+    search: () => (): Promise<Array<{ id: string, name: string }>> => {
+        return new Promise((resolve, reject) => {
+            (window as any).urbit.scry({ app: "engram", path: "/document/list"}).then((res: any) => {
+                resolve(Object.keys(res).map((item: string) => { return { id: item, name: res[item]}}))
+            })
+        })
     }
 }
 
@@ -102,20 +111,23 @@ const mutations: MutationTree<FileSysState> = {
         if(state[payload.id]) state[payload.id] = {...state[payload.id], ...payload};
         else state[payload.id] = payload;
 
-        let root = true;
-        Object.keys(state).forEach((key: string) => {
-            if(state[key].children && root) {
-                if(Object.keys((state[key].children as any)).map((item: string) => { 
-                    return (state[key].children as any)[item].id;
-                }).includes(payload.id))
-                    root = false;
-            }
-        });
-        if(root) state["."].children[payload.id] = payload;
-        if(payload.type == "folder")
-            Object.keys((state[payload.id].children as any)).forEach((child: string) => {
-                delete state["."].children[(state[payload.id].children as any)[child].id];
-            })
+        if(!payload.hidden) {
+            let root = true;
+            Object.keys(state).forEach((key: string) => {
+                if(state[key].children && root) {
+                    if(Object.keys((state[key].children as any)).map((item: string) => { 
+                        return (state[key].children as any)[item].id;
+                    }).includes(payload.id))
+                        root = false;
+                }
+            });
+            if(root) state["."].children[payload.id] = payload;
+            if(payload.type == "folder")
+                Object.keys((state[payload.id].children as any)).forEach((child: string) => {
+                    delete state["."].children[(state[payload.id].children as any)[child].id];
+                })
+        }
+        
     },
     reset(state) {
         Object.keys(state).forEach((key: string) => {
@@ -219,11 +231,15 @@ const actions: ActionTree<FileSysState, RootState> = {
         });
     },
     // get like the getter but it loads the item if it's not already loaded 
-    protectedget({ state, dispatch }, payload: SysRecord): Promise<SysItem> {
+    protectedget({ state, commit }, payload: SysRecord): Promise<SysItem> {
         return typeof state[payload.id] == "undefined" ?
             new Promise((resolve) => {
-                dispatch("get", payload).then((res) => {
-                    resolve(state[payload.id]);
+                (window as any).urbit.scry({ app: "engram", path: `/${payload.type}${payload.id}/meta` }).then((meta: any) => {
+                    (window as any).urbit.scry({ app: "engram", path: `/${payload.type}${payload.id}/perms` }).then((perms: any) => {
+                        console.log("proetected getting: ", { ...meta, ...perms, type: payload.type, id: payload.id, hidden: true });
+                        commit('load', { ...meta, ...perms, type: payload.type, id: payload.id, hidden: true });
+                        resolve(state[payload.id]);
+                    })
                 });
             }) : new Promise((resolve) => { 
                 resolve(state[payload.id]); 

@@ -1,6 +1,13 @@
 <template>
     <div class="input relative">
-        <input type="text" placeholder="Search Documents..." v-model="search" @focus="on = true" @blur="handleBlur" @keydown="handleKeypress">
+        <input 
+            type="text" 
+            placeholder="Search Documents..." 
+            v-model="search" 
+            @focus="() => { on = true; refresh(); }" 
+            @blur="handleBlur" 
+            @keydown="handleKeypress"
+        >
         <div id="results" class="flex flex-col bg-paper outline-none shadow-menu overflow-auto rounded-2 scrollbar-small" v-if="on">
             <div 
                 class="clickable px-3 py-1"
@@ -26,14 +33,24 @@ export default defineComponent({
             search: "",
             on: false,
             selected: 0,
+            all: [] as Array<{id: string, name: string}>
         }
     },
     computed: {
         items: function() {
-            return store.getters['documents/list'].filter((item: any) => { return item.name.search(this.search) > -1 || item.id.search(this.search) > -1 });
+            if(this.search.trim().length == 0) return [];
+            return this.all.filter((item: any) => {
+                return item.name.search(this.search) > -1 || item.id.search(this.search) > -1 
+            });
         }
     },
+    created: function() {
+        this.refresh();
+    },
     methods: {
+        refresh: async function() {
+            this.all = await store.getters['filesys/search']();
+        },
         open: function(id: string) {
             this.$router.push(`/apps/engram${id}?spaceId=${this.$route.query.spaceId}`); 
             this.selected = 0;

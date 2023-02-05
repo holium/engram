@@ -14,7 +14,7 @@ export const engram = new Plugin({
                 dom.setAttribute("data-type", "engram-link")
                 dom.setAttribute("href", node.attrs.href);
                 dom.classList.add("engram-link");
-                const meta = store.getters['documents/meta'](node.attrs.href)
+                const meta = store.getters['filesys/get'](node.attrs.href);
                 dom.addEventListener("click", () => {
                     router.push(`/apps/engram${node.attrs.href}?spaceId=${router.currentRoute.value.query.spaceId}`);
                 });

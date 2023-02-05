@@ -362,7 +362,7 @@
           %populate
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         :_  this(d (~(put by d) id doc.act))
-        :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['type' (tape:enjs:format "space")] ['id' (path:enjs:format space.settings.doc.act)]]))]
+        :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['space' (path:enjs:format space.settings.doc.act)] ['type' (tape:enjs:format "space")] ['id' (path:enjs:format space.settings.doc.act)]]))]
         ==
       ==
       %folder
@@ -945,7 +945,7 @@
             ::  Update Changes
             ::~&  "--- Sunk Document :) ---"  
             :_  dstate(u (~(gas ju u) content.update.res))
-            :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['type' (tape:enjs:format "document")] ['id' (path:enjs:format path.res)]]))]
+            :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['space' (path:enjs:format space.settings.doc)] ['type' (tape:enjs:format "document")] ['id' (path:enjs:format path.res)]]))]
             ==
             ::
               %gather-folder-success  `this
@@ -963,7 +963,7 @@
               fol
             ::~&  "--- Sunk Folder :) ---"  
             :_  this(f (~(put by f) id nfol))
-            :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['type' (tape:enjs:format "folder")] ['id' (path:enjs:format path.res)]]))]
+            :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['space' (path:enjs:format space.fol)] ['type' (tape:enjs:format "folder")] ['id' (path:enjs:format path.res)]]))]
             ==
             ::
               %gather-space-success  `this
@@ -989,7 +989,7 @@
                   %document  [%pass /document/request %agent [our.bowl %engram] %poke %post !>([%document %request `path`[(scot %p -.-.+.item) (scot %ud +.-.+.item) ~] -.-.+.item])]
                   %folder    [%pass /folder/request %agent [our.bowl %engram] %poke %post !>([%folder %request `path`[(scot %p -.-.+.item) (scot %ud +.-.+.item) ~] -.-.item])]
                 ==
-              ^-  card  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['type' (tape:enjs:format "space")] ['id' (path:enjs:format space.res)]]))]
+              ^-  card  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['space' (path:enjs:format space.res)] ['type' (tape:enjs:format "space")] ['id' (path:enjs:format space.res)]]))]
           ==
             %update
           =/  msg  !<  tape  q.cage.sign

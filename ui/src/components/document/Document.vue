@@ -11,13 +11,17 @@
         <img class="loading-animation" src="@/assets/engram.svg" />
         <div v-if="missing">Can't find this document</div>
       </div>
-      <div class="relative items-center scrollbar-small flex-grow" id="main" :class="{'no-cover': cover.src.length == 0}" v-if="!missing">
+      <div 
+        class="relative items-center scrollbar-small flex-grow" 
+        id="main" 
+        :class="{'no-cover': cover.src.length == 0}" 
+        v-if="!missing"
+      >
         <Cover :cover="cover" />
         <div id="document" ref="document"> </div>
       </div>
     </div>
-    <!-- <DocumentDock :styling="styling" :doc="doc" v-if="!missing"/> -->
-    <DocumentDock />
+    <DocumentDock v-if="got"/>
   </div>
 </template>
 
@@ -128,6 +132,7 @@ export default defineComponent({
     },
     editable: function(id: string): boolean {
       const myroles = store.getters['space/myroles'];
+      if(!store.getters['filesys/get'](id)) return false;
       const owner = store.getters['filesys/owner'](id);
       const roles = store.getters['filesys/roles'](id);
       const ships = store.getters['filesys/ships'](id);
@@ -148,6 +153,9 @@ export default defineComponent({
   computed: {
     path: function(): string {
       return `/${this.$route.params.author}/${this.$route.params.clock}`
+    },
+    got: function() {
+      return store.getters['filesys/get'](this.path);
     },
     previewing: function() {
       return store.getters['document/previewing'];
