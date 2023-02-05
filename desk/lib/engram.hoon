@@ -138,8 +138,7 @@
       %-  ~(run in ~(key by docs))
       |=  id=id:engram
       =/  doc  (~(got by docs) id)
-      :-  (spat ~[(scot %p -.id) (scot %u +.id)])
-      (pairs ~[['name' (tape (trip name.settings.doc))] ['owner' (tape (scow %p owner.settings.doc))]])
+      :-  (spat ~[(scot %p -.id) (scot %u +.id)])  (tape (trip name.settings.doc))
     ++  get
       =,  enjs:format
       |=  doc=document:engram

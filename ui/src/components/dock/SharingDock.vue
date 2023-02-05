@@ -12,7 +12,7 @@
       <ShipPermission 
         :editable="isAdmin" 
         :key="item" 
-        :ship="ships[item].perm" 
+        :ship="ships[item].ship" 
         :level="ships[item].level" 
         v-for="item in Object.keys(ships)" 
         @level="(event: string) => { handleLevel(item, event, 'ships') }"
@@ -20,7 +20,7 @@
       <RolePermission 
         :editable="isAdmin" 
         :key="item" 
-        :role="roles[item].perm" 
+        :role="roles[item].role" 
         :level="roles[item].level" 
         v-for="item in Object.keys(roles)" 
         @level="(event: string) => { handleLevel(item, event, 'roles') }"
@@ -65,6 +65,9 @@ export default defineComponent({
       newPermission: "",
       newPermissionLevel: "",
     }
+  },
+  created: function() {
+    console.log("ships: ", this.ships, "; roles: ", this.roles);
   },
   computed: {
     docId: function() {
