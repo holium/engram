@@ -515,7 +515,7 @@ const actions: ActionTree<FileSysState, RootState> = {
     },
 
     //remove perm
-    removeperm({ state, dispatch }, payload: { item: SysRecord, timestamp: string, type: "ships" | "roles"}): Promise<void> {
+    removeperm({ state, commit, dispatch }, payload: { item: SysRecord, timestamp: string, type: "ships" | "roles"}): Promise<void> {
         return new Promise((resolve) => {
             const perm = state[payload.item.id][payload.type];
             (window as any).urbit.poke({
@@ -529,6 +529,9 @@ const actions: ActionTree<FileSysState, RootState> = {
                 }}
                 }
             }).then(() => {
+                const temp = state[payload.item.id][payload.type];
+                delete temp[payload.timestamp];
+                commit("load", { id: payload.item.id, [payload.type]: temp })
                 dispatch("perms", payload.item);
                 if(payload.item.type == "folder") {
                     Promise.all(Object.keys((state[payload.item.id].children as any)).map((item: string) => {
@@ -552,7 +555,6 @@ const actions: ActionTree<FileSysState, RootState> = {
     //find remove perm
     findremoveperm({ dispatch }, payload: { item: SysRecord, type: string, perm: string, level: string }): Promise<void> {
         return new Promise((resolve) => {
-            console.log("finding remove perm: ", payload);
           dispatch("protectedget", payload.item).then((res: any) => {
             const closeenough = Object.keys(res[payload.type]).find((key: string) => {
               return res[payload.type][key][payload.type == "ships" ? "ship" : "role"] == payload.perm && res[payload.type][key].level == payload.level;
