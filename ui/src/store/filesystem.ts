@@ -448,8 +448,11 @@ const actions: ActionTree<FileSysState, RootState> = {
                             }
                           }
                         }).then(() => {
+                            console.warn("remving..")
                             dispatch("load", { id: payload.from, type: "folder"}).then(() => {
+                                console.warn("loaded")
                                 Object.keys(state[payload.from].roles).forEach((role: string) => {
+                                    console.warn("dispatching...");
                                     dispatch("findremoveperm", {
                                     item: item,
                                     type: "roles",
@@ -553,6 +556,7 @@ const actions: ActionTree<FileSysState, RootState> = {
             const closeenough = Object.keys(res[payload.type]).find((key: string) => {
               return res[payload.type][key][payload.type == "ships" ? "ship" : "role"] == payload.perm && res[payload.type][key].level == payload.level;
             });
+            console.log("close enough:" closeenough);
             if(closeenough) {
                 dispatch("removeperm", {
                     item: payload.item,
