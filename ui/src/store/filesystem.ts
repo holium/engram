@@ -548,9 +548,10 @@ const actions: ActionTree<FileSysState, RootState> = {
     //find remove perm
     findremoveperm({ dispatch }, payload: { item: SysRecord, type: string, perm: string, level: string }): Promise<void> {
         return new Promise((resolve) => {
+            console.log("finding remove perm: ", payload);
           dispatch("protectedget", payload.item).then((res: any) => {
             const closeenough = Object.keys(res[payload.type]).find((key: string) => {
-              return res[payload.type][key].perm == payload.perm && res[payload.type][key].level == payload.level;
+              return res[payload.type][key][payload.type == "ships" ? "ship" : "role"] == payload.perm && res[payload.type][key].level == payload.level;
             });
             if(closeenough) {
                 dispatch("removeperm", {
