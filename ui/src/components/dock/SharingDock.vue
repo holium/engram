@@ -66,9 +66,6 @@ export default defineComponent({
       newPermissionLevel: "",
     }
   },
-  created: function() {
-    console.log("ships: ", this.ships, "; roles: ", this.roles);
-  },
   computed: {
     docId: function() {
       return `/${this.$route.params.author}/${this.$route.params.clock}`;
