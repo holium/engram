@@ -311,24 +311,6 @@ const actions: ActionTree<FileSysState, RootState> = {
                       id: path,
                       type: payload.type
                     }).then((res: any) => {
-                        const ships = rootGetters["space/ships"];
-                        const roles = rootGetters["space/roles"];
-                        Object.keys(roles).forEach((role: string) => {
-                            dispatch("addperm", {
-                                item: { id: path, type: payload.type },
-                                type: "roles",
-                                perm: roles[role].role,
-                                level: roles[role].level
-                            })
-                        });
-                        Object.keys(ships).forEach((ship: string) => {
-                            dispatch("addperm", {
-                                item: { id: path, type: payload.type },
-                                type: "ships",
-                                perm: ships[ship].ship,
-                                level: ships[ship].level
-                            })
-                        });
                         resolve(res);
                     })
                   });
@@ -496,7 +478,6 @@ const actions: ActionTree<FileSysState, RootState> = {
     //add perm
     addperm({ dispatch }, payload: { item: SysRecord, perm: string, level: string, type: string}): Promise<void> {
         return new Promise((resolve) => {
-            console.warn("adding perm: ", payload);
           (window as any).urbit.poke({
             app: "engram",
             mark: "post",

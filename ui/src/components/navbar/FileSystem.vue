@@ -88,7 +88,7 @@ export default defineComponent({
                                 store.dispatch("filesys/addperm", {
                                     item: path,
                                     type: "roles",
-                                    perm: roles[timestamp].perm,
+                                    perm: roles[timestamp].role,
                                     level: roles[timestamp].level
                                 })
                             });
@@ -96,7 +96,7 @@ export default defineComponent({
                                 store.dispatch("filesys/addperm", {
                                     item: path,
                                     type: "ships",
-                                    perm: ships[timestamp].perm,
+                                    perm: ships[timestamp].ship,
                                     level: ships[timestamp].level
                                 })
                             });
@@ -114,7 +114,7 @@ export default defineComponent({
                                 store.dispatch("filesys/addperm", {
                                     item: { id: path.id, type: "folder" },
                                     type: "roles",
-                                    perm: roles[timestamp].perm,
+                                    perm: roles[timestamp].role,
                                     level: roles[timestamp].level
                                 })
                             });
@@ -122,7 +122,7 @@ export default defineComponent({
                                 store.dispatch("filesys/addperm", {
                                     item: { id: path.id, type: "folder"},
                                     type: "ships",
-                                    perm: ships[timestamp].perm,
+                                    perm: ships[timestamp].ship,
                                     level: ships[timestamp].level
                                 })
                             });
