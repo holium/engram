@@ -313,6 +313,7 @@ const actions: ActionTree<FileSysState, RootState> = {
                     }).then((res: any) => {
                         const ships = rootGetters["space/ships"];
                         const roles = rootGetters["space/roles"];
+                        console.warn("roles: ", roles);
                         Object.keys(roles).forEach((role: string) => {
                             dispatch(`${payload.type}s/addperm`, {
                             id: path,
