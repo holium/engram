@@ -124,7 +124,7 @@
           }).then(() => {
             store.dispatch('space/addperm', { 
               id: this.$route.query.spaceId, 
-              perm: perm.perm, 
+              perm: perm[type == "ships" ? "ship" : "role"], 
               level: level,
               type: type
             });

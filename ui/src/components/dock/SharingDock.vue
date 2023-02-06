@@ -113,7 +113,7 @@ export default defineComponent({
           type: type
         })
       } else {
-        const perm = (this as any)[type][item].perm;
+        const perm = (this as any)[type][item][type == "ships" ? "ship" : "role"];
         store.dispatch("filesys/removeperm", { 
           item: {id: this.docId, type: "document"},
           timestamp: item,

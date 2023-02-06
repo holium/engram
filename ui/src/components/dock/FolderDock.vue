@@ -129,7 +129,7 @@ export default defineComponent({
         }).then(() => {
           store.dispatch('filesys/addperm', { 
             id: this.folder, 
-            perm: perm.perm, 
+            perm: perm[type == "ships" ? "ship" : "role"], 
             level: level,
             type: type
           })
