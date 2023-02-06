@@ -313,7 +313,6 @@ const actions: ActionTree<FileSysState, RootState> = {
                     }).then((res: any) => {
                         const ships = rootGetters["space/ships"];
                         const roles = rootGetters["space/roles"];
-                        console.warn("roles: ", roles);
                         Object.keys(roles).forEach((role: string) => {
                             dispatch("addperm", {
                                 item: { id: path, type: payload.type },
@@ -338,6 +337,9 @@ const actions: ActionTree<FileSysState, RootState> = {
         });
     },
     delete({ commit, dispatch }, payload: SysRecord): Promise<void> {
+        if(`/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}` == payload.id) {
+            router.push(`/apps/engram?spaceId=${router.currentRoute.value.query.spaceId}`);
+        }
         return new Promise((resolve) => {
             commit('delete', payload);
             (window as any).urbit.poke({
@@ -494,7 +496,6 @@ const actions: ActionTree<FileSysState, RootState> = {
     //add perm
     addperm({ dispatch }, payload: { item: SysRecord, perm: string, level: string, type: string}): Promise<void> {
         return new Promise((resolve) => {
-            console.warn("adding perm: ", payload);
           (window as any).urbit.poke({
             app: "engram",
             mark: "post",
@@ -589,7 +590,6 @@ const actions: ActionTree<FileSysState, RootState> = {
         if(payload.type == "document") {
             if(payload.id == `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`) {
                 (window as any).urbit.scry({ app: "engram", path: `/document${payload.id}/updates`}).then((res: any) => {
-                    console.warn("live update: ", res);
                     Object.keys(res).map((key: string) => { return res[key] }).forEach((update: any) => {
                         pushUpdate(payload.id, update, true);
                     });
