@@ -430,8 +430,8 @@ const actions: ActionTree<FileSysState, RootState> = {
                 reject();
             } else {
                 // if it's only a soft remove we don't have to modify the agent
+                commit("remove", payload);
                 if(payload.soft) {
-                    commit("remove", payload);
                     resolve();
                 } else {
                     const item = (state[payload.from].children as any)[payload.index];
