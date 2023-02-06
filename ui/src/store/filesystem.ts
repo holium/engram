@@ -430,11 +430,11 @@ const actions: ActionTree<FileSysState, RootState> = {
                 reject();
             } else {
                 // if it's only a soft remove we don't have to modify the agent
+                const item = (state[payload.from].children as any)[payload.index];
                 commit("remove", payload);
                 if(payload.soft) {
                     resolve();
                 } else {
-                    const item = (state[payload.from].children as any)[payload.index];
                     if(payload.from != ".") {
                         (window as any).urbit.poke({
                           app: "engram",
@@ -548,7 +548,6 @@ const actions: ActionTree<FileSysState, RootState> = {
     //find remove perm
     findremoveperm({ dispatch }, payload: { item: SysRecord, type: string, perm: string, level: string }): Promise<void> {
         return new Promise((resolve) => {
-            console.warn("finding remove perm: ", payload);
           dispatch("protectedget", payload.item).then((res: any) => {
             const closeenough = Object.keys(res[payload.type]).find((key: string) => {
               return res[payload.type][key].perm == payload.perm && res[payload.type][key].level == payload.level;
