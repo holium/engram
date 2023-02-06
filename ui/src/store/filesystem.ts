@@ -348,7 +348,7 @@ const actions: ActionTree<FileSysState, RootState> = {
             ];
             ships.forEach((ship) => {
                 try {
-                    console.warn("sending update to: ", ship.substring(1));
+                    console.warn("sending update ", { [payload.type]: { "update": { id: payload.id } } }, " to: ", ship.substring(1));
                     (window as any).urbit.poke({
                         app: "engram",
                         mark: "post",
