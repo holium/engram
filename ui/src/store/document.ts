@@ -124,7 +124,6 @@ const actions: ActionTree<DocumentState, RootState> = {
               }}}
           }).then(() => {
               resolve();
-              dispatch("filesys/update", { id: payload.id, type: "document"}, { root: true });
           })
       });
     },

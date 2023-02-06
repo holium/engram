@@ -261,7 +261,6 @@ const actions: ActionTree<FileSysState, RootState> = {
                 }
             }).then(() => {
                 dispatch("load", payload.item).then(() => { resolve() });
-                dispatch("update", payload.item);
             })
         });
     },
@@ -337,37 +336,6 @@ const actions: ActionTree<FileSysState, RootState> = {
             });
         });
     },
-    update({ state, rootGetters }, payload: SysRecord): Promise<void> {
-        return new Promise((resolve) => {
-            console.warn("try to send update: ", payload);
-            const ships = [
-                ...rootGetters["space/members"],
-                ...Array.from(new Set(Object.keys(state[payload.id].ships).map((timestamp: string) => {
-                    return state[payload.id].ships[timestamp].ship;
-                })))
-            ];
-            ships.forEach((ship) => {
-                try {
-                    console.warn("sending update ", { [payload.type]: { "update": { id: payload.id } } }, " to: ", ship.substring(1));
-                    (window as any).urbit.poke({
-                        app: "engram",
-                        mark: "post",
-                        json: { [payload.type]: { "update": { id: payload.id } } },
-                        ship: ship.substring(1),
-                    }).then(() => {
-                        //console.log("successfully updated: ", ship);
-                    }).catch((err: any) => {
-                        //console.warn("caught error one: ", err);
-                    })
-                } catch(err) {
-                    // oh well
-                    //console.warn("caught error two: ", err);
-                }
-                
-            })
-            resolve();
-        })
-    },
 
     // add an item to a folder
     add({ state, commit, dispatch }, payload: { to: string, item: SysRecord, index?: string }): Promise<void> {
@@ -415,7 +383,6 @@ const actions: ActionTree<FileSysState, RootState> = {
                                     })
                                 });
                             });
-                            dispatch("update", { id: payload.to, type: "folder" });
                             resolve();
                         })
                     }
@@ -472,7 +439,6 @@ const actions: ActionTree<FileSysState, RootState> = {
                                     }
                                 })();
                             })
-                            dispatch("update", { id: payload.from, type: "folder" });
                           resolve();
                         })
                       }
@@ -511,7 +477,6 @@ const actions: ActionTree<FileSysState, RootState> = {
             } else {
                 resolve();
             }
-            dispatch("update", payload.item);
           })
         })
     },
@@ -549,7 +514,6 @@ const actions: ActionTree<FileSysState, RootState> = {
                 } else {
                     resolve();
                 }
-                dispatch("update", payload.item);
             })
         })
       },
