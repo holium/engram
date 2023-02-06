@@ -266,7 +266,7 @@ const actions: ActionTree<FileSysState, RootState> = {
         });
     },
 
-    make({ getters, dispatch }, payload: { type: "document" | "folder", name: string, spaceId: string }): Promise<SysItem> {
+    make({ getters, rootGetters, dispatch }, payload: { type: "document" | "folder", name: string, spaceId: string }): Promise<SysItem> {
         return new Promise((resolve) => {
             (async () => {
                 if(payload.type == "document") {
@@ -311,6 +311,24 @@ const actions: ActionTree<FileSysState, RootState> = {
                       id: path,
                       type: payload.type
                     }).then((res: any) => {
+                        const ships = rootGetters["space/ships"];
+                        const roles = rootGetters["space/roles"];
+                        Object.keys(roles).forEach((role: string) => {
+                            dispatch(`${payload.type}s/addperm`, {
+                            id: path,
+                            type: "roles",
+                            perm: roles[role].role,
+                            level: roles[role].level
+                            }, { root: true})
+                        });
+                        Object.keys(ships).forEach((ship: string) => {
+                            dispatch(`${payload.type}s/addperm`, {
+                            id: path,
+                            type: "ships",
+                            perm: ships[ship].ship,
+                            level: ships[ship].level
+                            }, { root: true})
+                        });
                         resolve(res);
                     })
                   });
