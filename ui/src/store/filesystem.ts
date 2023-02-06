@@ -315,20 +315,20 @@ const actions: ActionTree<FileSysState, RootState> = {
                         const roles = rootGetters["space/roles"];
                         console.warn("roles: ", roles);
                         Object.keys(roles).forEach((role: string) => {
-                            dispatch(`${payload.type}s/addperm`, {
-                            id: path,
-                            type: "roles",
-                            perm: roles[role].role,
-                            level: roles[role].level
-                            }, { root: true})
+                            dispatch("addperm", {
+                                item: { id: path, type: payload.type },
+                                type: "roles",
+                                perm: roles[role].role,
+                                level: roles[role].level
+                            })
                         });
                         Object.keys(ships).forEach((ship: string) => {
-                            dispatch(`${payload.type}s/addperm`, {
-                            id: path,
-                            type: "ships",
-                            perm: ships[ship].ship,
-                            level: ships[ship].level
-                            }, { root: true})
+                            dispatch("addperm", {
+                                item: { id: path, type: payload.type },
+                                type: "ships",
+                                perm: ships[ship].ship,
+                                level: ships[ship].level
+                            })
                         });
                         resolve(res);
                     })
@@ -413,20 +413,20 @@ const actions: ActionTree<FileSysState, RootState> = {
                         }).then(() => {
                             dispatch("load", { id: payload.to, type: "folder"}).then(() => {
                                 Object.keys(state[payload.to].roles).forEach((role: string) => {
-                                    dispatch(`${payload.item.type}s/addperm`, {
-                                    id: payload.item.id,
+                                    dispatch("addperm", {
+                                    item: payload.item,
                                     type: "roles",
                                     perm: state[payload.to].roles[role].role,
                                     level: state[payload.to].roles[role].level
-                                    }, { root: true})
+                                    })
                                 });
                                 Object.keys(state[payload.to].ships).forEach((ship: string) => {
-                                    dispatch(`${payload.item.type}s/addperm`, {
-                                    id: payload.item.id,
+                                    dispatch("addperm", {
+                                    item: payload.item,
                                     type: "ships",
                                     perm: state[payload.to].ships[ship].ship,
                                     level: state[payload.to].ships[ship].level
-                                    }, { root: true})
+                                    })
                                 });
                             });
                             dispatch("update", { id: payload.to, type: "folder" });
@@ -466,20 +466,20 @@ const actions: ActionTree<FileSysState, RootState> = {
                         }).then(() => {
                             dispatch("load", { id: payload.from, type: "folder"}).then(() => {
                                 Object.keys(state[payload.from].roles).forEach((role: string) => {
-                                    dispatch(`${item.type}s/findremoveperm`, {
-                                    id: item.id,
+                                    dispatch("findremoveperm", {
+                                    item: item,
                                     type: "roles",
                                     perm: state[payload.from].roles[role].role,
                                     level: state[payload.from].roles[role].level
                                     }, { root: true})
                                 });
                                 Object.keys(state[payload.from].ships).forEach((ship: string) => {
-                                    dispatch(`${item.type}s/findremoveperm`, {
-                                    id: item.id,
-                                    type: "ships",
-                                    perm: state[payload.from].ships[ship].ship,
-                                    level: state[payload.from].ships[ship].level
-                                    }, { root: true})
+                                    dispatch("findremoveperm", {
+                                        item: item,
+                                        type: "ships",
+                                        perm: state[payload.from].ships[ship].ship,
+                                        level: state[payload.from].ships[ship].level
+                                    })
                                 });
                             })
                             dispatch("update", { id: payload.from, type: "folder" });
@@ -494,6 +494,7 @@ const actions: ActionTree<FileSysState, RootState> = {
     //add perm
     addperm({ dispatch }, payload: { item: SysRecord, perm: string, level: string, type: string}): Promise<void> {
         return new Promise((resolve) => {
+            console.warn("adding perm: ", payload);
           (window as any).urbit.poke({
             app: "engram",
             mark: "post",
@@ -545,10 +546,10 @@ const actions: ActionTree<FileSysState, RootState> = {
                 if(payload.item.type == "folder") {
                     Promise.all(Object.keys((state[payload.item.id].children as any)).map((item: string) => {
                         dispatch("findremoveperm", { 
-                        item: (state[payload.item.id].children as any)[item], 
-                        perm: perm[payload.type == "ships" ? "ship" : "role"], 
-                        level: perm.level, 
-                        type: payload.type
+                            item: (state[payload.item.id].children as any)[item], 
+                            perm: perm[payload.type == "ships" ? "ship" : "role"], 
+                            level: perm.level, 
+                            type: payload.type
                         });
                     })).then(() => { 
                         resolve();
