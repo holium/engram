@@ -416,18 +416,18 @@ const actions: ActionTree<FileSysState, RootState> = {
                             dispatch("load", { id: payload.to, type: "folder"}).then(() => {
                                 Object.keys(state[payload.to].roles).forEach((role: string) => {
                                     dispatch("addperm", {
-                                    item: payload.item,
-                                    type: "roles",
-                                    perm: state[payload.to].roles[role].role,
-                                    level: state[payload.to].roles[role].level
+                                        item: payload.item,
+                                        type: "roles",
+                                        perm: state[payload.to].roles[role].role,
+                                        level: state[payload.to].roles[role].level
                                     })
                                 });
                                 Object.keys(state[payload.to].ships).forEach((ship: string) => {
                                     dispatch("addperm", {
-                                    item: payload.item,
-                                    type: "ships",
-                                    perm: state[payload.to].ships[ship].ship,
-                                    level: state[payload.to].ships[ship].level
+                                        item: payload.item,
+                                        type: "ships",
+                                        perm: state[payload.to].ships[ship].ship,
+                                        level: state[payload.to].ships[ship].level
                                     })
                                 });
                             });
@@ -473,7 +473,7 @@ const actions: ActionTree<FileSysState, RootState> = {
                                     type: "roles",
                                     perm: state[payload.from].roles[role].role,
                                     level: state[payload.from].roles[role].level
-                                    }, { root: true})
+                                    })
                                 });
                                 Object.keys(state[payload.from].ships).forEach((ship: string) => {
                                     dispatch("findremoveperm", {
@@ -496,6 +496,7 @@ const actions: ActionTree<FileSysState, RootState> = {
     //add perm
     addperm({ dispatch }, payload: { item: SysRecord, perm: string, level: string, type: string}): Promise<void> {
         return new Promise((resolve) => {
+            console.warn("adding perm: ", payload);
           (window as any).urbit.poke({
             app: "engram",
             mark: "post",
