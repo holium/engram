@@ -348,7 +348,7 @@ const actions: ActionTree<FileSysState, RootState> = {
             ];
             ships.forEach((ship) => {
                 try {
-                    console.warn("sending update");
+                    console.warn("sending update to: ", ship);
                     (window as any).urbit.poke({
                         app: "engram",
                         mark: "post",
