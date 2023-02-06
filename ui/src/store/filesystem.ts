@@ -339,7 +339,7 @@ const actions: ActionTree<FileSysState, RootState> = {
     },
     update({ state, rootGetters }, payload: SysRecord): Promise<void> {
         return new Promise((resolve) => {
-            console.warn("try to send update");
+            console.warn("try to send update: ", payload);
             const ships = [
                 ...rootGetters["space/members"],
                 ...Array.from(new Set(Object.keys(state[payload.id].ships).map((timestamp: string) => {
@@ -348,7 +348,7 @@ const actions: ActionTree<FileSysState, RootState> = {
             ];
             ships.forEach((ship) => {
                 try {
-                    console.warn("sending update to: ", ship);
+                    console.warn("sending update to: ", ship.substring(1));
                     (window as any).urbit.poke({
                         app: "engram",
                         mark: "post",
