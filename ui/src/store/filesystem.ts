@@ -448,11 +448,8 @@ const actions: ActionTree<FileSysState, RootState> = {
                             }
                           }
                         }).then(() => {
-                            console.warn("remving..")
                             dispatch("load", { id: payload.from, type: "folder"}).then(() => {
-                                console.warn("loaded")
                                 Object.keys(state[payload.from].roles).forEach((role: string) => {
-                                    console.warn("dispatching...");
                                     dispatch("findremoveperm", {
                                     item: item,
                                     type: "roles",
