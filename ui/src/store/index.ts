@@ -49,6 +49,7 @@ const actions: ActionTree<RootState, RootState> = {
                 console.warn("update message received: ", event);
                 if((event.type == "document" || event.type == "folder") && event.space == payload) 
                   dispatch("filesys/getupdate", event, { root: true });
+                else if(event.type == "space") dispatch("filesys/boot", payload, { root: true })
               }
             });
           })
