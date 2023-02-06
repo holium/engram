@@ -449,22 +449,26 @@ const actions: ActionTree<FileSysState, RootState> = {
                           }
                         }).then(() => {
                             dispatch("load", { id: payload.from, type: "folder"}).then(() => {
-                                Object.keys(state[payload.from].roles).forEach((role: string) => {
-                                    dispatch("findremoveperm", {
-                                    item: item,
-                                    type: "roles",
-                                    perm: state[payload.from].roles[role].role,
-                                    level: state[payload.from].roles[role].level
-                                    })
-                                });
-                                Object.keys(state[payload.from].ships).forEach((ship: string) => {
-                                    dispatch("findremoveperm", {
-                                        item: item,
-                                        type: "ships",
-                                        perm: state[payload.from].ships[ship].ship,
-                                        level: state[payload.from].ships[ship].level
-                                    })
-                                });
+                                const roles = Object.keys(state[payload.from].roles);
+                                const ships = Object.keys(state[payload.from].ships);
+                                (async () => {
+                                    for(let i = 0; i < roles.length; i++) {
+                                        await dispatch("findremoveperm", {
+                                            item: item,
+                                            type: "roles",
+                                            perm: state[payload.from].roles[roles[i]].role,
+                                            level: state[payload.from].roles[roles[i]].level
+                                        })
+                                    }
+                                    for(let i = 0; i < ships.length; i++) {
+                                        await dispatch("findremoveperm", {
+                                            item: item,
+                                            type: "ships",
+                                            perm: state[payload.from].ships[ships[i]].ship,
+                                            level: state[payload.from].ships[ships[i]].level
+                                        })
+                                    }
+                                })();
                             })
                             dispatch("update", { id: payload.from, type: "folder" });
                           resolve();
