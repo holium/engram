@@ -261,12 +261,11 @@ const actions: ActionTree<FileSysState, RootState> = {
                 }
             }).then(() => {
                 dispatch("load", payload.item).then(() => { resolve() });
-                dispatch("update", payload.item);
             })
         });
     },
 
-    make({ getters, dispatch }, payload: { type: "document" | "folder", name: string, spaceId: string }): Promise<SysItem> {
+    make({ getters, rootGetters, dispatch }, payload: { type: "document" | "folder", name: string, spaceId: string }): Promise<SysItem> {
         return new Promise((resolve) => {
             (async () => {
                 if(payload.type == "document") {
@@ -319,6 +318,9 @@ const actions: ActionTree<FileSysState, RootState> = {
         });
     },
     delete({ commit, dispatch }, payload: SysRecord): Promise<void> {
+        if(`/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}` == payload.id) {
+            router.push(`/apps/engram?spaceId=${router.currentRoute.value.query.spaceId}`);
+        }
         return new Promise((resolve) => {
             commit('delete', payload);
             (window as any).urbit.poke({
@@ -333,35 +335,6 @@ const actions: ActionTree<FileSysState, RootState> = {
                 resolve();
             });
         });
-    },
-    update({ state, rootGetters }, payload: SysRecord): Promise<void> {
-        return new Promise((resolve) => {
-            const ships = [
-                ...rootGetters["space/members"],
-                ...Array.from(new Set(Object.keys(state[payload.id].ships).map((timestamp: string) => {
-                    return state[payload.id].ships[timestamp].ship;
-                })))
-            ];
-            ships.forEach((ship) => {
-                try {
-                    (window as any).urbit.poke({
-                        app: "engram",
-                        mark: "post",
-                        json: { [payload.type]: { "update": { id: payload.id } } },
-                        ship: ship.substring(1),
-                    }).then(() => {
-                        //console.log("successfully updated: ", ship);
-                    }).catch((err: any) => {
-                        //console.warn("caught error one: ", err);
-                    })
-                } catch(err) {
-                    // oh well
-                    //console.warn("caught error two: ", err);
-                }
-                
-            })
-            resolve();
-        })
     },
 
     // add an item to a folder
@@ -394,23 +367,22 @@ const actions: ActionTree<FileSysState, RootState> = {
                         }).then(() => {
                             dispatch("load", { id: payload.to, type: "folder"}).then(() => {
                                 Object.keys(state[payload.to].roles).forEach((role: string) => {
-                                    dispatch(`${payload.item.type}s/addperm`, {
-                                    id: payload.item.id,
-                                    type: "roles",
-                                    perm: state[payload.to].roles[role].role,
-                                    level: state[payload.to].roles[role].level
-                                    }, { root: true})
+                                    dispatch("addperm", {
+                                        item: payload.item,
+                                        type: "roles",
+                                        perm: state[payload.to].roles[role].role,
+                                        level: state[payload.to].roles[role].level
+                                    })
                                 });
                                 Object.keys(state[payload.to].ships).forEach((ship: string) => {
-                                    dispatch(`${payload.item.type}s/addperm`, {
-                                    id: payload.item.id,
-                                    type: "ships",
-                                    perm: state[payload.to].ships[ship].ship,
-                                    level: state[payload.to].ships[ship].level
-                                    }, { root: true})
+                                    dispatch("addperm", {
+                                        item: payload.item,
+                                        type: "ships",
+                                        perm: state[payload.to].ships[ship].ship,
+                                        level: state[payload.to].ships[ship].level
+                                    })
                                 });
                             });
-                            dispatch("update", { id: payload.to, type: "folder" });
                             resolve();
                         })
                     }
@@ -427,11 +399,11 @@ const actions: ActionTree<FileSysState, RootState> = {
                 reject();
             } else {
                 // if it's only a soft remove we don't have to modify the agent
+                const item = (state[payload.from].children as any)[payload.index];
+                commit("remove", payload);
                 if(payload.soft) {
-                    commit("remove", payload);
                     resolve();
                 } else {
-                    const item = (state[payload.from].children as any)[payload.index];
                     if(payload.from != ".") {
                         (window as any).urbit.poke({
                           app: "engram",
@@ -446,24 +418,27 @@ const actions: ActionTree<FileSysState, RootState> = {
                           }
                         }).then(() => {
                             dispatch("load", { id: payload.from, type: "folder"}).then(() => {
-                                Object.keys(state[payload.from].roles).forEach((role: string) => {
-                                    dispatch(`${item.type}s/findremoveperm`, {
-                                    id: item.id,
-                                    type: "roles",
-                                    perm: state[payload.from].roles[role].role,
-                                    level: state[payload.from].roles[role].level
-                                    }, { root: true})
-                                });
-                                Object.keys(state[payload.from].ships).forEach((ship: string) => {
-                                    dispatch(`${item.type}s/findremoveperm`, {
-                                    id: item.id,
-                                    type: "ships",
-                                    perm: state[payload.from].ships[ship].ship,
-                                    level: state[payload.from].ships[ship].level
-                                    }, { root: true})
-                                });
+                                const roles = Object.keys(state[payload.from].roles);
+                                const ships = Object.keys(state[payload.from].ships);
+                                (async () => {
+                                    for(let i = 0; i < roles.length; i++) {
+                                        await dispatch("findremoveperm", {
+                                            item: item,
+                                            type: "roles",
+                                            perm: state[payload.from].roles[roles[i]].role,
+                                            level: state[payload.from].roles[roles[i]].level
+                                        })
+                                    }
+                                    for(let i = 0; i < ships.length; i++) {
+                                        await dispatch("findremoveperm", {
+                                            item: item,
+                                            type: "ships",
+                                            perm: state[payload.from].ships[ships[i]].ship,
+                                            level: state[payload.from].ships[ships[i]].level
+                                        })
+                                    }
+                                })();
                             })
-                            dispatch("update", { id: payload.from, type: "folder" });
                           resolve();
                         })
                       }
@@ -502,13 +477,12 @@ const actions: ActionTree<FileSysState, RootState> = {
             } else {
                 resolve();
             }
-            dispatch("update", payload.item);
           })
         })
     },
 
     //remove perm
-    removeperm({ state, dispatch }, payload: { item: SysRecord, timestamp: string, type: "ships" | "roles"}): Promise<void> {
+    removeperm({ state, commit, dispatch }, payload: { item: SysRecord, timestamp: string, type: "ships" | "roles"}): Promise<void> {
         return new Promise((resolve) => {
             const perm = state[payload.item.id][payload.type];
             (window as any).urbit.poke({
@@ -522,14 +496,17 @@ const actions: ActionTree<FileSysState, RootState> = {
                 }}
                 }
             }).then(() => {
+                const temp = state[payload.item.id][payload.type];
+                delete temp[payload.timestamp];
+                commit("load", { id: payload.item.id, [payload.type]: temp })
                 dispatch("perms", payload.item);
                 if(payload.item.type == "folder") {
                     Promise.all(Object.keys((state[payload.item.id].children as any)).map((item: string) => {
                         dispatch("findremoveperm", { 
-                        item: (state[payload.item.id].children as any)[item], 
-                        perm: perm[payload.type == "ships" ? "ship" : "role"], 
-                        level: perm.level, 
-                        type: payload.type
+                            item: (state[payload.item.id].children as any)[item], 
+                            perm: perm[payload.type == "ships" ? "ship" : "role"], 
+                            level: perm.level, 
+                            type: payload.type
                         });
                     })).then(() => { 
                         resolve();
@@ -537,7 +514,6 @@ const actions: ActionTree<FileSysState, RootState> = {
                 } else {
                     resolve();
                 }
-                dispatch("update", payload.item);
             })
         })
       },
@@ -547,7 +523,7 @@ const actions: ActionTree<FileSysState, RootState> = {
         return new Promise((resolve) => {
           dispatch("protectedget", payload.item).then((res: any) => {
             const closeenough = Object.keys(res[payload.type]).find((key: string) => {
-              return res[payload.type][key].perm == payload.perm && res[payload.type][key].level == payload.level;
+              return res[payload.type][key][payload.type == "ships" ? "ship" : "role"] == payload.perm && res[payload.type][key].level == payload.level;
             });
             if(closeenough) {
                 dispatch("removeperm", {
@@ -569,7 +545,6 @@ const actions: ActionTree<FileSysState, RootState> = {
         if(payload.type == "document") {
             if(payload.id == `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`) {
                 (window as any).urbit.scry({ app: "engram", path: `/document${payload.id}/updates`}).then((res: any) => {
-                    console.warn("live update: ", res);
                     Object.keys(res).map((key: string) => { return res[key] }).forEach((update: any) => {
                         pushUpdate(payload.id, update, true);
                     });

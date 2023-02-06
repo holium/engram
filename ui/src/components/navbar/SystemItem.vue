@@ -103,7 +103,7 @@ export default defineComponent({
             return children ? children : {};
         },
         canEdit: function(): boolean {
-            const myroles = store.getters['space/roles'];
+            const myroles = store.getters['space/myroles'];
             const owner = store.getters['filesys/owner'](this.item.id);
             const roles = store.getters['filesys/roles'](this.item.id);
             const ships = store.getters['filesys/ships'](this.item.id);
@@ -129,7 +129,7 @@ export default defineComponent({
             else this.$router.push(`/apps/engram${this.item.id}?spaceId=${this.$route.query.spaceId}`); 
         },
         canView: function(id: string): boolean {
-            const myroles = store.getters['space/roles'];
+            const myroles = store.getters['space/myroles'];
             const owner = store.getters['filesys/owner'](id);
             const roles = store.getters['filesys/roles'](id);
             const ships = store.getters['filesys/ships'](id);

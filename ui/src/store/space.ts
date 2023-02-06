@@ -74,9 +74,6 @@ const getters: GetterTree<SpaceState, RootState> = {
     roles(state) {
       return state.roles;
     },
-    members(state) {
-      return state.members
-    }
 }
 
 const mutations: MutationTree<SpaceState> = {
@@ -96,9 +93,6 @@ const mutations: MutationTree<SpaceState> = {
       state.ships = payload.ships;
       state.roles = payload.roles;
     },
-    loadmembers(state, payload: Array<string>) {
-      state.members = payload;
-    },
 }
 
 const actions: ActionTree<SpaceState, RootState> = {
@@ -108,9 +102,6 @@ const actions: ActionTree<SpaceState, RootState> = {
             (window as any).urbit.scry({ app: "spaces", path: `${payload}` }).then((response: any) => {
                 commit("load", { ...response.space, myroles: member.member.roles});
                 resolve(response.space);
-              });
-              (window as any).urbit.scry({ app: "spaces", path: `${payload}/members` }).then((res: any) => {
-                commit("loadmembers", Object.keys(res.members));
               });
 
               (window as any).urbit.scry({ app: "engram", path: `/space${payload}/perms`}).then((res: any) => {

@@ -23,7 +23,7 @@
             <ShipPermission 
               :editable="isAdmin"
               :key="item" 
-              :ship="ships[item].perm" 
+              :ship="ships[item].ship" 
               :level="ships[item].level" 
               @level="(event: any) => { handleLevel(item, event, 'ships'); }"
               v-for="item in Object.keys(ships)" 
@@ -31,7 +31,7 @@
             <RolePermission 
               :editable="isAdmin"
               :key="item" 
-              :role="roles[item].perm" 
+              :role="roles[item].role" 
               :level="roles[item].level" 
               v-for="item in Object.keys(roles)" 
               @level="(event: any) => { handleLevel(item, event, 'roles'); }"
@@ -124,7 +124,7 @@
           }).then(() => {
             store.dispatch('space/addperm', { 
               id: this.$route.query.spaceId, 
-              perm: perm.perm, 
+              perm: perm[type == "ships" ? "ship" : "role"], 
               level: level,
               type: type
             });

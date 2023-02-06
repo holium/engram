@@ -34,12 +34,14 @@
         [%removeperm (ot ~[id+pa timestamp+pa type+(se %tas)])]
         [%add (ot ~[to+pa id+pa type+so])]
         [%remove (ot ~[from+pa id+pa])]
+        [%update (ot ~[id+pa])]
         [%gatherall (ot ~[id+pa])]
       ==
       :-  %space  %-  of  :~
         [%make (ot ~[space+pa])]
         [%addperm (ot ~[space+pa perm+so level+(se %tas) type+(se %tas)])]
         [%removeperm (ot ~[space+pa timestamp+pa type+(se %tas)])]
+        [%update (ot ~[space+pa])]
         [%gatherall (ot ~[space+pa])]
       ==
     ==
