@@ -172,6 +172,7 @@
       |=  settings=dsettings:engram
       ^-  json
       %-  pairs  :~
+        ['space' (path space.settings)]
         ['owner' (tape (scow %p owner.settings))]
         :-  'ships'  %-  pairs  %+  turn  ~(tap by content.ships.settings)  
           |=  [id=id:index [ship=@p level=@tas]]  

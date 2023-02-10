@@ -133,6 +133,7 @@ export default defineComponent({
     editable: function(id: string): boolean {
       const myroles = store.getters['space/myroles'];
       if(!store.getters['filesys/get'](id)) return false;
+      const space = store.getters['filesys/space'](id);
       const owner = store.getters['filesys/owner'](id);
       const roles = store.getters['filesys/roles'](id);
       const ships = store.getters['filesys/ships'](id);
@@ -142,12 +143,15 @@ export default defineComponent({
               .map((timestamp: string) => { return ships[timestamp] })
                   .reduce((a: ShipPermission, acc: boolean) => {
                       return acc || (a.ship == `~${(window as any).ship}` && (a.level == "editor" || a.level == "admin"));
-                  }, false) || 
-          Object.keys(roles)
-              .map((timestamp: string) => { return roles[timestamp] })
-                  .reduce((a: RolePermission, acc: boolean) => {
-                      return acc || (myroles.includes(a.role) && (a.level == "editor" || a.level == "admin"));
-                  }, false);
+                  }, false) ||
+          (
+            space == this.$route.query.spaceId && 
+            Object.keys(roles)
+                .map((timestamp: string) => { return roles[timestamp] })
+                    .reduce((a: RolePermission, acc: boolean) => {
+                        return acc || (myroles.includes(a.role) && (a.level == "editor" || a.level == "admin"));
+                    }, false)
+          );
     }
   },
   computed: {

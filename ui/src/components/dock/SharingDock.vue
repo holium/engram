@@ -22,7 +22,7 @@
         :key="item" 
         :role="roles[item].role" 
         :level="roles[item].level" 
-        v-for="item in Object.keys(roles)" 
+        v-for="item in (space == $route.query.spaceId ? Object.keys(roles) : [])" 
         @level="(event: string) => { handleLevel(item, event, 'roles') }"
       />
     </div>
@@ -76,6 +76,9 @@ export default defineComponent({
     ships: function() {
       return store.getters['filesys/ships'](this.docId);
     },
+    space: function() {
+      return store.getters['filesys/owner'](this.docId);
+    },
     isAdmin: function(): boolean {
       const myroles = store.getters['space/myroles'];
       const owner = store.getters['filesys/owner'](this.docId);
@@ -87,11 +90,14 @@ export default defineComponent({
               }).reduce((a: boolean, acc: boolean) => {
                       return acc || a;
                   }, false) || 
-          Object.keys(this.roles)
+          (
+            this.space == this.$route.query.spaceId &&
+            Object.keys(this.roles)
               .map((timestamp: string) => { return myroles.includes(this.roles[timestamp].role) && this.roles[timestamp].level == "admin" })
                   .reduce((a: boolean, acc: boolean) => {
                       return acc || a;
-                  }, false);
+                  }, false)
+          ); 
     },
   },
   methods: {
