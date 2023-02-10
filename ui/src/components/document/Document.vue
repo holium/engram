@@ -137,6 +137,7 @@ export default defineComponent({
       const space = store.getters['filesys/space'](id);
       const owner = store.getters['filesys/owner'](id);
       const roles = store.getters['filesys/roles'](id);
+      console.warn("document space: ", space, " space id: ", this.$route.query.spaceId);
       const ships = store.getters['filesys/ships'](id);
 
       return owner == `~${(window as any).ship}` || 
