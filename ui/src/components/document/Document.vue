@@ -99,7 +99,8 @@ export default defineComponent({
   methods: {
     open: function(docId: string, snapshot: null | DocumentVersion = null) {
       this.loading = true;
-      this.loaded = render(
+      store.dispatch("filesys/protectedget", {id: docId, type: "document"}).then(() => {
+        this.loaded = render(
               this.$refs["document"] as any, 
               docId, 
               (this as any).pushMenu, 
@@ -115,7 +116,7 @@ export default defineComponent({
         console.error("problem loading document");
         this.missing = true;
       })
-
+      })
     },
     updateCover: function (cover: CoverUpdate) {
       this.cover = { ...this.cover, ...cover };
