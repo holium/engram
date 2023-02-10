@@ -46,7 +46,7 @@
 +$  localtime  clock
 +$  history  (list id)
 +$  spaces  (map spath space)
-+$  updates  (jug id dupdate)
++$  updates  (map id (map @p dupdate))
 +$  documents  (map id document)
 +$  folders  (map id folder)
 ::
@@ -130,7 +130,7 @@
   $%  [%none ~]
       [%gather-document-success ~]
       [%delta-document-success ~]
-      [%sync-document-success path=path peer=@p update=[name=@t roles=(update:index [@tas @tas]) ships=(update:index [@p @tas]) content=(list [id:index dupdate])]]
+      [%sync-document-success path=path peer=@p update=[name=@t roles=(update:index [@tas @tas]) ships=(update:index [@p @tas]) content=(list dupdate)]]
       [%gather-folder-success ~]
       [%delta-folder-success ~]
       [%sync-folder-success path=path peer=@p update=[name=@t roles=(update:index [@tas @tas]) ships=(update:index [@p @tas]) content=(update:index [id @tas])]]

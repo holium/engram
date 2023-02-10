@@ -92,6 +92,7 @@ pre {
   border-radius: theme(spacing.2);
   background-color: theme(colors.border);
   font-family: JetBrains Mono, monospace;
+  white-space: pre-wrap;
 }
 
 hr {

@@ -20,6 +20,7 @@ export interface SysItem {
     }
 
     owner: string,
+    space?: string,
     ships: { [key: string]: ShipPermission },
     roles: { [key: string]: RolePermission },
 
@@ -33,6 +34,7 @@ export interface FileSysState {
         type: "folder",
         name: "root",
         children: { [id: string]: SysRecord },
+        space: undefined,
         owner: "",
         ships: {},
         roles: {},
@@ -55,6 +57,7 @@ const state: FileSysState = {
         type: "folder",
         name: "root",
         children: {},
+        space: undefined,
         owner: "",
         ships: {},
         roles: {},
@@ -82,6 +85,9 @@ const getters: GetterTree<FileSysState, RootState> = {
     },
 
     // Permissions
+    space: (state) => (id: string): undefined | string => {
+        return state[id].space;
+    },
     owner: (state) => (id: string): undefined | string => {
         return state[id].owner;
     },
@@ -138,6 +144,7 @@ const mutations: MutationTree<FileSysState> = {
             type: "folder",
             name: "root",
             children: {},
+            space: undefined,
             owner: "",
             ships: {},
             roles: {}

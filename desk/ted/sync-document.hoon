@@ -26,7 +26,7 @@
       name.update
       roles.update
       ships.update
-      %+  turn  ~(tap in content.update)  |=  a=dupdate  [id a]
+      content.update
     ==
 ==
 --
