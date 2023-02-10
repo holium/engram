@@ -78,7 +78,7 @@
           :~  ['id' (path ~[(scot %p -.id) (scot %u +.id)])]
               ['type' (tape "document")] 
               ['name' (tape (trip name.settings.doc))] 
-              ['space' (path space.settings)]
+              ['space' (path space.settings.doc)]
               ['owner' (tape (scow %p owner.settings.doc))]
               :-  'roles'  %-  pairs  %+  turn  ~(tap by content.roles.settings.doc)
                 |=  [id=id:index [role=@tas level=@tas]]
