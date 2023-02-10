@@ -26,7 +26,7 @@
       name.update
       roles.update
       ships.update
-      content.update
+      ~(tap in content.update)
     ==
 ==
 --
