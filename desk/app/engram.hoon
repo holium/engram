@@ -15,12 +15,14 @@
 |%
 +$  versioned-state
   $%  state-0
+      state-1
   ==
-+$  state-0  [%0 t=localtime h=history s=spaces d=documents f=folders u=updates]
++$  state-0  [v=%0 t=localtime h=history s=spaces d=documents f=folders u=(jug id dupdate)]
++$  state-1  [v=%1 t=localtime h=history s=spaces d=documents f=folders u=updates]
 +$  card  card:agent:gall
 --
 %-  agent:dbug
-=|  state-0
+=|  state-1
 =*  state  -
 ^-  agent:gall
 |_  =bowl:gall
@@ -40,7 +42,8 @@
   ^-  (quip card _this)
   =/  old  !<(versioned-state old-state)
   ?-  -.old
-    %0  :_  this(state old)
+    %0  `this(state [%1 t.old h.old s.old d.old f.old ^*(updates)])
+    %1  :_  this(state old)
         %+  weld
           %+  weld  
             %+  turn  ~(tap in ~(key by s.old))
@@ -820,7 +823,7 @@
     ~&  "No space of path: {<`path`~[i.t.t.p i.t.t.t.p]>}"  !!
     ::
       [%x %document %list ~]
-    ``noun+!>((list:document:enjs:engram d))
+    ``noun+!>((listall:document:enjs:engram d))
   ::
       [%x %document @ @ %get ~]
     ?>  =(src.bowl our.bowl)
@@ -855,17 +858,9 @@
     =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
     =/  doc  (~(got by d) id)
     ?:  (~(has by u) id)
-      =/  updts  (need (~(get by u) id))
+      =/  updts  ~(val by (~(got by u) id))
       ``noun+!>((content:document:enjs:engram [doc updts]))
-    ``noun+!>((content:document:enjs:engram [doc ^*((set dupdate))]))
-  ::
-      [%x %document @ @ %updates ~]
-    ?>  =(src.bowl our.bowl)
-    =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
-    ?:  (~(has by u) id)
-      =/  updts  (need (~(get by u) id))
-      ``noun+!>((updates:document:enjs:engram updts))
-    ``noun+!>((updates:document:enjs:engram ^*((set dupdate))))
+    ``noun+!>((content:document:enjs:engram [doc ^*((list dupdate))]))
   ::
       [%x %folder @ @ %list ~]
     ?>  =(src.bowl our.bowl)
@@ -935,8 +930,14 @@
               doc
             =/  dstate  this(d (~(put by d) id ndoc))
             ::  Update Changes
-            ::~&  "--- Sunk Document :) ---"  
-            :_  dstate(u (~(gas ju u) content.update.res))
+            ::~&  "--- Sunk Document :) ---"
+            =/  nextu  %^  spin  
+                         content.update.res  
+                      (~(got by u) id)
+                    |=  [a=dupdate b=(map @p dupdate)]
+                    [a (~(put by b) author.a a)]
+                    ::(~(put by b) id (~(put by (~(got by b) id)) author.a a))
+            :_  dstate(u (~(put by u) id +.nextu))
             :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['space' (path:enjs:format space.settings.doc)] ['type' (tape:enjs:format "document")] ['id' (path:enjs:format path.res)]]))]
             ==
             ::

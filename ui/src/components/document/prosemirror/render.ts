@@ -72,6 +72,7 @@ export default function (
         }
 
         // Push current updates
+        console.warn("updates: ", res.updates);
         Object.keys(res.updates).map((key: string) => { return res.updates[key] }).forEach((update: any) => {
           pushUpdate(path, update);
         });

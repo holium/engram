@@ -131,7 +131,7 @@
     --
   ++  document
     |%
-    ++  list
+    ++  listall
       =,  enjs:format
       |=  docs=documents:engram
       ^-  json
@@ -182,25 +182,15 @@
       ==
     ++  content
       =,  enjs:format
-      |=  [doc=document:engram updts=(set dupdate:engram)]
+      |=  [doc=document:engram updts=(list dupdate:engram)]
       ^-  json
       %-  pairs  :~
         ['content' (tape content.doc)]
-        :-  'updates'  %-  pairs  %~  tap  in
-          ^-  (set [@t json])
-          %-  ~(run in updts)
+        :-  'updates'  %-  pairs
+          %+  turn  updts
           |=  updt=dupdate:engram
           [(scot %da timestamp.updt) (pairs ~[['author' (tape (scow %p author.updt))] ['content' (tape content.updt)]])]
       ==
-    ++  updates
-      =,  enjs:format
-      |=  updts=(set dupdate:engram)
-      ^-  json
-      %-  pairs  %~  tap  in
-          ^-  (set [@t json])
-          %-  ~(run in updts)
-          |=  updt=dupdate:engram
-          [(scot %da timestamp.updt) (pairs ~[['author' (tape (scow %p author.updt))] ['content' (tape content.updt)]])]
     ++  snapshots
       =,  enjs:format
       |=  snaps=(set dsnapshot:engram)
