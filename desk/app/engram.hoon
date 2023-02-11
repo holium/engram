@@ -933,7 +933,7 @@
             ::~&  "--- Sunk Document :) ---"
             =/  nextu  %^  spin  
                          content.update.res  
-                      (~(got by u) id)
+                      ?:  (~(has by u) id)  (~(got by u) id)  ^*  (map @p dupdate)
                     |=  [a=dupdate b=(map @p dupdate)]
                     [a (~(put by b) author.a a)]
                     ::(~(put by b) id (~(put by (~(got by b) id)) author.a a))
