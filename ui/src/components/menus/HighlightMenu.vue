@@ -191,7 +191,7 @@ export default defineComponent({
     },
     methods: {
         toggleMark: function(mark: string) {
-            toggleMark(schema.marks[mark])(view.state, view.dispatch, view);
+          toggleMark(schema.marks[mark])(view.state, view.dispatch, view);
         },
         implementLink: function() {
             const tr = view.state.tr.addMark(this.contextmenu.from, this.contextmenu.to, schema.marks["hyperlink"].create({ href: this.linkvalue}));

@@ -42,8 +42,8 @@ const slashmenu = (pushMenu: (menu: SlashMenu | null) => void) => new Plugin({
 
                     type = "engram"
                     pushMenu(new EngramMenu({ top: top, left: left }, search, selected));
-                } else if(top != 0 && !(event.key == "Backspace" || event.key == "Space")) {
-                    if(event.key.length == 1) search = search + event.key;
+                } else if(top != 0 && !(event.key == "Backspace" || event.key == "Space") && event.key.length == 1) {
+                    search = search + event.key;
                     type == "slash" ? pushMenu(new SlashMenu({ top: top, left: left }, search, selected)) :
                             "engram" ? pushMenu(new EngramMenu({ top: top, left: left }, search, selected)) : null;
                 } else if(top != 0 && event.key == "ArrowDown") {
