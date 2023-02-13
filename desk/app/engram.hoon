@@ -570,7 +570,7 @@
         ?.  (~(has by f) id)
           :: If we do not have this folder request it
           :_  this
-          :~  [%pass /folder/request %agent [peer.act %engram] %poke %post !>([%folder %request path.act peer.act])]
+          :~  [%pass /folder/request %agent [our.bowl %engram] %poke %post !>([%folder %request path.act peer.act])]
           ==
         =/  fol  (~(got by f) id)
         :_  this
