@@ -744,7 +744,7 @@
         ::
           %delta
         ?:  =(src.bowl our.bowl)  `this
-        ?.  (~(has by s) space.act) "<engram>: {<our.bowl>} does not know about space {<path.act>} yet"  `this
+        ?.  (~(has by s) space.act)  ~&  "<engram>: {<our.bowl>} does not know about space {<space.act>} yet"  `this
         =/  spc  (~(got by s) space.act)
         =/  tid  `@ta`(cat 4 (cat 2 'space-delta-' -.+.space.act) (cat 2 -.space.act (scot %uv (sham eny.bowl))))
         =/  ta-now  `@ta`(scot %da now.bowl)
