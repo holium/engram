@@ -307,7 +307,7 @@
         ::~&  "DELTA-- from {<src.bowl>} for {<path.act>}"
         ?:  =(src.bowl our.bowl)  `this
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
-        ?.  (~(has by d) id)  ~&  "{<our.bowl>} does not know about {<path.act>} yet"  `this
+        ?.  (~(has by d) id)  ~&  "<engram>: {<our.bowl>} does not know about document {<path.act>} yet"  `this
         =/  doc  (~(got by d) id)
         =/  tid  `@ta`(cat 4 (cat 2 'document-delta-' (scot %p +.id)) (cat 2 (scot %ud -.id) (scot %uv (sham eny.bowl))))
         =/  ta-now  `@ta`(scot %da now.bowl)
@@ -321,7 +321,6 @@
         ::  Sync updates with current document
         ::
           %sync
-        ::~&  "SYNC-- from {<src.bowl>}  for {<path.act>}"
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  doc  (~(got by d) id)
         =/  tid  `@ta`(cat 4 (cat 2 'document-sync-' (scot %p +.id)) (cat 2 (scot %ud -.id) (scot %uv (sham eny.bowl))))
@@ -583,7 +582,7 @@
         ::~&  "DELTA-- from {<src.bowl>} for {<path.act>}"
         ?:  =(src.bowl our.bowl)  `this
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
-        ?.  (~(has by f) id)  ~&  "{<our.bowl>} does not know about {<path.act>} yet"  `this
+        ?.  (~(has by f) id)  ~&  "<engram>: {<our.bowl>} does not know about folder {<path.act>} yet"  `this
         =/  fol  (~(got by f) id)
         =/  tid  `@ta`(cat 4 (cat 2 'folder-delta-' (scot %p +.id)) (cat 2 (scot %ud -.id) (scot %uv (sham eny.bowl))))
         =/  ta-now  `@ta`(scot %da now.bowl)
@@ -745,6 +744,7 @@
         ::
           %delta
         ?:  =(src.bowl our.bowl)  `this
+        ?.  (~(has by s) space.act) "<engram>: {<our.bowl>} does not know about space {<path.act>} yet"  `this
         =/  spc  (~(got by s) space.act)
         =/  tid  `@ta`(cat 4 (cat 2 'space-delta-' -.+.space.act) (cat 2 -.space.act (scot %uv (sham eny.bowl))))
         =/  ta-now  `@ta`(scot %da now.bowl)
