@@ -693,7 +693,6 @@
         ::
           %gatherall
         ?>  =(src.bowl our.bowl)
-        ::~&  "GATHERALL-- items in {<space.act>}"
         ?.  (~(has by s) space.act)  ~&  "No space at this path"  `this
         =/  spc  (~(got by s) space.act)
         =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.act -.+.space.act ~.members ~.noun])
@@ -711,7 +710,6 @@
         ::
           %updateall
         ?>  =(src.bowl our.bowl)
-        ::~&  "UPDATEDALL-- {<spc.act>}"
         ?.  (~(has by s) space.act)  ~&  "No space at this path"  `this
         =/  spc  (~(got by s) space.act)
         =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.act -.+.space.act ~.members ~.noun])
@@ -738,7 +736,6 @@
         ?>  =(src.bowl our.bowl)
         ?.  !=(our.bowl peer.act)
           `this
-        ::~&  "GATHER-- {<space.act>} from: {<peer.act>}"
         =/  spc  (~(got by s) space.act)
         :_  this
         :~  [%pass /engram/space %agent [peer.act %engram] %poke %post !>([%space %delta space.act version.content.spc])]
@@ -747,7 +744,6 @@
         ::  Assemble and reply with updates (pokes their sync)
         ::
           %delta
-        ::~&  "DELTA-- from {<src.bowl>} for {<space.act>}"
         ?:  =(src.bowl our.bowl)  `this
         =/  spc  (~(got by s) space.act)
         =/  tid  `@ta`(cat 4 (cat 2 'space-delta-' -.+.space.act) (cat 2 -.space.act (scot %uv (sham eny.bowl))))
@@ -762,7 +758,6 @@
         ::  Sync updates with current space
         ::
           %sync
-        ::~&  "SYNC-- from {<src.bowl>} for {<space.act>}: "
         =/  spc  (~(got by s) space.act)
         =/  tid  `@ta`(cat 4 (cat 2 'space-sync-' -.+.space.act) (cat 2 -.space.act (scot %uv (sham eny.bowl))))
         =/  ta-now  `@ta`(scot %da now.bowl)
