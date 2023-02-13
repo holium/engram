@@ -307,7 +307,7 @@
         ::~&  "DELTA-- from {<src.bowl>} for {<path.act>}"
         ?:  =(src.bowl our.bowl)  `this
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
-        ?.  (~(has by d) id)  ~&  "{<our.bowl>} does not know about {<path.act>} yet"  `this
+        ?.  (~(has by d) id)  ~&  "<engram>: {<our.bowl>} does not know about document {<path.act>} yet"  `this
         =/  doc  (~(got by d) id)
         =/  tid  `@ta`(cat 4 (cat 2 'document-delta-' (scot %p +.id)) (cat 2 (scot %ud -.id) (scot %uv (sham eny.bowl))))
         =/  ta-now  `@ta`(scot %da now.bowl)
@@ -321,7 +321,6 @@
         ::  Sync updates with current document
         ::
           %sync
-        ::~&  "SYNC-- from {<src.bowl>}  for {<path.act>}"
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         =/  doc  (~(got by d) id)
         =/  tid  `@ta`(cat 4 (cat 2 'document-sync-' (scot %p +.id)) (cat 2 (scot %ud -.id) (scot %uv (sham eny.bowl))))
@@ -570,7 +569,7 @@
         ?.  (~(has by f) id)
           :: If we do not have this folder request it
           :_  this
-          :~  [%pass /folder/request %agent [peer.act %engram] %poke %post !>([%folder %request path.act peer.act])]
+          :~  [%pass /folder/request %agent [our.bowl %engram] %poke %post !>([%folder %request path.act peer.act])]
           ==
         =/  fol  (~(got by f) id)
         :_  this
@@ -583,7 +582,7 @@
         ::~&  "DELTA-- from {<src.bowl>} for {<path.act>}"
         ?:  =(src.bowl our.bowl)  `this
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
-        ?.  (~(has by f) id)  ~&  "{<our.bowl>} does not know about {<path.act>} yet"  `this
+        ?.  (~(has by f) id)  ~&  "<engram>: {<our.bowl>} does not know about folder {<path.act>} yet"  `this
         =/  fol  (~(got by f) id)
         =/  tid  `@ta`(cat 4 (cat 2 'folder-delta-' (scot %p +.id)) (cat 2 (scot %ud -.id) (scot %uv (sham eny.bowl))))
         =/  ta-now  `@ta`(scot %da now.bowl)
@@ -693,7 +692,6 @@
         ::
           %gatherall
         ?>  =(src.bowl our.bowl)
-        ::~&  "GATHERALL-- items in {<space.act>}"
         ?.  (~(has by s) space.act)  ~&  "No space at this path"  `this
         =/  spc  (~(got by s) space.act)
         =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.act -.+.space.act ~.members ~.noun])
@@ -711,7 +709,6 @@
         ::
           %updateall
         ?>  =(src.bowl our.bowl)
-        ::~&  "UPDATEDALL-- {<spc.act>}"
         ?.  (~(has by s) space.act)  ~&  "No space at this path"  `this
         =/  spc  (~(got by s) space.act)
         =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.act -.+.space.act ~.members ~.noun])
@@ -738,7 +735,6 @@
         ?>  =(src.bowl our.bowl)
         ?.  !=(our.bowl peer.act)
           `this
-        ::~&  "GATHER-- {<space.act>} from: {<peer.act>}"
         =/  spc  (~(got by s) space.act)
         :_  this
         :~  [%pass /engram/space %agent [peer.act %engram] %poke %post !>([%space %delta space.act version.content.spc])]
@@ -747,8 +743,8 @@
         ::  Assemble and reply with updates (pokes their sync)
         ::
           %delta
-        ::~&  "DELTA-- from {<src.bowl>} for {<space.act>}"
         ?:  =(src.bowl our.bowl)  `this
+        ?.  (~(has by s) space.act) "<engram>: {<our.bowl>} does not know about space {<path.act>} yet"  `this
         =/  spc  (~(got by s) space.act)
         =/  tid  `@ta`(cat 4 (cat 2 'space-delta-' -.+.space.act) (cat 2 -.space.act (scot %uv (sham eny.bowl))))
         =/  ta-now  `@ta`(scot %da now.bowl)
@@ -762,7 +758,6 @@
         ::  Sync updates with current space
         ::
           %sync
-        ::~&  "SYNC-- from {<src.bowl>} for {<space.act>}: "
         =/  spc  (~(got by s) space.act)
         =/  tid  `@ta`(cat 4 (cat 2 'space-sync-' -.+.space.act) (cat 2 -.space.act (scot %uv (sham eny.bowl))))
         =/  ta-now  `@ta`(scot %da now.bowl)

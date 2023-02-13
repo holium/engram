@@ -324,11 +324,12 @@ const actions: ActionTree<FileSysState, RootState> = {
             
         });
     },
-    delete({ commit, dispatch }, payload: SysRecord): Promise<void> {
+    delete({ state, commit, dispatch }, payload: SysRecord): Promise<void> {
         if(`/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}` == payload.id) {
             router.push(`/apps/engram?spaceId=${router.currentRoute.value.query.spaceId}`);
         }
         return new Promise((resolve) => {
+            const children = state[payload.id].children;
             commit('delete', payload);
             (window as any).urbit.poke({
                 app: "engram",
@@ -341,6 +342,11 @@ const actions: ActionTree<FileSysState, RootState> = {
             }).then(() => {
                 resolve();
             });
+            if(children) {
+                Object.keys(children).forEach((child: string) => {
+                    dispatch("delete", children[child]);
+                });
+            }
         });
     },
 
