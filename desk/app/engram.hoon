@@ -44,17 +44,13 @@
   ?-  -.old
     %0  `this(state [%1 t.old h.old s.old d.old f.old ^*(updates)])
     %1  :_  this(state old)
-        %+  weld
-          %+  weld  
-            %+  turn  ~(tap in ~(key by s.old))
-            |=  space=path
-            [%pass /space/gatherall %agent [our.bowl %engram] %poke %post !>([%space %gatherall space])]
-          %+  turn  ~(tap in ~(key by f.old))
-          |=  fol=id
-          [%pass /folder/gatherall %agent [our.bowl %engram] %poke %post !>([%folder %gatherall /(scot %p -.fol)/(scot %ud +.fol)])]
-        %+  turn  ~(tap in ~(key by d.old))
-        |=  doc=id
-        [%pass /document/gatherall %agent [our.bowl %engram] %poke %post !>([%document %gatherall /(scot %p -.doc)/(scot %ud +.doc)])]
+        %+  weld  
+          %+  turn  ~(tap in ~(key by s.old))
+          |=  space=path
+          [%pass /space/gatherall %agent [our.bowl %engram] %poke %post !>([%space %gatherall space])]
+        %+  turn  ~(tap in ~(key by f.old))
+        |=  fol=id
+        [%pass /folder/gatherall %agent [our.bowl %engram] %poke %post !>([%folder %gatherall /(scot %p -.fol)/(scot %ud +.fol)])]
   ==
 ::
 ++  on-poke
@@ -293,7 +289,7 @@
         ?>  =(src.bowl our.bowl)
         ?:  =(our.bowl peer.act)
           `this
-        ~&  "GATHER-- {<path.act>} from: {<peer.act>}"
+        ~&  "<engram>: sync {<path.act>} <-> {<peer.act>}"
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         ?.  (~(has by d) id)
           :: If we do not have this document request it
