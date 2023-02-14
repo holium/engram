@@ -102,7 +102,14 @@
         :~  [%pass /space/updateall %agent [our.bowl %engram] %poke %post !>([%space %updateall space.act])]
         ==
         ::
+        ::  quietly delete a document from state
         ::
+          %softdelete
+        ?>  =(src.bowl our.bowl)
+        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        `this(d (~(del by d) id))
+        ::
+        ::  delete a document
         ::
           %delete
         ?>  =(src.bowl our.bowl)
@@ -393,6 +400,13 @@
         :_  hstate(t (add t 1))
         :~  [%pass /space/updateall %agent [our.bowl %engram] %poke %post !>([%space %updateall space.act])]
         ==
+        ::
+        :: quietly delete a folder from state
+        ::
+          %softdelete
+        ?>  =(src.bowl our.bowl)
+        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        `this(f (~(del by f) id))
         ::
         :: delete an existing folder
         ::
@@ -991,19 +1005,28 @@
                 content.spc  (apply:index content.spc content.update.res)
               ==
             spc
-            =/  diff  (~(dif by content.content.nspc) content.content.spc)
+            =/  diffget  (~(dif by content.content.nspc) content.content.spc)
+            =/  diffdel  (~(dif by content.content.spc) content.content.nspc)
             =/  sstate  this(s (~(put by s) space.res nspc))
             ::~&  "--- Sunk Space :) ---" 
             ~&  "<engram>: sync space {<space.res>}"
             :_  sstate
               %+  snoc  
-                %+  turn  ~(tap by diff)
-                |=  item=[id [id @tas]]
-                ^-  card
-                ?+  +.+.item  !!
-                  %document  [%pass /document/request %agent [our.bowl %engram] %poke %post !>([%document %request `path`[(scot %p -.-.+.item) (scot %ud +.-.+.item) ~] -.-.+.item])]
-                  %folder    [%pass /folder/request %agent [our.bowl %engram] %poke %post !>([%folder %request `path`[(scot %p -.-.+.item) (scot %ud +.-.+.item) ~] -.-.item])]
-                ==
+                %+  weld
+                  %+  turn  ~(tap by diffdel)
+                  |=  item=[id [id @tas]]
+                  ^-  card
+                  ?+  +.+.item  !!
+                    %document  [%pass /document/request %agent [our.bowl %engram] %poke %post !>([%document %softdelete `path`[(scot %p -.-.+.item) (scot %ud +.-.+.item) ~]])]
+                    %folder    [%pass /folder/request %agent [our.bowl %engram] %poke %post !>([%folder %softdelete `path`[(scot %p -.-.+.item) (scot %ud +.-.+.item) ~]])]
+                  ==
+                  %+  turn  ~(tap by diffget)
+                  |=  item=[id [id @tas]]
+                  ^-  card
+                  ?+  +.+.item  !!
+                    %document  [%pass /document/request %agent [our.bowl %engram] %poke %post !>([%document %request `path`[(scot %p -.-.+.item) (scot %ud +.-.+.item) ~] -.-.+.item])]
+                    %folder    [%pass /folder/request %agent [our.bowl %engram] %poke %post !>([%folder %request `path`[(scot %p -.-.+.item) (scot %ud +.-.+.item) ~] -.-.item])]
+                  ==
               ^-  card  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['space' (path:enjs:format space.res)] ['type' (tape:enjs:format "space")] ['id' (path:enjs:format space.res)]]))]
           ==
             %update

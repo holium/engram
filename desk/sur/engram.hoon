@@ -67,6 +67,7 @@
     [%leave self=@p]
     $:  %document
       $%  [%make owner=@p name=@t space=path version=dversion content=dcontent roles=(map @tas @tas) ships=(map @p @tas)]
+          [%softdelete path=path]
           [%delete path=path]
           [%save path=path content=dcontent version=dversion]
           [%snap path=path snapshot=dsnapshot]
@@ -87,6 +88,7 @@
     ==
     $:  %folder
       $%  [%make owner=@p name=@t space=path roles=(map @tas @tas) ships=(map @p @tas)]
+          [%softdelete path=path]
           [%delete path=path]
           [%add to=path id=path type=@tas]
           [%remove from=path id=path]
