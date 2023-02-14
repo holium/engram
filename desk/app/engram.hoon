@@ -924,11 +924,38 @@
             =/  dstate  this(d (~(put by d) id ndoc))
             ::  Update Changes
             ::~&  "--- Sunk Document :) ---"
-            =/  nextu  %^  spin  
-                         content.update.res  
-                      ?:  (~(has by u) id)  (~(got by u) id)  ^*  (map @p dupdate)
+            =/  overwrite  
+              ?&  (~(has by u) id)
+                  (gth (lent ~(val by (~(got by u) id))) 0)
+                    =/  newtimestamp   %^  spin  
+                                          content.update.res  
+                                        `@da`0  
+                                      |=  [a=dupdate b=@da]  [a (max timestamp.a b)]
+                    =/  lasttimestamp  %^  spin  
+                                          ~(val by (~(got by u) id))  
+                                        `@da`0  
+                                      |=  [a=dupdate b=@da]  [a (max timestamp.a b)]
+                  (gth (sub +.newtimestamp 60.000) +.lasttimestamp)
+              ==
+            =/  nextu
+              ?:  overwrite
+                %^  spin  content.update.res  
+                      ^*  (map @p dupdate)
                     |=  [a=dupdate b=(map @p dupdate)]
-                    [a (~(put by b) author.a a)]
+                  [a (~(put by b) author.a a)]
+              %^  spin  content.update.res  
+                      (~(got by u) id)
+                    |=  [a=dupdate b=(map @p dupdate)]
+                  [a (~(put by b) author.a a)]
+
+            ::  check timestamp
+            
+            ::  if w/in the minute mesh 
+            ::=/  nextu  %^  spin  
+            ::             content.update.res  
+            ::          ?:  (~(has by u) id)  (~(got by u) id)  ^*  (map @p dupdate)
+            ::        |=  [a=dupdate b=(map @p dupdate)]
+            ::        [a (~(put by b) author.a a)]
                     ::(~(put by b) id (~(put by (~(got by b) id)) author.a a))
             :_  dstate(u (~(put by u) id +.nextu))
             :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['space' (path:enjs:format space.settings.doc)] ['type' (tape:enjs:format "document")] ['id' (path:enjs:format path.res)]]))]
@@ -948,6 +975,7 @@
                 ==
               fol
             ::~&  "--- Sunk Folder :) ---"  
+            ~&  "<engram>: sync folder {<path.res>}"
             :_  this(f (~(put by f) id nfol))
             :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['space' (path:enjs:format space.fol)] ['type' (tape:enjs:format "folder")] ['id' (path:enjs:format path.res)]]))]
             ==
@@ -966,6 +994,7 @@
             =/  diff  (~(dif by content.content.nspc) content.content.spc)
             =/  sstate  this(s (~(put by s) space.res nspc))
             ::~&  "--- Sunk Space :) ---" 
+            ~&  "<engram>: sync space {<space.res>}"
             :_  sstate
               %+  snoc  
                 %+  turn  ~(tap by diff)
