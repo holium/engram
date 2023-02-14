@@ -59,13 +59,14 @@ export const comments = new Plugin({
           const commentHeading = document.createElement("li");
           commentHeading.className = "flex items-center gap-3";
           const author = document.createElement("div");
-          author.className = "azimuth";
+          author.className = "azimuth whitespace-nowrap overflow-hidden overflow-ellipsis";
           author.innerHTML = "~" + data.author;
           const timestamp = document.createElement("div");
           timestamp.style.textAlign = "right";
           timestamp.innerHTML = formatTimestamp(new Date(data.timestamp));
           timestamp.style.flexGrow = "1";
           timestamp.style.opacity = ".6";
+          timestamp.className="whitespace-nowrap"
           const resolve = document.createElement("div");
           resolve.innerHTML = `
             <svg

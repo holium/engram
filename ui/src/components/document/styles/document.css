@@ -212,6 +212,11 @@ aside {
   background: var(--paper-color);
   width: 280px;
   min-width: 280px;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  font-family: var(--rlm-font, "Rubik");
+  line-height: normal;
 }
 
 @media (max-width: 800px) {

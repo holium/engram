@@ -88,21 +88,6 @@ export const suggestions: Array<SuggestionItem> = [
       },
     },
     {
-      key: "blockquote",
-      display: "Quote",
-      description: "Display a quote",
-      icon: "",
-      command: (pos?) => {
-        if (pos) {
-          const $pos = view.state.doc.resolve(pos);
-          const tr = view.state.tr.setSelection(new TextSelection($pos));
-          view.dispatch(tr);
-        }
-        wrapIn(schema.nodes["blockquote"])(view.state, view.dispatch, view);
-        return true;
-      },
-    },
-    {
       key: "code",
       display: "Code Block",
       description: "Display a section of code",
