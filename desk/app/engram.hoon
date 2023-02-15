@@ -939,7 +939,7 @@
             ::  Update Changes
             ::~&  "--- Sunk Document :) ---"
             =/  overwrite  
-              ?&  (~(has by u) id)
+              ?|  !(~(has by u) id)
                   (gth (lent ~(val by (~(got by u) id))) 0)
                     =/  newtimestamp   %^  spin  
                                           content.update.res  
