@@ -67,12 +67,18 @@
           ^-  card
           [%pass /engram/save %arvo %c [%info %engram %& [`path`~[~.documents (crip (pathify:index id.old-doc)) ~.json] %ins %json !>((tape:enjs:format content.old-doc))]~]]
     %2  :_  this(state old)
+        %+  weld
+            :~  ^-  card  [%pass /engram/setreadpermissions %arvo %c [%perm %engram `path`~[~.documents] %r ~ [%white (sy [%.y our.bowl]~)]]]
+                ^-  card  [%pass /engram/setwritepermissions %arvo %c [%perm %engram `path`~[~.documents] %w ~ [%white (sy [%.y our.bowl]~)]]]
+            ==
         %+  weld  
           %+  turn  ~(tap in ~(key by s.old))
           |=  space=path
+          ^-  card
           [%pass /space/gatherall %agent [our.bowl %engram] %poke %post !>([%space %gatherall space])]
         %+  turn  ~(tap in ~(key by f.old))
         |=  fol=id
+        ^-  card
         [%pass /folder/gatherall %agent [our.bowl %engram] %poke %post !>([%folder %gatherall /(scot %p -.fol)/(scot %ud +.fol)])]
   ==
 ::
