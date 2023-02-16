@@ -4,14 +4,6 @@
 /+  engram
 /+  index
 /+  default-agent, dbug, agentio
-:: Notes on how to do access control
-:: Updates are sent to the entire space plus ships
-:: When added via ship there's no way to find it EXCEPT through search or link
-:: -> first search requests if not exists
-:: -> in the front end will need to hide the space when viewing a document added via-ship
-:: -> removing or changing a ship MUST PUSH TO THAT SHIP so they know to hide themselves
-:: When hidden in a space (you are in a space but do not have permission to view it)
-:: -> documents are hidden in the front end
 |%
 +$  versioned-state
   $%  state-0
@@ -34,8 +26,8 @@
 ++  on-init
   ^-  (quip card _this)
   :_  this
-  :~  ^-  card  [%pass /engram/setreadpermissions %arvo %c [%perm %engram `path`~[~.documents] %r ~ [%white (sy [%.y our.bowl]~)]]]
-      ^-  card  [%pass /engram/setwritepermissions %arvo %c [%perm %engram `path`~[~.documents] %w ~ [%white (sy [%.y our.bowl]~)]]]
+  :~  ^-  card  [%pass /engram/setreadpermissions %arvo %c [%perm %engram /(scot %p our.bowl) %r ~ [%white (sy [%.y our.bowl]~)]]]
+      ^-  card  [%pass /engram/setwritepermissions %arvo %c [%perm %engram /(scot %p our.bowl) %w ~ [%white (sy [%.y our.bowl]~)]]]
   ==
 ::
 ++  on-save
@@ -59,18 +51,14 @@
           [id.old-doc version.old-doc settings.old-doc snapshots.old-doc]
         :_  this(state [%2 t.old h.old s.old ndocs f.old ^*(updates)])
           %+  weld
-            :~  ^-  card  [%pass /engram/setreadpermissions %arvo %c [%perm %engram `path`~[~.documents] %r ~ [%white (sy [%.y our.bowl]~)]]]
-                ^-  card  [%pass /engram/setwritepermissions %arvo %c [%perm %engram `path`~[~.documents] %w ~ [%white (sy [%.y our.bowl]~)]]]
+            :~  ^-  card  [%pass /engram/setreadpermissions %arvo %c [%perm %engram /(scot %p our.bowl) %r ~ [%white (sy [%.y our.bowl]~)]]]
+                ^-  card  [%pass /engram/setwritepermissions %arvo %c [%perm %engram /(scot %p our.bowl) %w ~ [%white (sy [%.y our.bowl]~)]]]
             ==
           %+  turn  ~(val by d.old)
           |=  old-doc=old-document
           ^-  card
           [%pass /engram/save %arvo %c [%info %engram %& [`path`~[~.documents (crip (pathify:index id.old-doc)) ~.json] %ins %json !>((tape:enjs:format content.old-doc))]~]]
     %2  :_  this(state old)
-        %+  weld
-            :~  ^-  card  [%pass /engram/setreadpermissions %arvo %c [%perm %engram `path`~[~.documents] %r ~ [%white (sy [%.y our.bowl]~)]]]
-                ^-  card  [%pass /engram/setwritepermissions %arvo %c [%perm %engram `path`~[~.documents] %w ~ [%white (sy [%.y our.bowl]~)]]]
-            ==
         %+  weld  
           %+  turn  ~(tap in ~(key by s.old))
           |=  space=path
@@ -128,9 +116,9 @@
         =/  hstate  sstate(h (snoc h id))
         :_  hstate(t (add t 1))
         :~  [%pass /space/updateall %agent [our.bowl %engram] %poke %post !>([%space %updateall space.act])]
-            [%pass /engram/save %arvo %c [%info %engram %& [`path`~[~.documents (crip (pathify:index id)) ~.json] %ins %json !>((tape:enjs:format content.act))]~]]
-            [%pass /engram/setreadpermissions %arvo %c [%perm %engram `path`~[~.documents (crip (pathify:index id)) ~.json] %r ~ [%white (sy [%.y our.bowl]~)]]]
-            [%pass /engram/setwritepermissions %arvo %c [%perm %engram `path`~[~.documents (crip (pathify:index id)) ~.json] %w ~ [%white (sy [%.y our.bowl]~)]]]
+            [%pass /engram/save %arvo %c [%info %engram %& [`path`~[(scot %p our.bowl) ~.documents (crip (pathify:index id)) ~.json] %ins %json !>((tape:enjs:format content.act))]~]]
+            [%pass /engram/setreadpermissions %arvo %c [%perm %engram `path`~[(scot %p our.bowl) ~.documents (crip (pathify:index id)) ~.json] %r ~ [%white (sy [%.y our.bowl]~)]]]
+            [%pass /engram/setwritepermissions %arvo %c [%perm %engram `path`~[(scot %p our.bowl) ~.documents (crip (pathify:index id)) ~.json] %w ~ [%white (sy [%.y our.bowl]~)]]]
         ==
         ::
         ::  quietly delete a document from state
@@ -170,7 +158,7 @@
         =/  fstate  sstate(f fldrs)
         :_  fstate
         :~  [%pass /space/updateall %agent [our.bowl %engram] %poke %post !>([%space %updateall space.settings.copy])]
-            [%pass /engram/save %arvo %c [%info %engram %& [`path`~[~.documents (crip (pathify:index id)) ~.json] %del ~]~]]
+            [%pass /engram/save %arvo %c [%info %engram %& [`path`~[(scot %p our.bowl) ~.documents (crip (pathify:index id)) ~.json] %del ~]~]]
         ==
         ::
         :: modify a document by changing the stored document state
@@ -185,7 +173,7 @@
         old
         :_  this(d (~(put by d) id new))
         :~  [%pass /document/updateall %agent [our.bowl %engram] %poke %post !>([%document %updateall path.act])]
-            [%pass /engram/save %arvo %c [%info %engram %& [`path`~[~.documents (crip (pathify:index id)) ~.json] %ins %json !>((tape:enjs:format content.act))]~]]
+            [%pass /engram/save %arvo %c [%info %engram %& [`path`~[(scot %p our.bowl) ~.documents (crip (pathify:index id)) ~.json] %ins %json !>((tape:enjs:format content.act))]~]]
         ==
         ::
         ::
@@ -349,7 +337,7 @@
         =/  doc  (~(got by d) id)
         =/  tid  `@ta`(cat 4 (cat 2 'document-delta-' (scot %p +.id)) (cat 2 (scot %ud -.id) (scot %uv (sham eny.bowl))))
         =/  ta-now  `@ta`(scot %da now.bowl)
-        =/  filepath  /(scot %p our.bowl)/engram/(scot %da now.bowl)/documents/(crip (pathify:index id))/json
+        =/  filepath  /(scot %p our.bowl)/engram/(scot %da now.bowl)/(scot %p our.bowl)/documents/(crip (pathify:index id))/json
         ?.  .^(? %cu filepath)  ~&  "<engram>: document does not yet exist on system"  !!
         =/  content  !<  json  .^(vase %cr filepath)
         =/  start-args  [~ `tid byk.bowl(r da+now.bowl) %delta-document !>([path.act src.bowl doc content (~(has by s) space.settings.doc)])]
@@ -389,7 +377,7 @@
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         ?.  (~(has by d) id)  ~&  "<engram>: {<our.bowl>} does not know about document {<path.act>} yet"  `this
         =/  doc  (~(got by d) id)
-        =/  filepath  /(scot %p our.bowl)/engram/(scot %da now.bowl)/documents/(crip (pathify:index id))/json
+        =/  filepath  /(scot %p our.bowl)/engram/(scot %da now.bowl)/(scot %p our.bowl)/documents/(crip (pathify:index id))/json
         ?.  .^(? %cu filepath)  ~&  "Document does not exist in clay :("  !!
         =/  content  !<  json  .^(vase %cr filepath)
         :_  this
@@ -401,9 +389,9 @@
           %populate
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         :_  this(d (~(put by d) id doc.act))
-        :~  [%pass /engram/save %arvo %c [%info %engram %& [`path`~[~.documents (crip (pathify:index id)) ~.json] %ins %json !>(content.act)]~]]
-            [%pass /engram/setreadpermissions %arvo %c [%perm %engram `path`~[~.documents (crip (pathify:index id)) ~.json] %r ~ [%white (sy [%.y our.bowl]~)]]]
-            [%pass /engram/setwritepermissions %arvo %c [%perm %engram `path`~[~.documents (crip (pathify:index id)) ~.json] %w ~ [%white (sy [%.y our.bowl]~)]]]
+        :~  [%pass /engram/save %arvo %c [%info %engram %& [`path`~[(scot %p our.bowl) ~.documents (crip (pathify:index id)) ~.json] %ins %json !>(content.act)]~]]
+            [%pass /engram/setreadpermissions %arvo %c [%perm %engram `path`~[(scot %p our.bowl) ~.documents (crip (pathify:index id)) ~.json] %r ~ [%white (sy [%.y our.bowl]~)]]]
+            [%pass /engram/setwritepermissions %arvo %c [%perm %engram `path`~[(scot %p our.bowl) ~.documents (crip (pathify:index id)) ~.json] %w ~ [%white (sy [%.y our.bowl]~)]]]
             [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['space' (path:enjs:format space.settings.doc.act)] ['type' (tape:enjs:format "space")] ['id' (path:enjs:format space.settings.doc.act)]]))]
         ==
       ==
@@ -903,7 +891,7 @@
     ?>  =(src.bowl our.bowl)
     =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
     =/  doc  (~(got by d) id)
-    =/  filepath  /(scot %p our.bowl)/engram/(scot %da now.bowl)/documents/(crip (pathify:index id))/json
+    =/  filepath  /(scot %p our.bowl)/engram/(scot %da now.bowl)/(scot %p our.bowl)/documents/(crip (pathify:index id))/json
     ?.  .^(? %cu filepath)  ~&  "Document does not exist in clay :("  !!
     =/  content  !<  json  .^(vase %cr filepath)
     ?:  (~(has by u) id)
