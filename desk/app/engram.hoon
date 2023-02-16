@@ -129,6 +129,8 @@
         :_  hstate(t (add t 1))
         :~  [%pass /space/updateall %agent [our.bowl %engram] %poke %post !>([%space %updateall space.act])]
             [%pass /engram/save %arvo %c [%info %engram %& [`path`~[~.documents (crip (pathify:index id)) ~.json] %ins %json !>((tape:enjs:format content.act))]~]]
+            [%pass /engram/setreadpermissions %arvo %c [%perm %engram `path`~[~.documents (crip (pathify:index id)) ~.json] %r ~ [%white (sy [%.y our.bowl]~)]]]
+            [%pass /engram/setwritepermissions %arvo %c [%perm %engram `path`~[~.documents (crip (pathify:index id)) ~.json] %w ~ [%white (sy [%.y our.bowl]~)]]]
         ==
         ::
         ::  quietly delete a document from state
@@ -400,6 +402,8 @@
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         :_  this(d (~(put by d) id doc.act))
         :~  [%pass /engram/save %arvo %c [%info %engram %& [`path`~[~.documents (crip (pathify:index id)) ~.json] %ins %json !>(content.act)]~]]
+            [%pass /engram/setreadpermissions %arvo %c [%perm %engram `path`~[~.documents (crip (pathify:index id)) ~.json] %r ~ [%white (sy [%.y our.bowl]~)]]]
+            [%pass /engram/setwritepermissions %arvo %c [%perm %engram `path`~[~.documents (crip (pathify:index id)) ~.json] %w ~ [%white (sy [%.y our.bowl]~)]]]
             [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['space' (path:enjs:format space.settings.doc.act)] ['type' (tape:enjs:format "space")] ['id' (path:enjs:format space.settings.doc.act)]]))]
         ==
       ==
