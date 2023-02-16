@@ -21,7 +21,7 @@
 ::  Organisms
 ::  Documents
 +$  dversion   tape
-+$  dcontent   json
++$  dcontent   (index json)
 +$  dsettings  [owner=@p name=@t space=path roles=(index [@tas @tas]) ships=(index [@p @tas])]
 +$  dsnapshot  [timestamp=@da author=@p data=tape]
 +$  dupdate    [author=@p timestamp=@da content=dcontent]
@@ -55,6 +55,11 @@
 +$  old-document   [id=id version=dversion content=tape settings=dsettings snapshots=(set dsnapshot)]
 +$  old-documents  (map id:index old-document)
 ::
++$  old-update-2     [author=@p timestamp=@da content=tape]
++$  old-updates-2    (map id (map @p old-update))
++$  old-document-2   [id=id version=dversion settings=dsettings snapshots=(set dsnapshot)]
++$  old-documents-2  (map id:index old-document)
+::
 :: Poke Actions
 :: [%make =dmeta] - Create a new document within the state
 :: [%save =dmeta =doc =updt] - save a document in your state
@@ -83,11 +88,11 @@
           [%updateall path=path]
           [%update path=path]
           [%gather path=path peer=@p]
-          [%delta path=path]
-          [%sync path=path update=[name=@t roles=(update:index [@tas @tas]) ships=(update:index [@p @tas]) content=(set dupdate)]]
+          [%delta path=path version=version]
+          [%sync path=path update=[name=@t roles=(update:index [@tas @tas]) ships=(update:index [@p @tas]) content=(update:index json)]]
           [%request path=path peer=@p]
           [%answer path=path]
-          [%populate path=path doc=document content=json]
+          [%populate path=path doc=document content=(index json)]
           [%accept path=path]
       ==
     ==

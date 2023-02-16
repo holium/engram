@@ -106,9 +106,11 @@
           oldspc
         =/  sstate  state(s (~(put by s) space.act newspc))
         =/  hstate  sstate(h (snoc h id))
+        =/  content  ^*  (index:index json)
+        =/  ncontent  (indert:index content (tape:enjs:format content.act))
         :_  hstate(t (add t 1))
         :~  [%pass /space/updateall %agent [our.bowl %engram] %poke %post !>([%space %updateall space.act])]
-            [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.json] %ins %json !>((tape:enjs:format content.act))]~]]
+            [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.noun] %ins %noun !>(ncontent)]~]]
         ==
         ::
         ::  quietly delete a document from state
@@ -148,7 +150,7 @@
         =/  fstate  sstate(f fldrs)
         :_  fstate
         :~  [%pass /space/updateall %agent [our.bowl %engram] %poke %post !>([%space %updateall space.settings.copy])]
-            [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.json] %del ~]~]]
+            [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.noun] %del ~]~]]
         ==
         ::
         :: modify a document by changing the stored document state
@@ -161,9 +163,13 @@
         =/  new  
         =.  version.old  version.act
         old
+        =/  filepath  /(scot %p our.bowl)/engram-docs/(scot %da now.bowl)/(crip (pathify:index id))/noun
+        ?.  .^(? %cu filepath)  ~&  "Document does not exist in clay :("  !!
+        =/  content  !<  noun  .^(vase %cr filepath)
+        =/  ncontent (insert:index content (tape:enjs:format content.act))
         :_  this(d (~(put by d) id new))
         :~  [%pass /document/updateall %agent [our.bowl %engram] %poke %post !>([%document %updateall path.act])]
-            [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.json] %ins %json !>((tape:enjs:format content.act))]~]]
+            [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.noun] %ins %noun !>(ncontent)]~]]
         ==
         ::
         ::
@@ -879,7 +885,7 @@
     ?>  =(src.bowl our.bowl)
     =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
     =/  doc  (~(got by d) id)
-    =/  filepath  /(scot %p our.bowl)/engram-docs/(scot %da now.bowl)/(crip (pathify:index id))/json
+    =/  filepath  /(scot %p our.bowl)/engram-docs/(scot %da now.bowl)/(crip (pathify:index id))/noun
     ?.  .^(? %cu filepath)  ~&  "Document does not exist in clay :("  !!
     =/  content  !<  json  .^(vase %cr filepath)
     ?:  (~(has by u) id)
