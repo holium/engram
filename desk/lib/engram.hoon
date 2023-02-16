@@ -24,7 +24,7 @@
         [%update (ot ~[id+pa])]
         [%gatherall (ot ~[id+pa])]
         [%gather (ot ~[id+pa peer+(se %p)])]
-        [%accept (ot ~[id+pa])]
+        ::[%accept (ot ~[id+pa])]
       ==
       :-  %folder  %-  of  :~
         [%make (ot ~[owner+(se %p) name+so space+pa roles+(op sym (se %tas)) ships+(op fed:ag (se %tas))])]
@@ -183,15 +183,12 @@
       ==
     ++  content
       =,  enjs:format
-      |=  [doc=document:engram content=json updts=(list dupdate:engram)]
+      |=  [doc=document:engram content=dcontent:engram]
       ^-  json
-      %-  pairs  :~
-        ['content' content]
-        :-  'updates'  %-  pairs
-          %+  turn  updts
-          |=  updt=dupdate:engram
-          [(scot %da timestamp.updt) (pairs ~[['author' (tape (scow %p author.updt))] ['content' content.updt]])]
-      ==
+      %-  pairs  
+        %+  turn  ~(tap by content.content)
+          |=  [id=id:index item=json]
+          [(crip (stringify:index id)) item]
     ++  snapshots
       =,  enjs:format
       |=  snaps=(set dsnapshot:engram)

@@ -6,17 +6,19 @@
 /+  default-agent, dbug, agentio
 |%
 +$  versioned-state
-  $%  state-0
-      state-1
-      state-2
+  $%  ::state-0
+      ::state-1
+      ::state-2
+      state-3
   ==
-+$  state-0  [v=%0 t=localtime h=history s=spaces d=old-documents f=folders u=(jug id tape)]
-+$  state-1  [v=%1 t=localtime h=history s=spaces d=old-documents f=folders u=old-updates]
-+$  state-2  [v=%2 t=localtime h=history s=spaces d=documents f=folders u=updates]
+::+$  state-0  [v=%0 t=localtime h=history s=spaces d=old-documents f=folders u=(jug id tape)]
+::+$  state-1  [v=%1 t=localtime h=history s=spaces d=old-documents f=folders u=old-updates]
+::+$  state-2  [v=%2 t=localtime h=history s=spaces d=documents f=folders u=updates]
++$  state-3  [v=%3 t=localtime h=history s=spaces d=documents f=folders]
 +$  card  card:agent:gall
 --
 %-  agent:dbug
-=|  state-2
+=|  state-3
 =*  state  -
 ^-  agent:gall
 |_  =bowl:gall
@@ -38,21 +40,21 @@
   ^-  (quip card _this)
   =/  old  !<(versioned-state old-state)
   ?-  -.old
-    %0  =/  ndocs  %-  ~(run by d.old)
-          |=  old-doc=old-document
-          [id.old-doc version.old-doc settings.old-doc snapshots.old-doc]
-        :_  this(state [%2 t.old h.old s.old ndocs f.old ^*(updates)])
-          %+  turn  ~(val by d.old)
-          |=  old-doc=old-document
-          [%pass /engram/save %arvo %c [%info %engram %& [`path`~[~.documents (crip (pathify:index id.old-doc)) ~.json] %ins %json !>((tape:enjs:format content.old-doc))]~]]
-    %1  =/  ndocs  %-  ~(run by d.old)
-          |=  old-doc=old-document
-          [id.old-doc version.old-doc settings.old-doc snapshots.old-doc]
-        :_  this(state [%2 t.old h.old s.old ndocs f.old ^*(updates)])
-          %+  turn  ~(val by d.old)
-          |=  old-doc=old-document
-          [%pass /engram/save %arvo %c [%info %engram %& [`path`~[~.documents (crip (pathify:index id.old-doc)) ~.json] %ins %json !>((tape:enjs:format content.old-doc))]~]]
-    %2  :_  this(state old)
+    ::%0  =/  ndocs  %-  ~(run by d.old)
+    ::      |=  old-doc=old-document
+    ::      [id.old-doc version.old-doc settings.old-doc snapshots.old-doc]
+    ::    :_  this(state [%2 t.old h.old s.old ndocs f.old ^*(updates)])
+    ::      %+  turn  ~(val by d.old)
+    ::      |=  old-doc=old-document
+    ::      [%pass /engram/save %arvo %c [%info %engram %& [`path`~[~.documents (crip (pathify:index id.old-doc)) ~.json] %ins %json !>((tape:enjs:format content.old-doc))]~]]
+    ::%1  =/  ndocs  %-  ~(run by d.old)
+    ::      |=  old-doc=old-document
+    ::      [id.old-doc version.old-doc settings.old-doc snapshots.old-doc]
+    ::    :_  this(state [%2 t.old h.old s.old ndocs f.old ^*(updates)])
+    ::      %+  turn  ~(val by d.old)
+    ::      |=  old-doc=old-document
+    ::      [%pass /engram/save %arvo %c [%info %engram %& [`path`~[~.documents (crip (pathify:index id.old-doc)) ~.json] %ins %json !>((tape:enjs:format content.old-doc))]~]]
+    %3  :_  this(state old)
         %+  weld  
           %+  turn  ~(tap in ~(key by s.old))
           |=  space=path
@@ -107,7 +109,7 @@
         =/  sstate  state(s (~(put by s) space.act newspc))
         =/  hstate  sstate(h (snoc h id))
         =/  content  ^*  (index:index json)
-        =/  ncontent  (indert:index content (tape:enjs:format content.act))
+        =/  ncontent  (insert:index content (tape:enjs:format content.act) our.bowl)
         :_  hstate(t (add t 1))
         :~  [%pass /space/updateall %agent [our.bowl %engram] %poke %post !>([%space %updateall space.act])]
             [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.noun] %ins %noun !>(ncontent)]~]]
@@ -165,8 +167,8 @@
         old
         =/  filepath  /(scot %p our.bowl)/engram-docs/(scot %da now.bowl)/(crip (pathify:index id))/noun
         ?.  .^(? %cu filepath)  ~&  "Document does not exist in clay :("  !!
-        =/  content  !<  noun  .^(vase %cr filepath)
-        =/  ncontent (insert:index content (tape:enjs:format content.act))
+        =/  content  !<  dcontent  .^(vase %cr filepath)
+        =/  ncontent  (insert:index content (tape:enjs:format content.act) our.bowl)
         :_  this(d (~(put by d) id new))
         :~  [%pass /document/updateall %agent [our.bowl %engram] %poke %post !>([%document %updateall path.act])]
             [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.noun] %ins %noun !>(ncontent)]~]]
@@ -204,10 +206,10 @@
         ::
         :: Remove an update for the set of stored updates
         ::
-          %accept
-        ?>  =(src.bowl our.bowl)
-        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
-        `this(u (~(del by u) id))
+        ::  %accept
+        ::?>  =(src.bowl our.bowl)
+        ::=/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        ::`this(u (~(del by u) id))
         ::
         :: Add a permission to a document
         ::
@@ -318,9 +320,12 @@
           :_  this
           :~  [%pass /document/request %agent [our.bowl %engram] %poke %post !>([%document %request path.act peer.act])]
           ==
-        =/  doc  (~(got by d) id)
+        :: retrieve content to check version
+        =/  filepath  /(scot %p our.bowl)/engram-docs/(scot %da now.bowl)/(crip (pathify:index id))/noun
+        ?.  .^(? %cu filepath)  ~&  "<engram>: document does not yet exist on system"  !!
+        =/  content  !<  dcontent  .^(vase %cr filepath)
         :_  this
-        :~  [%pass /engram/delta %agent [peer.act %engram] %poke %post !>([%document %delta path.act])]
+        :~  [%pass /engram/delta %agent [peer.act %engram] %poke %post !>([%document %delta path.act version.content])]
         ==
         ::
         ::  Assemble and reply with updates (pokes their sync)
@@ -330,32 +335,64 @@
         ?:  =(src.bowl our.bowl)  `this
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         ?.  (~(has by d) id)  ~&  "<engram>: {<our.bowl>} does not know about document {<path.act>} yet"  `this
+        ::  get metadata
         =/  doc  (~(got by d) id)
-        =/  tid  `@ta`(cat 4 (cat 2 'document-delta-' (scot %p +.id)) (cat 2 (scot %ud -.id) (scot %uv (sham eny.bowl))))
-        =/  ta-now  `@ta`(scot %da now.bowl)
+
+        ::=/  tid  `@ta`(cat 4 (cat 2 'document-delta-' (scot %p +.id)) (cat 2 (scot %ud -.id) (scot %uv (sham eny.bowl))))
+        ::=/  ta-now  `@ta`(scot %da now.bowl)
+
+        :: get content
         =/  filepath  /(scot %p our.bowl)/engram-docs/(scot %da now.bowl)/(crip (pathify:index id))/json
         ?.  .^(? %cu filepath)  ~&  "<engram>: document does not yet exist on system"  !!
-        =/  content  !<  json  .^(vase %cr filepath)
-        =/  start-args  [~ `tid byk.bowl(r da+now.bowl) %delta-document !>([path.act src.bowl doc content (~(has by s) space.settings.doc)])]
+        =/  content  !<  dcontent  .^(vase %cr filepath)
+        ?:  =(version.content version.act)  ~&  "<engram>: peer is up to date"  `this
+        ::  assemble update
+        ::=/  updates  (silt ~[[author=our timestamp=now content=content]])
+        =/  updates  (delta:index content version.act)
+        =/  roles  (delta:index roles.settings.doc ^*(version:index))
+        =/  ships  (delta:index ships.settings.doc ^*(version:index))
+        =/  payload  [name.settings.doc roles ships updates]
         :_  this
-        :~
-          [%pass /engram/delta/document/[(cat 2 (scot %p -.id) (scot %ud +.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
-          [%pass /engram/delta/document/[(cat 2 (scot %p -.id) (scot %ud +.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
+        :~  [%pass /engram/delta %agent [src.bowl %engram] %poke %post !>([%document %sync path.act payload])]
         ==
+        ::=/  start-args  [~ `tid byk.bowl(r da+now.bowl) %delta-document !>([path.act src.bowl doc content (~(has by s) space.settings.doc)])]
+        :::_  this
+        :::~
+        ::  [%pass /engram/delta/document/[(cat 2 (scot %p -.id) (scot %ud +.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
+        ::  [%pass /engram/delta/document/[(cat 2 (scot %p -.id) (scot %ud +.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
+        ::==
         ::
         ::  Sync updates with current document
         ::
           %sync
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        ::  Metadata Changes
         =/  doc  (~(got by d) id)
-        =/  tid  `@ta`(cat 4 (cat 2 'document-sync-' (scot %p +.id)) (cat 2 (scot %ud -.id) (scot %uv (sham eny.bowl))))
-        =/  ta-now  `@ta`(scot %da now.bowl)
-        =/  start-args  [~ `tid byk.bowl(r da+now.bowl) %sync-document !>([path.act src.bowl settings.doc update.act (~(has by s) space.settings.doc)])]
-        :_  this
-        :~  
-          [%pass /engram/sync/document/[(cat 2 (scot %p -.id) (scot %ud +.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
-          [%pass /engram/sync/document/[(cat 2 (scot %p -.id) (scot %ud +.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
+        =/  ndoc
+          =:  name.settings.doc   name.update.act
+              roles.settings.doc  (apply:index roles.settings.doc roles.update.act)
+              ships.settings.doc  (apply:index ships.settings.doc ships.update.act)
+            ==
+          doc
+        =/  dstate  this(d (~(put by d) id ndoc))
+        :: Content Changes
+        =/  filepath  /(scot %p our.bowl)/engram-docs/(scot %da now.bowl)/(crip (pathify:index id))/noun
+        ?.  .^(? %cu filepath)  ~&  "<engram>: document does not yet exist on system"  !!
+        =/  content  !<  dcontent  .^(vase %cr filepath)
+        =/  ncontent  (apply:index content content.update.act)
+        :_  dstate
+        :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['space' (path:enjs:format space.settings.doc)] ['type' (tape:enjs:format "document")] ['id' (path:enjs:format path.act)]]))]
+            [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.noun] %ins %noun !>(ncontent)]~]]
         ==
+        ::  Thread Sync
+        ::=/  tid  `@ta`(cat 4 (cat 2 'document-sync-' (scot %p +.id)) (cat 2 (scot %ud -.id) (scot %uv (sham eny.bowl))))
+        ::=/  ta-now  `@ta`(scot %da now.bowl)
+        ::=/  start-args  [~ `tid byk.bowl(r da+now.bowl) %sync-document !>([path.act src.bowl settings.doc update.act (~(has by s) space.settings.doc)])]
+        :::_  this
+        :::~  
+        ::  [%pass /engram/sync/document/[(cat 2 (scot %p -.id) (scot %ud +.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
+        ::  [%pass /engram/sync/document/[(cat 2 (scot %p -.id) (scot %ud +.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
+        ::==
         ::
         :: Request a document you don't have
         ::
@@ -373,9 +410,9 @@
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         ?.  (~(has by d) id)  ~&  "<engram>: {<our.bowl>} does not know about document {<path.act>} yet"  `this
         =/  doc  (~(got by d) id)
-        =/  filepath  /(scot %p our.bowl)/engram-docs/(scot %da now.bowl)/(crip (pathify:index id))/json
+        =/  filepath  /(scot %p our.bowl)/engram-docs/(scot %da now.bowl)/(crip (pathify:index id))/noun
         ?.  .^(? %cu filepath)  ~&  "Document does not exist in clay :("  !!
-        =/  content  !<  json  .^(vase %cr filepath)
+        =/  content  !<  noun  .^(vase %cr filepath)
         :_  this
         :~  [%pass /document/populate %agent [src.bowl %engram] %poke %post !>([%document %populate path.act doc content])]
         ==
@@ -385,7 +422,7 @@
           %populate
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         :_  this(d (~(put by d) id doc.act))
-        :~  [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.json] %ins %json !>(content.act)]~]]
+        :~  [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.noun] %ins %noun !>(content.act)]~]]
             [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['space' (path:enjs:format space.settings.doc.act)] ['type' (tape:enjs:format "space")] ['id' (path:enjs:format space.settings.doc.act)]]))]
         ==
       ==
@@ -887,11 +924,8 @@
     =/  doc  (~(got by d) id)
     =/  filepath  /(scot %p our.bowl)/engram-docs/(scot %da now.bowl)/(crip (pathify:index id))/noun
     ?.  .^(? %cu filepath)  ~&  "Document does not exist in clay :("  !!
-    =/  content  !<  json  .^(vase %cr filepath)
-    ?:  (~(has by u) id)
-      =/  updts  ~(val by (~(got by u) id))
-      ``noun+!>((content:document:enjs:engram [doc content updts]))
-    ``noun+!>((content:document:enjs:engram [doc content ^*((list dupdate))]))
+    =/  content  !<  dcontent  .^(vase %cr filepath)
+    ``noun+!>((content:document:enjs:engram [doc content]))
   ::
       [%x %folder @ @ %list ~]
     ?>  =(src.bowl our.bowl)
@@ -947,47 +981,47 @@
           =/  res  !<(thread-res q.cage.sign)
           ::~&  "Thread Result: {<-.res>}"
           ?+  -.res  ~&  "Bad thread result"  !!
-              %gather-document-success  `this
-              %delta-document-success   `this
-              %sync-document-success
-            =/  id  [`@p`(slav %p -.path.res) `@u`(slav %ud -.+.path.res)]
-            =/  doc  (~(got by d) id)
-            ::  Document Changes
-            =/  ndoc
-              =:  name.settings.doc  name.update.res
-                  roles.settings.doc  (apply:index roles.settings.doc roles.update.res)
-                  ships.settings.doc  (apply:index ships.settings.doc ships.update.res)
-                ==
-              doc
-            =/  dstate  this(d (~(put by d) id ndoc))
-            ::  Update Changes
-            ::~&  "--- Sunk Document :) ---"
-            =/  overwrite  
-              ?|  !(~(has by u) id)
-                  (gth (lent ~(val by (~(got by u) id))) 0)
-                    =/  newtimestamp   %^  spin  
-                                          content.update.res  
-                                        `@da`0  
-                                      |=  [a=dupdate b=@da]  [a (max timestamp.a b)]
-                    =/  lasttimestamp  %^  spin  
-                                          ~(val by (~(got by u) id))  
-                                        `@da`0  
-                                      |=  [a=dupdate b=@da]  [a (max timestamp.a b)]
-                  (gth (sub +.newtimestamp 60.000) +.lasttimestamp)
-              ==
-            =/  nextu
-              ?:  overwrite
-                %^  spin  content.update.res  
-                      ^*  (map @p dupdate)
-                    |=  [a=dupdate b=(map @p dupdate)]
-                  [a (~(put by b) author.a a)]
-              %^  spin  content.update.res  
-                      (~(got by u) id)
-                    |=  [a=dupdate b=(map @p dupdate)]
-                  [a (~(put by b) author.a a)]
-            :_  dstate(u (~(put by u) id +.nextu))
-            :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['space' (path:enjs:format space.settings.doc)] ['type' (tape:enjs:format "document")] ['id' (path:enjs:format path.res)]]))]
-            ==
+::              %gather-document-success  `this
+::              %delta-document-success   `this
+::              %sync-document-success
+::            =/  id  [`@p`(slav %p -.path.res) `@u`(slav %ud -.+.path.res)]
+::            =/  doc  (~(got by d) id)
+::            ::  Document Changes
+::            =/  ndoc
+::              =:  name.settings.doc  name.update.res
+::                  roles.settings.doc  (apply:index roles.settings.doc roles.update.res)
+::                  ships.settings.doc  (apply:index ships.settings.doc ships.update.res)
+::                ==
+::              doc
+::            =/  dstate  this(d (~(put by d) id ndoc))
+::            ::  Update Changes
+::            ::~&  "--- Sunk Document :) ---"
+::            =/  overwrite  
+::              ?|  !(~(has by u) id)
+::                  (gth (lent ~(val by (~(got by u) id))) 0)
+::                    =/  newtimestamp   %^  spin  
+::                                          content.update.res  
+::                                        `@da`0  
+::                                      |=  [a=dupdate b=@da]  [a (max timestamp.a b)]
+::                    =/  lasttimestamp  %^  spin  
+::                                          ~(val by (~(got by u) id))  
+::                                        `@da`0  
+::                                      |=  [a=dupdate b=@da]  [a (max timestamp.a b)]
+::                  (gth (sub +.newtimestamp 60.000) +.lasttimestamp)
+::              ==
+::            =/  nextu
+::              ?:  overwrite
+::                %^  spin  content.update.res  
+::                      ^*  (map @p dupdate)
+::                    |=  [a=dupdate b=(map @p dupdate)]
+::                  [a (~(put by b) author.a a)]
+::              %^  spin  content.update.res  
+::                      (~(got by u) id)
+::                    |=  [a=dupdate b=(map @p dupdate)]
+::                  [a (~(put by b) author.a a)]
+::            :_  dstate(u (~(put by u) id +.nextu))
+::            :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['space' (path:enjs:format space.settings.doc)] ['type' (tape:enjs:format "document")] ['id' (path:enjs:format path.res)]]))]
+::            ==
             ::
               %gather-folder-success  `this
               %delta-folder-success   `this
