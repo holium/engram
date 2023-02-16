@@ -82,7 +82,7 @@
           [%sync path=path update=[name=@t roles=(update:index [@tas @tas]) ships=(update:index [@p @tas]) content=(set dupdate)]]
           [%request path=path peer=@p]
           [%answer path=path]
-          [%populate path=path doc=document]
+          [%populate path=path doc=document content=json]
           [%accept path=path]
       ==
     ==
@@ -120,7 +120,7 @@
     ==
   ==
 +$  dthread-gather  [path=path peer=@p doc=document]
-+$  dthread-delta   [path=path src=@p doc=document check-space=$?(%.y %.n)]
++$  dthread-delta   [path=path src=@p doc=document content=json check-space=$?(%.y %.n)]
 +$  dthread-sync    [path=path peer=@p settings=dsettings update=[name=@t roles=(update:index [@tas @tas]) ships=(update:index [@p @tas]) content=(set dupdate)] check-space=$?(%.y %.n)]
 +$  fthread-gather  [path=path peer=@p fol=folder]
 +$  fthread-delta   [path=path src=@p fol=folder version=version]

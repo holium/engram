@@ -100,6 +100,7 @@
         =/  hstate  sstate(h (snoc h id))
         :_  hstate(t (add t 1))
         :~  [%pass /space/updateall %agent [our.bowl %engram] %poke %post !>([%space %updateall space.act])]
+            [%pass /engram/save %arvo %c [%info %engram %& [`path`~[~.documents (crip (pathify:index id)) ~.json] %ins %json !>((tape:enjs:format content.act))]~]]
         ==
         ::
         ::  quietly delete a document from state
@@ -155,6 +156,7 @@
         old
         :_  this(d (~(put by d) id new))
         :~  [%pass /document/updateall %agent [our.bowl %engram] %poke %post !>([%document %updateall path.act])]
+            [%pass /engram/save %arvo %c [%info %engram %& [`path`~[~.documents (crip (pathify:index id)) ~.json] %ins %json !>((tape:enjs:format content.act))]~]]
         ==
         ::
         ::
@@ -318,7 +320,10 @@
         =/  doc  (~(got by d) id)
         =/  tid  `@ta`(cat 4 (cat 2 'document-delta-' (scot %p +.id)) (cat 2 (scot %ud -.id) (scot %uv (sham eny.bowl))))
         =/  ta-now  `@ta`(scot %da now.bowl)
-        =/  start-args  [~ `tid byk.bowl(r da+now.bowl) %delta-document !>([path.act src.bowl doc (~(has by s) space.settings.doc)])]
+        =/  filepath  /(scot %p our.bowl)/engram/(scot %da now.bowl)/documents/(crip (pathify:index id))/json
+        ?.  .^(? %cu filepath)  ~&  "Document does not exist in clay :("  !!
+        =/  content  !<  json  .^(vase %cr filepath)
+        =/  start-args  [~ `tid byk.bowl(r da+now.bowl) %delta-document !>([path.act src.bowl doc content (~(has by s) space.settings.doc)])]
         :_  this
         :~
           [%pass /engram/delta/document/[(cat 2 (scot %p -.id) (scot %ud +.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
@@ -355,9 +360,11 @@
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         ?.  (~(has by d) id)  ~&  "<engram>: {<our.bowl>} does not know about document {<path.act>} yet"  `this
         =/  doc  (~(got by d) id)
-        ::?>  (guardspace:engram [space.settings.doc (molt ~(val by content.roles.settings.doc)) (molt ~(val by content.ships.settings.doc)) (silt `(list @tas)`[%admin %editor %visitor ~]) src.bowl our.bowl now.bowl])
+        =/  filepath  /(scot %p our.bowl)/engram/(scot %da now.bowl)/documents/(crip (pathify:index id))/json
+        ?.  .^(? %cu filepath)  ~&  "Document does not exist in clay :("  !!
+        =/  content  !<  json  .^(vase %cr filepath)
         :_  this
-        :~  [%pass /document/populate %agent [src.bowl %engram] %poke %post !>([%document %populate path.act doc])]
+        :~  [%pass /document/populate %agent [src.bowl %engram] %poke %post !>([%document %populate path.act doc content])]
         ==
         ::
         :: Populate a requested document
@@ -365,7 +372,8 @@
           %populate
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         :_  this(d (~(put by d) id doc.act))
-        :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['space' (path:enjs:format space.settings.doc.act)] ['type' (tape:enjs:format "space")] ['id' (path:enjs:format space.settings.doc.act)]]))]
+        :~  [%pass /engram/save %arvo %c [%info %engram %& [`path`~[~.documents (crip (pathify:index id)) ~.json] %ins %json !>((tape:enjs:format content.act))]~]]
+            [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['space' (path:enjs:format space.settings.doc.act)] ['type' (tape:enjs:format "space")] ['id' (path:enjs:format space.settings.doc.act)]]))]
         ==
       ==
       %folder
@@ -864,10 +872,13 @@
     ?>  =(src.bowl our.bowl)
     =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
     =/  doc  (~(got by d) id)
+    =/  filepath  /(scot %p our.bowl)/engram/(scot %da now.bowl)/documents/(crip (pathify:index id))/json
+    ?.  .^(? %cu filepath)  ~&  "Document does not exist in clay :("  !!
+    =/  content  !<  json  .^(vase %cr filepath)
     ?:  (~(has by u) id)
       =/  updts  ~(val by (~(got by u) id))
-      ``noun+!>((content:document:enjs:engram [doc updts]))
-    ``noun+!>((content:document:enjs:engram [doc ^*((list dupdate))]))
+      ``noun+!>((content:document:enjs:engram [doc content updts]))
+    ``noun+!>((content:document:enjs:engram [doc content ^*((list dupdate))]))
   ::
       [%x %folder @ @ %list ~]
     ?>  =(src.bowl our.bowl)

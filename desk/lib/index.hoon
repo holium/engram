@@ -10,6 +10,9 @@
 ++  stringify
   |=  id=id
   (weld (weld "/" (trip (scot %p -.id))) (weld "/" (trip (scot %ud +.id))))
+++  pathify
+  |=  id=id
+  (weld (trip (scot %p -.id)) (weld "-" (trip (scot %ud +.id))))
 ++  delta
   |*  [state=(index) remote=version]
   :-

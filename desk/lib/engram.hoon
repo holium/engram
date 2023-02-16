@@ -184,10 +184,10 @@
       ==
     ++  content
       =,  enjs:format
-      |=  [doc=document:engram updts=(list dupdate:engram)]
+      |=  [doc=document:engram content=json updts=(list dupdate:engram)]
       ^-  json
       %-  pairs  :~
-        ['content' (tape content.doc)]
+        ['content' content]
         :-  'updates'  %-  pairs
           %+  turn  updts
           |=  updt=dupdate:engram
