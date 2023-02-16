@@ -26,8 +26,7 @@
 ++  on-init
   ^-  (quip card _this)
   :_  this
-  :~  ^-  card  [%pass /engram/setreadpermissions %arvo %c [%perm %engram-docs / %r ~ [%white (sy [%.y our.bowl]~)]]]
-      ^-  card  [%pass /engram/setwritepermissions %arvo %c [%perm %engram-docs / %w ~ [%white (sy [%.y our.bowl]~)]]]
+  :~  ^-  card  [%pass /engram/build-doc-desk %arvo %c [%merg %engram-docs our.bowl %base da+now.bowl %init]]
   ==
 ::
 ++  on-save
@@ -50,23 +49,16 @@
           |=  old-doc=old-document
           [id.old-doc version.old-doc settings.old-doc snapshots.old-doc]
         :_  this(state [%2 t.old h.old s.old ndocs f.old ^*(updates)])
-          %+  weld
-            :~  ^-  card  [%pass /engram/setreadpermissions %arvo %c [%perm %engram-docs / %r ~ [%white (sy [%.y our.bowl]~)]]]
-                ^-  card  [%pass /engram/setwritepermissions %arvo %c [%perm %engram-docs / %w ~ [%white (sy [%.y our.bowl]~)]]]
-            ==
           %+  turn  ~(val by d.old)
           |=  old-doc=old-document
-          ^-  card
           [%pass /engram/save %arvo %c [%info %engram %& [`path`~[~.documents (crip (pathify:index id.old-doc)) ~.json] %ins %json !>((tape:enjs:format content.old-doc))]~]]
     %2  :_  this(state old)
         %+  weld  
           %+  turn  ~(tap in ~(key by s.old))
           |=  space=path
-          ^-  card
           [%pass /space/gatherall %agent [our.bowl %engram] %poke %post !>([%space %gatherall space])]
         %+  turn  ~(tap in ~(key by f.old))
         |=  fol=id
-        ^-  card
         [%pass /folder/gatherall %agent [our.bowl %engram] %poke %post !>([%folder %gatherall /(scot %p -.fol)/(scot %ud +.fol)])]
   ==
 ::
@@ -117,8 +109,6 @@
         :_  hstate(t (add t 1))
         :~  [%pass /space/updateall %agent [our.bowl %engram] %poke %post !>([%space %updateall space.act])]
             [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.json] %ins %json !>((tape:enjs:format content.act))]~]]
-            [%pass /engram/setreadpermissions %arvo %c [%perm %engram-docs `path`~[(crip (pathify:index id)) ~.json] %r ~ [%white (sy [%.y our.bowl]~)]]]
-            [%pass /engram/setwritepermissions %arvo %c [%perm %engram-docs `path`~[(crip (pathify:index id)) ~.json] %w ~ [%white (sy [%.y our.bowl]~)]]]
         ==
         ::
         ::  quietly delete a document from state
@@ -390,8 +380,6 @@
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         :_  this(d (~(put by d) id doc.act))
         :~  [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.json] %ins %json !>(content.act)]~]]
-            [%pass /engram/setreadpermissions %arvo %c [%perm %engram-docs `path`~[(crip (pathify:index id)) ~.json] %r ~ [%white (sy [%.y our.bowl]~)]]]
-            [%pass /engram/setwritepermissions %arvo %c [%perm %engram-docs `path`~[(crip (pathify:index id)) ~.json] %w ~ [%white (sy [%.y our.bowl]~)]]]
             [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['space' (path:enjs:format space.settings.doc.act)] ['type' (tape:enjs:format "space")] ['id' (path:enjs:format space.settings.doc.act)]]))]
         ==
       ==
@@ -1056,7 +1044,17 @@
       ==
     ==
   ==
-++  on-arvo   on-arvo:def
+++  on-arvo
+  |=  [=wire =sign-arvo]
+  ?+  -.sign-arvo  ~|  "unexpected system response {<-.sign-arvo>} to {<dap.bowl>} on wire {<wire>}"  !!
+      %clay
+    ?+  -.+.sign-arvo  ~|  "unexpected system response {<-.sign-arvo>} to {<dap.bowl>} on wire {<wire>}"  !!
+        %mere
+      ?:  -.+.+.sign-arvo
+        ~&  "<engram>: set up storage desk"  `this
+      ~&  "<engram>: skipping storage desk setup"  `this
+    ==
+  ==
 ++  on-fail   
   |=  [=term =tang]
   ~&  "Fail with term {<term>}"
