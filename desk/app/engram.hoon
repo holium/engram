@@ -16,13 +16,15 @@
 +$  versioned-state
   $%  state-0
       state-1
+      state-2
   ==
-+$  state-0  [v=%0 t=localtime h=history s=spaces d=documents f=folders u=(jug id dupdate)]
-+$  state-1  [v=%1 t=localtime h=history s=spaces d=documents f=folders u=updates]
++$  state-0  [v=%0 t=localtime h=history s=spaces d=old-documents f=folders u=(jug id tape)]
++$  state-1  [v=%1 t=localtime h=history s=spaces d=old-documents f=folders u=old-updates]
++$  state-2  [v=%2 t=localtime h=history s=spaces d=documents f=folders u=updates]
 +$  card  card:agent:gall
 --
 %-  agent:dbug
-=|  state-1
+=|  state-2
 =*  state  -
 ^-  agent:gall
 |_  =bowl:gall
@@ -42,8 +44,21 @@
   ^-  (quip card _this)
   =/  old  !<(versioned-state old-state)
   ?-  -.old
-    %0  `this(state [%1 t.old h.old s.old d.old f.old ^*(updates)])
-    %1  :_  this(state old)
+    %0  =/  ndocs  %-  ~(run by d.old)
+          |=  old-doc=old-document
+          [id.old-doc version.old-doc settings.old-doc snapshots.old-doc]
+        :_  this(state [%2 t.old h.old s.old ndocs f.old ^*(updates)])
+          %+  turn  ~(val by d.old)
+          |=  old-doc=old-document
+          [%pass /engram/save %arvo %c [%info %engram %& [`path`~[~.documents (crip (pathify:index id.old-doc)) ~.json] %ins %json !>((tape:enjs:format content.old-doc))]~]]
+    %1  =/  ndocs  %-  ~(run by d.old)
+          |=  old-doc=old-document
+          [id.old-doc version.old-doc settings.old-doc snapshots.old-doc]
+        :_  this(state [%2 t.old h.old s.old ndocs f.old ^*(updates)])
+          %+  turn  ~(val by d.old)
+          |=  old-doc=old-document
+          [%pass /engram/save %arvo %c [%info %engram %& [`path`~[~.documents (crip (pathify:index id.old-doc)) ~.json] %ins %json !>((tape:enjs:format content.old-doc))]~]]
+    %2  :_  this(state old)
         %+  weld  
           %+  turn  ~(tap in ~(key by s.old))
           |=  space=path

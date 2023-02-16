@@ -50,6 +50,11 @@
 +$  documents  (map id document)
 +$  folders  (map id folder)
 ::
++$  old-update     [author=@p timestamp=@da content=tape]
++$  old-updates    (map id (map @p old-update))
++$  old-document   [id=id version=dversion content=tape settings=dsettings snapshots=(set dsnapshot)]
++$  old-documents  (map id:index old-document)
+::
 :: Poke Actions
 :: [%make =dmeta] - Create a new document within the state
 :: [%save =dmeta =doc =updt] - save a document in your state
