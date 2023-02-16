@@ -33,7 +33,10 @@
 ::
 ++  on-init
   ^-  (quip card _this)
-  `this
+  :_  this
+  :~  ^-  card  [%pass /engram/setreadpermissions %arvo %c [%perm %engram `path`~[~.documents] %r ~ [%white (sy [%.y our.bowl]~)]]]
+      ^-  card  [%pass /engram/setwritepermissions %arvo %c [%perm %engram `path`~[~.documents] %w ~ [%white (sy [%.y our.bowl]~)]]]
+  ==
 ::
 ++  on-save
   ^-  vase
@@ -55,8 +58,13 @@
           |=  old-doc=old-document
           [id.old-doc version.old-doc settings.old-doc snapshots.old-doc]
         :_  this(state [%2 t.old h.old s.old ndocs f.old ^*(updates)])
+          %+  weld
+            :~  ^-  card  [%pass /engram/setreadpermissions %arvo %c [%perm %engram `path`~[~.documents] %r ~ [%white (sy [%.y our.bowl]~)]]]
+                ^-  card  [%pass /engram/setwritepermissions %arvo %c [%perm %engram `path`~[~.documents] %w ~ [%white (sy [%.y our.bowl]~)]]]
+            ==
           %+  turn  ~(val by d.old)
           |=  old-doc=old-document
+          ^-  card
           [%pass /engram/save %arvo %c [%info %engram %& [`path`~[~.documents (crip (pathify:index id.old-doc)) ~.json] %ins %json !>((tape:enjs:format content.old-doc))]~]]
     %2  :_  this(state old)
         %+  weld  
