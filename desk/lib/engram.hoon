@@ -151,7 +151,6 @@
         ['name' (tape (trip name.settings.doc))]
         ['owner' (tape (scow %p owner.settings.doc))]
         ['version' (tape version.doc)]
-        ['content' (tape content.doc)]
         :-  'roles'  %-  pairs  %+  turn  ~(tap by content.roles.settings.doc)
           |=  [id=id:index [role=@tas level=@tas]]
           [(crip (stringify:index id)) (pairs ~[['role' (tape (trip role))] ['level' (tape (trip level))]])]
@@ -191,7 +190,7 @@
         :-  'updates'  %-  pairs
           %+  turn  updts
           |=  updt=dupdate:engram
-          [(scot %da timestamp.updt) (pairs ~[['author' (tape (scow %p author.updt))] ['content' (tape content.updt)]])]
+          [(scot %da timestamp.updt) (pairs ~[['author' (tape (scow %p author.updt))] ['content' content.updt]])]
       ==
     ++  snapshots
       =,  enjs:format

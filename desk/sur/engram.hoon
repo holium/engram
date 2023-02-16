@@ -21,11 +21,11 @@
 ::  Organisms
 ::  Documents
 +$  dversion   tape
-+$  dcontent   tape
++$  dcontent   json
 +$  dsettings  [owner=@p name=@t space=path roles=(index [@tas @tas]) ships=(index [@p @tas])]
 +$  dsnapshot  [timestamp=@da author=@p data=tape]
 +$  dupdate    [author=@p timestamp=@da content=dcontent]
-+$  document   [id=id version=dversion content=dcontent settings=dsettings snapshots=(set dsnapshot)]
++$  document   [id=id version=dversion settings=dsettings snapshots=(set dsnapshot)]
 ::
 ::  Folders
 +$  folder  [id=id owner=@p name=@t space=path roles=(index [@tas @tas]) ships=(index [@p @tas]) content=(index [id @tas])]
@@ -66,10 +66,10 @@
   $% 
     [%leave self=@p]
     $:  %document
-      $%  [%make owner=@p name=@t space=path version=dversion content=dcontent roles=(map @tas @tas) ships=(map @p @tas)]
+      $%  [%make owner=@p name=@t space=path version=dversion content=tape roles=(map @tas @tas) ships=(map @p @tas)]
           [%softdelete path=path]
           [%delete path=path]
-          [%save path=path content=dcontent version=dversion]
+          [%save path=path content=tape version=dversion]
           [%snap path=path snapshot=dsnapshot]
           [%rename path=path name=@t]
           [%addperm path=path perm=@t level=@tas type=@tas]

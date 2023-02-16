@@ -54,9 +54,9 @@
   ==
 ::
 ++  on-poke
-  |=  [=mark =vase]
+  |=  [=mark v=vase]
   ^-  (quip card _this)
-    =/  act  !<(action vase)
+    =/  act  !<(action v)
     ?-   -.act
       ::
       ::  Leave the update subscription
@@ -68,14 +68,13 @@
       %document
         ?-  -.+.act
         ::
-        :: initialize a new document with a blank document as passed by the frontend
+        :: Initialize a new document with a blank document as passed by the frontend
         ::
           %make
         ?>  =(src.bowl our.bowl)
         =/  doc  :*  
           [our.bowl t]
           version.act
-          content.act
           :*  owner.act 
               name.act 
               space.act
@@ -140,6 +139,7 @@
         =/  fstate  sstate(f fldrs)
         :_  fstate
         :~  [%pass /space/updateall %agent [our.bowl %engram] %poke %post !>([%space %updateall space.settings.copy])]
+            [%pass /engram/save %arvo %c [%info %engram %& [`path`~[~.documents (crip (pathify:index id)) ~.json] %del ~]~]]
         ==
         ::
         :: modify a document by changing the stored document state
@@ -150,9 +150,7 @@
         ?>  (~(has by d) id)
         =/  old  (~(got by d) id)
         =/  new  
-        =:  content.old  content.act
-            version.old  version.act
-          ==
+        =.  version.old  version.act
         old
         :_  this(d (~(put by d) id new))
         :~  [%pass /document/updateall %agent [our.bowl %engram] %poke %post !>([%document %updateall path.act])]
@@ -321,7 +319,7 @@
         =/  tid  `@ta`(cat 4 (cat 2 'document-delta-' (scot %p +.id)) (cat 2 (scot %ud -.id) (scot %uv (sham eny.bowl))))
         =/  ta-now  `@ta`(scot %da now.bowl)
         =/  filepath  /(scot %p our.bowl)/engram/(scot %da now.bowl)/documents/(crip (pathify:index id))/json
-        ?.  .^(? %cu filepath)  ~&  "Document does not exist in clay :("  !!
+        ?.  .^(? %cu filepath)  ~&  "<engram>: document does not yet exist on system"  !!
         =/  content  !<  json  .^(vase %cr filepath)
         =/  start-args  [~ `tid byk.bowl(r da+now.bowl) %delta-document !>([path.act src.bowl doc content (~(has by s) space.settings.doc)])]
         :_  this
@@ -372,7 +370,7 @@
           %populate
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         :_  this(d (~(put by d) id doc.act))
-        :~  [%pass /engram/save %arvo %c [%info %engram %& [`path`~[~.documents (crip (pathify:index id)) ~.json] %ins %json !>((tape:enjs:format content.act))]~]]
+        :~  [%pass /engram/save %arvo %c [%info %engram %& [`path`~[~.documents (crip (pathify:index id)) ~.json] %ins %json !>(content.act)]~]]
             [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['space' (path:enjs:format space.settings.doc.act)] ['type' (tape:enjs:format "space")] ['id' (path:enjs:format space.settings.doc.act)]]))]
         ==
       ==
@@ -972,16 +970,6 @@
                       (~(got by u) id)
                     |=  [a=dupdate b=(map @p dupdate)]
                   [a (~(put by b) author.a a)]
-
-            ::  check timestamp
-            
-            ::  if w/in the minute mesh 
-            ::=/  nextu  %^  spin  
-            ::             content.update.res  
-            ::          ?:  (~(has by u) id)  (~(got by u) id)  ^*  (map @p dupdate)
-            ::        |=  [a=dupdate b=(map @p dupdate)]
-            ::        [a (~(put by b) author.a a)]
-                    ::(~(put by b) id (~(put by (~(got by b) id)) author.a a))
             :_  dstate(u (~(put by u) id +.nextu))
             :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['space' (path:enjs:format space.settings.doc)] ['type' (tape:enjs:format "document")] ['id' (path:enjs:format path.res)]]))]
             ==
