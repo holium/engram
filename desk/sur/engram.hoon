@@ -21,11 +21,11 @@
 ::  Organisms
 ::  Documents
 +$  dversion   tape
-+$  dcontent   tape
++$  dcontent   json
 +$  dsettings  [owner=@p name=@t space=path roles=(index [@tas @tas]) ships=(index [@p @tas])]
 +$  dsnapshot  [timestamp=@da author=@p data=tape]
 +$  dupdate    [author=@p timestamp=@da content=dcontent]
-+$  document   [id=id version=dversion content=dcontent settings=dsettings snapshots=(set dsnapshot)]
++$  document   [id=id version=dversion settings=dsettings snapshots=(set dsnapshot)]
 ::
 ::  Folders
 +$  folder  [id=id owner=@p name=@t space=path roles=(index [@tas @tas]) ships=(index [@p @tas]) content=(index [id @tas])]
@@ -50,6 +50,11 @@
 +$  documents  (map id document)
 +$  folders  (map id folder)
 ::
++$  old-update     [author=@p timestamp=@da content=tape]
++$  old-updates    (map id (map @p old-update))
++$  old-document   [id=id version=dversion content=tape settings=dsettings snapshots=(set dsnapshot)]
++$  old-documents  (map id:index old-document)
+::
 :: Poke Actions
 :: [%make =dmeta] - Create a new document within the state
 :: [%save =dmeta =doc =updt] - save a document in your state
@@ -66,10 +71,10 @@
   $% 
     [%leave self=@p]
     $:  %document
-      $%  [%make owner=@p name=@t space=path version=dversion content=dcontent roles=(map @tas @tas) ships=(map @p @tas)]
+      $%  [%make owner=@p name=@t space=path version=dversion content=tape roles=(map @tas @tas) ships=(map @p @tas)]
           [%softdelete path=path]
           [%delete path=path]
-          [%save path=path content=dcontent version=dversion]
+          [%save path=path content=tape version=dversion]
           [%snap path=path snapshot=dsnapshot]
           [%rename path=path name=@t]
           [%addperm path=path perm=@t level=@tas type=@tas]
@@ -82,7 +87,7 @@
           [%sync path=path update=[name=@t roles=(update:index [@tas @tas]) ships=(update:index [@p @tas]) content=(set dupdate)]]
           [%request path=path peer=@p]
           [%answer path=path]
-          [%populate path=path doc=document]
+          [%populate path=path doc=document content=json]
           [%accept path=path]
       ==
     ==
@@ -120,7 +125,7 @@
     ==
   ==
 +$  dthread-gather  [path=path peer=@p doc=document]
-+$  dthread-delta   [path=path src=@p doc=document check-space=$?(%.y %.n)]
++$  dthread-delta   [path=path src=@p doc=document content=json check-space=$?(%.y %.n)]
 +$  dthread-sync    [path=path peer=@p settings=dsettings update=[name=@t roles=(update:index [@tas @tas]) ships=(update:index [@p @tas]) content=(set dupdate)] check-space=$?(%.y %.n)]
 +$  fthread-gather  [path=path peer=@p fol=folder]
 +$  fthread-delta   [path=path src=@p fol=folder version=version]

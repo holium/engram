@@ -4,25 +4,19 @@
 /+  engram
 /+  index
 /+  default-agent, dbug, agentio
-:: Notes on how to do access control
-:: Updates are sent to the entire space plus ships
-:: When added via ship there's no way to find it EXCEPT through search or link
-:: -> first search requests if not exists
-:: -> in the front end will need to hide the space when viewing a document added via-ship
-:: -> removing or changing a ship MUST PUSH TO THAT SHIP so they know to hide themselves
-:: When hidden in a space (you are in a space but do not have permission to view it)
-:: -> documents are hidden in the front end
 |%
 +$  versioned-state
   $%  state-0
       state-1
+      state-2
   ==
-+$  state-0  [v=%0 t=localtime h=history s=spaces d=documents f=folders u=(jug id dupdate)]
-+$  state-1  [v=%1 t=localtime h=history s=spaces d=documents f=folders u=updates]
++$  state-0  [v=%0 t=localtime h=history s=spaces d=old-documents f=folders u=(jug id tape)]
++$  state-1  [v=%1 t=localtime h=history s=spaces d=old-documents f=folders u=old-updates]
++$  state-2  [v=%2 t=localtime h=history s=spaces d=documents f=folders u=updates]
 +$  card  card:agent:gall
 --
 %-  agent:dbug
-=|  state-1
+=|  state-2
 =*  state  -
 ^-  agent:gall
 |_  =bowl:gall
@@ -31,7 +25,9 @@
 ::
 ++  on-init
   ^-  (quip card _this)
-  `this
+  :_  this
+  :~  ^-  card  [%pass /engram/build-doc-desk %arvo %c [%merg %engram-docs our.bowl %base da+now.bowl %init]]
+  ==
 ::
 ++  on-save
   ^-  vase
@@ -42,8 +38,21 @@
   ^-  (quip card _this)
   =/  old  !<(versioned-state old-state)
   ?-  -.old
-    %0  `this(state [%1 t.old h.old s.old d.old f.old ^*(updates)])
-    %1  :_  this(state old)
+    %0  =/  ndocs  %-  ~(run by d.old)
+          |=  old-doc=old-document
+          [id.old-doc version.old-doc settings.old-doc snapshots.old-doc]
+        :_  this(state [%2 t.old h.old s.old ndocs f.old ^*(updates)])
+          %+  turn  ~(val by d.old)
+          |=  old-doc=old-document
+          [%pass /engram/save %arvo %c [%info %engram %& [`path`~[~.documents (crip (pathify:index id.old-doc)) ~.json] %ins %json !>((tape:enjs:format content.old-doc))]~]]
+    %1  =/  ndocs  %-  ~(run by d.old)
+          |=  old-doc=old-document
+          [id.old-doc version.old-doc settings.old-doc snapshots.old-doc]
+        :_  this(state [%2 t.old h.old s.old ndocs f.old ^*(updates)])
+          %+  turn  ~(val by d.old)
+          |=  old-doc=old-document
+          [%pass /engram/save %arvo %c [%info %engram %& [`path`~[~.documents (crip (pathify:index id.old-doc)) ~.json] %ins %json !>((tape:enjs:format content.old-doc))]~]]
+    %2  :_  this(state old)
         %+  weld  
           %+  turn  ~(tap in ~(key by s.old))
           |=  space=path
@@ -54,9 +63,9 @@
   ==
 ::
 ++  on-poke
-  |=  [=mark =vase]
+  |=  [=mark v=vase]
   ^-  (quip card _this)
-    =/  act  !<(action vase)
+    =/  act  !<(action v)
     ?-   -.act
       ::
       ::  Leave the update subscription
@@ -68,14 +77,13 @@
       %document
         ?-  -.+.act
         ::
-        :: initialize a new document with a blank document as passed by the frontend
+        :: Initialize a new document with a blank document as passed by the frontend
         ::
           %make
         ?>  =(src.bowl our.bowl)
         =/  doc  :*  
           [our.bowl t]
           version.act
-          content.act
           :*  owner.act 
               name.act 
               space.act
@@ -100,6 +108,7 @@
         =/  hstate  sstate(h (snoc h id))
         :_  hstate(t (add t 1))
         :~  [%pass /space/updateall %agent [our.bowl %engram] %poke %post !>([%space %updateall space.act])]
+            [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.json] %ins %json !>((tape:enjs:format content.act))]~]]
         ==
         ::
         ::  quietly delete a document from state
@@ -139,6 +148,7 @@
         =/  fstate  sstate(f fldrs)
         :_  fstate
         :~  [%pass /space/updateall %agent [our.bowl %engram] %poke %post !>([%space %updateall space.settings.copy])]
+            [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.json] %del ~]~]]
         ==
         ::
         :: modify a document by changing the stored document state
@@ -149,12 +159,11 @@
         ?>  (~(has by d) id)
         =/  old  (~(got by d) id)
         =/  new  
-        =:  content.old  content.act
-            version.old  version.act
-          ==
+        =.  version.old  version.act
         old
         :_  this(d (~(put by d) id new))
         :~  [%pass /document/updateall %agent [our.bowl %engram] %poke %post !>([%document %updateall path.act])]
+            [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.json] %ins %json !>((tape:enjs:format content.act))]~]]
         ==
         ::
         ::
@@ -318,7 +327,10 @@
         =/  doc  (~(got by d) id)
         =/  tid  `@ta`(cat 4 (cat 2 'document-delta-' (scot %p +.id)) (cat 2 (scot %ud -.id) (scot %uv (sham eny.bowl))))
         =/  ta-now  `@ta`(scot %da now.bowl)
-        =/  start-args  [~ `tid byk.bowl(r da+now.bowl) %delta-document !>([path.act src.bowl doc (~(has by s) space.settings.doc)])]
+        =/  filepath  /(scot %p our.bowl)/engram-docs/(scot %da now.bowl)/(crip (pathify:index id))/json
+        ?.  .^(? %cu filepath)  ~&  "<engram>: document does not yet exist on system"  !!
+        =/  content  !<  json  .^(vase %cr filepath)
+        =/  start-args  [~ `tid byk.bowl(r da+now.bowl) %delta-document !>([path.act src.bowl doc content (~(has by s) space.settings.doc)])]
         :_  this
         :~
           [%pass /engram/delta/document/[(cat 2 (scot %p -.id) (scot %ud +.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
@@ -355,9 +367,11 @@
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         ?.  (~(has by d) id)  ~&  "<engram>: {<our.bowl>} does not know about document {<path.act>} yet"  `this
         =/  doc  (~(got by d) id)
-        ::?>  (guardspace:engram [space.settings.doc (molt ~(val by content.roles.settings.doc)) (molt ~(val by content.ships.settings.doc)) (silt `(list @tas)`[%admin %editor %visitor ~]) src.bowl our.bowl now.bowl])
+        =/  filepath  /(scot %p our.bowl)/engram-docs/(scot %da now.bowl)/(crip (pathify:index id))/json
+        ?.  .^(? %cu filepath)  ~&  "Document does not exist in clay :("  !!
+        =/  content  !<  json  .^(vase %cr filepath)
         :_  this
-        :~  [%pass /document/populate %agent [src.bowl %engram] %poke %post !>([%document %populate path.act doc])]
+        :~  [%pass /document/populate %agent [src.bowl %engram] %poke %post !>([%document %populate path.act doc content])]
         ==
         ::
         :: Populate a requested document
@@ -365,7 +379,8 @@
           %populate
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         :_  this(d (~(put by d) id doc.act))
-        :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['space' (path:enjs:format space.settings.doc.act)] ['type' (tape:enjs:format "space")] ['id' (path:enjs:format space.settings.doc.act)]]))]
+        :~  [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.json] %ins %json !>(content.act)]~]]
+            [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['space' (path:enjs:format space.settings.doc.act)] ['type' (tape:enjs:format "space")] ['id' (path:enjs:format space.settings.doc.act)]]))]
         ==
       ==
       %folder
@@ -864,10 +879,13 @@
     ?>  =(src.bowl our.bowl)
     =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
     =/  doc  (~(got by d) id)
+    =/  filepath  /(scot %p our.bowl)/engram-docs/(scot %da now.bowl)/(crip (pathify:index id))/json
+    ?.  .^(? %cu filepath)  ~&  "Document does not exist in clay :("  !!
+    =/  content  !<  json  .^(vase %cr filepath)
     ?:  (~(has by u) id)
       =/  updts  ~(val by (~(got by u) id))
-      ``noun+!>((content:document:enjs:engram [doc updts]))
-    ``noun+!>((content:document:enjs:engram [doc ^*((list dupdate))]))
+      ``noun+!>((content:document:enjs:engram [doc content updts]))
+    ``noun+!>((content:document:enjs:engram [doc content ^*((list dupdate))]))
   ::
       [%x %folder @ @ %list ~]
     ?>  =(src.bowl our.bowl)
@@ -961,16 +979,6 @@
                       (~(got by u) id)
                     |=  [a=dupdate b=(map @p dupdate)]
                   [a (~(put by b) author.a a)]
-
-            ::  check timestamp
-            
-            ::  if w/in the minute mesh 
-            ::=/  nextu  %^  spin  
-            ::             content.update.res  
-            ::          ?:  (~(has by u) id)  (~(got by u) id)  ^*  (map @p dupdate)
-            ::        |=  [a=dupdate b=(map @p dupdate)]
-            ::        [a (~(put by b) author.a a)]
-                    ::(~(put by b) id (~(put by (~(got by b) id)) author.a a))
             :_  dstate(u (~(put by u) id +.nextu))
             :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['space' (path:enjs:format space.settings.doc)] ['type' (tape:enjs:format "document")] ['id' (path:enjs:format path.res)]]))]
             ==
@@ -1036,7 +1044,17 @@
       ==
     ==
   ==
-++  on-arvo   on-arvo:def
+++  on-arvo
+  |=  [=wire =sign-arvo]
+  ?+  -.sign-arvo  ~|  "unexpected system response {<-.sign-arvo>} to {<dap.bowl>} on wire {<wire>}"  !!
+      %clay
+    ?+  -.+.sign-arvo  ~|  "unexpected system response {<-.sign-arvo>} to {<dap.bowl>} on wire {<wire>}"  !!
+        %mere
+      ?:  -.+.+.sign-arvo
+        ~&  "<engram>: set up storage desk"  `this
+      ~&  "<engram>: skipping storage desk setup"  `this
+    ==
+  ==
 ++  on-fail   
   |=  [=term =tang]
   ~&  "Fail with term {<term>}"
