@@ -83,6 +83,8 @@
         ::
           %make
         ?>  =(src.bowl our.bowl)
+        ~&  "Make doc:"
+        ~&  act
         =/  doc  :*  
           [our.bowl t]
           version.act
@@ -97,22 +99,27 @@
         ::
         =/  id  [our.bowl t]
         =/  state  this(d (~(put by d) id doc))
+        ~&  "Built metadata"
         =/  oldspc
         ?:  (~(has by s) space.act)
           (~(got by s) space.act)
         =/  initspc  ^*  space
+        ~&  "Built space"
         =.  roles.initspc  (insert:index roles.initspc ^-([@tas @tas] [%member %editor]) our.bowl)
         initspc
         =/  newspc
         =.  content.oldspc  (insert:index content.oldspc [id %document] our.bowl)
           oldspc
+        ~&  "Added document to space"
         =/  sstate  state(s (~(put by s) space.act newspc))
         =/  hstate  sstate(h (snoc h id))
         =/  content  ^*  (index:index json)
+        ~&  "Initialized content"
         =/  ncontent  (insert:index content (tape:enjs:format content.act) our.bowl)
+        ~&  "Built content"
         :_  hstate(t (add t 1))
         :~  [%pass /space/updateall %agent [our.bowl %engram] %poke %post !>([%space %updateall space.act])]
-            [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.noun] %ins %noun !>(ncontent)]~]]
+            [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.json] %ins %json !>((enjs:index ncontent))]~]]
         ==
         ::
         ::  quietly delete a document from state
@@ -165,13 +172,13 @@
         =/  new  
         =.  version.old  version.act
         old
-        =/  filepath  /(scot %p our.bowl)/engram-docs/(scot %da now.bowl)/(crip (pathify:index id))/noun
+        =/  filepath  /(scot %p our.bowl)/engram-docs/(scot %da now.bowl)/(crip (pathify:index id))/json
         ?.  .^(? %cu filepath)  ~&  "Document does not exist in clay :("  !!
-        =/  content  !<  dcontent  .^(vase %cr filepath)
+        =/  content  %-  dejs:index  !<  json  .^(vase %cr filepath)
         =/  ncontent  (insert:index content (tape:enjs:format content.act) our.bowl)
         :_  this(d (~(put by d) id new))
         :~  [%pass /document/updateall %agent [our.bowl %engram] %poke %post !>([%document %updateall path.act])]
-            [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.noun] %ins %noun !>(ncontent)]~]]
+            [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.json] %ins %json !>((enjs:index ncontent))]~]]
         ==
         ::
         ::
@@ -321,9 +328,9 @@
           :~  [%pass /document/request %agent [our.bowl %engram] %poke %post !>([%document %request path.act peer.act])]
           ==
         :: retrieve content to check version
-        =/  filepath  /(scot %p our.bowl)/engram-docs/(scot %da now.bowl)/(crip (pathify:index id))/noun
+        =/  filepath  /(scot %p our.bowl)/engram-docs/(scot %da now.bowl)/(crip (pathify:index id))/json
         ?.  .^(? %cu filepath)  ~&  "<engram>: document does not yet exist on system"  !!
-        =/  content  !<  dcontent  .^(vase %cr filepath)
+        =/  content  %-  dejs:index  !<  json  .^(vase %cr filepath)
         :_  this
         :~  [%pass /engram/delta %agent [peer.act %engram] %poke %post !>([%document %delta path.act version.content])]
         ==
@@ -334,20 +341,16 @@
         ::~&  "DELTA-- from {<src.bowl>} for {<path.act>}"
         ?:  =(src.bowl our.bowl)  `this
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
-        ?.  (~(has by d) id)  ~&  "<engram>: {<our.bowl>} does not know about document {<path.act>} yet"  `this
         ::  get metadata
+        ?.  (~(has by d) id)  ~&  "<engram>: {<our.bowl>} does not know about document {<path.act>} yet"  `this
         =/  doc  (~(got by d) id)
-
-        ::=/  tid  `@ta`(cat 4 (cat 2 'document-delta-' (scot %p +.id)) (cat 2 (scot %ud -.id) (scot %uv (sham eny.bowl))))
-        ::=/  ta-now  `@ta`(scot %da now.bowl)
-
         :: get content
         =/  filepath  /(scot %p our.bowl)/engram-docs/(scot %da now.bowl)/(crip (pathify:index id))/json
         ?.  .^(? %cu filepath)  ~&  "<engram>: document does not yet exist on system"  !!
-        =/  content  !<  dcontent  .^(vase %cr filepath)
+        =/  content  %-  dejs:index  !<  json  .^(vase %cr filepath)
         ?:  =(version.content version.act)  ~&  "<engram>: peer is up to date"  `this
+        ::
         ::  assemble update
-        ::=/  updates  (silt ~[[author=our timestamp=now content=content]])
         =/  updates  (delta:index content version.act)
         =/  roles  (delta:index roles.settings.doc ^*(version:index))
         =/  ships  (delta:index ships.settings.doc ^*(version:index))
@@ -355,12 +358,6 @@
         :_  this
         :~  [%pass /engram/delta %agent [src.bowl %engram] %poke %post !>([%document %sync path.act payload])]
         ==
-        ::=/  start-args  [~ `tid byk.bowl(r da+now.bowl) %delta-document !>([path.act src.bowl doc content (~(has by s) space.settings.doc)])]
-        :::_  this
-        :::~
-        ::  [%pass /engram/delta/document/[(cat 2 (scot %p -.id) (scot %ud +.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
-        ::  [%pass /engram/delta/document/[(cat 2 (scot %p -.id) (scot %ud +.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
-        ::==
         ::
         ::  Sync updates with current document
         ::
@@ -376,23 +373,14 @@
           doc
         =/  dstate  this(d (~(put by d) id ndoc))
         :: Content Changes
-        =/  filepath  /(scot %p our.bowl)/engram-docs/(scot %da now.bowl)/(crip (pathify:index id))/noun
+        =/  filepath  /(scot %p our.bowl)/engram-docs/(scot %da now.bowl)/(crip (pathify:index id))/json
         ?.  .^(? %cu filepath)  ~&  "<engram>: document does not yet exist on system"  !!
-        =/  content  !<  dcontent  .^(vase %cr filepath)
+        =/  content  %-  dejs:index  !<  json  .^(vase %cr filepath)
         =/  ncontent  (apply:index content content.update.act)
         :_  dstate
         :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['space' (path:enjs:format space.settings.doc)] ['type' (tape:enjs:format "document")] ['id' (path:enjs:format path.act)]]))]
-            [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.noun] %ins %noun !>(ncontent)]~]]
+            [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.json] %ins %json !>((enjs:index ncontent))]~]]
         ==
-        ::  Thread Sync
-        ::=/  tid  `@ta`(cat 4 (cat 2 'document-sync-' (scot %p +.id)) (cat 2 (scot %ud -.id) (scot %uv (sham eny.bowl))))
-        ::=/  ta-now  `@ta`(scot %da now.bowl)
-        ::=/  start-args  [~ `tid byk.bowl(r da+now.bowl) %sync-document !>([path.act src.bowl settings.doc update.act (~(has by s) space.settings.doc)])]
-        :::_  this
-        :::~  
-        ::  [%pass /engram/sync/document/[(cat 2 (scot %p -.id) (scot %ud +.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %watch /thread-result/[tid]]
-        ::  [%pass /engram/sync/document/[(cat 2 (scot %p -.id) (scot %ud +.id))]/[(scot %p src.bowl)]/[ta-now] %agent [our.bowl %spider] %poke %spider-start !>(start-args)]
-        ::==
         ::
         :: Request a document you don't have
         ::
@@ -922,9 +910,9 @@
     ?>  =(src.bowl our.bowl)
     =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
     =/  doc  (~(got by d) id)
-    =/  filepath  /(scot %p our.bowl)/engram-docs/(scot %da now.bowl)/(crip (pathify:index id))/noun
+    =/  filepath  /(scot %p our.bowl)/engram-docs/(scot %da now.bowl)/(crip (pathify:index id))/json
     ?.  .^(? %cu filepath)  ~&  "Document does not exist in clay :("  !!
-    =/  content  !<  dcontent  .^(vase %cr filepath)
+    =/  content  %-  dejs:index  !<  json  .^(vase %cr filepath)
     ``noun+!>((content:document:enjs:engram [doc content]))
   ::
       [%x %folder @ @ %list ~]
