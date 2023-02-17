@@ -127,7 +127,9 @@
           %softdelete
         ?>  =(src.bowl our.bowl)
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
-        `this(d (~(del by d) id))
+        :_  this(d (~(del by d) id))
+        :~  [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.json] %del ~]~]]
+        ==
         ::
         ::  delete a document
         ::
@@ -159,7 +161,7 @@
         =/  fstate  sstate(f fldrs)
         :_  fstate
         :~  [%pass /space/updateall %agent [our.bowl %engram] %poke %post !>([%space %updateall space.settings.copy])]
-            [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.noun] %del ~]~]]
+            [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.json] %del ~]~]]
         ==
         ::
         :: modify a document by changing the stored document state
@@ -914,6 +916,11 @@
     ?.  .^(? %cu filepath)  ~&  "Document does not exist in clay :("  !!
     =/  content  %-  dejs:index  !<  json  .^(vase %cr filepath)
     ``noun+!>((content:document:enjs:engram [doc content]))
+      [%x %document @ @ %version ~]
+    ?>  =(src.bowl our.bowl)
+    =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
+    =/  doc  (~(got by d) id)
+    ``noun+!>((tape:enjs:format version.doc))
   ::
       [%x %folder @ @ %list ~]
     ?>  =(src.bowl our.bowl)

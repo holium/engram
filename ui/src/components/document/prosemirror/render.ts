@@ -50,6 +50,7 @@ export default function (
         doc.gc = false;
 
         // Publish the push update
+        console.warn("document response: ", res)
         pushUpdate = (id: string, update: string, clear?: boolean) => {
           if((doc as any).documentId == id) {
             const content = new Uint8Array(JSON.parse(update));
@@ -67,7 +68,7 @@ export default function (
             }
           }
         }
-        
+
         // Load the document
         Object.keys(res).map((key: string) => { return res[key] }).forEach((update: any) => {
           pushUpdate(path, update);
@@ -86,19 +87,24 @@ export default function (
               imageview,
               find(openFinder),
               save((view) => {
-                const version = Y.encodeStateVector(doc);
-                const content = Y.encodeStateAsUpdate(doc);
-                const snapshot = Y.snapshot(doc);
-                store.dispatch("document/save", {
-                  id: path,
-                  version: version,
-                  content: content
-                });
-        
-                store.dispatch("document/snap", {
-                  id: path,
-                  snapshot: snapshot
-                });
+                (window as any).urbit.scry({ app: "engram", path: `/document${path}/version`}).then((oldversion: string) => {
+                  const old = new Uint8Array(JSON.parse(oldversion));
+                  console.warn("got old version: ", old);
+                  const version = Y.encodeStateVector(doc);
+                  const content = old.length > 0 ? Y.encodeStateAsUpdate(doc, old) : Y.encodeStateAsUpdate(doc);
+                  const snapshot = Y.snapshot(doc);
+                  store.dispatch("document/save", {
+                    id: path,
+                    version: version,
+                    content: content
+                  });
+                  /*
+                  store.dispatch("document/snap", {
+                    id: path,
+                    snapshot: snapshot
+                  });
+                  */
+                })
               }),
               // CRDT
               ySyncPlugin(type),
