@@ -402,7 +402,7 @@
         =/  doc  (~(got by d) id)
         =/  filepath  /(scot %p our.bowl)/engram-docs/(scot %da now.bowl)/(crip (pathify:index id))/json
         ?.  .^(? %cu filepath)  ~&  "<engram>: {<our.bowl>} does not exist in clay :("  !!
-        =/  content  !<  noun  .^(vase %cr filepath)
+        =/  content  !<  json  .^(vase %cr filepath)
         :_  this
         :~  [%pass /document/populate %agent [src.bowl %engram] %poke %post !>([%document %populate path.act doc content])]
         ==
