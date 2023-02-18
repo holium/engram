@@ -24,7 +24,7 @@
         [%update (ot ~[id+pa])]
         [%gatherall (ot ~[id+pa])]
         [%gather (ot ~[id+pa peer+(se %p)])]
-        [%accept (ot ~[id+pa])]
+        ::[%accept (ot ~[id+pa])]
       ==
       :-  %folder  %-  of  :~
         [%make (ot ~[owner+(se %p) name+so space+pa roles+(op sym (se %tas)) ships+(op fed:ag (se %tas))])]
@@ -183,15 +183,12 @@
       ==
     ++  content
       =,  enjs:format
-      |=  [doc=document:engram content=json updts=(list dupdate:engram)]
+      |=  [doc=document:engram content=dcontent:engram]
       ^-  json
-      %-  pairs  :~
-        ['content' content]
-        :-  'updates'  %-  pairs
-          %+  turn  updts
-          |=  updt=dupdate:engram
-          [(scot %da timestamp.updt) (pairs ~[['author' (tape (scow %p author.updt))] ['content' content.updt]])]
-      ==
+      %-  pairs  
+        %+  turn  ~(tap by content.content)
+          |=  [id=id:index item=json]
+          [(crip (stringify:index id)) item]
     ++  snapshots
       =,  enjs:format
       |=  snaps=(set dsnapshot:engram)
@@ -264,4 +261,28 @@
         (~(has in levels) (~(got by roles) a))
     ==
   ==
+++  online
+  |=  [peers=(list @p) our=@p now=@da]
+  =/  accessible  .^((map @p ?(%alien %known)) %ax [(scot %p our) %$ (scot %da now) %peers ~])
+  =/  available  ~(tap in (~(int in (silt peers)) ~(key by accessible)))
+  =/  i  0
+  =/  reqs  %+  skim  
+    %+  turn  available  
+      |=  peer=@p
+      =/  status  .^(ship-state:ames %ax [(scot %p our) %$ (scot %da now) %peers (scot %p peer) ~])
+      ?+  -.status  [%.n peer %lost]
+          %known
+        =/  qos  qos.status
+        ?+  -.qos  [%.n peer %lost]
+            %live  [%.y peer %live]
+            %dead  [(lth (sub now +.qos) 60.000) peer %dead]
+        ==
+      ==
+    |=  p=[? @p @tas]  -.p
+  %+  turn
+    ?:  (lte (lent reqs) 5)  reqs
+      =/  kreqs  %+  skim  reqs  |=  p=[? @p @tas]  =(+.+.p %known)
+      ?:  (lte (lent kreqs) 3)  reqs
+      kreqs
+  |=  p=[? @p @tas]  -.+.p
 --

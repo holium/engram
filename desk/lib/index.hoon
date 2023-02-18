@@ -13,6 +13,42 @@
 ++  pathify
   |=  id=id
   (weld (trip (scot %p -.id)) (weld "-" (trip (scot %ud +.id))))
+++  enjs
+  |=  indx=(index json)
+  =,  enjs:format
+  ^-  json
+  %-  pairs
+    :~  :-  'version'
+          %-  pairs  %+  turn  ~(tap by version.indx)
+            |=  [ship=@p clk=@u]
+            [(scot %p ship) (tape (trip (scot %ud ^-(@ud clk))))]
+        :-  'content'
+          %-  pairs  %+  turn  ~(tap by content.indx)
+            |=  [id=id:index item=json]
+            [(crip (stringify:index id)) item]
+        :-  'dels'
+          %-  pairs  %+  turn  ~(tap by dels.indx)
+            |=  [id=id:index item=id:index]
+            [(crip (stringify:index id)) (tape (stringify:index id))]
+    ==
+++  dejs
+  |=  jon=json
+  =,  dejs:format
+  ^-  (index json)
+  =/  parsed  %.  jon
+    (ot ~[version+(om nu) content+(om sa) dels+(om pa)])
+  =/  version  %-  molt  %+  turn  ~(tap by -.parsed)  
+      |=  [ship=@t clk=@ud]
+      [(slav %p ship) ^-(@u clk)]
+  =/  content  %-  molt  %+  turn  ~(tap by -.+.parsed)  
+      |=  [id=@t item=tape]
+      =/  p  (stab id)
+      [[(slav %p -.p) (slav %ud -.+.p)] (tape:enjs:format item)]
+  =/  dels  %-  molt  %+  turn  ~(tap by +.+.parsed)  
+      |=  [tmstamp=@t id=path]
+      =/  t  (stab tmstamp)
+      [[(slav %p -.t) (slav %ud -.+.t)] [(slav %p -.id) (slav %ud -.+.id)]]
+  [version content dels]
 ++  delta
   |*  [state=(index) remote=version]
   :-
