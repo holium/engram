@@ -261,4 +261,26 @@
         (~(has in levels) (~(got by roles) a))
     ==
   ==
+++  online
+  |=  [peers=(list @p) now=@da]
+  =/  i  0
+  =/  reqs  %+  skim  
+    %+  turn  peers  
+      |=  peer=@p
+      =/  status  .^(ship-state:ames %ax /=//=/peers/(scot %p peer))
+      ?+  -.status  [%.n peer %lost]
+          %known
+        =/  qos  qos.status
+        ?+  -.qos  [%.n peer %lost]
+            %live  [%.y peer %live]
+            %dead  [(lth (sub now +.qos) 60.000) peer %dead]
+        ==
+      ==
+    |=  p=[? @p @tas]  -.p
+  %+  turn
+    ?:  (lte (lent reqs) 5)  reqs
+      =/  kreqs  %+  skim  reqs  |=  p=[? @p @tas]  =(+.+.p %known)
+      ?:  (lte (lent kreqs) 3)  reqs
+      kreqs
+  |=  p=[? @p @tas]  -.+.p
 --

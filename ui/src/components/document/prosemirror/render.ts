@@ -56,15 +56,6 @@ export default function (
             const content = new Uint8Array(JSON.parse(update));
             if(content.length > 0) {
               Y.applyUpdate(doc, content);
-              //const snapshot = Y.snapshot(doc);
-              //store.dispatch("document/snap", {
-              //  id: path,
-              //  author: update.author,
-              //  snapshot: snapshot
-              //});
-
-              //if(clear) 
-              //  store.dispatch("document/acceptupdates", path);
             }
           }
         }
@@ -98,12 +89,6 @@ export default function (
                     version: version,
                     content: content
                   });
-                  /*
-                  store.dispatch("document/snap", {
-                    id: path,
-                    snapshot: snapshot
-                  });
-                  */
                 })
               }),
               // CRDT
