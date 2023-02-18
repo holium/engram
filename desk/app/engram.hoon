@@ -412,7 +412,7 @@
           %populate
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         :_  this(d (~(put by d) id doc.act))
-        :~  [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.noun] %ins %noun !>(content.act)]~]]
+        :~  [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.json] %ins %json !>(content.act)]~]]
             [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['space' (path:enjs:format space.settings.doc.act)] ['type' (tape:enjs:format "space")] ['id' (path:enjs:format space.settings.doc.act)]]))]
         ==
       ==
