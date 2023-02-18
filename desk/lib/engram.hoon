@@ -262,14 +262,14 @@
     ==
   ==
 ++  online
-  |=  [peers=(list @p) now=@da]
-  =/  accessible  .^((map @p ?(%alien %known)) %ax /=//=/peers)
+  |=  [peers=(list @p) our=@p now=@da]
+  =/  accessible  .^((map @p ?(%alien %known)) %ax [(scot %p our) %$ (scot %da now) %peers ~])
   =/  available  ~(tap in (~(int in (silt peers)) ~(key by accessible)))
   =/  i  0
   =/  reqs  %+  skim  
     %+  turn  available  
       |=  peer=@p
-      =/  status  .^(ship-state:ames %ax /=//=/peers/(scot %p peer))
+      =/  status  .^(ship-state:ames %ax [(scot %p our) %$ (scot %da now) %peers (scot %p peer) ~])
       ?+  -.status  [%.n peer %lost]
           %known
         =/  qos  qos.status
