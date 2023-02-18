@@ -92,7 +92,7 @@
           [%sync path=path update=[name=@t roles=(update:index [@tas @tas]) ships=(update:index [@p @tas]) content=(update:index json)]]
           [%request path=path peer=@p]
           [%answer path=path]
-          [%populate path=path doc=document content=(index json)]
+          [%populate path=path doc=document content=json]
           ::[%accept path=path]
       ==
     ==
