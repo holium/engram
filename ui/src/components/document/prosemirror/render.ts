@@ -50,7 +50,6 @@ export default function (
         doc.gc = false;
 
         // Publish the push update
-        console.warn("document response: ", res)
         pushUpdate = (id: string, update: string, clear?: boolean) => {
           if((doc as any).documentId == id) {
             const content = new Uint8Array(JSON.parse(update));
