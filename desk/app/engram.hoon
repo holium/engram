@@ -278,9 +278,8 @@
             %members
           =/  directpeers  %+  turn  ~(val by content.ships.settings.doc)  |=  a=[@p @tas]  -.a
           =/  spacepeers  %~  tap  in  %~  key  by  ^-  members:membership  +.spacemembers
-          =/  peers  (weld directpeers spacepeers)
           :_  this
-          %+  turn  (online:engram [peers now.bowl])
+          %+  turn  (online:engram [(weld directpeers spacepeers) now.bowl])
             |=  peer=@p 
             [%pass /document/gather %agent [our.bowl %engram] %poke %post !>([%document %gather path.act peer])]
         ==
@@ -590,7 +589,7 @@
           =/  directpeers  %+  turn  ~(val by content.ships.fold)  |=  a=[@p @tas]  -.a
           =/  spacepeers  %~  tap  in  %~  key  by  ^-  members:membership  +.spacemembers
           :_  this
-          %+  turn  (weld directpeers spacepeers)
+          %+  turn  (online:engram [(weld directpeers spacepeers) now.bowl])
             |=  peer=@p
             [%pass /engram/folder/gather %agent [our.bowl %engram] %poke %post !>([%folder %gather path.act peer])]
         ==
@@ -765,7 +764,7 @@
           =/  directpeers  %+  turn  ~(val by content.ships.spc)  |=  a=[@p @tas]  -.a
           =/  spacepeers  %~  tap  in  %~  key  by  ^-  members:membership  +.spacemembers
           :_  this
-          %+  turn  (weld directpeers spacepeers)
+          %+  turn  (online:engram [(weld directpeers spacepeers) now.bowl])
             |=  peer=@p
             [%pass /engram/space/gather %agent [our.bowl %engram] %poke %post !>([%space %gather space.act peer])]
         ==
