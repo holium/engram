@@ -20,8 +20,8 @@
   %-  pairs
     :~  :-  'version'
           %-  pairs  %+  turn  ~(tap by version.indx)
-            |=  [ship=@p clk=@u]
-            [(scot %p ship) (tape (trip (scot %ud ^-(@ud clk))))]
+            |=  [ship=@p clk=@ud]
+            [(scot %p ship) (tape (trip (scot %ud clk)))]
         :-  'content'
           %-  pairs  %+  turn  ~(tap by content.indx)
             |=  [id=id:index item=json]
@@ -39,7 +39,7 @@
     (ot ~[version+(om nu) content+(om sa) dels+(om pa)])
   =/  version  %-  molt  %+  turn  ~(tap by -.parsed)  
       |=  [ship=@t clk=@ud]
-      [(slav %p ship) ^-(@u clk)]
+      [(slav %p ship) clk]
   =/  content  %-  molt  %+  turn  ~(tap by -.+.parsed)  
       |=  [id=@t item=tape]
       =/  p  (stab id)
