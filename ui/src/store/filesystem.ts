@@ -558,7 +558,7 @@ const actions: ActionTree<FileSysState, RootState> = {
         if(payload.type == "document") {
             if(payload.id == `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`) {
                 (window as any).urbit.scry({ app: "engram", path: `/document${payload.id}/content`}).then((res: any) => {
-                    Object.keys(res.updates).map((key: string) => { return res.updates[key] }).forEach((update: any) => {
+                    Object.keys(res).map((key: string) => { return res[key] }).forEach((update: any) => {
                         pushUpdate(payload.id, update, true);
                     });
                 })
