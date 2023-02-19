@@ -27,7 +27,7 @@
     :~  :-  'version'
           %-  pairs  %+  turn  ~(tap by version.indx)
             |=  [ship=@p clk=@ud]
-            [(scot %p ship) (tape (trip (scot %ud clk)))]
+            [(scot %p ship) (numb clk)]
         :-  'content'
           %-  pairs  %+  turn  ~(tap by content.indx)
             |=  [id=id:index item=json]
