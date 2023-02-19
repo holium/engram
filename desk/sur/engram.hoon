@@ -89,7 +89,7 @@
           [%update path=path]
           [%gather path=path peer=@p]
           [%delta path=path version=version]
-          [%sync path=path update=[name=@t roles=(update:index [@tas @tas]) ships=(update:index [@p @tas]) content=dcontent]]
+          [%sync path=path update=[name=@t roles=(update:index [@tas @tas]) ships=(update:index [@p @tas]) content=(update json)]]
           [%request path=path peer=@p]
           [%answer path=path]
           [%populate path=path doc=document content=json]
