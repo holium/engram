@@ -322,7 +322,6 @@
         ?>  =(src.bowl our.bowl)
         ?:  =(our.bowl peer.act)
           `this
-        ~&  "<engram>: gather {<path.act>} from {<peer.act>}"
         =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
         ?.  (~(has by d) id)
           :: If we do not have this document request it
@@ -340,7 +339,6 @@
         ::  Assemble and reply with updates (pokes their sync)
         ::
           %delta
-        ~&  "DELTA-- from {<src.bowl>} for {<act>}"
         ?:  =(src.bowl our.bowl)  `this
         =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
         ::  get metadata
@@ -364,7 +362,6 @@
         ::  Sync updates with current document
         ::
           %sync
-        ~&  "SYNC-- from {<src.bowl>} for {<act>}"
         =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
         ::  Metadata Changes
         =/  doc  (~(got by d) id)

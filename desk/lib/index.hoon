@@ -16,12 +16,6 @@
 ++  enjs
   |=  indx=(index json)
   =,  enjs:format
-  ~&  "Encoding document version: {<version.indx>}"
-  ~&  "to: "
-  ~&  :-  'version'
-          %-  pairs  %+  turn  ~(tap by version.indx)
-            |=  [ship=@p clk=@ud]
-            [(scot %p ship) (tape (trip (scot %ud clk)))]
   ^-  json
   %-  pairs
     :~  :-  'version'
