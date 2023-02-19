@@ -36,7 +36,7 @@
   =,  dejs:format
   ^-  (index json)
   =/  parsed  %.  jon
-    (ot ~[version+(om nu) content+(om sa) dels+(om pa)])
+    (ot ~[version+(om ni) content+(om sa) dels+(om pa)])
   =/  version  %-  molt  %+  turn  ~(tap by -.parsed)  
       |=  [ship=@t clk=@ud]
       [(slav %p ship) clk]
