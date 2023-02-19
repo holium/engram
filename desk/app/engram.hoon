@@ -340,7 +340,7 @@
         ::  Assemble and reply with updates (pokes their sync)
         ::
           %delta
-        ::~&  "DELTA-- from {<src.bowl>} for {<path.act>}"
+        ~&  "DELTA-- from {<src.bowl>} for {<act>}"
         ?:  =(src.bowl our.bowl)  `this
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         ::  get metadata
@@ -364,6 +364,7 @@
         ::  Sync updates with current document
         ::
           %sync
+        ~&  "SYNC-- from {<src.bowl>} for {<act>}"
         =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         ::  Metadata Changes
         =/  doc  (~(got by d) id)
