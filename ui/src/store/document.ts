@@ -131,8 +131,10 @@ const actions: ActionTree<DocumentState, RootState> = {
     versions({ commit }, payload: string): Promise<void> {
       return new Promise((resolve) => {
         commit("reset");
+        console.warn("does it even run?")
         (window as any).urbit.scry({ app: "engram", path: `/document${payload}/snapshots`}).then((response: any) => {
           (window as any).urbit.scry({ app: "engram", path: `/document${payload}/content`}).then((content: any) => {
+            console.warn("got within the scries?");
             Object.keys(response).sort((a, b) => { return response[b].timestamp - response[a].timestamp }).forEach((timestamp: string, index: number, arr: Array<any>) => {
               if(response[timestamp].content.length == 0) {
                 const doc = new Y.Doc();
@@ -151,7 +153,7 @@ const actions: ActionTree<DocumentState, RootState> = {
                 (window as any).urbit.poke({
                   app: "engram",
                   mark: "post",
-                  json: { "document": { "snap": { id: payload, key: timestamp, content: encodeSnapshot(snapshot) }}}
+                  json: { "document": { "snap": { id: payload, key: timestamp, content: JSON.stringify(Array.from(encodeSnapshot(snapshot))) }}}
                 })
               } else {
                 commit("snap", {
