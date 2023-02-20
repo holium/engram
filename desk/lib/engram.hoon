@@ -17,7 +17,7 @@
         [%make (ot ~[owner+(se %p) name+so space+pa content+sa version+sa roles+(op sym (se %tas)) ships+(op fed:ag (se %tas))])]
         [%delete (ot ~[id+pa])]
         [%save (ot ~[id+pa content+sa version+sa])]
-        [%snap (ot ~[id+pa snapshot+(ot ~[timestamp+di author+(se %p) content+sa])])]
+        [%snap (ot ~[id+pa key+pa content+sa])]
         [%rename (ot ~[id+pa name+so])]
         [%addperm (ot ~[id+pa perm+so level+(se %tas) type+(se %tas)])]
         [%removeperm (ot ~[id+pa timestamp+pa type+(se %tas)])]
@@ -190,14 +190,16 @@
           |=  [id=id:index item=json]
           [(crip (stringify:index id)) item]
     ++  snapshots
-      =,  enjs:format
-      |=  snaps=(set dsnapshot:engram)
+      |=  snaps=(map path dsnapshot:engram)
       ^-  json
-      %-  pairs  %~  tap  in
-        ^-  (set [@t json])
-        %-  ~(run in snaps)
-        |=  snap=dsnapshot:engram
-        [(scot %da timestamp.snap) (pairs ~[['author' (tape (scow %p author.snap))] ['timestamp' (time timestamp.snap)] ['content' (tape data.snap)]])]
+      %-  pairs:enjs:format  %+  turn  ~(tap by snaps)
+        |=  [key=path snap=dsnapshot:engram]
+        =/  p  [`@p`(slav %p -.key) (slav %ud -.+.key)]
+        :-  (crip (stringify:index p))  %-  pairs:enjs:format 
+          :~  ['timestamp' (time:enjs:format timestamp.snap)] 
+             ['author' (ship:enjs:format author.snap)] 
+             ['content' (tape:enjs:format content.snap)]
+          ==
     --
   ++  folder
     |%

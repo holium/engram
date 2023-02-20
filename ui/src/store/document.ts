@@ -132,14 +132,35 @@ const actions: ActionTree<DocumentState, RootState> = {
       return new Promise((resolve) => {
         commit("reset");
         (window as any).urbit.scry({ app: "engram", path: `/document${payload}/snapshots`}).then((response: any) => {
-          Object.keys(response).sort((a, b) => { return response[b].timestamp - response[a].timestamp}).forEach((timestamp: string) => {
-            commit("snap", {
-              author: response[timestamp].author,
-              snapshot: decodeSnapshot(new Uint8Array(JSON.parse(response[timestamp].content))),
-              timestamp: response[timestamp].timestamp,
-              date: new Date(response[timestamp].timestamp),
+          (window as any).urbit.scry({ app: "engram", path: `/document${payload}/content`}).then((content: any) => {
+            Object.keys(response).sort((a, b) => { return response[b].timestamp - response[a].timestamp }).forEach((timestamp: string, index: number, arr: Array<any>) => {
+              const content = response[timestamp].content;
+              if(content.length == 0) {
+                const doc = new Y.Doc();
+                doc.clientID = 0;
+                doc.gc = false;
+                for (let i = 0; i < index; i++) {
+                  const update = new Uint8Array(JSON.parse(content[response[timestamp].timestamp]));
+                  if(update.length > 0) {
+                    Y.applyUpdate(doc, update);
+                  }
+                }
+                const snapshot = Y.snapshot(doc);
+                (window as any).urbit.poke({
+                  app: "engram",
+                  mark: "post",
+                  json: { "document": { "snap": { id: payload, key: response[timestamp].timestamp, content: encodeSnapshot(snapshot) }}}
+                })
+              } else {
+                commit("snap", {
+                  author: response[timestamp].author,
+                  snapshot: decodeSnapshot(new Uint8Array(JSON.parse(response[timestamp].content))),
+                  timestamp: response[timestamp].timestamp,
+                  date: new Date(response[timestamp].timestamp),
+                });
+              }
             });
-          })
+          });
         });
       })
     },
