@@ -47,8 +47,7 @@ const getters: GetterTree<DocumentState, RootState> = {
     return (window as any).urbit.scry({ app: "engram", path: `/document${docId}/content`})
   },
   versions: (state): Array<DocumentVersion> => {
-    //return state.revisions;
-    return [];
+    return state.revisions;
   },
   version: (state) => (i: number): DocumentVersion => {
     return state.revisions[i];
