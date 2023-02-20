@@ -148,9 +148,9 @@ const actions: ActionTree<DocumentState, RootState> = {
                 for (let i = 0; i < index; i++) {
                   console.warn("update:", content[timestamp])
                   //const update = new Uint8Array(JSON.parse(content[timestamp]));
-                  if(update.length > 0) {
+                  //if(update.length > 0) {
                     //Y.applyUpdate(doc, update);
-                  }
+                  //}
                 }
                 /*
                 const snapshot = Y.snapshot(doc);
