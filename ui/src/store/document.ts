@@ -134,14 +134,12 @@ const actions: ActionTree<DocumentState, RootState> = {
         (window as any).urbit.scry({ app: "engram", path: `/document${payload}/snapshots`}).then((response: any) => {
           (window as any).urbit.scry({ app: "engram", path: `/document${payload}/content`}).then((content: any) => {
             Object.keys(response).sort((a, b) => { return response[b].timestamp - response[a].timestamp }).forEach((timestamp: string, index: number, arr: Array<any>) => {
-              const content = response[timestamp].content;
-              if(content.length == 0) {
+              if(response[timestamp].content.length == 0) {
                 const doc = new Y.Doc();
                 doc.clientID = 0;
                 doc.gc = false;
                 for (let i = 0; i < index; i++) {
                   const update = new Uint8Array(JSON.parse(content[timestamp]));
-                  console.log("booting update: ", update);
                   if(update.length > 0) {
                     Y.applyUpdate(doc, update);
                   }
