@@ -62,7 +62,7 @@ import VersionShipLabel from './VersionShipLabel.vue';
 export default defineComponent({
     name: "VersionDock",
     components: {
-        //VersionItem,
+        VersionItem,
         VersionShipLabel,
     },
     created: function() {
