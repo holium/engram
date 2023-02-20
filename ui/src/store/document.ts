@@ -140,7 +140,7 @@ const actions: ActionTree<DocumentState, RootState> = {
                 doc.clientID = 0;
                 doc.gc = false;
                 for (let i = 0; i < index; i++) {
-                  const update = new Uint8Array(JSON.parse(content[response[timestamp].timestamp]));
+                  const update = new Uint8Array(JSON.parse(content[timestamp]));
                   if(update.length > 0) {
                     Y.applyUpdate(doc, update);
                   }
@@ -149,7 +149,7 @@ const actions: ActionTree<DocumentState, RootState> = {
                 (window as any).urbit.poke({
                   app: "engram",
                   mark: "post",
-                  json: { "document": { "snap": { id: payload, key: response[timestamp].timestamp, content: encodeSnapshot(snapshot) }}}
+                  json: { "document": { "snap": { id: payload, key: timestamp, content: encodeSnapshot(snapshot) }}}
                 })
               } else {
                 commit("snap", {
