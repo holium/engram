@@ -78,19 +78,15 @@ export default defineComponent({
             return store.getters['document/previewing'];
         },
         snapshots: function(): Array<VersionMeta> {
-            return [];
-            //return store.getters['document/versions'];
+            return store.getters['document/versions'];
         },
         ships: function(): Array<Patp> {
-            return [];
-            /*
             return Array.from(
                 new Set(
                     store.getters['document/versions'].map((revision: VersionMeta) => revision.author)
                     .filter((ship: string) => ship != `~${(window as any).ship}`)
                 )
             )
-            */
         },
         ship: function(): string {
             return (window as any).ship
