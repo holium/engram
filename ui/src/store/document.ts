@@ -138,7 +138,10 @@ const actions: ActionTree<DocumentState, RootState> = {
                 const doc = new Y.Doc();
                 doc.clientID = 0;
                 doc.gc = false;
+                console.warn("snapshots: ", response);
+                console.warn("content: ", content);
                 for (let i = 0; i < index; i++) {
+                  console.warn("update:", content[timestamp])
                   const update = new Uint8Array(JSON.parse(content[timestamp]));
                   if(update.length > 0) {
                     Y.applyUpdate(doc, update);
