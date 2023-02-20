@@ -131,7 +131,7 @@ const actions: ActionTree<DocumentState, RootState> = {
     versions({ commit }, payload: string): Promise<void> {
       return new Promise((resolve) => {
         commit("reset");
-        console.warn("does it even run?")
+        console.warn("does it even run?");
         (window as any).urbit.scry({ app: "engram", path: `/document${payload}/snapshots`}).then((response: any) => {
           (window as any).urbit.scry({ app: "engram", path: `/document${payload}/content`}).then((content: any) => {
             console.warn("got within the scries?");
