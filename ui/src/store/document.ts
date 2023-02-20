@@ -146,18 +146,22 @@ const actions: ActionTree<DocumentState, RootState> = {
                 
                 for (let i = 0; i < index; i++) {
                   console.warn("update:", content[timestamp])
-                  const update = new Uint8Array(JSON.parse(content[timestamp]));
+                  //const update = new Uint8Array(JSON.parse(content[timestamp]));
                   if(update.length > 0) {
-                    Y.applyUpdate(doc, update);
+                    //Y.applyUpdate(doc, update);
                   }
                 }
+                /*
                 const snapshot = Y.snapshot(doc);
                 (window as any).urbit.poke({
                   app: "engram",
                   mark: "post",
                   json: { "document": { "snap": { id: payload, key: timestamp, content: JSON.stringify(Array.from(encodeSnapshot(snapshot))) }}}
-                })
+                });
+                */
+
               } else {
+                console.warn("commiting snap");
                 commit("snap", {
                   author: response[timestamp].author,
                   snapshot: decodeSnapshot(new Uint8Array(JSON.parse(response[timestamp].content))),
