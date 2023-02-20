@@ -153,14 +153,12 @@ const actions: ActionTree<DocumentState, RootState> = {
                       Y.applyUpdate(doc, update);
                     }
                   }
-                  /*
                   const snapshot = Y.snapshot(doc);
                   (window as any).urbit.poke({
                     app: "engram",
                     mark: "post",
                     json: { "document": { "snap": { id: payload, key: timestamp, content: JSON.stringify(Array.from(encodeSnapshot(snapshot))) }}}
                   });
-                  */
                 }
               } else {
                 console.warn("commiting snap");
