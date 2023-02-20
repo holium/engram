@@ -145,7 +145,7 @@ const actions: ActionTree<DocumentState, RootState> = {
                   doc.clientID = 0;
                   doc.gc = false;
                   
-                  for (let i = 0; i < index; i++) {
+                  for (let i = arr.length - 1; i > index; i--) {
                     console.warn("update:", content[timestamp])
                     const update = new Uint8Array(JSON.parse(content[arr[i]]));
                     if(update.length > 0) {
