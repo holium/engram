@@ -141,26 +141,27 @@ const actions: ActionTree<DocumentState, RootState> = {
             Object.keys(response).sort((a, b) => { return response[b].timestamp - response[a].timestamp }).forEach((timestamp: string, index: number, arr: Array<any>) => {
               console.log("looking at version: ", timestamp);
               if(response[timestamp].content.length == 0) {
-                const doc = new Y.Doc();
-                doc.clientID = 0;
-                doc.gc = false;
-                
-                for (let i = 0; i < index; i++) {
-                  console.warn("update:", content[timestamp])
-                  //const update = new Uint8Array(JSON.parse(content[timestamp]));
-                  //if(update.length > 0) {
-                    //Y.applyUpdate(doc, update);
-                  //}
+                if(JSON.parse(content[timestamp]).length > 0) {
+                  const doc = new Y.Doc();
+                  doc.clientID = 0;
+                  doc.gc = false;
+                  
+                  for (let i = 0; i < index; i++) {
+                    console.warn("update:", content[timestamp])
+                    const update = new Uint8Array(JSON.parse(content[timestamp]));
+                    if(update.length > 0) {
+                      Y.applyUpdate(doc, update);
+                    }
+                  }
+                  /*
+                  const snapshot = Y.snapshot(doc);
+                  (window as any).urbit.poke({
+                    app: "engram",
+                    mark: "post",
+                    json: { "document": { "snap": { id: payload, key: timestamp, content: JSON.stringify(Array.from(encodeSnapshot(snapshot))) }}}
+                  });
+                  */
                 }
-                /*
-                const snapshot = Y.snapshot(doc);
-                (window as any).urbit.poke({
-                  app: "engram",
-                  mark: "post",
-                  json: { "document": { "snap": { id: payload, key: timestamp, content: JSON.stringify(Array.from(encodeSnapshot(snapshot))) }}}
-                });
-                */
-
               } else {
                 console.warn("commiting snap");
                 /*
