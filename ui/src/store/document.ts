@@ -161,14 +161,12 @@ const actions: ActionTree<DocumentState, RootState> = {
                 }
               } else {
                 console.warn("commiting snap");
-                /*
                 commit("snap", {
                   author: response[timestamp].author,
                   snapshot: decodeSnapshot(new Uint8Array(JSON.parse(response[timestamp].content))),
                   timestamp: response[timestamp].timestamp,
                   date: new Date(response[timestamp].timestamp),
                 });
-                */
               }
             });
           });
