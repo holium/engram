@@ -136,6 +136,7 @@ const actions: ActionTree<DocumentState, RootState> = {
           (window as any).urbit.scry({ app: "engram", path: `/document${payload}/content`}).then((content: any) => {
             console.warn("got within the scries?");
             Object.keys(response).sort((a, b) => { return response[b].timestamp - response[a].timestamp }).forEach((timestamp: string, index: number, arr: Array<any>) => {
+              console.log("looking at version: ", timestamp);
               if(response[timestamp].content.length == 0) {
                 const doc = new Y.Doc();
                 doc.clientID = 0;
