@@ -94,7 +94,7 @@
               ^*  (index:index [@tas @tas])
               ^*  (index:index [@p @tas])
           ==
-          ^*((map path dsnapshot))
+          ^*  (set dsnapshot)
         ==
         ::
         =/  id  [our.bowl t]
@@ -172,9 +172,7 @@
         =/  old  (~(got by d) id)
         =/  p  /(scot %p our.bowl)/(scot %ud (~(got by version.ncontent) our.bowl))
         =/  new  
-        =:  version.old    version.act
-            snapshots.old  (~(put by snapshots.old) p [now.bowl our.bowl [our.bowl (~(got by version.ncontent) our.bowl)] content.act])
-          ==
+        =.  version.old    version.act
         old
         :_  this(d (~(put by d) id new))
         :~  [%pass /document/updateall %agent [our.bowl %engram] %poke %post !>([%document %updateall path.act])]
@@ -185,15 +183,11 @@
         ::
           %snap
         ?>  =(src.bowl our.bowl)
-        =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
+        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
         ?>  (~(has by d) id)
         =/  old  (~(got by d) id)
-        =/  empty  (~(got by snapshots.old) key.act)
-        =/  full
-        =.  content.empty  content.act
-        empty
         =/  new
-        =.  snapshots.old  (~(put by snapshots.old) key.act full)
+        =.  snapshots.old  (~(put in snapshots.old) snapshot.act)
         old
         `this(d (~(put by d) id new))
         ::
@@ -365,13 +359,10 @@
         ?.  .^(? %cu filepath)  ~&  "<engram>: document does not yet exist on system"  !!
         =/  content  %-  dejs:index  !<  json  .^(vase %cr filepath)
         =/  ncontent  (apply:index content content.update.act)
-        =/  snaps  %+  turn  ~(tap in ~(key by (~(dif by content.ncontent) content.content)))  
-          |=  key=[@p @ud]  [`path`[(scot %p -.id) (scot %ud +.id) ~] [now.bowl -.key key ""]]
         =/  ndoc
           =:  name.settings.doc   name.update.act
               roles.settings.doc  (apply:index roles.settings.doc roles.update.act)
               ships.settings.doc  (apply:index ships.settings.doc ships.update.act)
-              snapshots.doc       (~(gas by snapshots.doc) snaps)
             ==
           doc
         :_  this(d (~(put by d) id ndoc))

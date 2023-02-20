@@ -86,6 +86,12 @@ export default function (
                     version: version,
                     content: content
                   });
+
+                  const snapshot = Y.snapshot(doc);
+                  store.dispatch("document/snap", {
+                    id: path, 
+                    snapshot: snapshot
+                  })
                 })
               }),
               // CRDT

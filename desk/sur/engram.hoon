@@ -23,9 +23,9 @@
 +$  dversion   tape
 +$  dcontent   (index json)
 +$  dsettings  [owner=@p name=@t space=path roles=(index [@tas @tas]) ships=(index [@p @tas])]
-+$  dsnapshot  [timestamp=@da author=@p key=id content=tape]
++$  dsnapshot  [timestamp=@da author=@p content=tape]
 ::+$  dupdate    [author=@p timestamp=@da content=dcontent]
-+$  document   [id=id version=dversion settings=dsettings snapshots=(map path dsnapshot)]
++$  document   [id=id version=dversion settings=dsettings snapshots=(set dsnapshot)]
 ::
 ::  Folders
 +$  folder  [id=id owner=@p name=@t space=path roles=(index [@tas @tas]) ships=(index [@p @tas]) content=(index [id @tas])]
@@ -80,7 +80,7 @@
           [%softdelete path=path]
           [%delete path=path]
           [%save path=path content=tape version=dversion]
-          [%snap path=path key=path content=tape]
+          [%snap path=path snapshot=dsnapshot]
           [%rename path=path name=@t]
           [%addperm path=path perm=@t level=@tas type=@tas]
           [%removeperm path=path item=path type=@tas]

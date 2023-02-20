@@ -133,43 +133,13 @@ const actions: ActionTree<DocumentState, RootState> = {
         commit("reset");
         console.warn("does it even run?");
         (window as any).urbit.scry({ app: "engram", path: `/document${payload}/snapshots`}).then((response: any) => {
-          (window as any).urbit.scry({ app: "engram", path: `/document${payload}/content`}).then((content: any) => {
-            console.warn("got within the scries?");
-            console.warn("snapshots: ", response);
-                console.warn("content: ", content);
             Object.keys(response).sort((a, b) => { return response[b].timestamp - response[a].timestamp }).forEach((timestamp: string, index: number, arr: Array<any>) => {
-              console.log("looking at version: ", timestamp);
-              if(response[timestamp].content.length == 0) {
-                if(JSON.parse(content[timestamp]).length > 0) {
-                  const doc = new Y.Doc();
-                  doc.clientID = 0;
-                  doc.gc = false;
-                  
-                  for (let i = arr.length - 1; i > index; i--) {
-                    console.warn("update:", content[timestamp])
-                    const update = new Uint8Array(JSON.parse(content[arr[i]]));
-                    if(update.length > 0) {
-                      Y.applyUpdate(doc, update);
-                    }
-                  }
-                  const snapshot = Y.snapshot(doc);
-                  (window as any).urbit.poke({
-                    app: "engram",
-                    mark: "post",
-                    json: { "document": { "snap": { id: payload, key: timestamp, content: JSON.stringify(Array.from(encodeSnapshot(snapshot))) }}}
-                  });
-                }
-              } else {
-                console.warn("commiting snap: ", new Uint8Array(JSON.parse(response[timestamp].content)));
-                console.log(new Uint8Array(JSON.parse(response[timestamp].content)));
-                commit("snap", {
-                  author: response[timestamp].author,
-                  snapshot: decodeSnapshot(new Uint8Array(JSON.parse(response[timestamp].content))),
-                  timestamp: response[timestamp].timestamp,
-                  date: new Date(response[timestamp].timestamp),
-                });
-              }
-            });
+              commit("snap", {
+                author: response[timestamp].author,
+                snapshot: decodeSnapshot(new Uint8Array(JSON.parse(response[timestamp].content))),
+                timestamp: response[timestamp].timestamp,
+                date: new Date(response[timestamp].timestamp),
+              });
           });
         });
       })
