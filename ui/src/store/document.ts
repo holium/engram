@@ -135,14 +135,15 @@ const actions: ActionTree<DocumentState, RootState> = {
         (window as any).urbit.scry({ app: "engram", path: `/document${payload}/snapshots`}).then((response: any) => {
           (window as any).urbit.scry({ app: "engram", path: `/document${payload}/content`}).then((content: any) => {
             console.warn("got within the scries?");
+            console.warn("snapshots: ", response);
+                console.warn("content: ", content);
             Object.keys(response).sort((a, b) => { return response[b].timestamp - response[a].timestamp }).forEach((timestamp: string, index: number, arr: Array<any>) => {
               console.log("looking at version: ", timestamp);
               if(response[timestamp].content.length == 0) {
                 const doc = new Y.Doc();
                 doc.clientID = 0;
                 doc.gc = false;
-                console.warn("snapshots: ", response);
-                console.warn("content: ", content);
+                
                 for (let i = 0; i < index; i++) {
                   console.warn("update:", content[timestamp])
                   const update = new Uint8Array(JSON.parse(content[timestamp]));
