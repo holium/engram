@@ -161,7 +161,7 @@ const actions: ActionTree<DocumentState, RootState> = {
                 }
               } else {
                 console.warn("commiting snap: ", JSON.parse(response[timestamp].content));
-                consle.log(JSON.parse(response[timestamp].content));
+                console.log(JSON.parse(response[timestamp].content));
                 commit("snap", {
                   author: response[timestamp].author,
                   snapshot: [],//decodeSnapshot(new Uint8Array(JSON.parse(response[timestamp].content))),
