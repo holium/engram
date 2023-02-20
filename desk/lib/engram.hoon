@@ -190,13 +190,14 @@
           |=  [id=id:index item=json]
           [(crip (stringify:index id)) item]
     ++  snapshots
-      |=  snaps=(map path dsnapshot:engram)
+      =,  enjs:format
+      |=  snaps=(set dsnapshot:engram)
       ^-  json
       %-  pairs  %~  tap  in
       ^-  (set [@t json])
       %-  ~(run in snaps)
       |=  snap=dsnapshot:engram
-      [(scot %da timestamp.snap) (pairs ~[['author' (tape (scow %p author.snap))] ['timestamp' (time timestamp.snap)] ['content' (tape data.snap)]])]
+      [(scot %da timestamp.snap) (pairs ~[['author' (tape (scow %p author.snap))] ['timestamp' (time timestamp.snap)] ['content' (tape content.snap)]])]
     --
   ++  folder
     |%
