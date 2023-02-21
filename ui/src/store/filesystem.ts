@@ -172,7 +172,6 @@ const actions: ActionTree<FileSysState, RootState> = {
     boot({ commit, dispatch }, payload: string): Promise<void> {
         return new Promise((resolve, reject) => {
             (window as any).urbit.scry({ app: "engram", path: `/space${payload}/content` }).then((res: any) => {
-                console.log("space res: ", res);
                 if(res == "Missing Space") {
                     console.warn("trying again");
                     // handle if the space is missing

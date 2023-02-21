@@ -16,8 +16,10 @@
 <script lang="ts">
 import { defineComponent } from "vue"
 import { view } from "./prosemirror/render";
-import { setCover, handleImageDrop } from "./prosemirror/commands"
+import { setCover } from "./prosemirror/commands"
 import type { Cover as ICover } from "./prosemirror/cover"
+
+import { uploadImage } from "@/store/images";
 
 export default defineComponent({
   name: "Cover",
@@ -93,12 +95,14 @@ export default defineComponent({
     handleDrop: function(event: DragEvent) {
       event.preventDefault();
       event.stopPropagation();
-      handleImageDrop(event).then((image: string) => {
-        this.changeCover(image);
-        this.changingCover = false;
-      }).catch(() => {
-        // do nothing
-      })
+      if(event.dataTransfer && event.dataTransfer.files) {
+        uploadImage(event.dataTransfer.files[0]).then((image: string) => {
+          this.changeCover(image);
+          this.changingCover = false;
+        }).catch(() => {
+          // do nothing
+        })
+      }
     }
   },
 });

@@ -10,6 +10,7 @@ import type { NodeType, ContentMatch } from "prosemirror-model";
 import schema from "./schema";
 import { CoverPluginKey } from "./cover";
 import type { Cover } from "./cover";
+import { uploadImage } from "@/store/images"
 
 // Engram
 export const setCover: (newCover: Cover) => Command = (newCover: Cover) => (state, dispatch) => {
@@ -79,29 +80,4 @@ export function defaultBlockAt(match: ContentMatch) {
     if (type.isTextblock && !type.hasRequiredAttrs()) return type;
   }
   return null;
-}
-
-export function handleImageDrop(event: DragEvent): Promise<any> {
-  return new Promise((resolve ,reject) => {
-    if (!event.dataTransfer) return;
-    const files = event.dataTransfer.files;
-    if (files.length == 0) {
-      reject();
-    } else {
-      event.preventDefault();
-
-      if (
-        ["image/png", "image/jpg", "image/jpeg"].includes(
-          Array.from(files)[0].type
-        )
-      ) {
-        const reader = new FileReader();
-        reader.readAsDataURL(Array.from(files)[0]);
-        reader.onload = (res) => {
-          resolve(reader.result);
-        };
-      }
-    }
-  })
-
 }

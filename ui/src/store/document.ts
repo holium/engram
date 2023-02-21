@@ -131,7 +131,6 @@ const actions: ActionTree<DocumentState, RootState> = {
     versions({ commit }, payload: string): Promise<void> {
       return new Promise((resolve) => {
         commit("reset");
-        console.warn("does it even run?");
         (window as any).urbit.scry({ app: "engram", path: `/document${payload}/snapshots`}).then((response: any) => {
             Object.keys(response).sort((a, b) => { return response[b].timestamp - response[a].timestamp }).forEach((timestamp: string, index: number, arr: Array<any>) => {
               commit("snap", {

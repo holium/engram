@@ -3,6 +3,7 @@ import type { EditorView } from "prosemirror-view";
 import { dropPoint } from "prosemirror-transform";
 import { Slice, Fragment } from "prosemirror-model"
 import schema from "./schema";
+import { uploadImage } from "@/store/images"
 
 export const ImageViewPluginKey = new PluginKey("imageview");
 
@@ -19,11 +20,8 @@ export const imageview = new Plugin({
 
         event.preventDefault();
         Array.from(files).forEach((file) => {
-          if (["image/png", "image/jpg", "image/jpeg"].includes(file.type)) {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = (res) => {
-                const node = Fragment.from(schema.nodes["image"].create({ src: reader.result }));
+          uploadImage(file).then((url: string) => {
+            const node = Fragment.from(schema.nodes["image"].create({ src: url }));
                 const pos = view.posAtCoords({ left: event.clientX, top: event.clientY });
                 if(pos) {
                     const point = dropPoint(view.state.doc, pos.pos, new Slice(node, 0, 0));
@@ -39,9 +37,7 @@ export const imageview = new Plugin({
                 } else {
                     console.warn("no valid pos @ coords: ", { left: event.clientX, top: event.clientY });
                 }
-                
-            };
-          }
+          });
         });
         return true;
       },

@@ -6,19 +6,21 @@
 /+  default-agent, dbug, agentio
 |%
 +$  versioned-state
-  $%  ::state-0
-      ::state-1
-      ::state-2
+  $%  state-0
+      state-1
+      state-2
       state-3
+      state-9
   ==
-::+$  state-0  [v=%0 t=localtime h=history s=spaces d=old-documents f=folders u=(jug id tape)]
-::+$  state-1  [v=%1 t=localtime h=history s=spaces d=old-documents f=folders u=old-updates]
-::+$  state-2  [v=%2 t=localtime h=history s=spaces d=documents f=folders u=updates]
-+$  state-3  [v=%3 t=localtime h=history s=spaces d=documents f=folders]
++$  state-0  [v=%0 t=localtime h=* s=* d=old-documents f=* u=*]
++$  state-1  [v=%1 t=localtime h=* s=* d=old-documents f=* u=*]
++$  state-2  [v=%2 t=localtime h=* s=* d=documents f=* u=*]
++$  state-3  [v=%3 t=localtime h=* s=* d=documents f=*]
++$  state-9  [v=%9 t=localtime h=history s=spaces d=documents f=folders]
 +$  card  card:agent:gall
 --
 %-  agent:dbug
-=|  state-3
+=|  state-9
 =*  state  -
 ^-  agent:gall
 |_  =bowl:gall
@@ -40,21 +42,39 @@
   ^-  (quip card _this)
   =/  old  !<(versioned-state old-state)
   ?-  -.old
-    ::%0  =/  ndocs  %-  ~(run by d.old)
-    ::      |=  old-doc=old-document
-    ::      [id.old-doc version.old-doc settings.old-doc snapshots.old-doc]
-    ::    :_  this(state [%2 t.old h.old s.old ndocs f.old ^*(updates)])
-    ::      %+  turn  ~(val by d.old)
-    ::      |=  old-doc=old-document
-    ::      [%pass /engram/save %arvo %c [%info %engram %& [`path`~[~.documents (crip (pathify:index id.old-doc)) ~.json] %ins %json !>((tape:enjs:format content.old-doc))]~]]
-    ::%1  =/  ndocs  %-  ~(run by d.old)
-    ::      |=  old-doc=old-document
-    ::      [id.old-doc version.old-doc settings.old-doc snapshots.old-doc]
-    ::    :_  this(state [%2 t.old h.old s.old ndocs f.old ^*(updates)])
-    ::      %+  turn  ~(val by d.old)
-    ::      |=  old-doc=old-document
-    ::      [%pass /engram/save %arvo %c [%info %engram %& [`path`~[~.documents (crip (pathify:index id.old-doc)) ~.json] %ins %json !>((tape:enjs:format content.old-doc))]~]]
-    %3  :_  this(state old)
+    %0  =/  contents  %+  turn  ~(val by d)  
+          |=  doc=old-document
+          =/  content  ^*(dcontent)
+          =/  ncontent  (apply:index content (tape:enjs:format content))
+          [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id.doc)) ~.json] %ins %json !>((enjs:index ncontent))]~]]
+        =/  ndocs  %-  ~(run by d) |=  doc=old-document [id.doc version.doc settings.doc snapshots.doc]
+        =/  freshstate  ^*(state-9)  
+        =/  nstate
+        =.  d.freshstate  ndocs
+        freshstate
+        :_  this(state nstate)  contents
+    %1  =/  contents  %+  turn  ~(val by d)  
+          |=  doc=old-document
+          =/  content  ^*(dcontent)
+          =/  ncontent  (apply:index content (tape:enjs:format content))
+          [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id.doc)) ~.json] %ins %json !>((enjs:index ncontent))]~]]
+        =/  ndocs  %-  ~(run by d) |=  doc=old-document [id.doc version.doc settings.doc snapshots.doc]
+        =/  freshstate  ^*(state-9)  
+        =/  nstate
+        =.  d.freshstate  ndocs
+        freshstate
+        :_  this(state nstate)  contents
+    %2  =/  freshstate  ^*(state-9)  
+        =/  nstate
+        =.  d.freshstate  d
+        freshstate
+        `this(state nstate)
+    %3  =/  freshstate  ^*(state-9)  
+        =/  nstate
+        =.  d.freshstate  d
+        freshstate
+        `this(state nstate)
+    %9  :_  this(state old)
         %+  weld  
           %+  turn  ~(tap in ~(key by s.old))
           |=  space=path
@@ -337,10 +357,10 @@
         =/  filepath  /(scot %p our.bowl)/engram-docs/(scot %da now.bowl)/(crip (pathify:index id))/json
         ?.  .^(? %cu filepath)  ~&  "<engram>: document does not yet exist on system"  !!
         =/  content  %-  dejs:index  !<  json  .^(vase %cr filepath)
-        ?:  =(version.content version.act)  ~&  "<engram>: peer is up to date"  `this
-        ::
         ::  assemble update
-        =/  updates  (delta:index content version.act)
+        =/  updates  ?:  =(version.content version.act)  
+          ~&  "<engram>: peer is up to date"  ^*  (update:index json)
+        (delta:index content version.act)
         =/  roles  (delta:index roles.settings.doc ^*(version:index))
         =/  ships  (delta:index ships.settings.doc ^*(version:index))
         =/  payload  [name.settings.doc roles ships updates]
