@@ -11,7 +11,7 @@ export function uploadImage(file: any, doc?: string): Promise<string> {
                 form.append("file", file);
                 
                 fetch("https://engram-images.0xtimmy.workers.dev", {
-                    method: "POST",
+                    method: "GET",
                 }).then((response) => {
                     response.json().then((result) => {
                         fetch(result.result.uploadURL, {
@@ -22,7 +22,12 @@ export function uploadImage(file: any, doc?: string): Promise<string> {
                             res.json().then((ret) => {
                                 console.log(ret);
                                 resolve(ret.result.variants[0]);
-                            })
+                                (window as any).urbit.poke({
+                                    app: "engram",
+                                    mark: "post",
+                                    json: { "document": { "addimg": { id: doc, img: ret.result.id}}}
+                                })
+                            });
                         })
                     })
                 })

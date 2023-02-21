@@ -330,6 +330,17 @@ const actions: ActionTree<FileSysState, RootState> = {
         return new Promise((resolve) => {
             const children = state[payload.id].children;
             commit('delete', payload);
+            if(payload.type == "document") {
+                (window as any).urbit.scry({
+                    app: "engram",
+                    path: `/document${payload.id}/images`
+                }).then((res: any) => {
+                    console.log("images res: ", res);
+                    Object.keys(res).forEach((key: string) => {
+                        fetch(`https://engram-images.0xtimmy.workers.dev`, { method: "DELETE", body: res[key] });
+                    })
+                })
+            }
             (window as any).urbit.poke({
                 app: "engram",
                 mark: "post",

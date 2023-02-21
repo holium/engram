@@ -4,6 +4,7 @@ import { dropPoint } from "prosemirror-transform";
 import { Slice, Fragment } from "prosemirror-model"
 import schema from "./schema";
 import { uploadImage } from "@/store/images"
+import router from "@/router/index"
 
 export const ImageViewPluginKey = new PluginKey("imageview");
 
@@ -20,7 +21,7 @@ export const imageview = new Plugin({
 
         event.preventDefault();
         Array.from(files).forEach((file) => {
-          uploadImage(file).then((url: string) => {
+          uploadImage(file, `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`).then((url: string) => {
             const node = Fragment.from(schema.nodes["image"].create({ src: url }));
                 const pos = view.posAtCoords({ left: event.clientX, top: event.clientY });
                 if(pos) {

@@ -11,16 +11,18 @@
       state-2
       state-3
       state-9
+      state-10
   ==
-+$  state-0  [v=%0 t=localtime h=* s=* d=old-documents f=* u=*]
-+$  state-1  [v=%1 t=localtime h=* s=* d=old-documents f=* u=*]
-+$  state-2  [v=%2 t=localtime h=* s=* d=documents f=* u=*]
-+$  state-3  [v=%3 t=localtime h=* s=* d=documents f=*]
-+$  state-9  [v=%9 t=localtime h=history s=spaces d=documents f=folders]
++$  state-0   [v=%0 t=localtime h=* s=* d=old-documents f=* u=*]
++$  state-1   [v=%1 t=localtime h=* s=* d=old-documents f=* u=*]
++$  state-2   [v=%2 t=localtime h=* s=* d=old-documents-2 f=* u=*]
++$  state-3   [v=%3 t=localtime h=* s=* d=old-documents-2 f=*]
++$  state-9   [v=%9 t=localtime h=history s=spaces d=old-documents-2 f=folders]
++$  state-10  [v=%10 t=localtime h=history s=spaces d=documents f=folders]
 +$  card  card:agent:gall
 --
 %-  agent:dbug
-=|  state-9
+=|  state-10
 =*  state  -
 ^-  agent:gall
 |_  =bowl:gall
@@ -42,39 +44,42 @@
   ^-  (quip card _this)
   =/  old  !<(versioned-state old-state)
   ?-  -.old
-    %0  =/  contents  %+  turn  ~(val by d)  
+    %0  =/  contents  %+  turn  ~(val by d.old)  
           |=  doc=old-document
           =/  content  ^*(dcontent)
-          =/  ncontent  (apply:index content (tape:enjs:format content))
+          =/  ncontent  (insert:index content (tape:enjs:format content.doc) our.bowl)
           [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id.doc)) ~.json] %ins %json !>((enjs:index ncontent))]~]]
-        =/  ndocs  %-  ~(run by d) |=  doc=old-document [id.doc version.doc settings.doc snapshots.doc]
-        =/  freshstate  ^*(state-9)  
+        =/  ndocs  %-  ~(run by d.old)  |=  doc=old-document  [id.doc version.doc settings.doc snapshots.doc ^*((index:index tape))]
+        =/  freshstate  ^*(state-10)  
         =/  nstate
         =.  d.freshstate  ndocs
         freshstate
         :_  this(state nstate)  contents
-    %1  =/  contents  %+  turn  ~(val by d)  
+    %1  =/  contents  %+  turn  ~(val by d.old)  
           |=  doc=old-document
           =/  content  ^*(dcontent)
-          =/  ncontent  (apply:index content (tape:enjs:format content))
+          =/  ncontent  (insert:index content (tape:enjs:format content.doc) our.bowl)
           [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id.doc)) ~.json] %ins %json !>((enjs:index ncontent))]~]]
-        =/  ndocs  %-  ~(run by d) |=  doc=old-document [id.doc version.doc settings.doc snapshots.doc]
-        =/  freshstate  ^*(state-9)  
+        =/  ndocs  %-  ~(run by d.old)  |=  doc=old-document  [id.doc version.doc settings.doc snapshots.doc ^*((index:index tape))]
+        =/  freshstate  ^*(state-10)  
         =/  nstate
         =.  d.freshstate  ndocs
         freshstate
         :_  this(state nstate)  contents
-    %2  =/  freshstate  ^*(state-9)  
+    %2  =/  freshstate  ^*(state-10)  
         =/  nstate
-        =.  d.freshstate  d
+        =.  d.freshstate  %-  ~(run by d.old)  |=  doc=old-document-2  [id.doc version.doc settings.doc snapshots.doc ^*((index:index tape))]
         freshstate
         `this(state nstate)
-    %3  =/  freshstate  ^*(state-9)  
+    %3  =/  freshstate  ^*(state-10)  
         =/  nstate
-        =.  d.freshstate  d
+        =.  d.freshstate  %-  ~(run by d.old)  |=  doc=old-document-2  [id.doc version.doc settings.doc snapshots.doc ^*((index:index tape))]
         freshstate
         `this(state nstate)
-    %9  :_  this(state old)
+    %9  =/  ndocs  %-  ~(run by d.old)  |=  doc=old-document-2
+          [id.doc version.doc settings.doc snapshots.doc ^*((index:index tape))]
+        `this(state [%10 t.old h.old s.old ndocs f.old])
+    %10  :_  this(state old)
         %+  weld  
           %+  turn  ~(tap in ~(key by s.old))
           |=  space=path
@@ -115,6 +120,7 @@
               ^*  (index:index [@p @tas])
           ==
           ^*  (set dsnapshot)
+          ^*  (index:index tape)
         ==
         ::
         =/  id  [our.bowl t]
@@ -135,6 +141,19 @@
         :_  hstate(t (add t 1))
         :~  [%pass /space/updateall %agent [our.bowl %engram] %poke %post !>([%space %updateall space.act])]
             [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.json] %ins %json !>((enjs:index ncontent))]~]]
+        ==
+        ::
+        ::  Add an image to a document
+        ::
+          %addimg
+        ?>  =(src.bowl our.bowl)
+        =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
+        =/  doc  (~(got by d) id)
+        =/  ndoc
+        =.  imgs.doc  (insert:index imgs.doc img.act our.bowl)
+        doc
+        :_  this(d (~(put by d) id ndoc))
+        :~  [%pass /space/updateall %agent [our.bowl %engram] %poke %post !>([%document %updateall path.act])]
         ==
         ::
         ::  quietly delete a document from state
@@ -363,7 +382,8 @@
         (delta:index content version.act)
         =/  roles  (delta:index roles.settings.doc ^*(version:index))
         =/  ships  (delta:index ships.settings.doc ^*(version:index))
-        =/  payload  [name.settings.doc roles ships updates]
+        =/  imgs   (delta:index imgs.doc ^*(version:index))
+        =/  payload  [name.settings.doc roles ships imgs updates]
         :_  this
         :~  [%pass /engram/delta %agent [src.bowl %engram] %poke %post !>([%document %sync path.act payload])]
         ==
@@ -383,6 +403,7 @@
           =:  name.settings.doc   name.update.act
               roles.settings.doc  (apply:index roles.settings.doc roles.update.act)
               ships.settings.doc  (apply:index ships.settings.doc ships.update.act)
+              imgs.doc            (apply:index imgs.doc imgs.update.act)
             ==
           doc
         :_  this(d (~(put by d) id ndoc))
@@ -927,6 +948,11 @@
     =/  id=id  [`@p`(slav %p i.t.t.p) (slav %ud i.t.t.t.p)]
     =/  doc  (~(got by d) id)
     ``noun+!>((tape:enjs:format version.doc))
+      [%x %document @ @ %images ~]
+    ?>  =(src.bowl our.bowl)
+    =/  id=id  [`@p`(slav %p i.t.t.p) (slav %ud i.t.t.t.p)]
+    =/  doc  (~(got by d) id)
+    ``noun+!>((images:document:enjs:engram imgs.doc))
   ::
       [%x %folder @ @ %list ~]
     ?>  =(src.bowl our.bowl)

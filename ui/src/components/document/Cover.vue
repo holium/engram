@@ -96,7 +96,7 @@ export default defineComponent({
       event.preventDefault();
       event.stopPropagation();
       if(event.dataTransfer && event.dataTransfer.files) {
-        uploadImage(event.dataTransfer.files[0]).then((image: string) => {
+        uploadImage(event.dataTransfer.files[0], `/${this.$route.params.author}/${this.$route.params.clock}`).then((image: string) => {
           this.changeCover(image);
           this.changingCover = false;
         }).catch(() => {
