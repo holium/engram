@@ -79,15 +79,19 @@ export default function (
               save((view) => {
                 (window as any).urbit.scry({ app: "engram", path: `/document${path}/version`}).then((oldversion: string) => {
                   const old = new Uint8Array(JSON.parse(oldversion));
-                  console.warn("got old version: ", old);
                   const version = Y.encodeStateVector(doc);
                   const content = old.length > 0 ? Y.encodeStateAsUpdate(doc, old) : Y.encodeStateAsUpdate(doc);
-                  const snapshot = Y.snapshot(doc);
                   store.dispatch("document/save", {
                     id: path,
                     version: version,
                     content: content
                   });
+
+                  const snapshot = Y.snapshot(doc);
+                  store.dispatch("document/snap", {
+                    id: path, 
+                    snapshot: snapshot
+                  })
                 })
               }),
               // CRDT

@@ -15,6 +15,7 @@
       [%leave (ot ~[self+(se %p)])]
       :-  %document  %-  of  :~  
         [%make (ot ~[owner+(se %p) name+so space+pa content+sa version+sa roles+(op sym (se %tas)) ships+(op fed:ag (se %tas))])]
+        [%addimg (ot ~[id+pa img+sa])]
         [%delete (ot ~[id+pa])]
         [%save (ot ~[id+pa content+sa version+sa])]
         [%snap (ot ~[id+pa snapshot+(ot ~[timestamp+di author+(se %p) content+sa])])]
@@ -194,10 +195,17 @@
       |=  snaps=(set dsnapshot:engram)
       ^-  json
       %-  pairs  %~  tap  in
-        ^-  (set [@t json])
-        %-  ~(run in snaps)
-        |=  snap=dsnapshot:engram
-        [(scot %da timestamp.snap) (pairs ~[['author' (tape (scow %p author.snap))] ['timestamp' (time timestamp.snap)] ['content' (tape data.snap)]])]
+      ^-  (set [@t json])
+      %-  ~(run in snaps)
+      |=  snap=dsnapshot:engram
+      [(scot %da timestamp.snap) (pairs ~[['author' (tape (scow %p author.snap))] ['timestamp' (time timestamp.snap)] ['content' (tape content.snap)]])]
+    ++  images
+      |=  imgs=(index:index tape)
+      ^-  json
+      %-  pairs:enjs:format  %+  turn  ~(tap in content.imgs)
+      |=  [id=id:index img=tape]
+      [(crip (stringify:index id)) (tape:enjs:format img)]
+
     --
   ++  folder
     |%

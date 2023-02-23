@@ -70,7 +70,7 @@ export default defineComponent({
     },
     watch: {
         docId: function(newId: string) {
-            store.dispatch("document/versions", this.docId);
+            store.dispatch("document/versions", newId);
         }
     },
     computed: {

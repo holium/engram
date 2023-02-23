@@ -1,5 +1,5 @@
 |%
-+$  id  [@p @u]
-+$  clock  @u
++$  id  [@p @ud]
++$  clock  @ud
 +$  version  (map @p clock)
 --

@@ -132,14 +132,14 @@ const actions: ActionTree<DocumentState, RootState> = {
       return new Promise((resolve) => {
         commit("reset");
         (window as any).urbit.scry({ app: "engram", path: `/document${payload}/snapshots`}).then((response: any) => {
-          Object.keys(response).sort((a, b) => { return response[b].timestamp - response[a].timestamp}).forEach((timestamp: string) => {
-            commit("snap", {
-              author: response[timestamp].author,
-              snapshot: decodeSnapshot(new Uint8Array(JSON.parse(response[timestamp].content))),
-              timestamp: response[timestamp].timestamp,
-              date: new Date(response[timestamp].timestamp),
-            });
-          })
+            Object.keys(response).sort((a, b) => { return response[b].timestamp - response[a].timestamp }).forEach((timestamp: string, index: number, arr: Array<any>) => {
+              commit("snap", {
+                author: response[timestamp].author,
+                snapshot: decodeSnapshot(new Uint8Array(JSON.parse(response[timestamp].content))),
+                timestamp: response[timestamp].timestamp,
+                date: new Date(response[timestamp].timestamp),
+              });
+          });
         });
       })
     },

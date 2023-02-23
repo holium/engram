@@ -5,6 +5,7 @@ import { nullspace } from "./space"
 import space from "./space"
 import filesys from "./filesystem"
 import document from "./document"
+import { loadS3 } from "./images"
 
 export interface RootState { }
 
@@ -26,6 +27,7 @@ const getters: GetterTree<RootState, RootState> = {
 
 const actions: ActionTree<RootState, RootState> = {
   load({ dispatch, state }, payload: string): Promise<void> {
+    loadS3();
     return new Promise((resolve) => {
       let delay = 1;
       dispatch("space/load", payload, { root: true });

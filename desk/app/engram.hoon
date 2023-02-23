@@ -6,19 +6,23 @@
 /+  default-agent, dbug, agentio
 |%
 +$  versioned-state
-  $%  ::state-0
-      ::state-1
-      ::state-2
+  $%  state-0
+      state-1
+      state-2
       state-3
+      state-9
+      state-10
   ==
-::+$  state-0  [v=%0 t=localtime h=history s=spaces d=old-documents f=folders u=(jug id tape)]
-::+$  state-1  [v=%1 t=localtime h=history s=spaces d=old-documents f=folders u=old-updates]
-::+$  state-2  [v=%2 t=localtime h=history s=spaces d=documents f=folders u=updates]
-+$  state-3  [v=%3 t=localtime h=history s=spaces d=documents f=folders]
++$  state-0   [v=%0 t=localtime h=* s=* d=old-documents f=* u=*]
++$  state-1   [v=%1 t=localtime h=* s=* d=old-documents f=* u=*]
++$  state-2   [v=%2 t=localtime h=* s=* d=old-documents-2 f=* u=*]
++$  state-3   [v=%3 t=localtime h=* s=* d=old-documents-2 f=*]
++$  state-9   [v=%9 t=localtime h=history s=spaces d=old-documents-2 f=folders]
++$  state-10  [v=%10 t=localtime h=history s=spaces d=documents f=folders]
 +$  card  card:agent:gall
 --
 %-  agent:dbug
-=|  state-3
+=|  state-10
 =*  state  -
 ^-  agent:gall
 |_  =bowl:gall
@@ -40,21 +44,42 @@
   ^-  (quip card _this)
   =/  old  !<(versioned-state old-state)
   ?-  -.old
-    ::%0  =/  ndocs  %-  ~(run by d.old)
-    ::      |=  old-doc=old-document
-    ::      [id.old-doc version.old-doc settings.old-doc snapshots.old-doc]
-    ::    :_  this(state [%2 t.old h.old s.old ndocs f.old ^*(updates)])
-    ::      %+  turn  ~(val by d.old)
-    ::      |=  old-doc=old-document
-    ::      [%pass /engram/save %arvo %c [%info %engram %& [`path`~[~.documents (crip (pathify:index id.old-doc)) ~.json] %ins %json !>((tape:enjs:format content.old-doc))]~]]
-    ::%1  =/  ndocs  %-  ~(run by d.old)
-    ::      |=  old-doc=old-document
-    ::      [id.old-doc version.old-doc settings.old-doc snapshots.old-doc]
-    ::    :_  this(state [%2 t.old h.old s.old ndocs f.old ^*(updates)])
-    ::      %+  turn  ~(val by d.old)
-    ::      |=  old-doc=old-document
-    ::      [%pass /engram/save %arvo %c [%info %engram %& [`path`~[~.documents (crip (pathify:index id.old-doc)) ~.json] %ins %json !>((tape:enjs:format content.old-doc))]~]]
-    %3  :_  this(state old)
+    %0  =/  contents  %+  turn  ~(val by d.old)  
+          |=  doc=old-document
+          =/  content  ^*(dcontent)
+          =/  ncontent  (insert:index content (tape:enjs:format content.doc) our.bowl)
+          [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id.doc)) ~.json] %ins %json !>((enjs:index ncontent))]~]]
+        =/  ndocs  %-  ~(run by d.old)  |=  doc=old-document  [id.doc version.doc settings.doc snapshots.doc ^*((index:index tape))]
+        =/  freshstate  ^*(state-10)  
+        =/  nstate
+        =.  d.freshstate  ndocs
+        freshstate
+        :_  this(state nstate)  contents
+    %1  =/  contents  %+  turn  ~(val by d.old)  
+          |=  doc=old-document
+          =/  content  ^*(dcontent)
+          =/  ncontent  (insert:index content (tape:enjs:format content.doc) our.bowl)
+          [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id.doc)) ~.json] %ins %json !>((enjs:index ncontent))]~]]
+        =/  ndocs  %-  ~(run by d.old)  |=  doc=old-document  [id.doc version.doc settings.doc snapshots.doc ^*((index:index tape))]
+        =/  freshstate  ^*(state-10)  
+        =/  nstate
+        =.  d.freshstate  ndocs
+        freshstate
+        :_  this(state nstate)  contents
+    %2  =/  freshstate  ^*(state-10)  
+        =/  nstate
+        =.  d.freshstate  %-  ~(run by d.old)  |=  doc=old-document-2  [id.doc version.doc settings.doc snapshots.doc ^*((index:index tape))]
+        freshstate
+        `this(state nstate)
+    %3  =/  freshstate  ^*(state-10)  
+        =/  nstate
+        =.  d.freshstate  %-  ~(run by d.old)  |=  doc=old-document-2  [id.doc version.doc settings.doc snapshots.doc ^*((index:index tape))]
+        freshstate
+        `this(state nstate)
+    %9  =/  ndocs  %-  ~(run by d.old)  |=  doc=old-document-2
+          [id.doc version.doc settings.doc snapshots.doc ^*((index:index tape))]
+        `this(state [%10 t.old h.old s.old ndocs f.old])
+    %10  :_  this(state old)
         %+  weld  
           %+  turn  ~(tap in ~(key by s.old))
           |=  space=path
@@ -94,39 +119,48 @@
               ^*  (index:index [@tas @tas])
               ^*  (index:index [@p @tas])
           ==
-          (silt `(list dsnapshot)`[~])
+          ^*  (set dsnapshot)
+          ^*  (index:index tape)
         ==
         ::
         =/  id  [our.bowl t]
         =/  state  this(d (~(put by d) id doc))
-        ~&  "Built metadata"
         =/  oldspc
         ?:  (~(has by s) space.act)
           (~(got by s) space.act)
         =/  initspc  ^*  space
-        ~&  "Built space"
         =.  roles.initspc  (insert:index roles.initspc ^-([@tas @tas] [%member %editor]) our.bowl)
         initspc
         =/  newspc
         =.  content.oldspc  (insert:index content.oldspc [id %document] our.bowl)
           oldspc
-        ~&  "Added document to space"
         =/  sstate  state(s (~(put by s) space.act newspc))
         =/  hstate  sstate(h (snoc h id))
         =/  content  ^*  (index:index json)
-        ~&  "Initialized content"
         =/  ncontent  (insert:index content (tape:enjs:format content.act) our.bowl)
-        ~&  "Built content"
         :_  hstate(t (add t 1))
         :~  [%pass /space/updateall %agent [our.bowl %engram] %poke %post !>([%space %updateall space.act])]
             [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.json] %ins %json !>((enjs:index ncontent))]~]]
+        ==
+        ::
+        ::  Add an image to a document
+        ::
+          %addimg
+        ?>  =(src.bowl our.bowl)
+        =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
+        =/  doc  (~(got by d) id)
+        =/  ndoc
+        =.  imgs.doc  (insert:index imgs.doc img.act our.bowl)
+        doc
+        :_  this(d (~(put by d) id ndoc))
+        :~  [%pass /space/updateall %agent [our.bowl %engram] %poke %post !>([%document %updateall path.act])]
         ==
         ::
         ::  quietly delete a document from state
         ::
           %softdelete
         ?>  =(src.bowl our.bowl)
-        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
         :_  this(d (~(del by d) id))
         :~  [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.json] %del ~]~]]
         ==
@@ -135,7 +169,7 @@
         ::
           %delete
         ?>  =(src.bowl our.bowl)
-        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
         ?>  (~(has by d) id)
         =/  copy  (~(got by d) id)
         =/  nstate  this(d (~(del by d) id))
@@ -143,7 +177,7 @@
           %-  ~(run by s)  |=  spc=space
           ?:  (~(has in (silt ~(val by content.content.spc))) [id %document])
             =/  spclist  ~(tap by content.content.spc) 
-            =/  idx  (find ~[[id %document]] (turn spclist |=(a=[[@p @u] [[@p @u] @tas]] +.a)))
+            =/  idx  (find ~[[id %document]] (turn spclist |=(a=[[@p @ud] [[@p @ud] @tas]] +.a)))
             =/  todel  (snag (need idx) spclist)
             =.  content.spc  (remove:index content.spc -.todel our.bowl)
             spc
@@ -153,7 +187,7 @@
           %-  ~(run by f)  |=  fldr=folder
           ?:  (~(has in (silt ~(val by content.content.fldr))) [id %document])
             =/  fldrlist  ~(tap by content.content.fldr) 
-            =/  idx  (find ~[[id %document]] (turn fldrlist |=(a=[[@p @u] [[@p @u] @tas]] +.a)))
+            =/  idx  (find ~[[id %document]] (turn fldrlist |=(a=[[@p @ud] [[@p @ud] @tas]] +.a)))
             =/  todel  (snag (need idx) fldrlist)
             =.  content.fldr  (remove:index content.fldr -.todel our.bowl)
             fldr
@@ -168,16 +202,17 @@
         ::
           %save
         ?>  =(src.bowl our.bowl)
-        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
         ?>  (~(has by d) id)
-        =/  old  (~(got by d) id)
-        =/  new  
-        =.  version.old  version.act
-        old
         =/  filepath  /(scot %p our.bowl)/engram-docs/(scot %da now.bowl)/(crip (pathify:index id))/json
         ?.  .^(? %cu filepath)  ~&  "Document does not exist in clay :("  !!
         =/  content  %-  dejs:index  !<  json  .^(vase %cr filepath)
         =/  ncontent  (insert:index content (tape:enjs:format content.act) our.bowl)
+        =/  old  (~(got by d) id)
+        =/  p  /(scot %p our.bowl)/(scot %ud (~(got by version.ncontent) our.bowl))
+        =/  new  
+        =.  version.old    version.act
+        old
         :_  this(d (~(put by d) id new))
         :~  [%pass /document/updateall %agent [our.bowl %engram] %poke %post !>([%document %updateall path.act])]
             [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.json] %ins %json !>((enjs:index ncontent))]~]]
@@ -199,7 +234,7 @@
         ::
           %rename
         ?>  =(src.bowl our.bowl)
-        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
         ~_  [%leaf "Error renaming document of id: {<id>}"]
         ?.  (~(has by d) id)
           ~&  "Could not find document!"  !!
@@ -213,18 +248,11 @@
         :~  [%pass /document/updateall %agent [our.bowl %engram] %poke %post !>([%document %updateall path.act])]
         ==
         ::
-        :: Remove an update for the set of stored updates
-        ::
-        ::  %accept
-        ::?>  =(src.bowl our.bowl)
-        ::=/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
-        ::`this(u (~(del by u) id))
-        ::
         :: Add a permission to a document
         ::
           %addperm
         ?>  =(src.bowl our.bowl)
-        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
         =/  todoc  (~(got by d) id)
         =/  ndoc
         ?+  type.act  !!
@@ -243,9 +271,9 @@
         ::
           %removeperm
         ?>  =(src.bowl our.bowl)
-        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
         =/  doc  (~(got by d) id)
-        =/  item  [`@p`(slav %p -.item.act) `@u`(slav %ud -.+.item.act)]
+        =/  item  [`@p`(slav %p -.item.act) (slav %ud -.+.item.act)]
         =/  ndoc
         ?+  type.act  !!
             %roles
@@ -264,7 +292,7 @@
           %gatherall
         ?>  =(src.bowl our.bowl)
         ::~&  "GATHERALL-- {<path.act>}"
-        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
         =/  doc  (~(got by d) id)
         ?:  =(space.settings.doc /null/space)  ~&  "Document does not belong to a space"  `this
         ?.  (~(has by s) space.settings.doc)
@@ -289,7 +317,7 @@
           %updateall
         ?>  =(src.bowl our.bowl)
         ::~&  "Update All-- {<path.act>}"
-        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
         =/  doc  (~(got by d) id)
         ?:  =(space.settings.doc /null/space)  ~&  "Document does not belong to a space"  `this
         ?.  (~(has by s) space.settings.doc)
@@ -322,8 +350,7 @@
         ?>  =(src.bowl our.bowl)
         ?:  =(our.bowl peer.act)
           `this
-        ::~&  "<engram>: gather {<path.act>} from {<peer.act>}"
-        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
         ?.  (~(has by d) id)
           :: If we do not have this document request it
           :_  this
@@ -340,9 +367,8 @@
         ::  Assemble and reply with updates (pokes their sync)
         ::
           %delta
-        ::~&  "DELTA-- from {<src.bowl>} for {<path.act>}"
         ?:  =(src.bowl our.bowl)  `this
-        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
         ::  get metadata
         ?.  (~(has by d) id)  ~&  "<engram>: {<our.bowl>} does not know about document {<path.act>} yet"  `this
         =/  doc  (~(got by d) id)
@@ -350,13 +376,14 @@
         =/  filepath  /(scot %p our.bowl)/engram-docs/(scot %da now.bowl)/(crip (pathify:index id))/json
         ?.  .^(? %cu filepath)  ~&  "<engram>: document does not yet exist on system"  !!
         =/  content  %-  dejs:index  !<  json  .^(vase %cr filepath)
-        ?:  =(version.content version.act)  ~&  "<engram>: peer is up to date"  `this
-        ::
         ::  assemble update
-        =/  updates  (delta:index content version.act)
+        =/  updates  ?:  =(version.content version.act)  
+          ~&  "<engram>: peer is up to date"  ^*  (update:index json)
+        (delta:index content version.act)
         =/  roles  (delta:index roles.settings.doc ^*(version:index))
         =/  ships  (delta:index ships.settings.doc ^*(version:index))
-        =/  payload  [name.settings.doc roles ships updates]
+        =/  imgs   (delta:index imgs.doc ^*(version:index))
+        =/  payload  [name.settings.doc roles ships imgs updates]
         :_  this
         :~  [%pass /engram/delta %agent [src.bowl %engram] %poke %post !>([%document %sync path.act payload])]
         ==
@@ -364,22 +391,22 @@
         ::  Sync updates with current document
         ::
           %sync
-        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
         ::  Metadata Changes
         =/  doc  (~(got by d) id)
-        =/  ndoc
-          =:  name.settings.doc   name.update.act
-              roles.settings.doc  (apply:index roles.settings.doc roles.update.act)
-              ships.settings.doc  (apply:index ships.settings.doc ships.update.act)
-            ==
-          doc
-        =/  dstate  this(d (~(put by d) id ndoc))
         :: Content Changes
         =/  filepath  /(scot %p our.bowl)/engram-docs/(scot %da now.bowl)/(crip (pathify:index id))/json
         ?.  .^(? %cu filepath)  ~&  "<engram>: document does not yet exist on system"  !!
         =/  content  %-  dejs:index  !<  json  .^(vase %cr filepath)
         =/  ncontent  (apply:index content content.update.act)
-        :_  dstate
+        =/  ndoc
+          =:  name.settings.doc   name.update.act
+              roles.settings.doc  (apply:index roles.settings.doc roles.update.act)
+              ships.settings.doc  (apply:index ships.settings.doc ships.update.act)
+              imgs.doc            (apply:index imgs.doc imgs.update.act)
+            ==
+          doc
+        :_  this(d (~(put by d) id ndoc))
         :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['space' (path:enjs:format space.settings.doc)] ['type' (tape:enjs:format "document")] ['id' (path:enjs:format path.act)]]))]
             [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.json] %ins %json !>((enjs:index ncontent))]~]]
         ==
@@ -397,7 +424,7 @@
           %answer
         ::~&  "Request from: {<src.bowl>}"
         ?:  =(src.bowl our.bowl)  `this
-        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
         ?.  (~(has by d) id)  ~&  "<engram>: {<our.bowl>} does not know about document {<path.act>} yet"  `this
         =/  doc  (~(got by d) id)
         =/  filepath  /(scot %p our.bowl)/engram-docs/(scot %da now.bowl)/(crip (pathify:index id))/json
@@ -410,7 +437,7 @@
         :: Populate a requested document
         ::
           %populate
-        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
         :_  this(d (~(put by d) id doc.act))
         :~  [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.json] %ins %json !>(content.act)]~]]
             [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['space' (path:enjs:format space.settings.doc.act)] ['type' (tape:enjs:format "space")] ['id' (path:enjs:format space.settings.doc.act)]]))]
@@ -453,14 +480,14 @@
         ::
           %softdelete
         ?>  =(src.bowl our.bowl)
-        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
         `this(f (~(del by f) id))
         ::
         :: delete an existing folder
         ::
           %delete
         ?>  =(src.bowl our.bowl)
-        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
         ?>  (~(has by f) id)
         =/  copy  (~(got by f) id)
         =/  nstate  this(f (~(del by f) id))
@@ -468,7 +495,7 @@
           %-  ~(run by s)  |=  spc=space
           ?:  (~(has in (silt ~(val by content.content.spc))) [id %folder])
             =/  spclist  ~(tap by content.content.spc) 
-            =/  idx  (find ~[[id %folder]] (turn spclist |=(a=[[@p @u] [[@p @u] @tas]] +.a)))
+            =/  idx  (find ~[[id %folder]] (turn spclist |=(a=[[@p @ud] [[@p @ud] @tas]] +.a)))
             =/  todel  (snag (need idx) spclist)
             =.  content.spc  (remove:index content.spc -.todel our.bowl)
             spc
@@ -478,7 +505,7 @@
           %-  ~(run by f)  |=  fldr=folder
           ?:  (~(has in (silt ~(val by content.content.fldr))) [id %folder])
             =/  fldrlist  ~(tap by content.content.fldr) 
-            =/  idx  (find ~[[id %folder]] (turn fldrlist |=(a=[[@p @u] [[@p @u] @tas]] +.a)))
+            =/  idx  (find ~[[id %folder]] (turn fldrlist |=(a=[[@p @ud] [[@p @ud] @tas]] +.a)))
             =/  todel  (snag (need idx) fldrlist)
             =.  content.fldr  (remove:index content.fldr -.todel our.bowl)
             fldr
@@ -492,8 +519,8 @@
         ::
           %add
         ?>  =(src.bowl our.bowl)
-        =/  id  [`@p`(slav %p -.id.act) `@u`(slav %ud -.+.id.act)]
-        =/  to  [`@p`(slav %p -.to.act) `@u`(slav %ud -.+.to.act)]
+        =/  id  [`@p`(slav %p -.id.act) (slav %ud -.+.id.act)]
+        =/  to  [`@p`(slav %p -.to.act) (slav %ud -.+.to.act)]
         ?>  (~(has by f) to)
         =/  tofldr  (~(got by f) to)
         =/  nfldr
@@ -507,8 +534,8 @@
         ::
           %remove
         ?>  =(src.bowl our.bowl)
-        =/  id  [`@p`(slav %p -.id.act) `@u`(slav %ud -.+.id.act)]
-        =/  from  [`@p`(slav %p -.from.act) `@u`(slav %ud -.+.from.act)]
+        =/  id  [`@p`(slav %p -.id.act) (slav %ud -.+.id.act)]
+        =/  from  [`@p`(slav %p -.from.act) (slav %ud -.+.from.act)]
         ?>  (~(has by f) from)
         =/  fromfldr  (~(got by f) from)
         =/  nfldr
@@ -522,7 +549,7 @@
         ::
           %addperm
         ?>  =(src.bowl our.bowl)
-        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
         =/  tofol  (~(got by f) id)
         =/  nfol
         ?+  type.act  !!
@@ -541,9 +568,9 @@
         ::
           %removeperm
         ?>  =(src.bowl our.bowl)
-        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
         =/  fold  (~(got by f) id)
-        =/  item  [`@p`(slav %p -.item.act) `@u`(slav %ud -.+.item.act)]
+        =/  item  [`@p`(slav %p -.item.act) (slav %ud -.+.item.act)]
         =/  nfold
         ?+  type.act  !!
             %roles
@@ -562,7 +589,7 @@
           %rename
         ?>  =(src.bowl our.bowl)
 
-        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
         ~_  [%leaf "Error renaming folder of id: {<id>}"]
         ?.  (~(has by f) id)
           ~&  "Could not find folder!"  !!
@@ -581,7 +608,7 @@
           %gatherall
         ?>  =(src.bowl our.bowl)
         ::~&  "GATHERALL-- items in {<path.act>}"
-        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
         =/  fold  (~(got by f) id)
         =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.fold -.+.space.fold ~.members ~.noun])
         ?+  -.spacemembers  !!
@@ -599,7 +626,7 @@
           %updateall
         ?>  =(src.bowl our.bowl)
         ::~&  "GATHERALL-- {<path.act>}"
-        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
         =/  fol  (~(got by f) id)
         ?:  =(space.fol /null/space)  ~&  "Folder does not belong to a space"  `this
         =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.fol -.+.space.fol ~.members ~.noun])
@@ -628,7 +655,7 @@
         ?.  !=(our.bowl peer.act)
           `this
         ::~&  "GATHER-- {<path.act>} from: {<peer.act>}"
-        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
         ?.  (~(has by f) id)
           :: If we do not have this folder request it
           :_  this
@@ -644,7 +671,7 @@
           %delta
         ::~&  "DELTA-- from {<src.bowl>} for {<path.act>}"
         ?:  =(src.bowl our.bowl)  `this
-        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
         ?.  (~(has by f) id)  ~&  "<engram>: {<our.bowl>} does not know about folder {<path.act>} yet"  `this
         =/  fol  (~(got by f) id)
         =/  tid  `@ta`(cat 4 (cat 2 'folder-delta-' (scot %p +.id)) (cat 2 (scot %ud -.id) (scot %uv (sham eny.bowl))))
@@ -660,7 +687,7 @@
         ::
           %sync
         ::~&  "SYNC-- from {<src.bowl>} for {<path.act>}: "
-        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
         =/  fol  (~(got by f) id)
         =/  tid  `@ta`(cat 4 (cat 2 'folder-sync-' (scot %p +.id)) (cat 2 (scot %ud -.id) (scot %uv (sham eny.bowl))))
         =/  ta-now  `@ta`(scot %da now.bowl)
@@ -683,7 +710,7 @@
         ::
           %answer
         ?:  =(src.bowl our.bowl)  `this
-        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
         ?.  (~(has by f) id)  ~&  "<engram>: {<our.bowl>} does not know about folder {<path.act>} yet"  `this
         =/  fold  (~(got by f) id)
         ::?>  (guardspace:engram [space.fold (molt ~(val by content.roles.fold)) (molt ~(val by content.ships.fold)) (silt `(list @tas)`[%admin %editor %visitor ~]) src.bowl our.bowl now.bowl])
@@ -694,7 +721,7 @@
         :: Populate a requested document
         ::
           %populate
-        =/  id  [`@p`(slav %p -.path.act) `@u`(slav %ud -.+.path.act)]
+        =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
         :_  this(f (~(put by f) id fold.act))
         :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['type' (tape:enjs:format "space")] ['id' (path:enjs:format space.fold.act)]]))]
         ==
@@ -738,7 +765,7 @@
           %removeperm
         ?>  =(src.bowl our.bowl)
         =/  spc  (~(got by s) space.act)
-        =/  id  [`@p`(slav %p -.item.act) `@u`(slav %ud -.+.item.act)]
+        =/  id  [`@p`(slav %p -.item.act) (slav %ud -.+.item.act)]
         =/  nspc
         ?+  type.act  !!
             %roles
@@ -839,7 +866,7 @@
   ?+  p  (on-watch:def p)
     [%updates ~]  `this
     [%preview @ @ ~]  
-    =/  id=id  [`@p`(slav %p i.t.p) `@u`(slav %ud i.t.t.p)]
+    =/  id=id  [`@p`(slav %p i.t.p) (slav %ud i.t.t.p)]
     =/  doc  (~(got by d) id)
     :_  this
     :~  [%give %fact ~ %json !>((get:document:enjs:engram doc))]
@@ -882,7 +909,7 @@
   ::
       [%x %document @ @ %get ~]
     ?>  =(src.bowl our.bowl)
-    =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
+    =/  id=id  [`@p`(slav %p i.t.t.p) (slav %ud i.t.t.t.p)]
     ?.  (~(has by d) id)
       ``noun+!>((tape:enjs:format "missing document"))
     =/  doc  (~(got by d) id)
@@ -890,7 +917,7 @@
   ::
       [%x %document @ @ %meta ~]
     ?>  =(src.bowl our.bowl)
-    =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
+    =/  id=id  [`@p`(slav %p i.t.t.p) (slav %ud i.t.t.t.p)]
     ?.  (~(has by d) id)
       ``noun+!>((tape:enjs:format "missing document"))
     =/  doc  (~(got by d) id)
@@ -898,19 +925,19 @@
   ::
       [%x %document @ @ %perms ~]
     ?>  =(src.bowl our.bowl)
-    =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
+    =/  id=id  [`@p`(slav %p i.t.t.p) (slav %ud i.t.t.t.p)]
     =/  doc  (~(got by d) id)
     ``noun+!>((perms:document:enjs:engram settings.doc))
   ::
       [%x %document @ @ %snapshots ~]
     ?>  =(src.bowl our.bowl)
-    =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
+    =/  id=id  [`@p`(slav %p i.t.t.p) (slav %ud i.t.t.t.p)]
     =/  doc  (~(got by d) id)
     ``noun+!>((snapshots:document:enjs:engram snapshots.doc))
   ::
       [%x %document @ @ %content ~]
     ?>  =(src.bowl our.bowl)
-    =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
+    =/  id=id  [`@p`(slav %p i.t.t.p) (slav %ud i.t.t.t.p)]
     =/  doc  (~(got by d) id)
     =/  filepath  /(scot %p our.bowl)/engram-docs/(scot %da now.bowl)/(crip (pathify:index id))/json
     ?.  .^(? %cu filepath)  ~&  "Document does not exist in clay :("  !!
@@ -918,31 +945,36 @@
     ``noun+!>((content:document:enjs:engram [doc content]))
       [%x %document @ @ %version ~]
     ?>  =(src.bowl our.bowl)
-    =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
+    =/  id=id  [`@p`(slav %p i.t.t.p) (slav %ud i.t.t.t.p)]
     =/  doc  (~(got by d) id)
     ``noun+!>((tape:enjs:format version.doc))
+      [%x %document @ @ %images ~]
+    ?>  =(src.bowl our.bowl)
+    =/  id=id  [`@p`(slav %p i.t.t.p) (slav %ud i.t.t.t.p)]
+    =/  doc  (~(got by d) id)
+    ``noun+!>((images:document:enjs:engram imgs.doc))
   ::
       [%x %folder @ @ %list ~]
     ?>  =(src.bowl our.bowl)
-    =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
+    =/  id=id  [`@p`(slav %p i.t.t.p) (slav %ud i.t.t.t.p)]
     =/  fold  (~(got by f) id)
     ``noun+!>((list:folder:enjs:engram fold))
   ::
       [%x %folder @ @ %get ~]
     ?>  =(src.bowl our.bowl)
-    =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
+    =/  id=id  [`@p`(slav %p i.t.t.p) (slav %ud i.t.t.t.p)]
     =/  fold  (~(got by f) id)
     ``noun+!>((list:folder:enjs:engram fold))
   ::
       [%x %folder @ @ %meta ~]
     ?>  =(src.bowl our.bowl)
-    =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
+    =/  id=id  [`@p`(slav %p i.t.t.p) (slav %ud i.t.t.t.p)]
     =/  fold  (~(got by f) id)
     ``noun+!>((meta:folder:enjs:engram fold))
   ::
       [%x %folder @ @ %perms ~]
     ?>  =(src.bowl our.bowl)
-    =/  id=id  [`@p`(slav %p i.t.t.p) `@u`(slav %ud i.t.t.t.p)]
+    =/  id=id  [`@p`(slav %p i.t.t.p) (slav %ud i.t.t.t.p)]
     =/  fold  (~(got by f) id)
     ``noun+!>((perms:folder:enjs:engram fold))
   ==
@@ -976,52 +1008,10 @@
           =/  res  !<(thread-res q.cage.sign)
           ::~&  "Thread Result: {<-.res>}"
           ?+  -.res  ~&  "Bad thread result"  !!
-::              %gather-document-success  `this
-::              %delta-document-success   `this
-::              %sync-document-success
-::            =/  id  [`@p`(slav %p -.path.res) `@u`(slav %ud -.+.path.res)]
-::            =/  doc  (~(got by d) id)
-::            ::  Document Changes
-::            =/  ndoc
-::              =:  name.settings.doc  name.update.res
-::                  roles.settings.doc  (apply:index roles.settings.doc roles.update.res)
-::                  ships.settings.doc  (apply:index ships.settings.doc ships.update.res)
-::                ==
-::              doc
-::            =/  dstate  this(d (~(put by d) id ndoc))
-::            ::  Update Changes
-::            ::~&  "--- Sunk Document :) ---"
-::            =/  overwrite  
-::              ?|  !(~(has by u) id)
-::                  (gth (lent ~(val by (~(got by u) id))) 0)
-::                    =/  newtimestamp   %^  spin  
-::                                          content.update.res  
-::                                        `@da`0  
-::                                      |=  [a=dupdate b=@da]  [a (max timestamp.a b)]
-::                    =/  lasttimestamp  %^  spin  
-::                                          ~(val by (~(got by u) id))  
-::                                        `@da`0  
-::                                      |=  [a=dupdate b=@da]  [a (max timestamp.a b)]
-::                  (gth (sub +.newtimestamp 60.000) +.lasttimestamp)
-::              ==
-::            =/  nextu
-::              ?:  overwrite
-::                %^  spin  content.update.res  
-::                      ^*  (map @p dupdate)
-::                    |=  [a=dupdate b=(map @p dupdate)]
-::                  [a (~(put by b) author.a a)]
-::              %^  spin  content.update.res  
-::                      (~(got by u) id)
-::                    |=  [a=dupdate b=(map @p dupdate)]
-::                  [a (~(put by b) author.a a)]
-::            :_  dstate(u (~(put by u) id +.nextu))
-::            :~  [%give %fact ~[/updates] %json !>((pairs:enjs:format ~[['space' (path:enjs:format space.settings.doc)] ['type' (tape:enjs:format "document")] ['id' (path:enjs:format path.res)]]))]
-::            ==
-            ::
               %gather-folder-success  `this
               %delta-folder-success   `this
               %sync-folder-success
-            =/  id  [`@p`(slav %p -.path.res) `@u`(slav %ud -.+.path.res)]   
+            =/  id  [`@p`(slav %p -.path.res) (slav %ud -.+.path.res)]   
             =/  fol  (~(got by f) id)
             ::  Folder Changes
             =/  nfol

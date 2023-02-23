@@ -172,7 +172,6 @@ const actions: ActionTree<FileSysState, RootState> = {
     boot({ commit, dispatch }, payload: string): Promise<void> {
         return new Promise((resolve, reject) => {
             (window as any).urbit.scry({ app: "engram", path: `/space${payload}/content` }).then((res: any) => {
-                console.log("space res: ", res);
                 if(res == "Missing Space") {
                     console.warn("trying again");
                     // handle if the space is missing
@@ -331,6 +330,17 @@ const actions: ActionTree<FileSysState, RootState> = {
         return new Promise((resolve) => {
             const children = state[payload.id].children;
             commit('delete', payload);
+            if(payload.type == "document") {
+                (window as any).urbit.scry({
+                    app: "engram",
+                    path: `/document${payload.id}/images`
+                }).then((res: any) => {
+                    console.log("images res: ", res);
+                    Object.keys(res).forEach((key: string) => {
+                        fetch(`https://engram-images.0xtimmy.workers.dev`, { method: "DELETE", body: res[key] });
+                    })
+                })
+            }
             (window as any).urbit.poke({
                 app: "engram",
                 mark: "post",
@@ -558,7 +568,7 @@ const actions: ActionTree<FileSysState, RootState> = {
         if(payload.type == "document") {
             if(payload.id == `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`) {
                 (window as any).urbit.scry({ app: "engram", path: `/document${payload.id}/content`}).then((res: any) => {
-                    Object.keys(res.updates).map((key: string) => { return res.updates[key] }).forEach((update: any) => {
+                    Object.keys(res).map((key: string) => { return res[key] }).forEach((update: any) => {
                         pushUpdate(payload.id, update, true);
                     });
                 })
