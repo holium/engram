@@ -31,8 +31,14 @@
 ::
 ++  on-init
   ^-  (quip card _this)
-  :_  this
-  :~  ^-  card  [%pass /engram/build-doc-desk %arvo %c [%merg %engram-docs our.bowl %base da+now.bowl %init]]
+  =/  filepath  /(scot %p our.bowl)/engram-docs/(scot %da now.bowl)/clock/json
+  =/  clk
+    ?.  .^(? %cu filepath)  ~&  "Initializing clock backup"  t
+    ~&  "Loading clock backup:"
+    %-  ni:dejs:format  !<  json  .^(vase %cr filepath)
+  :_  this(t clk)
+  :~  [%pass /engram/save %arvo %c [%info %engram-docs %& [/clock/json %ins %json !>((numb:enjs:format clk))]~]]
+      [%pass /engram/build-doc-desk %arvo %c [%merg %engram-docs our.bowl %base da+now.bowl %init]]
   ==
 ::
 ++  on-save
@@ -79,13 +85,16 @@
     %9  =/  ndocs  %-  ~(run by d.old)  |=  doc=old-document-2
           [id.doc version.doc settings.doc snapshots.doc ^*((index:index tape))]
         `this(state [%10 t.old h.old s.old ndocs f.old])
-    %10  :_  this(state old)
+    %10  
+        :_  this(state old)
         %+  weld  
           %+  turn  ~(tap in ~(key by s.old))
           |=  space=path
+          ^-  card
           [%pass /space/gatherall %agent [our.bowl %engram] %poke %post !>([%space %gatherall space])]
         %+  turn  ~(tap in ~(key by f.old))
         |=  fol=id
+        ^-  card
         [%pass /folder/gatherall %agent [our.bowl %engram] %poke %post !>([%folder %gatherall /(scot %p -.fol)/(scot %ud +.fol)])]
   ==
 ::
@@ -108,8 +117,6 @@
         ::
           %make
         ?>  =(src.bowl our.bowl)
-        ~&  "Make doc:"
-        ~&  act
         =/  doc  :*  
           [our.bowl t]
           version.act
@@ -139,7 +146,8 @@
         =/  content  ^*  (index:index json)
         =/  ncontent  (insert:index content (tape:enjs:format content.act) our.bowl)
         :_  hstate(t (add t 1))
-        :~  [%pass /space/updateall %agent [our.bowl %engram] %poke %post !>([%space %updateall space.act])]
+        :~  [%pass /engram/save %arvo %c [%info %engram-docs %& [/clock/json %ins %json !>((numb:enjs:format (add t 1)))]~]]
+            [%pass /space/updateall %agent [our.bowl %engram] %poke %post !>([%space %updateall space.act])]
             [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.json] %ins %json !>((enjs:index ncontent))]~]]
         ==
         ::
@@ -473,7 +481,8 @@
         =/  sstate  fstate(s (~(put by s) space.act newspc))
         =/  hstate  sstate(h (snoc h id))
         :_  hstate(t (add t 1))
-        :~  [%pass /space/updateall %agent [our.bowl %engram] %poke %post !>([%space %updateall space.act])]
+        :~  [%pass /engram/save %arvo %c [%info %engram-docs %& [/clock/json %ins %json !>((numb:enjs:format (add t 1)))]~]]
+            [%pass /space/updateall %agent [our.bowl %engram] %poke %post !>([%space %updateall space.act])]
         ==
         ::
         :: quietly delete a folder from state
