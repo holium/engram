@@ -7,6 +7,7 @@ export let s3endpoint = ""
 export function loadS3() {
     (window as any).urbit.scry({ app: "s3-store", path: "/configuration" }).then((config: any) => {
         (window as any).urbit.scry({ app: "s3-store", path: "/credentials" }).then((creds: any) => {
+            console.log("loading s3: ", config, creds);
             if(config["s3-update"].configuration.currentBucket.length > 0) {
                 s3storeclient = new S3Client({
                     endpoint: creds["s3-update"].credentials.endpoint, 
@@ -31,7 +32,7 @@ export function uploadImage(file: any, doc?: string): Promise<string> {
             reader.readAsDataURL(file);
             reader.onload = function(event) {
                 const img = (event.target as any).result;
-                console.log(s3storeclient);
+                //console.log("s3 store client", s3storeclient);
 
                 if(s3storeclient) {
                     const key = (`${(window as any).ship}/${Date.now()}-${file.name}` as any).replaceAll(" ", "-");
@@ -44,7 +45,7 @@ export function uploadImage(file: any, doc?: string): Promise<string> {
                     };
                     (s3storeclient as any).send(new PutObjectCommand(params)).then(() => {
                         const link = `https://${params.Bucket}.${s3endpoint.substr(8)}/${params.Key}`
-                        console.log("link: ", link);
+                        //console.log("link: ", link);
                         resolve(link);
                     });
                 } else {
@@ -55,13 +56,14 @@ export function uploadImage(file: any, doc?: string): Promise<string> {
                         method: "GET",
                     }).then((response) => {
                         response.json().then((result) => {
+                            //console.log("cloudflare result: ", result);
                             fetch(result.result.uploadURL, {
                                 method: "POST",
                                 'Content-Type': 'multipart/form-data; boundary=---011000010111000001101001',
                                 body: form
                             } as any).then((res) => {
                                 res.json().then((ret) => {
-                                    console.log(ret);
+                                    //console.log(ret);
                                     resolve(ret.result.variants[0]);
                                     (window as any).urbit.poke({
                                         app: "engram",

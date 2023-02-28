@@ -11,8 +11,9 @@
     >
         <input
             v-if="hasMark.get('hyperlink')"
+            id="highlight-menu-input"
             type="text"
-            v-model="linkvalue"
+            v-model="newlink"
             class="px-3 py-2 outline-none"
             @blur="(event) => {
                 implementLink();
@@ -165,6 +166,16 @@ export default defineComponent({
             required: true,
         }
     },
+    data() {
+      return {
+        newlink: "",
+      }
+    },
+    watch: {
+      linkvalue: function(val: string) {
+        this.newlink = val;
+      },
+    },
     computed: {
         hasMark: function() {
             return new Map(['strong', 'italic', 'underline', 'strike', 'code', 'hyperlink'].map((mark: string) => {
@@ -183,7 +194,10 @@ export default defineComponent({
                 const value = view.state.selection.$head
                 .marks()
                 .find((mark) => mark.type.name == "hyperlink");
-                if(value) return value.attrs.href;
+                if(typeof value != "undefined") {
+                  this.newlink = value.attrs.href;
+                  return value.attrs.href;
+                }
             } else {
               return "";
             }
@@ -194,7 +208,7 @@ export default defineComponent({
           toggleMark(schema.marks[mark])(view.state, view.dispatch, view);
         },
         implementLink: function() {
-            const tr = view.state.tr.addMark(this.contextmenu.from, this.contextmenu.to, schema.marks["hyperlink"].create({ href: this.linkvalue}));
+            const tr = view.state.tr.addMark(this.contextmenu.from, this.contextmenu.to, schema.marks["hyperlink"].create({ href: this.newlink }));
             view.dispatch(tr);
         }
     },

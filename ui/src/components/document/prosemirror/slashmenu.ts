@@ -13,15 +13,17 @@ const slashmenu = (pushMenu: (menu: SlashMenu | null) => void) => new Plugin({
     key: SlahsMenuPluginKey,
     props: {
         handleDOMEvents: {
-            blur: () => {
-                setTimeout(() => {
-                    pushMenu(null);
-                    search = "";
-                    selected = 0;
-                    top = 0;
-                    left = 0;
-                    type = "";
-                }, 80);
+            blur: (view, event) => {
+                if((event as any).relatedTarget != undefined && (event as any).relatedTarget.id != "highlight-menu-input") {
+                    setTimeout(() => {
+                        pushMenu(null);
+                        search = "";
+                        selected = 0;
+                        top = 0;
+                        left = 0;
+                        type = "";
+                    }, 80);
+                }
             },
             keydown: (view, event) => {
                 const sel = view.state.selection;
