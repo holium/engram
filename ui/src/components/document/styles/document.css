@@ -198,6 +198,7 @@ aside {
   position: relative;
   font-weight: normal;
   font-style: normal;
+  color: var(--type-color);
   text-decoration: none;
   float: right;
   width: 0;
