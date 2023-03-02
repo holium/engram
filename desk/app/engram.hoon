@@ -12,17 +12,19 @@
       state-3
       state-9
       state-10
+      state-12
   ==
-+$  state-0   [v=%0 t=localtime h=* s=* d=old-documents f=* u=*]
-+$  state-1   [v=%1 t=localtime h=* s=* d=old-documents f=* u=*]
-+$  state-2   [v=%2 t=localtime h=* s=* d=old-documents-2 f=* u=*]
-+$  state-3   [v=%3 t=localtime h=* s=* d=old-documents-2 f=*]
-+$  state-9   [v=%9 t=localtime h=history s=spaces d=old-documents-2 f=folders]
-+$  state-10  [v=%10 t=localtime h=history s=spaces d=documents f=folders]
++$  state-0   [v=%0 *]
++$  state-1   [v=%1 *]
++$  state-2   [v=%2 *]
++$  state-3   [v=%3 *]
++$  state-9   [v=%9 *]
++$  state-10  [v=%10 *]
++$  state-12  [v=%12 t=localtime h=history s=spaces d=documents f=folders]
 +$  card  card:agent:gall
 --
 %-  agent:dbug
-=|  state-10
+=|  state-12
 =*  state  -
 ^-  agent:gall
 |_  =bowl:gall
@@ -50,42 +52,12 @@
   ^-  (quip card _this)
   =/  old  !<(versioned-state old-state)
   ?-  -.old
-    %0  =/  contents  %+  turn  ~(val by d.old)  
-          |=  doc=old-document
-          =/  content  ^*(dcontent)
-          =/  ncontent  (insert:index content (tape:enjs:format content.doc) our.bowl)
-          [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id.doc)) ~.json] %ins %json !>((enjs:index ncontent))]~]]
-        =/  ndocs  %-  ~(run by d.old)  |=  doc=old-document  [id.doc version.doc settings.doc snapshots.doc ^*((index:index tape))]
-        =/  freshstate  ^*(state-10)  
-        =/  nstate
-        =.  d.freshstate  ndocs
-        freshstate
-        :_  this(state nstate)  contents
-    %1  =/  contents  %+  turn  ~(val by d.old)  
-          |=  doc=old-document
-          =/  content  ^*(dcontent)
-          =/  ncontent  (insert:index content (tape:enjs:format content.doc) our.bowl)
-          [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id.doc)) ~.json] %ins %json !>((enjs:index ncontent))]~]]
-        =/  ndocs  %-  ~(run by d.old)  |=  doc=old-document  [id.doc version.doc settings.doc snapshots.doc ^*((index:index tape))]
-        =/  freshstate  ^*(state-10)  
-        =/  nstate
-        =.  d.freshstate  ndocs
-        freshstate
-        :_  this(state nstate)  contents
-    %2  =/  freshstate  ^*(state-10)  
-        =/  nstate
-        =.  d.freshstate  %-  ~(run by d.old)  |=  doc=old-document-2  [id.doc version.doc settings.doc snapshots.doc ^*((index:index tape))]
-        freshstate
-        `this(state nstate)
-    %3  =/  freshstate  ^*(state-10)  
-        =/  nstate
-        =.  d.freshstate  %-  ~(run by d.old)  |=  doc=old-document-2  [id.doc version.doc settings.doc snapshots.doc ^*((index:index tape))]
-        freshstate
-        `this(state nstate)
-    %9  =/  ndocs  %-  ~(run by d.old)  |=  doc=old-document-2
-          [id.doc version.doc settings.doc snapshots.doc ^*((index:index tape))]
-        `this(state [%10 t.old h.old s.old ndocs f.old])
-    %10  
+    %0  `this(state ^*(state))
+    %1  `this(state ^*(state))
+    %3  `this(state ^*(state))
+    %9  `this(state ^*(state))
+    %10  `this(state ^*(state))
+    %12
         :_  this(state old)
         %+  weld  
           %+  turn  ~(tap in ~(key by s.old))
