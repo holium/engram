@@ -37,8 +37,8 @@
     ~&  "Loading clock backup:"
     %-  ni:dejs:format  !<  json  .^(vase %cr filepath)
   :_  this(t clk)
-  :~  [%pass /engram/save %arvo %c [%info %engram-docs %& [/clock/json %ins %json !>((numb:enjs:format clk))]~]]
-      [%pass /engram/build-doc-desk %arvo %c [%merg %engram-docs our.bowl %base da+now.bowl %init]]
+  :~  [%pass /engram/build-doc-desk %arvo %c [%merg %engram-docs our.bowl %base da+now.bowl %init]]
+      [%pass /engram/save %arvo %c [%info %engram-docs %& [/clock/json %ins %json !>((numb:enjs:format clk))]~]]
   ==
 ::
 ++  on-save
