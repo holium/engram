@@ -303,7 +303,7 @@
         =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
         =/  doc  (~(got by d) id)
         ?:  =(space.settings.doc /null/space)  ~&  "Document does not belong to a space"  `this
-        ?.  (~(has by s) space.settings.doc)
+        ?.  ?&((~(has by s) space.settings.doc) (~(has in .^((set desk) %cd /(scot %p our.bowl)/base/(scot %da now.bowl))) %realm))
           =/  directpeers  %+  turn  ~(val by content.ships.settings.doc)  |=  a=[@p @tas]  -.a
           :_  this
           %+  turn  (weld directpeers ~[owner.settings.doc])
@@ -327,8 +327,7 @@
         ::~&  "Update All-- {<path.act>}"
         =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
         =/  doc  (~(got by d) id)
-        ?:  =(space.settings.doc /null/space)  ~&  "Document does not belong to a space"  `this
-        ?.  (~(has by s) space.settings.doc)
+        ?.  ?&((~(has by s) space.settings.doc) (~(has in .^((set desk) %cd /(scot %p our.bowl)/base/(scot %da now.bowl))) %realm))
           =/  directpeers  %+  turn  ~(val by content.ships.settings.doc)  |=  a=[@p @tas]  -.a
           :_  this
           %+  turn  (weld directpeers ~[owner.settings.doc])
@@ -619,16 +618,20 @@
         ::~&  "GATHERALL-- items in {<path.act>}"
         =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
         =/  fold  (~(got by f) id)
-        =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.fold -.+.space.fold ~.members ~.noun])
-        ?+  -.spacemembers  !!
-            %members
-          =/  directpeers  %+  turn  ~(val by content.ships.fold)  |=  a=[@p @tas]  -.a
-          =/  spacepeers  %~  tap  in  %~  key  by  ^-  members:membership  +.spacemembers
-          :_  this
-          %+  turn  (online:engram [(weld directpeers spacepeers) our.bowl now.bowl])
+        =/  directpeers  %+  turn  ~(val by content.ships.fold)  |=  a=[@p @tas]  -.a
+        =/  peers
+          ?.  (~(has in .^((set desk) %cd .^((set desk) %cd /(scot %p our.bowl)/base/(scot %da now.bowl)))) %realm)
+            directpeers
+          =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.fold -.+.space.fold ~.members ~.noun])
+          ?+  -.spacemembers  !!
+              %members
+            =/  spacepeers  %~  tap  in  %~  key  by  ^-  members:membership  +.spacemembers
+            (weld directpeers spacepeers)
+          ==
+        :_  this
+          %+  turn  (online:engram [peers our.bowl now.bowl])
             |=  peer=@p
             [%pass /engram/folder/gather %agent [our.bowl %engram] %poke %post !>([%folder %gather path.act peer])]
-        ==
         ::
         ::  A Helper to send update notifs to everyone with access to a folder
         ::
@@ -636,18 +639,21 @@
         ?>  =(src.bowl our.bowl)
         ::~&  "GATHERALL-- {<path.act>}"
         =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
-        =/  fol  (~(got by f) id)
-        ?:  =(space.fol /null/space)  ~&  "Folder does not belong to a space"  `this
-        =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.fol -.+.space.fol ~.members ~.noun])
-        ?+  -.spacemembers  !!
-            %members
-          =/  directpeers  %+  turn  ~(val by content.ships.fol)  |=  a=[@p @tas]  -.a
-          =/  spacepeers  %~  tap  in  %~  key  by  ^-  members:membership  +.spacemembers
-          :_  this
-          %+  turn  (weld (weld directpeers spacepeers) ~[owner.fol])
-            |=  peer=@p 
+        =/  fold  (~(got by f) id)
+        =/  directpeers  %+  turn  ~(val by content.ships.fold)  |=  a=[@p @tas]  -.a
+        =/  peers
+          ?.  (~(has in .^((set desk) %cd .^((set desk) %cd /(scot %p our.bowl)/base/(scot %da now.bowl)))) %realm)
+            directpeers
+          =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.fold -.+.space.fold ~.members ~.noun])
+          ?+  -.spacemembers  !!
+              %members
+            =/  spacepeers  %~  tap  in  %~  key  by  ^-  members:membership  +.spacemembers
+            (weld directpeers spacepeers)
+          ==
+        :_  this
+          %+  turn  (online:engram [peers our.bowl now.bowl])
+            |=  peer=@p
             [%pass /folder/update %agent [peer %engram] %poke %post !>([%folder %update path.act])]
-        ==
         ::
         ::  Poked when a remote update is availible
         ::
@@ -794,16 +800,20 @@
         ?>  =(src.bowl our.bowl)
         ?.  (~(has by s) space.act)  ~&  "No space at this path"  `this
         =/  spc  (~(got by s) space.act)
-        =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.act -.+.space.act ~.members ~.noun])
-        ?+  -.spacemembers  !!
-            %members
-          =/  directpeers  %+  turn  ~(val by content.ships.spc)  |=  a=[@p @tas]  -.a
-          =/  spacepeers  %~  tap  in  %~  key  by  ^-  members:membership  +.spacemembers
-          :_  this
-          %+  turn  (online:engram [(weld directpeers spacepeers) our.bowl now.bowl])
+        =/  directpeers  %+  turn  ~(val by content.ships.spc)  |=  a=[@p @tas]  -.a
+        =/  peers
+          ?.  (~(has in .^((set desk) %cd /(scot %p our.bowl)/base/(scot %da now.bowl))) %realm)
+            directpeers
+          =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.act -.+.space.act ~.members ~.noun])
+          ?+  -.spacemembers  !!
+              %members
+            =/  spacepeers  %~  tap  in  %~  key  by  ^-  members:membership  +.spacemembers
+            (weld directpeers spacepeers)
+          ==
+        :_  this
+          %+  turn  (online:engram [peers our.bowl now.bowl])
             |=  peer=@p
             [%pass /engram/space/gather %agent [our.bowl %engram] %poke %post !>([%space %gather space.act peer])]
-        ==
         ::
         ::  A Helper to send update notifs to everyone with access to a space
         ::
@@ -811,16 +821,20 @@
         ?>  =(src.bowl our.bowl)
         ?.  (~(has by s) space.act)  ~&  "No space at this path"  `this
         =/  spc  (~(got by s) space.act)
-        =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.act -.+.space.act ~.members ~.noun])
-        ?+  -.spacemembers  !!
-            %members
-          =/  directpeers  %+  turn  ~(val by content.ships.spc)  |=  a=[@p @tas]  -.a
-          =/  spacepeers  %~  tap  in  %~  key  by  ^-  members:membership  +.spacemembers
-          :_  this
-          %+  turn  (weld directpeers spacepeers)
-            |=  peer=@p 
+        =/  directpeers  %+  turn  ~(val by content.ships.spc)  |=  a=[@p @tas]  -.a
+        =/  peers
+          ?.  (~(has in .^((set desk) %cd /(scot %p our.bowl)/base/(scot %da now.bowl))) %realm)
+            directpeers
+          =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.act -.+.space.act ~.members ~.noun])
+          ?+  -.spacemembers  !!
+              %members
+            =/  spacepeers  %~  tap  in  %~  key  by  ^-  members:membership  +.spacemembers
+            (weld directpeers spacepeers)
+          ==
+        :_  this
+          %+  turn  (online:engram [peers our.bowl now.bowl])
+            |=  peer=@p
             [%pass /space/update %agent [peer %engram] %poke %post !>([%space %update space.act])]
-        ==
         ::
         ::  Poked when a remote update is availible
         ::
