@@ -33,7 +33,7 @@ export const nullspace = {
   name: "Local", 
   color: "#262626",
   picture: "",
-  myroles: ["admin"],
+  myroles: ["owner"],
   ships: {},
   roles: {},
   members: []
@@ -97,25 +97,31 @@ const mutations: MutationTree<SpaceState> = {
 
 const actions: ActionTree<SpaceState, RootState> = {
     load({ commit, dispatch }, payload: string): Promise<Space> {
-        return new Promise((resolve, reject) => {
+        return new Promise<Space>((resolve) => {
+          const loadperms = () => {
+            (window as any).urbit.scry({ app: "engram", path: `/space${payload}/perms`}).then((res: any) => {
+              commit("loadperms", res);
+              resolve(res as Space);
+            }).catch(() => {
+              console.warn("space missing... retrying");
+              setTimeout(() => {
+                dispatch("load", payload).then((res) => { resolve(res); });
+              }, 200);
+            });
+          };
+
           (window as any).urbit.scry({ app: "spaces", path: `${payload}/members/~${(window as any).ship}` }).then((member: any) => {
             (window as any).urbit.scry({ app: "spaces", path: `${payload}` }).then((response: any) => {
                 commit("load", { ...response.space, myroles: member.member.roles});
                 resolve(response.space);
               });
 
-              (window as any).urbit.scry({ app: "engram", path: `/space${payload}/perms`}).then((res: any) => {
-                commit("loadperms", res);
-              }).catch(() => {
-                console.warn("space missing... retrying");
-                setTimeout(() => {
-                  dispatch("load", payload).then((res) => { resolve(res); });
-                }, 200);
-              })
+                loadperms();
             }).catch((err: any) => {
               console.warn("space missing!!", err);
-              commit("load", nullspace)
-              resolve(nullspace);
+              commit("load", nullspace);
+
+              loadperms();
             })
         })
     },

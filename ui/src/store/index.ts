@@ -30,7 +30,6 @@ const actions: ActionTree<RootState, RootState> = {
     loadS3();
     return new Promise((resolve) => {
       let delay = 1;
-      dispatch("space/load", payload, { root: true });
       (window as any).urbit.poke({
         app: "engram",
         mark: "post",
@@ -38,6 +37,7 @@ const actions: ActionTree<RootState, RootState> = {
       }).then(() => {
         dispatch("filesys/reset", {}, { root: true });
         dispatch("filesys/boot", payload, { root: true }).then(() => {
+          dispatch("space/load", payload, { root: true });
           resolve();
           (window as any).urbit.poke({
             app: "engram",
