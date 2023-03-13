@@ -32,9 +32,9 @@
   --ratio: var(---ratio, 1.2599);
   --document-width: var(---document-width, 60ch);
   --document-margin: var(---document-margin, 4rem);
-  --body-font-family: var(---body-font-family, --rlm-font, sans-serif);
-  --heading-font-family: var(---heading-font-family, --rlm-font, serif);
-  --heading-weight: var(---heading-weight, 800);
+  --body-font-family: var(---body-font-family, --rlm-font, "Rubik", sans-serif);
+  --heading-font-family: var(---heading-font-family, --rlm-font, "Rubik", sans-serif);
+  --heading-weight: var(---heading-weight, 400);
 
   /* Effects */
   --body: 1rem;
@@ -54,6 +54,6 @@
   --leading-heading: calc(var(--ratio) * var(--ratio) * 1em);
 
   /* Root Styles */
-  font-family: var(--rlm-font, Rubik, sans-serif);
+  font-family: var(--rlm-font, "Rubik", sans-serif);
   font-size: var(--root-size);
 }

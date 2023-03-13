@@ -445,6 +445,7 @@ const schema = new Schema({
       attrs: { comment: { default: "{}" } },
       inclusive: false,
       excludes: "",
+      spanning: true,
       parseDOM: [{ tag: "mark" }],
       toDOM(node) {
         return ["mark", 0];
