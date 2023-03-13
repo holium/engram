@@ -5,8 +5,20 @@ import {
   wrappingInputRule,
   inputRules,
   textblockTypeInputRule,
+  emDash,
+  ellipsis,
+  smartQuotes
 } from "prosemirror-inputrules";
 import schema from "./schema";
+
+// Text ------------------------------------------------------------------------
+const rightArrow = new InputRule(
+  /->$/, "→"
+);
+
+const leftArrow = new InputRule(
+  /<-$/, "←"
+);
 
 // Nodes -----------------------------------------------------------------------
 const engramRule = textblockTypeInputRule(
@@ -59,37 +71,43 @@ const orderedListRule = wrappingInputRule(
 // Marks -----------------------------------------------------------------------
 
 const boldRule = markInputRule(
-  /((?:\*\*)(?<content>(?:[^*]+))(?:\*\*))$/,
+  /((?:^|\s)(?:\*\*)(?<content>(?:[^*]+))(?:\*\*))$/,
   schema.marks["strong"],
   null
 );
 
 const italicRule = markInputRule(
-  /((?:\*)(?<content>(?:[^*]+))(?:\*))$/,
+  /((?:^|\s)(?:\*)(?<content>(?:[^*]+))(?:\*))$/,
   schema.marks["italic"],
   null
 );
 
 const underlineRule = markInputRule(
-  /((?:_)((?<content>[^~]+))(?:_))$/,
+  /((?:^|\s)(?:_)((?<content>[^_]+))(?:_))$/,
   schema.marks["underline"],
   null
 );
 
 const strikeRule = markInputRule(
-  /((?:~~)((?<content>[^~]+))(?:~~))$/,
+  /((?:^|\s)(?:~~)((?<content>[^~]+))(?:~~))$/,
   schema.marks["strike"],
   null
 );
 
 const codeRule = markInputRule(
-  /^`(?<content>[^`]+)`$/,
+  /((?:^|\s)(?:\`)(?<content>(?:[^`]+))(?:\`))$/,
   schema.marks["code"],
   null
 );
 
 export default inputRules({
   rules: [
+    // Text
+    emDash,
+    ellipsis,
+    leftArrow,
+    rightArrow,
+    ...smartQuotes,
     // Nodes
     headingRule,
     blockquoteRule,

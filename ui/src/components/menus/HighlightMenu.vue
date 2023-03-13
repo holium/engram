@@ -132,7 +132,7 @@
         </div>
         <div 
         class="highlightmenu-item"
-            @click="toggleMark('comment')"
+            @click="insertComment()"
             :class="{
                 'bg-border': hasMark.get('comment')
             }"
@@ -204,6 +204,20 @@ export default defineComponent({
         }
     },
     methods: {
+        insertComment: function() {
+          const sel = view.state.selection;
+          let found = false;
+          view.state.doc.nodesBetween(view.state.selection.from, view.state.selection.to, (node, pos, ) => {
+            if(!found && node.type.name == "text") { 
+              found = true;
+              console.log("!! Chosen Node !!");
+              const from = Math.max(sel.from, pos);
+              const to = Math.min(sel.to, pos + node.nodeSize);
+              const tr = view.state.tr.addMark(from, to, schema.marks["comment"].create({}));
+              view.dispatch(tr);
+            }
+          });
+        },
         toggleMark: function(mark: string) {
           toggleMark(schema.marks[mark])(view.state, view.dispatch, view);
         },

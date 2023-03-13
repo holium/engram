@@ -22,7 +22,7 @@ const slashmenu = (pushMenu: (menu: SlashMenu | null) => void) => new Plugin({
                         top = 0;
                         left = 0;
                         type = "";
-                    }, 80);
+                    }, 200);
                 }
             },
             keydown: (view, event) => {
