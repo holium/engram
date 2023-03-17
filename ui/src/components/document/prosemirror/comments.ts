@@ -35,7 +35,8 @@ export const comments = new Plugin({
         const contentDOM = document.createElement("mark");
         dom.appendChild(contentDOM);
 
-        const viewPortal = document.createElement("aside");
+        const viewPortal = document.createElement("div");
+        viewPortal.classList.add("comment-wrapper")
         viewPortal.addEventListener("click", (event) => {
           event.stopPropagation();
         });
