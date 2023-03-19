@@ -35,8 +35,8 @@ export default defineComponent({
 <style scoped>
 
 .skeleton {
-  background-color: #000000;
-  color: #000000;
+  background-color: var(--rlm-icon-color, #333333);
+  color: var(--rlm-icon-color, #333333);
   user-select: none;
   animation: blinker 1s linear infinite;
 }

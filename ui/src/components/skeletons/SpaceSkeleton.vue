@@ -83,7 +83,6 @@ export default defineComponent({
 }
 
 #toolbar {
-  @apply bg-window;
   position: absolute;
   top: 0;
   left: 0;
@@ -92,8 +91,8 @@ export default defineComponent({
 }
 
 .skeleton {
-  background-color: #000000;
-  color: #000000;
+  background-color: var(--rlm-icon-color, #333333);
+  color: var(--rlm-icon-color, #333333);
   user-select: none;
   animation: blinker 1s linear infinite;
 }

@@ -14,14 +14,16 @@
         <div v-if="missing">Can't find this document</div>
       </div>
     -->
-      <div 
-        class="relative items-center scrollbar-small flex-grow" 
-        id="main" 
-        :class="{'no-cover': cover.src.length == 0}" 
-        v-if="!missing"
-      >
-        <Cover :cover="cover" />
-        <div id="document" ref="document"> </div>
+      <div class="overflow-hidden flex-grow flex flex-col items-stretch" id="main-wrapper">
+        <div 
+          class="relative items-center scrollbar-small flex-grow" 
+          id="main" 
+          :class="{'no-cover': cover.src.length == 0}" 
+          v-if="!missing"
+        >
+          <Cover :cover="cover" />
+          <div id="document" ref="document"> </div>
+        </div>
       </div>
     </div>
     <DocumentDock v-if="got"/>
@@ -175,9 +177,15 @@ export default defineComponent({
 </script>
 
 <style lang="css" scoped>
+
+#main-wrapper {
+  margin-top: calc(1.25rem + 32px);
+}
+
 #main {
-  @apply relative overflow-auto;
-  padding-top: calc(1.25rem + 16px);
+  @apply relative;
+  overflow: auto;
+  overflow: overlay;
 }
 
 #document {
