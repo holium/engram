@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col gap-2" @drop="handleDrop" @dragover="handleDragOver">
         <div 
-            class="flex py-1 hover:underline cursor-pointer items-center gap-2" 
+            class="flex py-1 clickable items-center gap-2 rounded-2" 
             @click="open" 
             @contextmenu="openMenu" 
             :draggable="editable" 
@@ -11,24 +11,24 @@
             <!-- Document Icon -->
             <svg 
                 v-if="item.type == 'document'"
-                viewBox="0 0 16 16" 
-                class="icon"
+                xmlns="http://www.w3.org/2000/svg" 
+                viewBox="0 0 24 24"
                 fill="var(--rlm-icon-color, #333333)"
-                xmlns="http://www.w3.org/2000/svg"
+                class="icon"
             >
-                <circle cx="8" cy="8" r="3"/>
+                <path fill="none" d="M0 0h24v24H0z"/>
+                <path d="M21 9v11.993A1 1 0 0 1 20.007 22H3.993A.993.993 0 0 1 3 21.008V2.992C3 2.455 3.447 2 3.998 2H14v6a1 1 0 0 0 1 1h6zm0-2h-5V2.003L21 7z"/>
             </svg>
             <!-- Folder Icon -->
             <svg 
-                v-if="item.type == 'folder'"
-                viewBox="0 0 16 16" 
+            v-if="item.type == 'folder'"
+                xmlns="http://www.w3.org/2000/svg" 
+                viewBox="0 0 24 24" 
                 fill="var(--rlm-icon-color, #333333)"
-                xmlns="http://www.w3.org/2000/svg"
-                class="folder-caret icon clickable"
-                :class="{'expanded': expand}"
+                class="icon"
             >
-                <path d="M6 3.99995L9.99998 7.99245L5.99997 11.9999C5.49995 12.4999 6.07812 13.2999 6.70718 12.6712L10.7072 8.69933C11.0978 8.3087 11.0978 7.67589 10.7072 7.28527L6.70718 3.31341C6.07812 2.65716 5.5 3.50005 6 3.99995Z" fill="#333333"/>
-            </svg>
+                <path fill="none" d="M0 0h24v24H0z"/>
+                <path d="M22 8v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7h19a1 1 0 0 1 1 1zm-9.586-3H2V4a1 1 0 0 1 1-1h7.414l2 2z"/></svg>
             <input 
                 type="text" 
                 v-if="rename" 
@@ -43,6 +43,17 @@
             <div class="flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis text-sm px-2 py-2" v-else>
                 {{ itemname }}
             </div>
+             <!-- Folder Icon -->
+             <svg 
+                v-if="item.type == 'folder'"
+                viewBox="0 0 16 16" 
+                fill="var(--rlm-icon-color, #333333)"
+                xmlns="http://www.w3.org/2000/svg"
+                class="folder-caret icon"
+                :class="{'expanded': expand}"
+            >
+                <path d="M6 3.99995L9.99998 7.99245L5.99997 11.9999C5.49995 12.4999 6.07812 13.2999 6.70718 12.6712L10.7072 8.69933C11.0978 8.3087 11.0978 7.67589 10.7072 7.28527L6.70718 3.31341C6.07812 2.65716 5.5 3.50005 6 3.99995Z" fill="#333333"/>
+            </svg>
         </div>
         <SystemItem 
             class="pl-4" 
