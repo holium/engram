@@ -6,7 +6,7 @@
 @tailwind utilities;
 
 #app {
-  @apply bg-window text-type w-window h-window;
+  @apply text-type w-window h-window;
 }
 
 * {
