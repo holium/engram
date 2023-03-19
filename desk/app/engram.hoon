@@ -50,7 +50,7 @@
   ^-  (quip card _this)
   =/  old  !<(versioned-state old-state)
   ?-  -.old
-    %0  =/  contents  %+  turn  ~(val by d.old)  
+    %0  =/  contents  %+  turn  ~(val by d.old)
           |=  doc=old-document
           =/  content  ^*(dcontent)
           =/  ncontent  (insert:index content (tape:enjs:format content.doc) our.bowl)
@@ -60,7 +60,10 @@
         =/  nstate
         =.  d.freshstate  ndocs
         freshstate
-        :_  this(state nstate)  contents
+        :_  this(state nstate)  
+          %+  weld
+            ^-  (list card)  ~[[%pass /engram/build-doc-desk %arvo %c [%merg %engram-docs our.bowl %base da+now.bowl %init]]]
+            ^-  (list card)  contents
     %1  =/  contents  %+  turn  ~(val by d.old)  
           |=  doc=old-document
           =/  content  ^*(dcontent)
@@ -71,7 +74,10 @@
         =/  nstate
         =.  d.freshstate  ndocs
         freshstate
-        :_  this(state nstate)  contents
+        :_  this(state nstate)
+          %+  weld
+            ^-  (list card)  ~[[%pass /engram/build-doc-desk %arvo %c [%merg %engram-docs our.bowl %base da+now.bowl %init]]]
+            ^-  (list card)  contents
     %2  =/  freshstate  ^*(state-10)  
         =/  nstate
         =.  d.freshstate  %-  ~(run by d.old)  |=  doc=old-document-2  [id.doc version.doc settings.doc snapshots.doc ^*((index:index tape))]
@@ -620,8 +626,9 @@
         =/  fold  (~(got by f) id)
         =/  directpeers  %+  turn  ~(val by content.ships.fold)  |=  a=[@p @tas]  -.a
         =/  peers
-          ?.  (~(has in .^((set desk) %cd .^((set desk) %cd /(scot %p our.bowl)/base/(scot %da now.bowl)))) %realm)
-            directpeers
+          ?.  (~(has in .^((set desk) %cd /(scot %p our.bowl)/base/(scot %da now.bowl))) %realm)
+            ~&  "does not have realm"  directpeers
+          ~&  "does have realm"
           =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.fold -.+.space.fold ~.members ~.noun])
           ?+  -.spacemembers  !!
               %members
@@ -642,8 +649,9 @@
         =/  fold  (~(got by f) id)
         =/  directpeers  %+  turn  ~(val by content.ships.fold)  |=  a=[@p @tas]  -.a
         =/  peers
-          ?.  (~(has in .^((set desk) %cd .^((set desk) %cd /(scot %p our.bowl)/base/(scot %da now.bowl)))) %realm)
-            directpeers
+          ?.  (~(has in .^((set desk) %cd /(scot %p our.bowl)/base/(scot %da now.bowl))) %realm)
+            ~&  "does not have realm"  directpeers
+          ~&  "does have realm"
           =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.fold -.+.space.fold ~.members ~.noun])
           ?+  -.spacemembers  !!
               %members

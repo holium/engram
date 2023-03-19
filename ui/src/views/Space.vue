@@ -4,9 +4,12 @@
     <router-view class="flex-grow" v-if="!loading"></router-view>
     <FolderDock :folder="folderdock" :class="{'hide-folder-dock': folderdock.length == 0}" @close="closeFolderDock" v-if="!loading"/>
     <SpaceDock :open="(spacedock.length == 0)" :class="{'hide-space-dock': spacedock.length == 0}" @close="closeSpaceDock" v-if="!loading"/>
+    <!--
     <div class="flex justify-center items-center flex-grow" v-if="loading">
       <img class="loading-animation" src="@/assets/engram.svg" />
     </div>
+    -->
+    <SpaceSkeleton v-if="loading"/>
   </div>
 </template>
 
@@ -15,8 +18,9 @@ import { defineComponent } from "vue";
 import store from "@/store/index";
 import { RouterLink, RouterView } from "vue-router";
 import Navbar from "@/components/navbar/Navbar.vue";
-import FolderDock from "@/components/dock/FolderDock.vue"
-import SpaceDock from "@/components/dock/SpaceDock.vue"
+import FolderDock from "@/components/dock/FolderDock.vue";
+import SpaceDock from "@/components/dock/SpaceDock.vue";
+import SpaceSkeleton from "@/components/skeletons/SpaceSkeleton.vue";
 
 export default defineComponent({
   name: "Space",
@@ -25,6 +29,7 @@ export default defineComponent({
     Navbar,
     FolderDock,
     SpaceDock,
+    SpaceSkeleton
   },
   data() {
     return {

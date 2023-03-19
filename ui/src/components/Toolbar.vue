@@ -90,7 +90,6 @@ export default defineComponent({
 <style lang="css" scoped>
 
 #toolbar {
-  @apply bg-window;
   position: absolute;
   top: 0;
   left: 0;

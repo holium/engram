@@ -5,7 +5,9 @@
     </div>
     <div id="dock" :style="{width: `${dockWidth}px`}">
       <div class="toolbar" >
-          <div class="flex-grow"></div>
+          <div class="flex-grow heading-1">
+            Folder Settings
+          </div>
           <div @click="closeDock" class="px-2 rounded-2 clickable">
             close
           </div>

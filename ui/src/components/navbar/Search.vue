@@ -94,6 +94,10 @@ export default defineComponent({
 
 <style scoped>
 
+.input {
+    box-shadow: none !important;
+}
+
 #results {
     position: absolute;
     top: 100%;

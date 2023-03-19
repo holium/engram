@@ -46,8 +46,8 @@ module.exports = {
     borderWidth: scale,
     outlineWidth: scale,
     boxShadow: {
-      menu: "0px 2px 8px 2px var(--rlm-text-color, #261f1f26)",
-      sunk: "inset 0px 2px 8px 2px var(--rlm-text-color, #261f1f26)",
+      menu: "0px 2px 8px 2px var(--rlm-icon-color, #261f1f26)",
+      sunk: "inset 0px 2px 8px 2px var(--rlm-icon-color, #261f1f26)",
     },
     width: { ...scale, full: "100%", window: "100vw" },
     height: { ...scale, full: "100%", window: "100vh" },

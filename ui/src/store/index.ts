@@ -6,6 +6,9 @@ import space from "./space"
 import filesys from "./filesystem"
 import document from "./document"
 import { loadS3 } from "./images"
+import router from '@/router/index'
+
+import { pushUpdate } from "@/components/document/prosemirror/render";
 
 export interface RootState { }
 
@@ -52,6 +55,16 @@ const actions: ActionTree<RootState, RootState> = {
                 if((event.type == "document" || event.type == "folder") && event.space == payload) 
                   dispatch("filesys/getupdate", event, { root: true });
                 else if(event.type == "space") dispatch("filesys/boot", payload, { root: true })
+
+                if(event.type == "document") {
+                  if(event.id == `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`) {
+                      (window as any).urbit.scry({ app: "engram", path: `/document${event.id}/content`}).then((res: any) => {
+                          Object.keys(res).map((key: string) => { return res[key] }).forEach((update: any) => {
+                              pushUpdate(event.id, update, true);
+                          });
+                      })
+                  }
+              }
               }
             });
           })
@@ -68,8 +81,5 @@ export default createStore({
     space,
     filesys,
     document,
-    //documents,
-    //folders,
-    //workspace,
   }
 })

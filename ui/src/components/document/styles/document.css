@@ -195,7 +195,7 @@ mark {
   text-decoration: underline;
 }
 
-aside {
+.comment-wrapper {
   @apply inline mb-3;
   position: relative;
   font-weight: normal;
@@ -213,8 +213,8 @@ aside {
 .comment {
   @apply rounded-2 shadow-menu flex flex-col items-stretch;
   background: var(--paper-color);
-  width: 280px;
-  min-width: 280px;
+  width: 240px;
+  min-width: 240px;
   font-size: 16px;
   font-weight: normal;
   font-style: normal;
@@ -223,7 +223,7 @@ aside {
 }
 
 @media (max-width: 800px) {
-  aside {
+  .comment-wrapper {
     position: absolute;
     float: none;
     top: auto;
@@ -231,22 +231,22 @@ aside {
   }
 }
 
-aside li {
+.comment-wrapper li {
   @apply px-3 py-2 gap-2 flex;
   list-style-type: none;
   margin: 0;
 }
 
-aside.context-menu li:hover {
+.comment-wrapper.context-menu li:hover {
   background-color: var(--paper-color);
   cursor: default;
 }
 
-aside blockquote {
+.comment-wrapper blockquote {
   @apply pl-3;
 }
 
-aside li textarea {
+.comment-wrapper li textarea {
   @apply px-3 py-2 flex-grow rounded-2;
   outline: none;
   background-color: var(--type-glass-color);

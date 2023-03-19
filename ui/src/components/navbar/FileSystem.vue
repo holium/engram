@@ -1,13 +1,16 @@
 <template>
     <div class="flex flex-col gap-2" @drop="handleDrop" @dragover="handleDragOver">
-        <div class="px-3 py-2 flex items-center" id="workspace-heading" @contextmenu="openMenu">
-            <div class="flex-grow heading-1">
+        <div class="py-2 flex items-center" style="color: var(--rlm-icon-color, #333333)" id="workspace-heading" @contextmenu="openMenu">
+            <div class="heading-1 color-icon">
                 workspace
+            </div>
+            <div class="flex-grow mx-3" style="border-top: 1px solid; height: 0px; border-color: var(--rlm-icon-color, #333333)">
+
             </div>
             <svg 
                 v-if="canEdit"
                 @click="openMenu"
-                class="icon clickable new-item-button"
+                class="icon clickable"
                 viewBox="0 0 16 16" 
                 fill="var(--rlm-icon-color, #333333)"
                 xmlns="http://www.w3.org/2000/svg"
@@ -175,13 +178,5 @@ export default defineComponent({
 
 <style>
 
-.new-item-button {
-    opacity: 0;
-    transition: opacity 80ms ease;
-}
-
-#workspace-heading:hover .new-item-button {
-    opacity: 1;
-}
 
 </style>
