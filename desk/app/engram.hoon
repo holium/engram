@@ -626,8 +626,9 @@
         =/  fold  (~(got by f) id)
         =/  directpeers  %+  turn  ~(val by content.ships.fold)  |=  a=[@p @tas]  -.a
         =/  peers
-          ?.  (~(has in .^((set desk) %cd .^((set desk) %cd /(scot %p our.bowl)/base/(scot %da now.bowl)))) %realm)
-            directpeers
+          ?.  (~(has in .^((set desk) %cd /(scot %p our.bowl)/base/(scot %da now.bowl))) %realm)
+            ~&  "does not have realm"  directpeers
+          ~&  "does have realm"
           =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.fold -.+.space.fold ~.members ~.noun])
           ?+  -.spacemembers  !!
               %members
@@ -648,8 +649,9 @@
         =/  fold  (~(got by f) id)
         =/  directpeers  %+  turn  ~(val by content.ships.fold)  |=  a=[@p @tas]  -.a
         =/  peers
-          ?.  (~(has in .^((set desk) %cd .^((set desk) %cd /(scot %p our.bowl)/base/(scot %da now.bowl)))) %realm)
-            directpeers
+          ?.  (~(has in .^((set desk) %cd /(scot %p our.bowl)/base/(scot %da now.bowl))) %realm)
+            ~&  "does not have realm"  directpeers
+          ~&  "does have realm"
           =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.fold -.+.space.fold ~.members ~.noun])
           ?+  -.spacemembers  !!
               %members
