@@ -7,10 +7,13 @@
         :querier="querier"
         @close="closeFinder"
       />
-      <div class="flex flex-col gap-3 justify-center items-center flex-grow" v-if="loading || missing">
+      <DocumentSkeleton v-if="loading || missing" />
+      <!--
+      <div class="flex flex-col gap-3 justify-center items-center flex-grow" >
         <img class="loading-animation" src="@/assets/engram.svg" />
         <div v-if="missing">Can't find this document</div>
       </div>
+    -->
       <div 
         class="relative items-center scrollbar-small flex-grow" 
         id="main" 
@@ -43,6 +46,8 @@ import type {
   Cover as ICover,
 } from "./prosemirror/cover";
 
+import DocumentSkeleton from "../skeletons/DocumentSkeleton.vue";
+
 export default defineComponent({
   name: "Document",
   components: {
@@ -50,6 +55,7 @@ export default defineComponent({
     Finder,
     DocumentDock,
     Cover,
+    DocumentSkeleton
   },
   props: {
     allowDock: {
@@ -124,7 +130,6 @@ export default defineComponent({
     openFinder: function(querier: (query: string) => void) {
       this.finder = true;
       this.querier = querier;
-      console.log("opening finder: ", this.finder, this.missing);
     },
     closeFinder: function() {
       this.finder = false;

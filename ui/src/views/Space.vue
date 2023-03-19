@@ -67,7 +67,7 @@ export default defineComponent({
     loadSpace: function(to: string) {
       this.loading = true;
       store.dispatch("load", to as string).then(() => {
-        //this.loading = false;
+        this.loading = false;
       })
     },
     toggleNav: function() {
