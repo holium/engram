@@ -1,10 +1,10 @@
 <template>
     <div class="flex flex-col gap-2" @drop="handleDrop" @dragover="handleDragOver">
         <div class="py-2 flex items-center" style="color: var(--rlm-icon-color, #333333)" id="workspace-heading" @contextmenu="openMenu">
-            <div class="flex-grow heading-1 color-icon">
+            <div class="heading-1 color-icon">
                 workspace
             </div>
-            <div class="flex-grow" style="border-top: 1px; height: 0px; border-color: var(--rlm-icon-color, #333333)">
+            <div class="flex-grow mx-3" style="border-top: 1px solid; height: 0px; border-color: var(--rlm-icon-color, #333333)">
 
             </div>
             <svg 
