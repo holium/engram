@@ -2,11 +2,23 @@
   <div class="relative cover" @drop="handleDrop">
     <img class="cover-image" :src="cover.src" alt="" :style="{ 'object-position': `${xpositioning}% ${ypositioning}%`}">
     <div class="image-toolbar rounded-2" :style="changingCover ? { opacity: '1' } : {}">
-      <div class="bg-paper px-3 py-2 cursor-pointer" @click="() => { changingCover = true }" v-if="!changingCover">
+      <div 
+        class="bg-paper px-3 py-2 clickable"  
+        @click="() => { changingCover = true }" 
+        v-if="!changingCover"
+      >
         {{ cover.src == "" ? "add cover" : "change cover" }}
       </div>
-      <input class="bg-paper px-3 py-2" style="width: 480px" v-model="newSrc" @drop="handleDrop" @keydown="handleKeys" v-if="changingCover" placeholder="Type the image URL or drop one from your machine"/>
-      <div class="bg-paper px-3 py-2 cursor-grab" draggable="true" @dragstart="handleDragStart" @drag="handleDrag">
+      <input 
+        class="bg-paper px-3 py-2 outline-none" 
+        style="width: 480px" 
+        v-model="newSrc" 
+        @drop="handleDrop" 
+        @keydown="handleKeys" 
+        v-if="changingCover" 
+        placeholder="Type the image URL or drop one from your machine"
+      />
+      <div class="bg-paper px-3 py-2 cursor-grab clickable" draggable="true" @dragstart="handleDragStart" @drag="handleDrag">
         reposition
       </div>
     </div>
@@ -123,8 +135,8 @@ export default defineComponent({
 }
 .no-cover .cover {
   max-height: calc(2.5em + 32px);
-  height: calc(2.5em + 32px);
-  min-height: calc(2.5em + 32px);
+  height: calc(1.25rem + 32px);
+  min-height: calc(1.25rem + 32px);
 }
 
 .cover-image {
@@ -144,7 +156,9 @@ export default defineComponent({
 }
 
 .image-toolbar {
-  @apply absolute bottom-3 right-4 bg-border gap-1 flex;
+  @apply absolute bottom-3 right-4 bg-paper gap-1 flex;
+  border-width: 1px;
+  border-color: theme(colors.border);
   overflow: hidden;
   z-index: 2;
   opacity: 0;

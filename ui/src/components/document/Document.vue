@@ -8,12 +8,6 @@
         @close="closeFinder"
       />
       <DocumentSkeleton v-if="loading || missing" />
-      <!--
-      <div class="flex flex-col gap-3 justify-center items-center flex-grow" >
-        <img class="loading-animation" src="@/assets/engram.svg" />
-        <div v-if="missing">Can't find this document</div>
-      </div>
-    -->
       <div class="overflow-hidden flex-grow flex flex-col items-stretch" id="main-wrapper">
         <div 
           class="relative items-center scrollbar-small flex-grow" 
