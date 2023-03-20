@@ -81,6 +81,9 @@ export default defineComponent({
       dragStart: 0,
     }
   },
+  mounted: function() {
+    this.$emit("updateWidth", this.dockWidth);
+  },
   methods: {
     handleDragStart: function(event: any) {
       this.dragStart = event.clientX;
@@ -95,6 +98,7 @@ export default defineComponent({
     handleDrag: function(event: MouseEvent) {
       this.dockWidth = this.dockWidth - (event.clientX - this.dragStart);
       this.dragStart = event.clientX;
+      this.$emit("updateWidth", this.dockWidth);
     },
     closeDock: function() {
       (this as any).toggleDock();

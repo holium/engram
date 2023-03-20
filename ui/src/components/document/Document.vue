@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-row items-stretch overflow-hidden">
-    <div class="flex flex-col flex-grow relative" :class="{'loading-document': loading}" style="width: 100%">
+    <div class="flex flex-col flex-1 relative" :class="{'loading-document': loading}" :style="`width: calc(100% - ${dockWidth}px)`">
       <Toolbar />
       <Finder 
         :show="finder && !missing"
@@ -20,7 +20,7 @@
         </div>
       </div>
     </div>
-    <DocumentDock v-if="got"/>
+    <DocumentDock v-if="got" @updateWidth="handleWidthUpdate"/>
   </div>
 </template>
 
@@ -73,6 +73,7 @@ export default defineComponent({
         xpositioning: 50,
         ypositioning: 50,
       } as ICover,
+      dockWidth: 0,
     };
   },
   watch: {
@@ -99,6 +100,9 @@ export default defineComponent({
     this.open(this.path);
   },
   methods: {
+    handleWidthUpdate: function(newWidth: number) {
+      this.dockWidth = newWidth;
+    },
     open: function(docId: string, snapshot: null | DocumentVersion = null) {
       this.loading = true;
       store.dispatch("filesys/protectedget", {id: docId, type: "document"}).then(() => {
@@ -183,7 +187,7 @@ export default defineComponent({
 }
 
 #document {
-  @apply flex flex-col flex-grow items-center overflow-hidden relative;
+  @apply flex flex-col flex-grow items-center overflow-hidden relative px-1;
   width: 100%;
   min-height: calc(100% - 32vh);
   z-index: 1;
