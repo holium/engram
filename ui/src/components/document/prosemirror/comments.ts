@@ -131,6 +131,7 @@ export const comments = new Plugin({
 
           const commentContent = document.createElement("li");
           const comment = document.createElement("textarea");
+          comment.setAttribute("identifier", mark.attrs.identifier);
           commentContent.appendChild(comment);
 
           // Send the comment

@@ -37,16 +37,23 @@
 }
 
 .clickable:hover {
-  @apply bg-border;
+  @apply bg-hover;
 }
 
 .input {
-  @apply px-4 py-3 flex justify-between items-center rounded-2 border-;
+  @apply p-3 flex justify-between items-center;
+  border-width: 1px;
   border-color: theme(colors.border);
+  background-color: rgba(0,0,0,.06);
+  border-radius: 6px;
 }
 
 .input input, .input select {
-  @apply outline-none text-sm bg-none min-w-0 flex-1;
+  @apply outline-none text-sm min-w-0 flex-1 bg-none;
+}
+
+.input:active {
+  @apply bg-active;
 }
 
 .input .unit {

@@ -37,6 +37,8 @@ module.exports = {
       window: "var(--rlm-window-color, #ECEFF0)",
       border: "var(--rlm-border-color, #D7D0DA)",
       accent: "var(--rlm-accent-color, #4E9EFD)",
+      hover: "var(--rlm-overlay-hover, #0000002F)",
+      active: "var(--rlm-overlay-active, #0000002F)"
     },
     spacing: scale,
     borderRadius: {

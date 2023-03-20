@@ -210,11 +210,15 @@ export default defineComponent({
           view.state.doc.nodesBetween(view.state.selection.from, view.state.selection.to, (node, pos, ) => {
             if(!found && node.type.name == "text") { 
               found = true;
-              console.log("!! Chosen Node !!");
               const from = Math.max(sel.from, pos);
               const to = Math.min(sel.to, pos + node.nodeSize);
-              const tr = view.state.tr.addMark(from, to, schema.marks["comment"].create({}));
+              const identifier = `${(window as any).ship}-${Date.now()}`;
+              const tr = view.state.tr.addMark(from, to, schema.marks["comment"].create({ "identifier": identifier }));
               view.dispatch(tr);
+              setTimeout(() => {
+                const toFocus = document.querySelector(`[identifier=${identifier}]`);
+                if(toFocus != null) (toFocus as any).focus();
+              })
             }
           });
         },

@@ -442,7 +442,7 @@ const schema = new Schema({
 
     // Comment
     comment: {
-      attrs: { comment: { default: "{}" } },
+      attrs: { comment: { default: "{}" }, identifier: { default: "" } },
       inclusive: false,
       excludes: "",
       spanning: true,

@@ -247,8 +247,9 @@ mark {
 }
 
 .comment-wrapper li textarea {
-  @apply px-3 py-2 flex-grow rounded-2;
+  @apply flex-grow p-3;
+  border-radius: 6px;
   outline: none;
-  background-color: var(--type-glass-color);
+  background-color: rgba(0, 0, 0, .05);
   min-width: 0;
 }
