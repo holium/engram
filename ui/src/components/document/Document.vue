@@ -7,7 +7,7 @@
         :querier="querier"
         @close="closeFinder"
       />
-      <DocumentSkeleton v-if="loading || missing" />
+      <DocumentSkeleton v-if="loading || missing" class="flex-grow" />
       <div class="overflow-hidden flex-grow flex flex-col items-stretch" id="main-wrapper">
         <div 
           class="relative items-center scrollbar-small flex-grow" 
@@ -194,7 +194,7 @@ export default defineComponent({
 }
 
 .no-cover #document {
-  min-height: calc(100% - calc(2.5em + 32px));
+  min-height: calc(100% - calc(1.25rem + 32px));
 }
 
 </style>

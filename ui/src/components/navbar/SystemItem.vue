@@ -1,7 +1,8 @@
 <template>
     <div class="flex flex-col gap-2" @drop="handleDrop" @dragover="handleDragOver">
         <div 
-            class="flex py-1 clickable items-center gap-2 rounded-2" 
+            class="flex py-1 items-center gap-2 rounded-2" 
+            :class="{'clickable': !rename}"
             @click="open" 
             @contextmenu="openMenu" 
             :draggable="editable" 

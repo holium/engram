@@ -11,6 +11,7 @@ import { RouterLink, RouterView } from "vue-router";
 import type { Menu } from "@/components/menus/types"
 import ContextMenu from "@/components/menus/ContextMenu.vue";
 
+
 export default defineComponent({
   name: "App",
   components: {
