@@ -48,7 +48,7 @@ const schema = new Schema({
         return ["h1", { name: "title", id: node.attrs.id }, 0];
       },
     },
-
+    
     cover: {
       content: "text*",
       group: "meta",
@@ -254,8 +254,8 @@ const schema = new Schema({
       },
     },
 
-    image: {
-      draggable: true,  
+    img: {
+      draggable: true,
       group: "block",
       attrs: {
         src: { default: "" },
