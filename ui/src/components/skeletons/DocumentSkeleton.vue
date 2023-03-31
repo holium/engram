@@ -69,7 +69,7 @@ header::before {
 #document {
   @apply flex flex-col flex-grow items-center overflow-hidden relative;
   width: 100%;
-  min-height: calc(100% - calc(2.5em + 32px));
+  min-height: calc(100% - calc(1.25em + 32px));
   z-index: 1;
 }
 

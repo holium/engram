@@ -3,6 +3,7 @@ import { EditorState } from "prosemirror-state";
 import * as Y from "yjs"
 import { ySyncPlugin, yUndoPlugin } from "y-prosemirror";
 import { dropCursor } from "prosemirror-dropcursor";
+import { Plugin } from "prosemirror-state";
 
 import store from "@/store/index";
 import type { DocumentUpdate, DocumentVersion } from "@/store/document";
@@ -106,6 +107,15 @@ export default function (
               dropCursor(),
               engram,
               comments,
+              new Plugin({
+                props: {
+                  handleDOMEvents: {
+                    "dragstart": (view, event) => {
+                      console.log(event);
+                    }
+                  }
+                }
+              })
             ],
           });
       } else {

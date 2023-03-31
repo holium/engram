@@ -22,7 +22,7 @@ export const imageview = new Plugin({
         event.preventDefault();
         Array.from(files).forEach((file) => {
           uploadImage(file, `/${router.currentRoute.value.params.author}/${router.currentRoute.value.params.clock}`).then((url: string) => {
-            const node = Fragment.from(schema.nodes["image"].create({ src: url }));
+            const node = Fragment.from(schema.nodes["img"].create({ src: url }));
                 const pos = view.posAtCoords({ left: event.clientX, top: event.clientY });
                 if(pos) {
                     const point = dropPoint(view.state.doc, pos.pos, new Slice(node, 0, 0));
@@ -43,14 +43,16 @@ export const imageview = new Plugin({
         return true;
       },
     },
+    /*
     nodeViews: {
-      image: (node: any, view: EditorView, getPos: any) => {
+      img: (node: any, view: EditorView, getPos: any) => {
         const dom = document.createElement("div");
+        dom.draggable = true;
         dom.style.overflow = "hidden";
         dom.style.display = "block";
         dom.style.height = `${node.attrs.height}px`;
-        const contentDOM = document.createElement("div");
-        dom.appendChild(contentDOM);
+        dom.innerHTML = "hello :)";
+        
         if (node.attrs.src.length > 0) {
           dom.style.resize = "vertical";
           const img = document.createElement("img");
@@ -58,6 +60,7 @@ export const imageview = new Plugin({
           img.style.height = "100%";
           img.style.objectFit = "contain";
           img.setAttribute("src", node.attrs.src);
+          img.draggable = false;
           dom.appendChild(img);
 
           dom.addEventListener("mouseup", (event) => {
@@ -92,7 +95,7 @@ export const imageview = new Plugin({
               reader.onload = (res) => {
                 const tr = view.state.tr.setNodeMarkup(
                   getPos(),
-                  schema.nodes["image"],
+                  schema.nodes["img"],
                   { src: reader.result, height: "auto" }
                 );
                 view.dispatch(tr);
@@ -118,7 +121,7 @@ export const imageview = new Plugin({
               event.stopPropagation();
               const tr = view.state.tr.setNodeMarkup(
                 getPos(),
-                schema.nodes["image"],
+                schema.nodes["img"],
                 { src: event.target.value, height: "auto" }
               );
               view.dispatch(tr);
@@ -130,13 +133,12 @@ export const imageview = new Plugin({
 
         return {
           dom,
-          contentDOM,
           stopEvent: () => {
             return true;
           },
         };
       },
-    },
+    },*/
   },
 });
 
