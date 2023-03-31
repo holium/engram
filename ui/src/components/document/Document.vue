@@ -8,7 +8,7 @@
         @close="closeFinder"
       />
       <DocumentSkeleton v-if="loading || missing" class="flex-grow" />
-      <div class="overflow-hidden flex-grow flex flex-col items-stretch" id="main-wrapper">
+      <div class="overflow-hidden flex-grow flex-col items-stretch" id="main-wrapper" :style="{'display': (loading || missing ? 'none' : 'flex')}">
         <div 
           class="relative items-center scrollbar-small flex-grow" 
           id="main" 

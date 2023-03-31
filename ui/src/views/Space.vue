@@ -4,11 +4,6 @@
     <router-view class="flex-grow" v-if="!loading"></router-view>
     <FolderDock :folder="folderdock" :class="{'hide-folder-dock': folderdock.length == 0}" @close="closeFolderDock" v-if="!loading"/>
     <SpaceDock :open="(spacedock.length == 0)" :class="{'hide-space-dock': spacedock.length == 0}" @close="closeSpaceDock" v-if="!loading"/>
-    <!--
-    <div class="flex justify-center items-center flex-grow" v-if="loading">
-      <img class="loading-animation" src="@/assets/engram.svg" />
-    </div>
-    -->
     <SpaceSkeleton v-if="loading"/>
   </div>
 </template>
