@@ -279,16 +279,21 @@ const schema = new Schema({
       ],
       toDOM(node) {
         return [
-          "img",
-          {
-            src: node.attrs.src,
-            ...(node.attrs.alt ? { alt: node.attrs.alt } : {}),
-            ...(node.attrs.title ? { alt: node.attrs.title } : {}),
-            ...(node.attrs.height
-              ? { style: { height: node.attrs.height + "px" } }
-              : {}),
-            ...(node.attrs.id ? { id: node.attrs.id } : {}),
-          },
+          "div",
+          {},
+          [
+            "img",
+            {
+              src: node.attrs.src,
+              ...(node.attrs.alt ? { alt: node.attrs.alt } : {}),
+              ...(node.attrs.title ? { alt: node.attrs.title } : {}),
+              ...(node.attrs.height
+                ? { style: { height: node.attrs.height + "px" } }
+                : {}),
+              ...(node.attrs.id ? { id: node.attrs.id } : {}),
+            },
+          ]
+          
         ];
       },
     },
