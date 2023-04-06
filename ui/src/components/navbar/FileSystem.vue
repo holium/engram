@@ -35,7 +35,6 @@
 import { defineComponent } from "vue";
 import store from "@/store/index";
 import SystemItem from "./SystemItem.vue";
-import type { ShipPermission, RolePermission, SysItem } from "@/store/filesystem";
 import { Menu } from "@/components/menus/types";
 export default defineComponent({
     name: "FileSystem",
@@ -45,7 +44,6 @@ export default defineComponent({
     inject: ["pushMenu"],
     data() {
         return {
-            ships: {} as any,
             roles: {} as any,
         }
     },
@@ -59,15 +57,8 @@ export default defineComponent({
         canEdit: function(): boolean {
             const myroles = store.getters['space/myroles'];
             const roles = store.getters['space/roles'];
-            const ships = store.getters['space/ships'];
 
             return myroles.includes("owner") || 
-                Object.keys(ships)
-                    .map((timestamp: string) => { 
-                        return ships[timestamp].ship == `~${(window as any).ship}` && (ships[timestamp].level == "editor" || ships[timestamp].level == "admin") 
-                    }).reduce((a: boolean, acc: boolean) => {
-                            return acc || a;
-                        }, false) || 
                 Object.keys(roles)
                     .map((timestamp: string) => { 
                         return myroles.includes(roles[timestamp].role) && (roles[timestamp].level == "editor" || roles[timestamp].level == "admin") 
@@ -84,52 +75,14 @@ export default defineComponent({
                     display: "New Document",
                     icon: "",
                     command: () => {
-                        store.dispatch("filesys/make", { type: "document", name: "Untitled Document", spaceId: this.$route.query.spaceId }).then((path: SysItem) => {
-                            const roles = store.getters['space/roles'];
-                            const ships = store.getters['space/ships'];
-                            Object.keys(roles).forEach((timestamp: string) => {
-                                store.dispatch("filesys/addperm", {
-                                    item: path,
-                                    type: "roles",
-                                    perm: roles[timestamp].role,
-                                    level: roles[timestamp].level
-                                })
-                            });
-                            Object.keys(ships).forEach((timestamp: string) => {
-                                store.dispatch("filesys/addperm", {
-                                    item: path,
-                                    type: "ships",
-                                    perm: ships[timestamp].ship,
-                                    level: ships[timestamp].level
-                                })
-                            });
-                        })
+                        store.dispatch("filesys/make", { type: "document", name: "Untitled Document", spaceId: this.$route.query.spaceId });
                     }
                 },
                 {
                     display: "New Folder",
                     icon: "",
                     command: () => {
-                        store.dispatch("filesys/make", { type: "folder", name: "Untitled Folder", spaceId: this.$route.query.spaceId }).then((path: SysItem) => {
-                            const roles = store.getters['space/roles'];
-                            const ships = store.getters['space/ships'];
-                            Object.keys(roles).forEach((timestamp: string) => {
-                                store.dispatch("filesys/addperm", {
-                                    item: { id: path.id, type: "folder" },
-                                    type: "roles",
-                                    perm: roles[timestamp].role,
-                                    level: roles[timestamp].level
-                                })
-                            });
-                            Object.keys(ships).forEach((timestamp: string) => {
-                                store.dispatch("filesys/addperm", {
-                                    item: { id: path.id, type: "folder"},
-                                    type: "ships",
-                                    perm: ships[timestamp].ship,
-                                    level: ships[timestamp].level
-                                })
-                            });
-                        })
+                        store.dispatch("filesys/make", { type: "folder", name: "Untitled Folder", spaceId: this.$route.query.spaceId });
                     }
                 }
             ]))
@@ -156,16 +109,9 @@ export default defineComponent({
         canView: function(id: string): boolean {
             const myroles = store.getters['space/myroles'];
             const owner = store.getters['filesys/owner'](id);
-            const roles = store.getters['filesys/roles'](id);
-            const ships = store.getters['filesys/ships'](id);
+            const roles = store.getters['space/roles'];
 
             return owner == `~${(window as any).ship}` || 
-                Object.keys(ships)
-                    .map((timestamp: string) => { 
-                        return ships[timestamp].ship == `~${(window as any).ship}`;
-                    }).reduce((a: boolean, acc: boolean) => {
-                            return acc || a;
-                        }, false) || 
                 Object.keys(roles)
                     .map((timestamp: string) => { return myroles.includes(roles[timestamp].role) })
                         .reduce((a: boolean, acc: boolean) => {

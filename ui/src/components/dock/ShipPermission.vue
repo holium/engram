@@ -1,5 +1,5 @@
 <template>
-    <div class="flex justify-between items-center py-2">
+    <div class="flex justify-between items-center py-2" :style="lvl == '-' ? {'display': 'none'} : {}">
         <div class="azimuth px-3 py-2 whitespace-nowrap overflow-hidden overflow-ellipsis">
             {{ ship }}
         </div>
@@ -46,6 +46,7 @@ export default defineComponent({
     },
     methods: {
         handleLevel: function(event: any) {
+            console.log("this level: ", this.lvl);
             this.$emit("level", event.target.value);
         }
     }

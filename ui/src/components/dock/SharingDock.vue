@@ -17,20 +17,13 @@
         v-for="item in Object.keys(ships)" 
         @level="(event: string) => { handleLevel(item, event, 'ships') }"
       />
-      <RolePermission 
-        :editable="isAdmin" 
-        :key="item" 
-        :role="roles[item].role" 
-        :level="roles[item].level" 
-        v-for="item in (space == $route.query.spaceId ? Object.keys(roles) : [])" 
-        @level="(event: string) => { handleLevel(item, event, 'roles') }"
-      />
     </div>
     <div class="input" v-if="isAdmin">
+      ~
       <input 
         @keydown="addPermission"
         type="text" 
-        placeholder="add role or ship"
+        placeholder="dev"
         v-model="newPermission"
         class="whitespace-nowrap overflow-hidden overflow-ellipsis realm-cursor-text-cursor text-azimuth" 
       >
@@ -52,7 +45,7 @@ import store from "@/store/index";
 import Toggle from "./Toggle.vue"
 import ShipPermission from "./ShipPermission.vue";
 import RolePermission from "./RolePermission.vue";
-import type { ShipPermission as ShipPerm, RolePermission as RolePerm } from "@/store/filesystem";
+import type { ShipPermission as ShipPerm } from "@/store/filesystem";
 export default defineComponent({
   name: "SharingDock",
   components: {
@@ -71,7 +64,7 @@ export default defineComponent({
       return `/${this.$route.params.author}/${this.$route.params.clock}`;
     },
     roles: function() {
-      return store.getters['filesys/roles'](this.docId);
+      return store.getters['space/roles'];
     },
     ships: function() {
       return store.getters['filesys/ships'](this.docId);
@@ -82,6 +75,7 @@ export default defineComponent({
     isAdmin: function(): boolean {
       const myroles = store.getters['space/myroles'];
       const owner = store.getters['filesys/owner'](this.docId);
+      
 
       return owner == `~${(window as any).ship}` || 
           Object.keys(this.ships)
@@ -110,50 +104,36 @@ export default defineComponent({
     },
     handleLevel: function(item: string, level: string, type: string) {
       if(level == "-") {
-        store.dispatch("filesys/removeperm", { 
+        store.dispatch("filesys/removeship", { 
           item: {id: this.docId, type: "document"},
           timestamp: item,
-          type: type
         })
       } else {
-        const perm = (this as any)[type][item][type == "ships" ? "ship" : "role"];
-        store.dispatch("filesys/removeperm", { 
+        const perm = this.ships.ship;
+        store.dispatch("filesys/removeship", { 
           item: {id: this.docId, type: "document"},
           timestamp: item,
-          type: type
         }).then(() => {
-          store.dispatch('filesys/addperm', { 
+          store.dispatch('filesys/addship', { 
             item: {id: this.docId, type: "document"}, 
             perm: perm, 
             level: level,
-            type: type
           })
         })
       }
     },
     addPermission: function(event: KeyboardEvent) {
       if(event.key == "Enter" && this.newPermission.length > 0 && this.newPermissionLevel.length > 0) {
-        const ship = this.newPermission.charAt(0) == "~";
-        store.dispatch('filesys/addperm', { 
+        store.dispatch('filesys/addship', { 
           item: {id: this.docId, type: "document"}, 
-          perm: ship ? this.newPermission : this.newPermission.substring(1),
+          perm: `~${this.newPermission}`,
           level: this.newPermissionLevel,
-          type: ship ? "ships" : "roles"
         });
         this.newPermission = "";
         this.newPermissionLevel = "";
       } else {
-        if(event.key != "ArrowLeft" && event.key != "ArrowRight" && event.key != "Backspace" && event.key != "Delete") {
-          if(this.newPermission.length == 0) {
-            if(event.key != '~' && event.key != '%') event.preventDefault();
-          } else {
-            if((event.target as any).selectionStart == 0) event.preventDefault();
-            else if(this.newPermission.charAt(0) == '~') {
-              if(!"abcdefghijklmnopqrstuvwxyz-".includes(event.key)) event.preventDefault();
-            } else if(this.newPermission.charAt(0) == "%") {
-              if(!"abcdefghijklmnopqrstuvwxyz-0123456789".includes(event.key)) event.preventDefault();
-            }
-          }
+        if(event.key != "ArrowLeft" && event.key != "ArrowRight" && event.key != "Backspace" && event.key != "Delete" && event.key != "Tab") {
+          if(!"abcdefghijklmnopqrstuvwxyz-".includes(event.key)) event.preventDefault();
         }
       }
     }
