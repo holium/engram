@@ -9,16 +9,14 @@
 |%
 ++  make-delta
 |=  [space=path spc=space version=version:index src=@p our=@p now=@da]
-?>  ?|  (~(has in (silt (turn ~(val by content.ships.spc) |=(a=[@p @tas] -.a)))) src)
+?>
       =/  spacemembers  .^(view:membership %gx ~[(scot %p our) ~.spaces (scot %da now) -.space -.+.space ~.members ~.noun])
       ?+  -.spacemembers  !!
         %members  (~(has by ^-(members:membership +.spacemembers)) src)
       ==
-    ==
 =/  updates  (delta:index content.spc version)
 =/  roles  (delta:index roles.spc ^*(version:index))
-=/  ships  (delta:index ships.spc ^*(version:index))
-[%post !>([%space %sync space [roles ships updates]])]
+[%post !>([%space %sync space [roles updates]])]
 --
 ^-  thread:spider
 |=  starter=vase

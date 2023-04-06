@@ -224,12 +224,16 @@ const actions: ActionTree<FileSysState, RootState> = {
     },
     get({ commit, state }, payload: SysRecord): Promise<SysItem> {
         return new Promise((resolve) => {
+            console.warn("get: ", payload);
             (window as any).urbit.scry({ app: "engram", path: `/${payload.type}${payload.id}/meta` }).then((meta: any) => {
-                if(state[payload.id].type == "document") {
+                if(payload.type == "document") {
                     (window as any).urbit.scry({ app: "engram", path: `/${payload.type}${payload.id}/perms` }).then((perms: any) => {
                         commit('load', { ...meta, ...perms, type: payload.type, id: payload.id });
                         resolve(state[payload.id]);
                     })
+                } else {
+                    commit('load', { ...meta, type: payload.type, id: payload.id });
+                    resolve(state[payload.id]);
                 }
             })
         });
@@ -311,6 +315,7 @@ const actions: ActionTree<FileSysState, RootState> = {
                       id: path,
                       type: payload.type
                     }).then((res: any) => {
+                        console.log("res");
                         resolve(res);
                     })
                   });
@@ -383,6 +388,7 @@ const actions: ActionTree<FileSysState, RootState> = {
                             }
                             }
                         }).then(() => {
+                            dispatch("load", state[payload.to]);
                             resolve();
                         })
                     }
@@ -416,7 +422,8 @@ const actions: ActionTree<FileSysState, RootState> = {
                             }
                           }
                         }).then(() => {
-                          resolve();
+                            dispatch("load", state[payload.from]);
+                            resolve();
                         })
                       }
                 } 

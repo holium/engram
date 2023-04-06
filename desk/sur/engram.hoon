@@ -140,10 +140,10 @@
   ==
 +$  fthread-gather  [path=path peer=@p fol=folder]
 +$  fthread-delta   [path=path src=@p fol=folder version=version]
-+$  fthread-sync    [path=path peer=@p fol=folder update=[name=@t roles=(update:index [@tas @tas]) ships=(update:index [@p @tas]) content=(update:index [id @tas])]]
++$  fthread-sync    [path=path peer=@p fol=folder update=[name=@t content=(update:index [id @tas])]]
 +$  sthread-gather  [space=path peer=@p spc=space]
 +$  sthread-delta   [space=path src=@p spc=space version=version]
-+$  sthread-sync    [space=path peer=@p spc=space update=[roles=(update:index [@tas @tas]) ships=(update:index [@p @tas]) content=(update:index [id @tas])]]
++$  sthread-sync    [space=path peer=@p spc=space update=[roles=(update:index [@tas @tas]) content=(update:index [id @tas])]]
 +$  thread-res
   $%  [%none ~]
       [%gather-folder-success ~]
