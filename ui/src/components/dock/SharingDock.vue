@@ -1,14 +1,44 @@
 <template>
   <div class="flex flex-col">
     <div class="flex">
-      <div class="flex-grow py-2 heading-2 opacity-50">
-        Permission Rules 
+      <div class="flex-grow py-2 heading-2">
+        Permissions 
       </div>
       <div class="rounded-1 py-2 px-3 border clickable" @click="exportDocument">
         export
       </div>
     </div>
-    <div class="flex flex-col gap-1">
+    <div class="heading-2 opacity-50 py-2">{{ space.name }}</div>
+    <div class="flex flex-col gap-2">
+      <RolePermission 
+        :editable="false"
+        :key="item" 
+        :role="roles[item].role" 
+        :level="roles[item].level" 
+        v-for="item in Object.keys(roles)" 
+        @level="(event: any) => { handleLevel(item, event, 'roles'); }"
+      />
+    </div>
+    <div class="heading-2 opacity-50 py-2">Collaborators</div>
+    <div class="flex flex-col gap-2">
+      <div class="input" v-if="isAdmin">
+        <div class="flex-grow-0 mr-2">~</div>
+        <input 
+          @keydown="addPermission"
+          type="text" 
+          placeholder="dev"
+          v-model="newPermission"
+          class="whitespace-nowrap overflow-hidden overflow-ellipsis realm-cursor-text-cursor text-azimuth" 
+        >
+        <select 
+          v-model="newPermissionLevel"
+          class="whitespace-nowrap overflow-hidden overflow-ellipsis text-azimuth" 
+        >
+          <option value="editor">editor</option>
+          <option value="viewer">viewer</option>
+          <option value="admin">admin</option>
+        </select>
+      </div>
       <ShipPermission 
         :editable="isAdmin" 
         :key="item" 
@@ -17,24 +47,6 @@
         v-for="item in Object.keys(ships)" 
         @level="(event: string) => { handleLevel(item, event, 'ships') }"
       />
-    </div>
-    <div class="input" v-if="isAdmin">
-      ~
-      <input 
-        @keydown="addPermission"
-        type="text" 
-        placeholder="dev"
-        v-model="newPermission"
-        class="whitespace-nowrap overflow-hidden overflow-ellipsis realm-cursor-text-cursor text-azimuth" 
-      >
-      <select 
-        v-model="newPermissionLevel"
-        class="whitespace-nowrap overflow-hidden overflow-ellipsis text-azimuth" 
-      >
-        <option value="editor">editor</option>
-        <option value="viewer">viewer</option>
-        <option value="admin">admin</option>
-      </select>
     </div>
   </div>
 </template>
@@ -70,12 +82,12 @@ export default defineComponent({
       return store.getters['filesys/ships'](this.docId);
     },
     space: function() {
-      return store.getters['filesys/space'](this.docId);
+      return store.getters['space/get'];
     },
     isAdmin: function(): boolean {
       const myroles = store.getters['space/myroles'];
       const owner = store.getters['filesys/owner'](this.docId);
-      
+      const space = store.getters['filesys/space'](this.docId);
 
       return owner == `~${(window as any).ship}` || 
           Object.keys(this.ships)

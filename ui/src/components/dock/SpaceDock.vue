@@ -6,7 +6,7 @@
       <div id="dock" :style="{width: `${dockWidth}px`}">
         <div class="toolbar">
             <div class="flex-grow heading-1">
-              Space Settings
+              {{ space.name }}
             </div>
             <div @click="closeDock" class="px-2 rounded-2 clickable">
               close
@@ -15,24 +15,15 @@
         <div class="dock-body scrollbar-small">
           <div class="py-2 heading-2 opacity-50 flex">
             <div class="flex-grow">
-              Permission Rules 
+              Permissions 
             </div>
             <div class="opacity-50" v-if="isAdmin">
               admin view
             </div>
           </div>
-          <div class="flex flex-col gap-1">
-            <RolePermission 
-              :editable="isAdmin"
-              :key="item" 
-              :role="roles[item].role" 
-              :level="roles[item].level" 
-              v-for="item in Object.keys(roles)" 
-              @level="(event: any) => { handleLevel(item, event, 'roles'); }"
-            />
-            </div>
+          <div class="flex flex-col gap-2">
             <div class="input" v-if="isAdmin">
-              %
+              <div class="flex-grow-0 mr-2">%</div>
               <input 
                   @keydown="addPermission"
                   type="text" 
@@ -49,6 +40,15 @@
                   <option value="admin">admin</option>
               </select>
             </div>
+            <RolePermission 
+              :editable="isAdmin"
+              :key="item" 
+              :role="roles[item].role" 
+              :level="roles[item].level" 
+              v-for="item in Object.keys(roles)" 
+              @level="(event: any) => { handleLevel(item, event, 'roles'); }"
+            />
+            </div>
           </div>
       </div>
   </div>
@@ -59,6 +59,8 @@
   import store from "@/store/index"
   import ShipPermission from "./ShipPermission.vue";
   import RolePermission from "./RolePermission.vue";
+  import type { Space } from "@/store/space";
+
   export default defineComponent({
     name: "Dock",
     components: {
@@ -83,6 +85,9 @@
     computed: {
       roles: function() {
         return store.getters['space/roles'];
+      },
+      space: function(): Space {
+        return store.getters['space/get'];
       },
       isAdmin: function(): boolean {
         const myroles = store.getters['space/myroles'];
