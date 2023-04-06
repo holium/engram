@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-stretch text-body">
     <div id="nav" :style="{width: `${navWidth}px`}">
-      <SpaceHeading />
+      <!-- <SpaceHeading /> -->
       <Search />
       <FileSystem class="flex-grow" />
     </div>

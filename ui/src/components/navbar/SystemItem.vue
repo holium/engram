@@ -14,7 +14,7 @@
                 v-if="item.type == 'document'"
                 xmlns="http://www.w3.org/2000/svg" 
                 viewBox="0 0 24 24"
-                fill="var(--rlm-icon-color, #333333)"
+                fill="var(--rlm-icon-rgba, #333333)"
                 class="icon"
             >
                 <path fill="none" d="M0 0h24v24H0z"/>
@@ -25,7 +25,7 @@
                 v-if="item.type == 'folder'"
                 xmlns="http://www.w3.org/2000/svg" 
                 viewBox="0 0 24 24" 
-                fill="var(--rlm-icon-color, #333333)"
+                fill="var(--rlm-icon-rgba, #333333)"
                 class="icon"
             >
                 <path fill="none" d="M0 0h24v24H0z"/>
@@ -48,7 +48,7 @@
              <svg 
                 v-if="item.type == 'folder'"
                 viewBox="0 0 16 16" 
-                fill="var(--rlm-icon-color, #333333)"
+                fill="var(--rlm-icon-rgba, #333333)"
                 xmlns="http://www.w3.org/2000/svg"
                 class="folder-caret icon"
                 :class="{'expanded': expand}"
