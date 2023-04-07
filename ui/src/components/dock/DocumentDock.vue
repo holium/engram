@@ -12,7 +12,7 @@
           <svg
             class="icon clickable"
             viewBox="0 0 16 16"
-            fill="var(--rlm-icon-color, #333333)"
+            fill="rgba(var(--rlm-icon-rgba, 51, 51, 51, .7))"
             xmlns="http://www.w3.org/2000/svg"
             @click="() => {
               open = 'sharing'
@@ -39,7 +39,7 @@
           <svg
             class="icon clickable"
             viewBox="0 0 16 16"
-            fill="var(--rlm-icon-color, #333333)"
+            fill="rgba(var(--rlm-icon-rgba, 51, 51, 51, .7))"
             xmlns="http://www.w3.org/2000/svg"
             @click="() => {
               open = 'revisions'

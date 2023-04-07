@@ -10,7 +10,7 @@
                 x1="12.5"
                 x2="12.5"
                 y2="25"
-                stroke="var(--rlm-text-color, #261f1f)"
+                stroke="rgba(var(--rlm-text-rgba, 51, 51, 51))"
                 stroke-width="2px"
             />
         </svg>

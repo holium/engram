@@ -91,8 +91,7 @@ export default defineComponent({
 }
 
 .skeleton {
-  background-color: var(--rlm-icon-color, #333333);
-  color: var(--rlm-icon-color, #333333);
+  @apply bg-icon text-icon;
   user-select: none;
   animation: blinker 1s linear infinite;
 }
