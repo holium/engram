@@ -30,15 +30,15 @@ module.exports = {
     },
     colors: {
       none: "#00000000",
-      type: "var(--rlm-text-rgba, #261f1f)",
-      paper: "var(--rlm-card-rgba, #FAFBFB)",
-      icon: "var(--rlm-icon-rgba, #333333)",
-      base: "var(--rlm-base-rgba, #B4BDC2)",
-      window: "var(--rlm-window-rgba, #ECEFF0)",
-      border: "var(--rlm-border-rgba, #D7D0DA)",
-      accent: "var(--rlm-accent-rgba, #4E9EFD)",
-      hover: "var(--rlm-overlay-hover-rgba, #0000002F)",
-      active: "var(--rlm-overlay-active-rgba, #0000002F)"
+      type: "rgba(var(--rlm-text-rgba, 51, 51, 51))",
+      paper: "rgba(var(--rlm-card-rgba, 255, 255, 255))",
+      icon: "rgba(var(--rlm-icon-rgba, 51, 51, 51, .7))",
+      base: "rgba(var(--rlm-base-rgba, 196, 195, 191))",
+      window: "rgba(var(--rlm-window-rgba, 255, 255, 255, .8))",
+      border: "rgba(var(--rlm-border-rgba, 230, 230, 230))",
+      accent: "rgba(var(--rlm-accent-rgba, 78, 158, 253))",
+      hover: "rgba(var(--rlm-overlay-hover-rgba, 0, 0, 0, 0.04))",
+      active: "rgba(var(--rlm-overlay-active-rgba, 0, 0, 0, 0.06))"
     },
     spacing: scale,
     borderRadius: {
@@ -48,8 +48,8 @@ module.exports = {
     borderWidth: scale,
     outlineWidth: scale,
     boxShadow: {
-      menu: "0px 2px 8px 2px var(--rlm-icon-rgba, #261f1f26)",
-      sunk: "inset 0px 2px 8px 2px var(--rlm-icon-rgba, #261f1f26)",
+      menu: "var(--rlm-box-shadow-lifted, 0px 0px 4px rgba(0, 0, 0, 0.24))",
+      sunk: "inset var(--rlm-box-shadow-lifted, 0px 0px 4px rgba(0, 0, 0, 0.24))",
     },
     width: { ...scale, full: "100%", window: "100vw" },
     height: { ...scale, full: "100%", window: "100vh" },
