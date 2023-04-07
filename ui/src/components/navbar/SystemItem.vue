@@ -14,7 +14,7 @@
                 v-if="item.type == 'document'"
                 xmlns="http://www.w3.org/2000/svg" 
                 viewBox="0 0 24 24"
-                fill="var(--rlm-icon-color, #333333)"
+                fill="var(--rlm-icon-rgba, #333333)"
                 class="icon"
             >
                 <path fill="none" d="M0 0h24v24H0z"/>
@@ -22,10 +22,10 @@
             </svg>
             <!-- Folder Icon -->
             <svg 
-            v-if="item.type == 'folder'"
+                v-if="item.type == 'folder'"
                 xmlns="http://www.w3.org/2000/svg" 
                 viewBox="0 0 24 24" 
-                fill="var(--rlm-icon-color, #333333)"
+                fill="var(--rlm-icon-rgba, #333333)"
                 class="icon"
             >
                 <path fill="none" d="M0 0h24v24H0z"/>
@@ -48,7 +48,7 @@
              <svg 
                 v-if="item.type == 'folder'"
                 viewBox="0 0 16 16" 
-                fill="var(--rlm-icon-color, #333333)"
+                fill="var(--rlm-icon-rgba, #333333)"
                 xmlns="http://www.w3.org/2000/svg"
                 class="folder-caret icon"
                 :class="{'expanded': expand}"
@@ -72,7 +72,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import store from "@/store/index";
-import type { SysRecord, ShipPermission, RolePermission } from "@/store/filesystem"
+import type { SysRecord } from "@/store/filesystem"
 import { Menu } from "@/components/menus/types";
 
 export default defineComponent({
@@ -117,16 +117,9 @@ export default defineComponent({
         canEdit: function(): boolean {
             const myroles = store.getters['space/myroles'];
             const owner = store.getters['filesys/owner'](this.item.id);
-            const roles = store.getters['filesys/roles'](this.item.id);
-            const ships = store.getters['filesys/ships'](this.item.id);
+            const roles = store.getters['space/roles'];
 
             return owner == `~${(window as any).ship}` || 
-                Object.keys(ships)
-                    .map((timestamp: string) => { 
-                        return ships[timestamp].ship == `~${(window as any).ship}` && (ships[timestamp].level == "editor" || ships[timestamp].level == "admin") 
-                    }).reduce((a: boolean, acc: boolean) => {
-                            return acc || a;
-                        }, false) || 
                 Object.keys(roles)
                     .map((timestamp: string) => { 
                         return myroles.includes(roles[timestamp].role) && (roles[timestamp].level == "editor" || roles[timestamp].level == "admin") 
@@ -143,7 +136,7 @@ export default defineComponent({
         canView: function(id: string): boolean {
             const myroles = store.getters['space/myroles'];
             const owner = store.getters['filesys/owner'](id);
-            const roles = store.getters['filesys/roles'](id);
+            const roles = store.getters['space/roles'];
             const ships = store.getters['filesys/ships'](id);
 
             return owner == `~${(window as any).ship}` || 

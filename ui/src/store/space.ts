@@ -2,9 +2,7 @@ import type { Module, GetterTree, MutationTree, ActionTree, Action } from "vuex"
 import type {
     RootState,
   } from "./index"
-import type { RolePermission, ShipPermission } from "./filesystem";
-import router from "@/router/index";
-
+import type { RolePermission } from "./filesystem";
 
 export interface Space {
   path: string;
@@ -13,7 +11,6 @@ export interface Space {
   color: string;
   myroles: Array<string>,
   roles: { [key: string]: RolePermission },
-  ships: { [key: string]: ShipPermission },
   members: Array<string>
 }
 
@@ -24,7 +21,6 @@ export interface SpaceState {
   color: string,
   myroles: Array<string>,
   roles: { [key: string]: RolePermission },
-  ships: { [key: string]: ShipPermission },
   members: Array<any>
 }
 
@@ -34,7 +30,6 @@ export const nullspace = {
   color: "#262626",
   picture: "",
   myroles: ["owner"],
-  ships: {},
   roles: {},
   members: []
 }
@@ -45,7 +40,6 @@ const state: SpaceState = {
     picture: "",
     color: "",
     myroles: [],
-    ships: {},
     roles: {},
     members: []
 }
@@ -68,9 +62,6 @@ const getters: GetterTree<SpaceState, RootState> = {
     myroles(state) {
       return state.myroles;
     },
-    ships(state) {
-      return state.ships;
-    },
     roles(state) {
       return state.roles;
     },
@@ -89,8 +80,8 @@ const mutations: MutationTree<SpaceState> = {
         if( payload.myroles.includes("admin")) state.myroles.push("member");
         if(payload.myroles.includes("member")) state.myroles.push("visitor")
     },
-    loadperms(state, payload: { roles: { [key: string]: RolePermission }, ships: { [key: string]: ShipPermission }}) {
-      state.ships = payload.ships;
+    loadroles(state, payload: { roles: { [key: string]: RolePermission }}) {
+      console.log("loading roles: ", payload);
       state.roles = payload.roles;
     },
 }
@@ -98,9 +89,9 @@ const mutations: MutationTree<SpaceState> = {
 const actions: ActionTree<SpaceState, RootState> = {
     load({ commit, dispatch }, payload: string): Promise<Space> {
         return new Promise<Space>((resolve) => {
-          const loadperms = () => {
+          const loadroles = () => {
             (window as any).urbit.scry({ app: "engram", path: `/space${payload}/perms`}).then((res: any) => {
-              commit("loadperms", res);
+              commit("loadroles", res);
               resolve(res as Space);
             }).catch(() => {
               console.warn("space missing... retrying");
@@ -116,23 +107,26 @@ const actions: ActionTree<SpaceState, RootState> = {
                 resolve(response.space);
               });
 
-                loadperms();
+              loadroles();
             }).catch((err: any) => {
               console.warn("space missing!!", err);
               commit("load", nullspace);
 
-              loadperms();
+              loadroles();
             })
         })
     },
-    perms({ commit }, payload: string): Promise<void> {
+    roles({ commit }, payload: string): Promise<void> {
       return new Promise((resolve) => {
         (window as any).urbit.scry({ app: "engram", path: `/space${payload}/perms` }).then((response: any) => {
-            commit("loadperms", response);
+            commit("loadroles", response);
         });
       })
     },
-    addperm({ dispatch, state }, payload: { id: string, perm: string, level: string, type: string}): Promise<void> {
+    perms({}) {
+      console.error("SHOULD NOT BE CALLING space/perms");
+    },
+    addrole({ dispatch, state }, payload: { id: string, perm: string, level: string, type: string}): Promise<void> {
       return new Promise((resolve) => {
         (window as any).urbit.poke({
           app: "engram",
@@ -142,29 +136,16 @@ const actions: ActionTree<SpaceState, RootState> = {
               space: payload.id,
               perm: payload.perm,
               level: payload.level,
-              type: payload.type
             }}
           }
         }).then(() => {
-          dispatch("perms", payload.id);
-          (window as any).urbit.scry({app: "engram", path: `/space${payload.id}/list`}).then((res: any) => {
-            Promise.all(Object.keys(res).map((item: string) => {
-              dispatch("filesys/addperm", {
-                item: res[item], 
-                perm: payload.perm, 
-                level: payload.level, 
-                type: payload.type},
-              { root: true });
-            })).then(() => { 
-              resolve();
-            });
-          })
+          dispatch("roles", payload.id);
         })
       })
     },
-    removeperm({ state, dispatch }, payload: { id: string, timestamp: string, type: "roles" | "ships" }): Promise<void> {
+    removerole({ state, dispatch }, payload: { id: string, timestamp: string}): Promise<void> {
       return new Promise((resolve) => {
-        const perm = (state as any)[payload.type][payload.timestamp];
+        const perm = state.roles[payload.timestamp];
         (window as any).urbit.poke({
           app: "engram",
           mark: "post",
@@ -172,23 +153,10 @@ const actions: ActionTree<SpaceState, RootState> = {
             space: { removeperm: {
               space: payload.id,
               timestamp: payload.timestamp,
-              type: payload.type
             }}
           }
         }).then(() => {
-          dispatch("perms", payload.id);
-          (window as any).urbit.scry({app: "engram", path: `/space${payload.id}/list`}).then((res: any) => {
-            Promise.all(Object.keys(res).map((item: string) => {
-              dispatch("filesys/findremoveperm", { 
-                item: res[item], 
-                perm: perm[payload.type == "ships" ? "ship":"role"], 
-                level: perm.level, 
-                type: payload.type
-              }, { root: true });
-            })).then(() => { 
-              resolve();
-            });
-          })
+          dispatch("roles", payload.id);
         })
       })
     },

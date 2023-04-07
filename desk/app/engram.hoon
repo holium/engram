@@ -12,17 +12,19 @@
       state-3
       state-9
       state-10
+      state-11
   ==
 +$  state-0   [v=%0 t=localtime h=* s=* d=old-documents f=* u=*]
 +$  state-1   [v=%1 t=localtime h=* s=* d=old-documents f=* u=*]
 +$  state-2   [v=%2 t=localtime h=* s=* d=old-documents-2 f=* u=*]
 +$  state-3   [v=%3 t=localtime h=* s=* d=old-documents-2 f=*]
-+$  state-9   [v=%9 t=localtime h=history s=spaces d=old-documents-2 f=folders]
-+$  state-10  [v=%10 t=localtime h=history s=spaces d=documents f=folders]
++$  state-9   [v=%9 t=localtime h=history s=spaces-10 d=old-documents-2 f=folders-10]
++$  state-10  [v=%10 t=localtime h=history s=spaces-10 d=documents-10 f=folders-10]
++$  state-11  [v=%11 t=localtime h=history s=spaces d=documents f=folders]
 +$  card  card:agent:gall
 --
 %-  agent:dbug
-=|  state-10
+=|  state-11
 =*  state  -
 ^-  agent:gall
 |_  =bowl:gall
@@ -55,8 +57,8 @@
           =/  content  ^*(dcontent)
           =/  ncontent  (insert:index content (tape:enjs:format content.doc) our.bowl)
           [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id.doc)) ~.json] %ins %json !>((enjs:index ncontent))]~]]
-        =/  ndocs  %-  ~(run by d.old)  |=  doc=old-document  [id.doc version.doc settings.doc snapshots.doc ^*((index:index tape))]
-        =/  freshstate  ^*(state-10)  
+        =/  ndocs  %-  ~(run by d.old)  |=  doc=old-document  [id.doc version.doc [owner.settings.doc name.settings.doc space.settings.doc ships.settings.doc] snapshots.doc ^*((index:index tape))]
+        =/  freshstate  ^*(state-11)  
         =/  nstate
         =.  d.freshstate  ndocs
         freshstate
@@ -69,8 +71,8 @@
           =/  content  ^*(dcontent)
           =/  ncontent  (insert:index content (tape:enjs:format content.doc) our.bowl)
           [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id.doc)) ~.json] %ins %json !>((enjs:index ncontent))]~]]
-        =/  ndocs  %-  ~(run by d.old)  |=  doc=old-document  [id.doc version.doc settings.doc snapshots.doc ^*((index:index tape))]
-        =/  freshstate  ^*(state-10)  
+        =/  ndocs  %-  ~(run by d.old)  |=  doc=old-document  [id.doc version.doc [owner.settings.doc name.settings.doc space.settings.doc ships.settings.doc] snapshots.doc ^*((index:index tape))]
+        =/  freshstate  ^*(state-11)  
         =/  nstate
         =.  d.freshstate  ndocs
         freshstate
@@ -78,20 +80,33 @@
           %+  weld
             ^-  (list card)  ~[[%pass /engram/build-doc-desk %arvo %c [%merg %engram-docs our.bowl %base da+now.bowl %init]]]
             ^-  (list card)  contents
-    %2  =/  freshstate  ^*(state-10)  
+    %2  =/  freshstate  ^*(state-11) 
         =/  nstate
-        =.  d.freshstate  %-  ~(run by d.old)  |=  doc=old-document-2  [id.doc version.doc settings.doc snapshots.doc ^*((index:index tape))]
+        =/  ndocs  ^-  documents  %-  ~(run by d.old)  
+          |=  doc=old-document-2
+          [id.doc version.doc [owner.settings.doc name.settings.doc space.settings.doc ships.settings.doc] snapshots.doc ^*((index:index tape))]
+        =.  d.freshstate  ndocs
         freshstate
         `this(state nstate)
-    %3  =/  freshstate  ^*(state-10)  
+    %3  =/  freshstate  ^*(state-11)  
+        =/  ndocs  ^-  documents  %-  ~(run by d.old)
+          |=  doc=old-document-2  
+          [id.doc version.doc [owner.settings.doc name.settings.doc space.settings.doc ships.settings.doc] snapshots.doc ^*((index:index tape))]
         =/  nstate
-        =.  d.freshstate  %-  ~(run by d.old)  |=  doc=old-document-2  [id.doc version.doc settings.doc snapshots.doc ^*((index:index tape))]
+        =.  d.freshstate  ndocs
         freshstate
         `this(state nstate)
-    %9  =/  ndocs  %-  ~(run by d.old)  |=  doc=old-document-2
-          [id.doc version.doc settings.doc snapshots.doc ^*((index:index tape))]
-        `this(state [%10 t.old h.old s.old ndocs f.old])
-    %10  
+    %9
+        =/  nspaces  ^-  spaces  %-  ~(run by s.old)  |=  spc=space-10  [roles.spc content.spc]
+        =/  ndocuments  ^-  documents  %-  ~(run by d.old)  |=  doc=old-document-2  ^-  document  [id.doc version.doc [owner.settings.doc name.settings.doc space.settings.doc ships.settings.doc] snapshots.doc ^*((index:index tape))]
+        =/  nfolders  ^-  folders  %-  ~(run by f.old)  |=  fol=folder-10  [id.fol owner.fol name.fol space.fol content.fol]
+        `this(state [%11 t.old h.old nspaces ndocuments nfolders])
+    %10
+        =/  nspaces  ^-  spaces  %-  ~(run by s.old)  |=  spc=space-10  [roles.spc content.spc]
+        =/  ndocuments  ^-  documents  %-  ~(run by d.old)  |=  doc=document-10  [id.doc version.doc [owner.settings.doc name.settings.doc space.settings.doc ships.settings.doc] snapshots.doc imgs.doc]
+        =/  nfolders  ^-  folders  %-  ~(run by f.old)  |=  fol=folder-10  [id.fol owner.fol name.fol space.fol content.fol]
+        `this(state [%11 t.old h.old nspaces ndocuments nfolders])
+    %11
         :_  this(state old)
         %+  weld  
           %+  turn  ~(tap in ~(key by s.old))
@@ -129,7 +144,6 @@
           :*  owner.act 
               name.act 
               space.act
-              ^*  (index:index [@tas @tas])
               ^*  (index:index [@p @tas])
           ==
           ^*  (set dsnapshot)
@@ -141,11 +155,9 @@
         =/  oldspc
         ?:  (~(has by s) space.act)
           (~(got by s) space.act)
-        =/  initspc  ^*  space
-        =.  roles.initspc  (insert:index roles.initspc ^-([@tas @tas] [%member %editor]) our.bowl)
-        initspc
+        ^*  space
         =/  newspc
-        =.  content.oldspc  (insert:index content.oldspc [id %document] our.bowl)
+          =.  content.oldspc  (insert:index content.oldspc [id %document] our.bowl)
           oldspc
         =/  sstate  state(s (~(put by s) space.act newspc))
         =/  hstate  sstate(h (snoc h id))
@@ -269,14 +281,8 @@
         =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
         =/  todoc  (~(got by d) id)
         =/  ndoc
-        ?+  type.act  !!
-            %ships
-          =.  ships.settings.todoc  (insert:index ships.settings.todoc [(slav %p perm.act) level.act] our.bowl)
+          =.  ships.settings.todoc  (insert:index ships.settings.todoc [perm.act level.act] our.bowl)
           todoc
-            %roles
-          =.  roles.settings.todoc  (insert:index roles.settings.todoc [(slav %tas perm.act) level.act] our.bowl)
-          todoc
-        ==
         :_  this(d (~(put by d) id ndoc))
         :~  [%pass /document/updateall %agent [our.bowl %engram] %poke %post !>([%document %updateall path.act])]
         ==
@@ -289,14 +295,8 @@
         =/  doc  (~(got by d) id)
         =/  item  [`@p`(slav %p -.item.act) (slav %ud -.+.item.act)]
         =/  ndoc
-        ?+  type.act  !!
-            %roles
-          =.  roles.settings.doc  (remove:index roles.settings.doc item our.bowl)
-          doc
-            %ships
           =.  ships.settings.doc  (remove:index ships.settings.doc item our.bowl)
           doc
-        ==
         :_  this(d (~(put by d) id ndoc))
         :~  [%pass /document/updateall %agent [our.bowl %engram] %poke %post !>([%document %updateall path.act])]
         ==
@@ -393,10 +393,9 @@
         =/  updates  ?:  =(version.content version.act)  
           ~&  "<engram>: peer is up to date"  ^*  (update:index json)
         (delta:index content version.act)
-        =/  roles  (delta:index roles.settings.doc ^*(version:index))
         =/  ships  (delta:index ships.settings.doc ^*(version:index))
         =/  imgs   (delta:index imgs.doc ^*(version:index))
-        =/  payload  [name.settings.doc roles ships imgs updates]
+        =/  payload  [name.settings.doc ships imgs updates]
         :_  this
         :~  [%pass /engram/delta %agent [src.bowl %engram] %poke %post !>([%document %sync path.act payload])]
         ==
@@ -414,7 +413,6 @@
         =/  ncontent  (apply:index content content.update.act)
         =/  ndoc
           =:  name.settings.doc   name.update.act
-              roles.settings.doc  (apply:index roles.settings.doc roles.update.act)
               ships.settings.doc  (apply:index ships.settings.doc ships.update.act)
               imgs.doc            (apply:index imgs.doc imgs.update.act)
             ==
@@ -468,8 +466,6 @@
           owner.act
           name.act
           space.act
-          ^*  (index:index [@tas @tas])
-          ^*  (index:index [@p @tas])
           ^*  (index:index [id @tas])
         ==
         =/  id  [our.bowl t]
@@ -559,45 +555,6 @@
         :~  [%pass /folder/updateall %agent [our.bowl %engram] %poke %post !>([%folder %updateall from.act])]
         ==
         ::
-        :: Add a permission to a document
-        ::
-          %addperm
-        ?>  =(src.bowl our.bowl)
-        =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
-        =/  tofol  (~(got by f) id)
-        =/  nfol
-        ?+  type.act  !!
-            %ships
-          =.  ships.tofol  (insert:index ships.tofol [(slav %p perm.act) level.act] our.bowl)
-          tofol
-            %roles
-          =.  roles.tofol  (insert:index roles.tofol [(slav %tas perm.act) level.act] our.bowl)
-          tofol
-        ==
-        :_  this(f (~(put by f) id nfol))
-        :~  [%pass /folder/updateall %agent [our.bowl %engram] %poke %post !>([%folder %updateall path.act])]
-        ==
-        ::
-        :: Remove a permission rule
-        ::
-          %removeperm
-        ?>  =(src.bowl our.bowl)
-        =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
-        =/  fold  (~(got by f) id)
-        =/  item  [`@p`(slav %p -.item.act) (slav %ud -.+.item.act)]
-        =/  nfold
-        ?+  type.act  !!
-            %roles
-          =.  roles.fold  (remove:index roles.fold item our.bowl)
-          fold
-            %ships
-          =.  ships.fold  (remove:index ships.fold item our.bowl)
-          fold
-        ==
-        :_  this(f (~(put by f) id nfold))
-        :~  [%pass /folder/updateall %agent [our.bowl %engram] %poke %post !>([%folder %updateall path.act])]
-        ==
-        ::
         :: Rename a folder
         ::
           %rename
@@ -624,16 +581,13 @@
         ::~&  "GATHERALL-- items in {<path.act>}"
         =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
         =/  fold  (~(got by f) id)
-        =/  directpeers  %+  turn  ~(val by content.ships.fold)  |=  a=[@p @tas]  -.a
         =/  peers
-          ?.  (~(has in .^((set desk) %cd /(scot %p our.bowl)/base/(scot %da now.bowl))) %realm)
-            ~&  "does not have realm"  directpeers
-          ~&  "does have realm"
+          ?.  (~(has in .^((set desk) %cd /(scot %p our.bowl)/base/(scot %da now.bowl))) %realm)  ^*  (list @p)
           =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.fold -.+.space.fold ~.members ~.noun])
           ?+  -.spacemembers  !!
               %members
             =/  spacepeers  %~  tap  in  %~  key  by  ^-  members:membership  +.spacemembers
-            (weld directpeers spacepeers)
+            spacepeers
           ==
         :_  this
           %+  turn  (online:engram [peers our.bowl now.bowl])
@@ -647,16 +601,13 @@
         ::~&  "GATHERALL-- {<path.act>}"
         =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
         =/  fold  (~(got by f) id)
-        =/  directpeers  %+  turn  ~(val by content.ships.fold)  |=  a=[@p @tas]  -.a
         =/  peers
-          ?.  (~(has in .^((set desk) %cd /(scot %p our.bowl)/base/(scot %da now.bowl))) %realm)
-            ~&  "does not have realm"  directpeers
-          ~&  "does have realm"
+          ?.  (~(has in .^((set desk) %cd /(scot %p our.bowl)/base/(scot %da now.bowl))) %realm)  ^*  (list @p)
           =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.fold -.+.space.fold ~.members ~.noun])
           ?+  -.spacemembers  !!
               %members
             =/  spacepeers  %~  tap  in  %~  key  by  ^-  members:membership  +.spacemembers
-            (weld directpeers spacepeers)
+            spacepeers
           ==
         :_  this
           %+  turn  (online:engram [peers our.bowl now.bowl])
@@ -770,14 +721,8 @@
         ?>  =(src.bowl our.bowl)
         =/  tospc  (~(got by s) space.act)
         =/  nspc
-        ?+  type.act  !!
-            %ships
-          =.  ships.tospc  (insert:index ships.tospc [(slav %p perm.act) level.act] our.bowl)
-          tospc
-            %roles
           =.  roles.tospc  (insert:index roles.tospc [(slav %tas perm.act) level.act] our.bowl)
           tospc
-        ==
         :_  this(s (~(put by s) space.act nspc))
         :~  [%pass /space/updateall %agent [our.bowl %engram] %poke %post !>([%space %updateall space.act])]
         ==
@@ -790,14 +735,8 @@
         =/  spc  (~(got by s) space.act)
         =/  id  [`@p`(slav %p -.item.act) (slav %ud -.+.item.act)]
         =/  nspc
-        ?+  type.act  !!
-            %roles
           =.  roles.spc  (remove:index roles.spc id our.bowl)
           spc
-            %ships
-          =.  ships.spc  (remove:index ships.spc id our.bowl)
-          spc
-        ==
         :_  this(s (~(put by s) space.act nspc))
         :~  [%pass /space/updateall %agent [our.bowl %engram] %poke %post !>([%space %updateall space.act])]
         ==
@@ -808,15 +747,14 @@
         ?>  =(src.bowl our.bowl)
         ?.  (~(has by s) space.act)  ~&  "No space at this path"  `this
         =/  spc  (~(got by s) space.act)
-        =/  directpeers  %+  turn  ~(val by content.ships.spc)  |=  a=[@p @tas]  -.a
         =/  peers
           ?.  (~(has in .^((set desk) %cd /(scot %p our.bowl)/base/(scot %da now.bowl))) %realm)
-            directpeers
+            ^*  (list @p)
           =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.act -.+.space.act ~.members ~.noun])
           ?+  -.spacemembers  !!
               %members
             =/  spacepeers  %~  tap  in  %~  key  by  ^-  members:membership  +.spacemembers
-            (weld directpeers spacepeers)
+            spacepeers
           ==
         :_  this
           %+  turn  (online:engram [peers our.bowl now.bowl])
@@ -829,15 +767,14 @@
         ?>  =(src.bowl our.bowl)
         ?.  (~(has by s) space.act)  ~&  "No space at this path"  `this
         =/  spc  (~(got by s) space.act)
-        =/  directpeers  %+  turn  ~(val by content.ships.spc)  |=  a=[@p @tas]  -.a
         =/  peers
           ?.  (~(has in .^((set desk) %cd /(scot %p our.bowl)/base/(scot %da now.bowl))) %realm)
-            directpeers
+            ^*  (list @p)
           =/  spacemembers  .^(view:membership %gx `path`~[(scot %p our.bowl) ~.spaces (scot %da now.bowl) -.space.act -.+.space.act ~.members ~.noun])
           ?+  -.spacemembers  !!
               %members
             =/  spacepeers  %~  tap  in  %~  key  by  ^-  members:membership  +.spacemembers
-            (weld directpeers spacepeers)
+            spacepeers
           ==
         :_  this
           %+  turn  (online:engram [peers our.bowl now.bowl])
@@ -1002,12 +939,6 @@
     =/  id=id  [`@p`(slav %p i.t.t.p) (slav %ud i.t.t.t.p)]
     =/  fold  (~(got by f) id)
     ``noun+!>((meta:folder:enjs:engram fold))
-  ::
-      [%x %folder @ @ %perms ~]
-    ?>  =(src.bowl our.bowl)
-    =/  id=id  [`@p`(slav %p i.t.t.p) (slav %ud i.t.t.t.p)]
-    =/  fold  (~(got by f) id)
-    ``noun+!>((perms:folder:enjs:engram fold))
   ==
 ::
 ++  on-agent
@@ -1047,8 +978,6 @@
             ::  Folder Changes
             =/  nfol
               =:  name.fol  name.update.res
-                  roles.fol  (apply:index roles.fol roles.update.res)
-                  ships.fol  (apply:index ships.fol ships.update.res)
                   content.fol  (apply:index content.fol content.update.res)
                 ==
               fol
@@ -1065,7 +994,6 @@
             ::  Space Changes
             =/  nspc
             =:  roles.spc  (apply:index roles.spc roles.update.res)
-                ships.spc  (apply:index ships.spc ships.update.res)
                 content.spc  (apply:index content.spc content.update.res)
               ==
             spc

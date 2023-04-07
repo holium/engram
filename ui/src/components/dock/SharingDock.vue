@@ -1,14 +1,44 @@
 <template>
   <div class="flex flex-col">
     <div class="flex">
-      <div class="flex-grow py-2 heading-2 opacity-50">
-        Permission Rules 
+      <div class="flex-grow py-2 heading-2">
+        Permissions 
       </div>
       <div class="rounded-1 py-2 px-3 border clickable" @click="exportDocument">
         export
       </div>
     </div>
-    <div class="flex flex-col gap-1">
+    <div class="heading-2 opacity-50 py-2">{{ space.name }}</div>
+    <div class="flex flex-col gap-2">
+      <RolePermission 
+        :editable="false"
+        :key="item" 
+        :role="roles[item].role" 
+        :level="roles[item].level" 
+        v-for="item in Object.keys(roles)" 
+        @level="(event: any) => { handleLevel(item, event, 'roles'); }"
+      />
+    </div>
+    <div class="heading-2 opacity-50 py-2">Collaborators</div>
+    <div class="flex flex-col gap-2">
+      <div class="input" v-if="isAdmin">
+        <div class="flex-grow-0 mr-2">~</div>
+        <input 
+          @keydown="addPermission"
+          type="text" 
+          placeholder="dev"
+          v-model="newPermission"
+          class="whitespace-nowrap overflow-hidden overflow-ellipsis realm-cursor-text-cursor text-azimuth" 
+        >
+        <select 
+          v-model="newPermissionLevel"
+          class="whitespace-nowrap overflow-hidden overflow-ellipsis text-azimuth" 
+        >
+          <option value="editor">editor</option>
+          <option value="viewer">viewer</option>
+          <option value="admin">admin</option>
+        </select>
+      </div>
       <ShipPermission 
         :editable="isAdmin" 
         :key="item" 
@@ -17,31 +47,6 @@
         v-for="item in Object.keys(ships)" 
         @level="(event: string) => { handleLevel(item, event, 'ships') }"
       />
-      <RolePermission 
-        :editable="isAdmin" 
-        :key="item" 
-        :role="roles[item].role" 
-        :level="roles[item].level" 
-        v-for="item in (space == $route.query.spaceId ? Object.keys(roles) : [])" 
-        @level="(event: string) => { handleLevel(item, event, 'roles') }"
-      />
-    </div>
-    <div class="input" v-if="isAdmin">
-      <input 
-        @keydown="addPermission"
-        type="text" 
-        placeholder="add role or ship"
-        v-model="newPermission"
-        class="whitespace-nowrap overflow-hidden overflow-ellipsis realm-cursor-text-cursor text-azimuth" 
-      >
-      <select 
-        v-model="newPermissionLevel"
-        class="whitespace-nowrap overflow-hidden overflow-ellipsis text-azimuth" 
-      >
-        <option value="editor">editor</option>
-        <option value="viewer">viewer</option>
-        <option value="admin">admin</option>
-      </select>
     </div>
   </div>
 </template>
@@ -52,7 +57,7 @@ import store from "@/store/index";
 import Toggle from "./Toggle.vue"
 import ShipPermission from "./ShipPermission.vue";
 import RolePermission from "./RolePermission.vue";
-import type { ShipPermission as ShipPerm, RolePermission as RolePerm } from "@/store/filesystem";
+import type { ShipPermission as ShipPerm } from "@/store/filesystem";
 export default defineComponent({
   name: "SharingDock",
   components: {
@@ -71,17 +76,18 @@ export default defineComponent({
       return `/${this.$route.params.author}/${this.$route.params.clock}`;
     },
     roles: function() {
-      return store.getters['filesys/roles'](this.docId);
+      return store.getters['space/roles'];
     },
     ships: function() {
       return store.getters['filesys/ships'](this.docId);
     },
     space: function() {
-      return store.getters['filesys/space'](this.docId);
+      return store.getters['space/get'];
     },
     isAdmin: function(): boolean {
       const myroles = store.getters['space/myroles'];
       const owner = store.getters['filesys/owner'](this.docId);
+      const space = store.getters['filesys/space'](this.docId);
 
       return owner == `~${(window as any).ship}` || 
           Object.keys(this.ships)
@@ -110,50 +116,36 @@ export default defineComponent({
     },
     handleLevel: function(item: string, level: string, type: string) {
       if(level == "-") {
-        store.dispatch("filesys/removeperm", { 
+        store.dispatch("filesys/removeship", { 
           item: {id: this.docId, type: "document"},
           timestamp: item,
-          type: type
         })
       } else {
-        const perm = (this as any)[type][item][type == "ships" ? "ship" : "role"];
-        store.dispatch("filesys/removeperm", { 
+        const perm = this.ships.ship;
+        store.dispatch("filesys/removeship", { 
           item: {id: this.docId, type: "document"},
           timestamp: item,
-          type: type
         }).then(() => {
-          store.dispatch('filesys/addperm', { 
+          store.dispatch('filesys/addship', { 
             item: {id: this.docId, type: "document"}, 
             perm: perm, 
             level: level,
-            type: type
           })
         })
       }
     },
     addPermission: function(event: KeyboardEvent) {
       if(event.key == "Enter" && this.newPermission.length > 0 && this.newPermissionLevel.length > 0) {
-        const ship = this.newPermission.charAt(0) == "~";
-        store.dispatch('filesys/addperm', { 
+        store.dispatch('filesys/addship', { 
           item: {id: this.docId, type: "document"}, 
-          perm: ship ? this.newPermission : this.newPermission.substring(1),
+          perm: `~${this.newPermission}`,
           level: this.newPermissionLevel,
-          type: ship ? "ships" : "roles"
         });
         this.newPermission = "";
         this.newPermissionLevel = "";
       } else {
-        if(event.key != "ArrowLeft" && event.key != "ArrowRight" && event.key != "Backspace" && event.key != "Delete") {
-          if(this.newPermission.length == 0) {
-            if(event.key != '~' && event.key != '%') event.preventDefault();
-          } else {
-            if((event.target as any).selectionStart == 0) event.preventDefault();
-            else if(this.newPermission.charAt(0) == '~') {
-              if(!"abcdefghijklmnopqrstuvwxyz-".includes(event.key)) event.preventDefault();
-            } else if(this.newPermission.charAt(0) == "%") {
-              if(!"abcdefghijklmnopqrstuvwxyz-0123456789".includes(event.key)) event.preventDefault();
-            }
-          }
+        if(event.key != "ArrowLeft" && event.key != "ArrowRight" && event.key != "Backspace" && event.key != "Delete" && event.key != "Tab") {
+          if(!"abcdefghijklmnopqrstuvwxyz-".includes(event.key)) event.preventDefault();
         }
       }
     }

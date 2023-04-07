@@ -6,7 +6,7 @@
       <div id="dock" :style="{width: `${dockWidth}px`}">
         <div class="toolbar">
             <div class="flex-grow heading-1">
-              Space Settings
+              {{ space.name }}
             </div>
             <div @click="closeDock" class="px-2 rounded-2 clickable">
               close
@@ -15,35 +15,19 @@
         <div class="dock-body scrollbar-small">
           <div class="py-2 heading-2 opacity-50 flex">
             <div class="flex-grow">
-              Permission Rules 
+              Permissions 
             </div>
             <div class="opacity-50" v-if="isAdmin">
               admin view
             </div>
           </div>
-          <div class="flex flex-col gap-1">
-            <ShipPermission 
-              :editable="isAdmin"
-              :key="item" 
-              :ship="ships[item].ship" 
-              :level="ships[item].level" 
-              @level="(event: any) => { handleLevel(item, event, 'ships'); }"
-              v-for="item in Object.keys(ships)" 
-            />
-            <RolePermission 
-              :editable="isAdmin"
-              :key="item" 
-              :role="roles[item].role" 
-              :level="roles[item].level" 
-              v-for="item in Object.keys(roles)" 
-              @level="(event: any) => { handleLevel(item, event, 'roles'); }"
-            />
-            </div>
+          <div class="flex flex-col gap-2">
             <div class="input" v-if="isAdmin">
+              <div class="flex-grow-0 mr-2">%</div>
               <input 
                   @keydown="addPermission"
                   type="text" 
-                  placeholder="add role or ship"
+                  placeholder="add role"
                   v-model="newPermission"
                   class="whitespace-nowrap overflow-hidden overflow-ellipsis realm-cursor-text-cursor text-azimuth" 
               >
@@ -56,6 +40,15 @@
                   <option value="admin">admin</option>
               </select>
             </div>
+            <RolePermission 
+              :editable="isAdmin"
+              :key="item" 
+              :role="roles[item].role" 
+              :level="roles[item].level" 
+              v-for="item in Object.keys(roles)" 
+              @level="(event: any) => { handleLevel(item, event, 'roles'); }"
+            />
+            </div>
           </div>
       </div>
   </div>
@@ -66,6 +59,8 @@
   import store from "@/store/index"
   import ShipPermission from "./ShipPermission.vue";
   import RolePermission from "./RolePermission.vue";
+  import type { Space } from "@/store/space";
+
   export default defineComponent({
     name: "Dock",
     components: {
@@ -91,17 +86,14 @@
       roles: function() {
         return store.getters['space/roles'];
       },
-      ships: function() {
-        return store.getters['space/ships'];
+      space: function(): Space {
+        return store.getters['space/get'];
       },
       isAdmin: function(): boolean {
         const myroles = store.getters['space/myroles'];
 
         const perms = Object.keys(this.roles).map((key: string) => {
           return myroles.includes(this.roles[key].perm) ? (this.roles[key].level == "admin") : false;
-        })
-        Object.keys(this.ships).forEach((key: string) => {
-          perms.push(this.ships[key].perm == `~${(window as any).ship}` ? (this.ships[key].level == "admin") : false);
         })
 
         return myroles.includes("owner") || perms.reduce((a: boolean, acc: boolean) => {
@@ -112,50 +104,36 @@
     methods: {
       handleLevel: function(item: string, level: string, type: string) {
         if(level == "-") {
-          store.dispatch("space/removeperm", { 
+          store.dispatch("space/removerole", { 
             id: this.$route.query.spaceId,
             timestamp: item,
-            type: type,
           });
         } else {
-          const perm = (this as any)[type][item];
-          store.dispatch("space/removeperm", { 
+          const perm = this.roles[item];
+          store.dispatch("space/removerole", { 
             id: this.$route.query.spaceId,
             timestamp: item,
-            type: type,
           }).then(() => {
-            store.dispatch('space/addperm', { 
+            store.dispatch('space/addrole', { 
               id: this.$route.query.spaceId, 
-              perm: perm[type == "ships" ? "ship" : "role"], 
+              perm: perm.role, 
               level: level,
-              type: type
             });
           })
         }
       },
       addPermission: function(event: KeyboardEvent) {
         if(event.key == "Enter" && this.newPermission.length > 0 && this.newPermissionLevel.length > 0) {
-          const ship = this.newPermission.charAt(0) == "~";
-          store.dispatch('space/addperm', { 
+          store.dispatch('space/addrole', { 
             id: this.$route.query.spaceId, 
-            perm: ship ? this.newPermission : this.newPermission.substring(1),
+            perm: this.newPermission,
             level: this.newPermissionLevel,
-            type: ship ? "ships" : "roles"
           });
           this.newPermission = "";
           this.newPermissionLevel = "";
         } else {
-          if(event.key != "ArrowLeft" && event.key != "ArrowRight" && event.key != "Backspace" && event.key != "Delete") {
-            if(this.newPermission.length == 0) {
-              if(event.key != '~' && event.key != '%') event.preventDefault();
-            } else {
-              if((event.target as any).selectionStart == 0) event.preventDefault();
-              else if(this.newPermission.charAt(0) == '~') {
-                if(!"abcdefghijklmnopqrstuvwxyz-".includes(event.key)) event.preventDefault();
-              } else if(this.newPermission.charAt(0) == "%") {
-                if(!"abcdefghijklmnopqrstuvwxyz-0123456789".includes(event.key)) event.preventDefault();
-              }
-            }
+          if(event.key != "ArrowLeft" && event.key != "ArrowRight" && event.key != "Backspace" && event.key != "Delete" && event.key != "Tab") {
+              if(!"abcdefghijklmnopqrstuvwxyz-0123456789".includes(event.key)) event.preventDefault();
           }
         }
       },

@@ -1,5 +1,5 @@
 <template>
-    <div class="flex justify-between items-center py-2">
+    <div class="flex justify-between items-center py-2" :style="lvl == '-' ? {'display': 'none'} : {}">
         <div class="azimuth px-3 py-2 whitespace-nowrap overflow-hidden overflow-ellipsis">
             %{{ role }}
         </div>

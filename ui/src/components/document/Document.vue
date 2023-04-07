@@ -141,7 +141,7 @@ export default defineComponent({
       if(!store.getters['filesys/get'](id)) return false;
       const space = store.getters['filesys/space'](id);
       const owner = store.getters['filesys/owner'](id);
-      const roles = store.getters['filesys/roles'](id);
+      const roles = store.getters['space/roles'];
       const ships = store.getters['filesys/ships'](id);
 
       return owner == `~${(window as any).ship}` || 

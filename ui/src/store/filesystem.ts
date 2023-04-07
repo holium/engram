@@ -21,7 +21,6 @@ export interface SysItem {
     owner: string,
     space?: string,
     ships: { [key: string]: ShipPermission },
-    roles: { [key: string]: RolePermission },
 
     hidden?: boolean //whether to inject into a folder or not
 }
@@ -36,7 +35,6 @@ export interface FileSysState {
         space: undefined,
         owner: "",
         ships: {},
-        roles: {},
     },
 }
 
@@ -59,7 +57,6 @@ const state: FileSysState = {
         space: undefined,
         owner: "",
         ships: {},
-        roles: {},
     }
 }
 
@@ -91,10 +88,9 @@ const getters: GetterTree<FileSysState, RootState> = {
         return state[id].owner;
     },
     ships: (state) => (id: string): undefined | { [key: string]: ShipPermission } => {
-        return state[id].ships;
-    },
-    roles: (state) => (id: string): undefined | { [key: string]: RolePermission } => {
-        return state[id].roles;
+        if(state[id].type == "document") {
+            return state[id].ships;
+        }
     },
 
     // Scries
@@ -146,7 +142,6 @@ const mutations: MutationTree<FileSysState> = {
             space: undefined,
             owner: "",
             ships: {},
-            roles: {}
         }
     },
     delete(state, payload: SysRecord) {
@@ -217,21 +212,29 @@ const actions: ActionTree<FileSysState, RootState> = {
             })
         })
     },
-    perms({ commit }, payload: SysRecord): Promise<SysItem> {
+    ships({ commit, state }, payload: SysRecord): Promise<SysItem> {
         return new Promise((resolve, reject) => {
-            (window as any).urbit.scry({ app: "engram", path: `/${payload.type}${payload.id}/perms` }).then((res: any) => {
-                commit('load', { ...res, type: payload.type, id: payload.id });
-                resolve(res);
-            })
+            if(state[payload.id].type == "document") {
+                (window as any).urbit.scry({ app: "engram", path: `/${payload.type}${payload.id}/perms` }).then((res: any) => {
+                    commit('load', { ...res, type: payload.type, id: payload.id });
+                    resolve(res);
+                })
+            }
         })
     },
     get({ commit, state }, payload: SysRecord): Promise<SysItem> {
         return new Promise((resolve) => {
+            console.warn("get: ", payload);
             (window as any).urbit.scry({ app: "engram", path: `/${payload.type}${payload.id}/meta` }).then((meta: any) => {
-                (window as any).urbit.scry({ app: "engram", path: `/${payload.type}${payload.id}/perms` }).then((perms: any) => {
-                    commit('load', { ...meta, ...perms, type: payload.type, id: payload.id });
+                if(payload.type == "document") {
+                    (window as any).urbit.scry({ app: "engram", path: `/${payload.type}${payload.id}/perms` }).then((perms: any) => {
+                        commit('load', { ...meta, ...perms, type: payload.type, id: payload.id });
+                        resolve(state[payload.id]);
+                    })
+                } else {
+                    commit('load', { ...meta, type: payload.type, id: payload.id });
                     resolve(state[payload.id]);
-                })
+                }
             })
         });
     },
@@ -290,7 +293,6 @@ const actions: ActionTree<FileSysState, RootState> = {
                             space: `${payload.spaceId}`,
                             content: "[]",
                             version: "[]",
-                            roles: {},
                             ships: {},
                         }}}
                     });
@@ -303,8 +305,6 @@ const actions: ActionTree<FileSysState, RootState> = {
                           owner: `~${(window as any).ship}`,
                           name: payload.name,
                           space: payload.spaceId,
-                          roles: {},
-                          ships: {},
                         }}}
                     });
                     return;
@@ -315,6 +315,7 @@ const actions: ActionTree<FileSysState, RootState> = {
                       id: path,
                       type: payload.type
                     }).then((res: any) => {
+                        console.log("res");
                         resolve(res);
                     })
                   });
@@ -387,24 +388,7 @@ const actions: ActionTree<FileSysState, RootState> = {
                             }
                             }
                         }).then(() => {
-                            dispatch("load", { id: payload.to, type: "folder"}).then(() => {
-                                Object.keys(state[payload.to].roles).forEach((role: string) => {
-                                    dispatch("addperm", {
-                                        item: payload.item,
-                                        type: "roles",
-                                        perm: state[payload.to].roles[role].role,
-                                        level: state[payload.to].roles[role].level
-                                    })
-                                });
-                                Object.keys(state[payload.to].ships).forEach((ship: string) => {
-                                    dispatch("addperm", {
-                                        item: payload.item,
-                                        type: "ships",
-                                        perm: state[payload.to].ships[ship].ship,
-                                        level: state[payload.to].ships[ship].level
-                                    })
-                                });
-                            });
+                            dispatch("load", state[payload.to]);
                             resolve();
                         })
                     }
@@ -421,7 +405,6 @@ const actions: ActionTree<FileSysState, RootState> = {
                 reject();
             } else {
                 // if it's only a soft remove we don't have to modify the agent
-                const item = (state[payload.from].children as any)[payload.index];
                 commit("remove", payload);
                 if(payload.soft) {
                     resolve();
@@ -439,29 +422,8 @@ const actions: ActionTree<FileSysState, RootState> = {
                             }
                           }
                         }).then(() => {
-                            dispatch("load", { id: payload.from, type: "folder"}).then(() => {
-                                const roles = Object.keys(state[payload.from].roles);
-                                const ships = Object.keys(state[payload.from].ships);
-                                (async () => {
-                                    for(let i = 0; i < roles.length; i++) {
-                                        await dispatch("findremoveperm", {
-                                            item: item,
-                                            type: "roles",
-                                            perm: state[payload.from].roles[roles[i]].role,
-                                            level: state[payload.from].roles[roles[i]].level
-                                        })
-                                    }
-                                    for(let i = 0; i < ships.length; i++) {
-                                        await dispatch("findremoveperm", {
-                                            item: item,
-                                            type: "ships",
-                                            perm: state[payload.from].ships[ships[i]].ship,
-                                            level: state[payload.from].ships[ships[i]].level
-                                        })
-                                    }
-                                })();
-                            })
-                          resolve();
+                            dispatch("load", state[payload.from]);
+                            resolve();
                         })
                       }
                 } 
@@ -470,100 +432,64 @@ const actions: ActionTree<FileSysState, RootState> = {
     },
 
     //add perm
-    addperm({ dispatch }, payload: { item: SysRecord, perm: string, level: string, type: string}): Promise<void> {
+    addship({ dispatch, state }, payload: { item: SysRecord, perm: string, level: string }): Promise<void> {
         return new Promise((resolve) => {
-          (window as any).urbit.poke({
-            app: "engram",
-            mark: "post",
-            json: {
-              [payload.item.type]: { addperm: {
-                id: payload.item.id,
-                perm: payload.perm,
-                level: payload.level,
-                type: payload.type
-              }}
-            }
-          }).then(() => {
-            dispatch("perms", payload.item);
-            if(payload.item.type == "folder") {
-                Promise.all(Object.keys((state[payload.item.id].children as any)).map((item: string) => {
-                    dispatch("addperm", { 
-                      item: (state[payload.item.id].children as any)[item], 
-                      perm: payload.perm, 
-                      level: payload.level, 
-                      type: payload.type
-                    })
-                  })).then(() => { 
-                    resolve();
-                  });
+            if(state[payload.item.id].type == "document") {
+                (window as any).urbit.poke({
+                    app: "engram",
+                    mark: "post",
+                    json: {
+                      [payload.item.type]: { addperm: {
+                        id: payload.item.id,
+                        perm: payload.perm,
+                        level: payload.level,
+                      }}
+                    }
+                  }).then(() => {
+                    dispatch("ships", payload.item);
+                  })
             } else {
-                resolve();
+                console.error("can only permission documents");
             }
-          })
         })
     },
 
     //remove perm
-    removeperm({ state, commit, dispatch }, payload: { item: SysRecord, timestamp: string, type: "ships" | "roles"}): Promise<void> {
+    removeship({ state, commit, dispatch }, payload: { item: SysRecord, timestamp: string }): Promise<void> {
         return new Promise((resolve) => {
-            const perm = state[payload.item.id][payload.type];
-            (window as any).urbit.poke({
-                app: "engram",
-                mark: "post",
-                json: {
-                [payload.item.type]: { removeperm: {
-                    id: payload.item.id,
-                    timestamp: payload.timestamp,
-                    type: payload.type
-                }}
-                }
-            }).then(() => {
-                const temp = state[payload.item.id][payload.type];
-                delete temp[payload.timestamp];
-                commit("load", { id: payload.item.id, [payload.type]: temp })
-                dispatch("perms", payload.item);
-                if(payload.item.type == "folder") {
-                    Promise.all(Object.keys((state[payload.item.id].children as any)).map((item: string) => {
-                        dispatch("findremoveperm", { 
-                            item: (state[payload.item.id].children as any)[item], 
-                            perm: perm[payload.type == "ships" ? "ship" : "role"], 
-                            level: perm.level, 
-                            type: payload.type
-                        });
-                    })).then(() => { 
-                        resolve();
-                    });
-                } else {
+            if(payload.item.type == "document") {
+                (window as any).urbit.poke({
+                    app: "engram",
+                    mark: "post",
+                    json: {
+                    [payload.item.type]: { removeperm: {
+                        id: payload.item.id,
+                        timestamp: payload.timestamp,
+                    }}
+                    }
+                }).then(() => {
+                    const temp = state[payload.item.id].ships;
+                    delete temp[payload.timestamp];
+                    commit("load", { id: payload.item.id, ships: temp })
+                    dispatch("ships", payload.item);
                     resolve();
-                }
-            })
+                })
+            } else {
+                console.error("Can only persmission documents");
+            }
         })
       },
 
     //find remove perm
-    findremoveperm({ dispatch }, payload: { item: SysRecord, type: string, perm: string, level: string }): Promise<void> {
+    findremoveperm({  }, payload: { item: SysRecord, type: string, perm: string, level: string }): Promise<void> {
         return new Promise((resolve) => {
-          dispatch("protectedget", payload.item).then((res: any) => {
-            const closeenough = Object.keys(res[payload.type]).find((key: string) => {
-              return res[payload.type][key][payload.type == "ships" ? "ship" : "role"] == payload.perm && res[payload.type][key].level == payload.level;
-            });
-            if(closeenough) {
-                dispatch("removeperm", {
-                    item: payload.item,
-                    timestamp: closeenough,
-                    type: payload.type,
-                  }).then(() => {
-                    resolve();
-                  })
-            } else {
-                resolve();
-            }
-          })
-        })
+            console.error("SHOULD NOT BE CALLING THIS");
+            resolve();
+        });
     },
     getupdate({ dispatch }, payload: SysItem) {
         dispatch("load", payload);
-        dispatch("perms", payload);
+        dispatch("ships", payload);
     }
 }
 

@@ -17,7 +17,7 @@ module.exports = {
   content: ["index.html", "./src/App.vue", "./src/**/*.{js,ts,css,vue}"],
   theme: {
     fontFamily: {
-      sys: "var(--rlm-font, sans-serif)",
+      sys: "var(--rlm-font, \"Rubik\", sans-serif)",
       azimuth: "Source Code Pro",
     },
     fontSize: {
@@ -30,15 +30,15 @@ module.exports = {
     },
     colors: {
       none: "#00000000",
-      type: "var(--rlm-text-color, #261f1f)",
-      paper: "var(--rlm-card-color, #FAFBFB)",
-      icon: "var(--rlm-icon-color, #333333)",
-      base: "var(--rlm-base-color, #B4BDC2)",
-      window: "var(--rlm-window-color, #ECEFF0)",
-      border: "var(--rlm-border-color, #D7D0DA)",
-      accent: "var(--rlm-accent-color, #4E9EFD)",
-      hover: "var(--rlm-overlay-hover, #0000002F)",
-      active: "var(--rlm-overlay-active, #0000002F)"
+      type: "var(--rlm-text-rgba, #261f1f)",
+      paper: "var(--rlm-card-rgba, #FAFBFB)",
+      icon: "var(--rlm-icon-rgba, #333333)",
+      base: "var(--rlm-base-rgba, #B4BDC2)",
+      window: "var(--rlm-window-rgba, #ECEFF0)",
+      border: "var(--rlm-border-rgba, #D7D0DA)",
+      accent: "var(--rlm-accent-rgba, #4E9EFD)",
+      hover: "var(--rlm-overlay-hover-rgba, #0000002F)",
+      active: "var(--rlm-overlay-active-rgba, #0000002F)"
     },
     spacing: scale,
     borderRadius: {
@@ -48,8 +48,8 @@ module.exports = {
     borderWidth: scale,
     outlineWidth: scale,
     boxShadow: {
-      menu: "0px 2px 8px 2px var(--rlm-icon-color, #261f1f26)",
-      sunk: "inset 0px 2px 8px 2px var(--rlm-icon-color, #261f1f26)",
+      menu: "0px 2px 8px 2px var(--rlm-icon-rgba, #261f1f26)",
+      sunk: "inset 0px 2px 8px 2px var(--rlm-icon-rgba, #261f1f26)",
     },
     width: { ...scale, full: "100%", window: "100vw" },
     height: { ...scale, full: "100%", window: "100vh" },

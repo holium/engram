@@ -14,25 +14,27 @@
     :~  
       [%leave (ot ~[self+(se %p)])]
       :-  %document  %-  of  :~  
-        [%make (ot ~[owner+(se %p) name+so space+pa content+sa version+sa roles+(op sym (se %tas)) ships+(op fed:ag (se %tas))])]
+        [%make (ot ~[owner+(se %p) name+so space+pa content+sa version+sa ships+(op fed:ag (se %tas))])]
         [%addimg (ot ~[id+pa img+sa])]
         [%delete (ot ~[id+pa])]
         [%save (ot ~[id+pa content+sa version+sa])]
         [%snap (ot ~[id+pa snapshot+(ot ~[timestamp+di author+(se %p) content+sa])])]
         [%rename (ot ~[id+pa name+so])]
-        [%addperm (ot ~[id+pa perm+so level+(se %tas) type+(se %tas)])]
-        [%removeperm (ot ~[id+pa timestamp+pa type+(se %tas)])]
+        ::[%addperm (ot ~[id+pa perm+so level+(se %tas) type+(se %tas)])]
+        ::[%removeperm (ot ~[id+pa timestamp+pa type+(se %tas)])]
+        [%addperm (ot ~[id+pa perm+(se %p) level+(se %tas)])]
+        [%removeperm (ot ~[id+pa timestamp+pa])]
         [%update (ot ~[id+pa])]
         [%gatherall (ot ~[id+pa])]
         [%gather (ot ~[id+pa peer+(se %p)])]
         ::[%accept (ot ~[id+pa])]
       ==
       :-  %folder  %-  of  :~
-        [%make (ot ~[owner+(se %p) name+so space+pa roles+(op sym (se %tas)) ships+(op fed:ag (se %tas))])]
+        [%make (ot ~[owner+(se %p) name+so space+pa])]
         [%delete (ot ~[id+pa])]
         [%rename (ot ~[id+pa name+so])]
-        [%addperm (ot ~[id+pa perm+so level+(se %tas) type+(se %tas)])]
-        [%removeperm (ot ~[id+pa timestamp+pa type+(se %tas)])]
+        ::[%addperm (ot ~[id+pa perm+so level+(se %tas) type+(se %tas)])]
+        ::[%removeperm (ot ~[id+pa timestamp+pa type+(se %tas)])]
         [%add (ot ~[to+pa id+pa type+so])]
         [%remove (ot ~[from+pa id+pa])]
         [%update (ot ~[id+pa])]
@@ -40,8 +42,10 @@
       ==
       :-  %space  %-  of  :~
         [%make (ot ~[space+pa])]
-        [%addperm (ot ~[space+pa perm+so level+(se %tas) type+(se %tas)])]
-        [%removeperm (ot ~[space+pa timestamp+pa type+(se %tas)])]
+        ::[%addperm (ot ~[space+pa perm+so level+(se %tas) type+(se %tas)])]
+        ::[%removeperm (ot ~[space+pa timestamp+pa type+(se %tas)])]
+        [%addperm (ot ~[space+pa perm+so level+(se %tas)])]
+        [%removeperm (ot ~[space+pa timestamp+pa])]
         [%update (ot ~[space+pa])]
         [%gatherall (ot ~[space+pa])]
       ==
@@ -81,9 +85,6 @@
               ['name' (tape (trip name.settings.doc))] 
               ['space' (path space.settings.doc)]
               ['owner' (tape (scow %p owner.settings.doc))]
-              :-  'roles'  %-  pairs  %+  turn  ~(tap by content.roles.settings.doc)
-                |=  [id=id:index [role=@tas level=@tas]]
-                [(crip (stringify:index id)) (pairs ~[['role' (tape (trip role))] ['level' (tape (trip level))]])]
               :-  'ships'  %-  pairs  %+  turn  ~(tap by content.ships.settings.doc)
                 |=  [id=id:index [ship=@p level=@tas]]
                 [(crip (stringify:index id)) (pairs ~[['ship' (tape (trip (scot %p ship)))] ['level' (tape (trip level))]])]
@@ -102,12 +103,6 @@
               ['name' (tape (trip name.fol))] 
               ['children' (pairs ~(val by folcont))]
               ['owner' (tape (scow %p owner.fol))]
-              :-  'ships'  %-  pairs  %+  turn  ~(tap by content.ships.fol)  
-                |=  [id=id:index [ship=@p level=@tas]]  
-                [(crip (stringify:index id)) (pairs ~[['ship' (tape (trip (scot %p ship)))] ['level' (tape (trip level))]])]
-              :-  'roles'  %-  pairs  %+  turn  ~(tap by content.roles.fol)  
-                |=  [id=id:index [role=@tas level=@tas]]  
-                [(crip (stringify:index id)) (pairs ~[['role' (tape (trip role))] ['level' (tape (trip level))]])]
           ==
       ==
     ++  list
@@ -126,9 +121,6 @@
         :-  'roles'  %-  pairs  %+  turn  ~(tap by content.roles.spc)
           |=  [id=id:index [role=@tas level=@tas]]
           [(crip (stringify:index id)) (pairs ~[['role' (tape (trip role))] ['level' (tape (trip level))]])]
-        :-  'ships'  %-  pairs  %+  turn  ~(tap by content.ships.spc)
-          |=  [id=id:index [ship=@p level=@tas]]
-          [(crip (stringify:index id)) (pairs ~[['ship' (tape (trip (scot %p ship)))] ['level' (tape (trip level))]])]
       ==
     --
   ++  document
@@ -152,9 +144,6 @@
         ['name' (tape (trip name.settings.doc))]
         ['owner' (tape (scow %p owner.settings.doc))]
         ['version' (tape version.doc)]
-        :-  'roles'  %-  pairs  %+  turn  ~(tap by content.roles.settings.doc)
-          |=  [id=id:index [role=@tas level=@tas]]
-          [(crip (stringify:index id)) (pairs ~[['role' (tape (trip role))] ['level' (tape (trip level))]])]
         :-  'ships'  %-  pairs  %+  turn  ~(tap by content.ships.settings.doc)
           |=  [id=id:index [ship=@p level=@tas]]
           [(crip (stringify:index id)) (pairs ~[['ship' (tape (trip (scot %p ship)))] ['level' (tape (trip level))]])]
@@ -178,9 +167,6 @@
         :-  'ships'  %-  pairs  %+  turn  ~(tap by content.ships.settings)  
           |=  [id=id:index [ship=@p level=@tas]]  
           [(crip (stringify:index id)) (pairs ~[['ship' (tape (trip (scot %p ship)))] ['level' (tape (trip level))]])]
-        :-  'roles'  %-  pairs  %+  turn  ~(tap by content.roles.settings)  
-          |=  [id=id:index [role=@tas level=@tas]]  
-          [(crip (stringify:index id)) (pairs ~[['role' (tape (trip role))] ['level' (tape (trip level))]])]
       ==
     ++  content
       =,  enjs:format
@@ -229,19 +215,6 @@
         ['type' (tape "folder")]
         ['name' (tape (trip name.fol))]
         ['children' (pairs ~(val by folcont))]
-      ==
-    ++  perms
-      =,  enjs:format
-      |=  fol=folder:engram
-      ^-  json
-      %-  pairs  :~
-        ['owner' (tape (scow %p owner.fol))]
-        :-  'ships'  %-  pairs  %+  turn  ~(tap by content.ships.fol)  
-          |=  [id=id:index [ship=@p level=@tas]]  
-          [(crip (stringify:index id)) (pairs ~[['ship' (tape (trip (scot %p ship)))] ['level' (tape (trip level))]])]
-        :-  'roles'  %-  pairs  %+  turn  ~(tap by content.roles.fol)  
-          |=  [id=id:index [role=@tas level=@tas]]  
-          [(crip (stringify:index id)) (pairs ~[['role' (tape (trip role))] ['level' (tape (trip level))]])]
       ==
     --
   --
