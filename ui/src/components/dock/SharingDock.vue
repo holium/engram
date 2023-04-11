@@ -109,7 +109,7 @@ export default defineComponent({
       const owner = store.getters['filesys/owner'](this.docId);
 
       return owner == `~${(window as any).ship}` || 
-          myroles.inclueds("owner") ||
+          myroles.includes("owner") ||
           Object.keys(this.ships)
               .map((timestamp: string) => { 
                 return this.ships[timestamp].ship == `~${(window as any).ship}` && this.ships[timestamp].level == "admin" 
