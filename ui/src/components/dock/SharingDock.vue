@@ -10,42 +10,60 @@
     </div>
     <div class="heading-2 opacity-50 py-2">{{ space.name }}</div>
     <div class="flex flex-col gap-2">
+      <div class="input" v-if="isSpaceAdmin">
+        <div class="flex-grow-0 mr-2">%</div>
+        <input 
+            @keydown="addRole"
+            type="text" 
+            placeholder="add role"
+            v-model="newRole"
+            class="whitespace-nowrap overflow-hidden overflow-ellipsis realm-cursor-text-cursor text-azimuth" 
+        >
+        <select 
+          v-model="newRoleLevel"
+          class="whitespace-nowrap overflow-hidden overflow-ellipsis text-azimuth" 
+        >
+            <option value="editor">editor</option>
+            <option value="viewer">viewer</option>
+            <option value="admin">admin</option>
+        </select>
+      </div>
       <RolePermission 
-        :editable="false"
+        :editable="isSpaceAdmin"
         :key="item" 
         :role="roles[item].role" 
         :level="roles[item].level" 
         v-for="item in Object.keys(roles)" 
-        @level="(event: any) => { handleLevel(item, event, 'roles'); }"
+        @level="(event: any) => { handleRoleLevel(item, event); }"
       />
     </div>
     <div class="heading-2 opacity-50 py-2">Collaborators</div>
     <div class="flex flex-col gap-2">
-      <div class="input" v-if="isAdmin">
+      <div class="input" v-if="isDocAdmin">
         <div class="flex-grow-0 mr-2">~</div>
         <input 
-          @keydown="addPermission"
+          @keydown="addShip"
           type="text" 
           placeholder="dev"
-          v-model="newPermission"
+          v-model="newShip"
           class="whitespace-nowrap overflow-hidden overflow-ellipsis realm-cursor-text-cursor text-azimuth" 
         >
         <select 
-          v-model="newPermissionLevel"
-          class="whitespace-nowrap overflow-hidden overflow-ellipsis text-azimuth" 
+          v-model="newShipLevel"
+          class="whitespace-nowrap overflow-hidden overflow-ellipsis text-azimuth bg-window" 
         >
-          <option value="editor">editor</option>
-          <option value="viewer">viewer</option>
-          <option value="admin">admin</option>
+          <option class="" value="editor">editor</option>
+          <option class="" value="viewer">viewer</option>
+          <option class="" value="admin">admin</option>
         </select>
       </div>
       <ShipPermission 
-        :editable="isAdmin" 
+        :editable="isDocAdmin" 
         :key="item" 
         :ship="ships[item].ship" 
         :level="ships[item].level" 
         v-for="item in Object.keys(ships)" 
-        @level="(event: string) => { handleLevel(item, event, 'ships') }"
+        @level="(event: string) => { handleShipLevel(item, event) }"
       />
     </div>
   </div>
@@ -67,8 +85,10 @@ export default defineComponent({
   },
   data() {
     return {
-      newPermission: "",
-      newPermissionLevel: "",
+      newShip: "",
+      newShipLevel: "",
+      newRole: "",
+      newRoleLevel: ""
     }
   },
   computed: {
@@ -84,12 +104,12 @@ export default defineComponent({
     space: function() {
       return store.getters['space/get'];
     },
-    isAdmin: function(): boolean {
+    isDocAdmin: function(): boolean {
       const myroles = store.getters['space/myroles'];
       const owner = store.getters['filesys/owner'](this.docId);
-      const space = store.getters['filesys/space'](this.docId);
 
       return owner == `~${(window as any).ship}` || 
+          myroles.inclueds("owner") ||
           Object.keys(this.ships)
               .map((timestamp: string) => { 
                 return this.ships[timestamp].ship == `~${(window as any).ship}` && this.ships[timestamp].level == "admin" 
@@ -105,6 +125,17 @@ export default defineComponent({
                   }, false)
           ); 
     },
+    isSpaceAdmin: function(): boolean {
+      const myroles = store.getters['space/myroles'];
+
+      const perms = Object.keys(this.roles).map((key: string) => {
+        return myroles.includes(this.roles[key].perm) ? (this.roles[key].level == "admin") : false;
+      })
+
+      return myroles.includes("owner") || perms.reduce((a: boolean, acc: boolean) => {
+          return acc || a;
+      }, false);
+    }
   },
   methods: {
     exportDocument: async function() {
@@ -114,7 +145,7 @@ export default defineComponent({
       dummy.setAttribute("download", `${this.$route.params.author}_${this.$route.params.clock}`);
       dummy.click();
     },
-    handleLevel: function(item: string, level: string, type: string) {
+    handleShipLevel: function(item: string, level: string) {
       if(level == "-") {
         store.dispatch("filesys/removeship", { 
           item: {id: this.docId, type: "document"},
@@ -134,21 +165,56 @@ export default defineComponent({
         })
       }
     },
-    addPermission: function(event: KeyboardEvent) {
-      if(event.key == "Enter" && this.newPermission.length > 0 && this.newPermissionLevel.length > 0) {
+    handleRoleLevel: function(item: string, level: string) {
+      if(level == "-") {
+          store.dispatch("space/removerole", { 
+            id: this.$route.query.spaceId,
+            timestamp: item,
+          });
+        } else {
+          const perm = this.roles[item];
+          store.dispatch("space/removerole", { 
+            id: this.$route.query.spaceId,
+            timestamp: item,
+          }).then(() => {
+            store.dispatch('space/addrole', { 
+              id: this.$route.query.spaceId, 
+              perm: perm.role, 
+              level: level,
+            });
+          })
+        }
+    },
+    addShip: function(event: KeyboardEvent) {
+      if(event.key == "Enter" && this.newShip.length > 0 && this.newRoleLevel.length > 0) {
         store.dispatch('filesys/addship', { 
           item: {id: this.docId, type: "document"}, 
-          perm: `~${this.newPermission}`,
-          level: this.newPermissionLevel,
+          perm: `~${this.newShip}`,
+          level: this.newRoleLevel,
         });
-        this.newPermission = "";
-        this.newPermissionLevel = "";
+        this.newShip = "";
+        this.newRoleLevel = "";
       } else {
         if(event.key != "ArrowLeft" && event.key != "ArrowRight" && event.key != "Backspace" && event.key != "Delete" && event.key != "Tab") {
           if(!"abcdefghijklmnopqrstuvwxyz-".includes(event.key)) event.preventDefault();
         }
       }
-    }
+    },
+    addRole: function(event: KeyboardEvent) {
+        if(event.key == "Enter" && this.newRole.length > 0 && this.newRoleLevel.length > 0) {
+          store.dispatch('space/addrole', { 
+            id: this.$route.query.spaceId, 
+            perm: this.newRole,
+            level: this.newRoleLevel,
+          });
+          this.newRole = "";
+          this.newRoleLevel = "";
+        } else {
+          if(event.key != "ArrowLeft" && event.key != "ArrowRight" && event.key != "Backspace" && event.key != "Delete" && event.key != "Tab") {
+              if(!"abcdefghijklmnopqrstuvwxyz-0123456789".includes(event.key)) event.preventDefault();
+          }
+        }
+      },
   }
 });
 </script>

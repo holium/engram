@@ -179,13 +179,6 @@ export default defineComponent({
                         }, 10);
                     }
                 }] : []),
-                ...(this.item.type == 'folder' ? [{
-                    display: "Settings",
-                    icon: "",
-                    command: () => {
-                        (this as any).pushFolderDock(this.item.id);
-                    }
-                }]: [])
             ]
             ));
         },
