@@ -15,7 +15,8 @@
   align-self: stretch;
   left: 50%;
   transform: translate(-50%);
-  padding: 0 280px 0 72px;
+  /* padding: 0 280px 0 72px; */
+  padding: 0 72px 0 72px;
   max-width: 100%;
   width: calc(calc(280px + 72px) + calc(var(--document-width) + calc(2 * var(--document-margin))));
 }
@@ -67,10 +68,11 @@ header p.Prosemirror-placeholder:before {
 */
 
 .ProseMirror-selectednode {
-  outline: 2px solid var(--type-color);
+  outline: 2px solid rgba(var(--rlm-text-rgba, 51, 51, 51));
   outline-offset: 2px;
 }
 
 .ProseMirror .found-text {
-  background-color: var(--rlm-accent-color, #4e9efd88);
+  
+  background-color: rgba(var(--rlm-accent-rgba, 78, 158, 253));
 }

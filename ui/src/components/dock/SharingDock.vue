@@ -10,30 +10,12 @@
     </div>
     <div class="heading-2 opacity-50 py-2">{{ space.name }}</div>
     <div class="flex flex-col gap-2">
-      <div class="input" v-if="isSpaceAdmin">
-        <div class="flex-grow-0 mr-2">%</div>
-        <input 
-            @keydown="addRole"
-            type="text" 
-            placeholder="add role"
-            v-model="newRole"
-            class="whitespace-nowrap overflow-hidden overflow-ellipsis realm-cursor-text-cursor text-azimuth" 
-        >
-        <select 
-          v-model="newRoleLevel"
-          class="whitespace-nowrap overflow-hidden overflow-ellipsis text-azimuth" 
-        >
-            <option value="editor">editor</option>
-            <option value="viewer">viewer</option>
-            <option value="admin">admin</option>
-        </select>
-      </div>
       <RolePermission 
         :editable="isSpaceAdmin"
         :key="item" 
         :role="roles[item].role" 
         :level="roles[item].level" 
-        v-for="item in Object.keys(roles)" 
+        v-for="item in Object.keys(roles).sort((a, b) => roles[a].role == 'admin' ? -1 : roles[a].role == 'member' ? -1 : 1)" 
         @level="(event: any) => { handleRoleLevel(item, event); }"
       />
     </div>
@@ -166,55 +148,27 @@ export default defineComponent({
       }
     },
     handleRoleLevel: function(item: string, level: string) {
-      if(level == "-") {
-          store.dispatch("space/removerole", { 
-            id: this.$route.query.spaceId,
-            timestamp: item,
-          });
-        } else {
-          const perm = this.roles[item];
-          store.dispatch("space/removerole", { 
-            id: this.$route.query.spaceId,
-            timestamp: item,
-          }).then(() => {
-            store.dispatch('space/addrole', { 
-              id: this.$route.query.spaceId, 
-              perm: perm.role, 
-              level: level,
-            });
-          })
-        }
+      store.dispatch("space/exchangerole", { 
+        id: this.$route.query.spaceId,
+        timestamp: item,
+        level: level
+      })
     },
     addShip: function(event: KeyboardEvent) {
-      if(event.key == "Enter" && this.newShip.length > 0 && this.newRoleLevel.length > 0) {
+      if(event.key == "Enter" && this.newShip.length > 0 && this.newShipLevel.length > 0) {
         store.dispatch('filesys/addship', { 
           item: {id: this.docId, type: "document"}, 
           perm: `~${this.newShip}`,
-          level: this.newRoleLevel,
+          level: this.newShipLevel,
         });
         this.newShip = "";
-        this.newRoleLevel = "";
+        this.newShipLevel = "";
       } else {
         if(event.key != "ArrowLeft" && event.key != "ArrowRight" && event.key != "Backspace" && event.key != "Delete" && event.key != "Tab") {
           if(!"abcdefghijklmnopqrstuvwxyz-".includes(event.key)) event.preventDefault();
         }
       }
     },
-    addRole: function(event: KeyboardEvent) {
-        if(event.key == "Enter" && this.newRole.length > 0 && this.newRoleLevel.length > 0) {
-          store.dispatch('space/addrole', { 
-            id: this.$route.query.spaceId, 
-            perm: this.newRole,
-            level: this.newRoleLevel,
-          });
-          this.newRole = "";
-          this.newRoleLevel = "";
-        } else {
-          if(event.key != "ArrowLeft" && event.key != "ArrowRight" && event.key != "Backspace" && event.key != "Delete" && event.key != "Tab") {
-              if(!"abcdefghijklmnopqrstuvwxyz-0123456789".includes(event.key)) event.preventDefault();
-          }
-        }
-      },
   }
 });
 </script>

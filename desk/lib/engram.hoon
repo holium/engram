@@ -42,9 +42,10 @@
       ==
       :-  %space  %-  of  :~
         [%make (ot ~[space+pa])]
+        [%exchange-role (ot ~[space+pa timestamp+pa level+(se %tas)])]
         ::[%addperm (ot ~[space+pa perm+so level+(se %tas) type+(se %tas)])]
         ::[%removeperm (ot ~[space+pa timestamp+pa type+(se %tas)])]
-        [%addperm (ot ~[space+pa perm+so level+(se %tas)])]
+        [%addperm (ot ~[space+pa perm+(se %tas) level+(se %tas)])]
         [%removeperm (ot ~[space+pa timestamp+pa])]
         [%update (ot ~[space+pa])]
         [%gatherall (ot ~[space+pa])]

@@ -35,8 +35,6 @@ export default keymap({
   // Enter
   Enter: chainCommands(
     (state, dispatch) => {
-      console.log("checking in header", state.doc.nodeAt(state.selection.from));
-      console.log("checking in header acnhor before", state.doc.nodeAt(state.selection.$anchor.before()))
       const node = state.doc.nodeAt(state.selection.$anchor.before());
       if(node && node.type.name == "description") {
         if(state.selection.from + 1 == state.selection.$anchor.before() + node.nodeSize) {
@@ -71,6 +69,7 @@ export default keymap({
 
   //Tab
   Tab: chainCommands(sinkListItem(schema.nodes["li"]), stopTab),
+  "Shift-Tab": liftListItem(schema.nodes["li"]),
 
   // Undo / Redo
   //"Mod-z": undo,

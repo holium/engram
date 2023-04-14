@@ -1,5 +1,5 @@
 <template>
-    <div class="flex justify-between items-center py-2" :style="lvl == '-' ? {'display': 'none'} : {}">
+    <div class="flex justify-between items-center py-2">
         <div class="azimuth px-3 py-2 whitespace-nowrap overflow-hidden overflow-ellipsis">
             %{{ role }}
         </div>
@@ -12,7 +12,6 @@
             <option value="editor">editor</option>
             <option value="viewer">viewer</option>
             <option value="admin">admin</option>
-            <option value="-">delete</option>
         </select>
     </div>
 </template>
