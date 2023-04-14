@@ -52,6 +52,10 @@
   @apply outline-none text-sm min-w-0 flex-1 bg-none;
 }
 
+.input option {
+  color: #262626 !important;
+}
+
 .input:active {
   @apply bg-active;
 }
