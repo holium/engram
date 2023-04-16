@@ -2,7 +2,6 @@
   <div id="space" :class="{'hide-nav': !nav, 'hide-doc-dock': !dock}">
     <Navbar v-if="!loading"/>
     <router-view class="flex-grow" v-if="!loading"></router-view>
-    <!--<SpaceDock :open="(spacedock.length == 0)" :class="{'hide-space-dock': spacedock.length == 0}" @close="closeSpaceDock" v-if="!loading"/> -->
     <SpaceSkeleton v-if="loading"/>
   </div>
 </template>

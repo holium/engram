@@ -187,7 +187,8 @@ export default defineComponent({
 }
 
 #document {
-  @apply flex flex-col flex-grow items-center overflow-hidden relative px-1;
+  @apply flex flex-col flex-grow items-center overflow-hidden relative;
+  padding: 0px 188px 0px 8px;
   width: 100%;
   min-height: calc(100% - 32vh);
   z-index: 1;

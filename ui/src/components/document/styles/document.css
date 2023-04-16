@@ -190,8 +190,7 @@ a[href*="engram://"]
 
 /* Comments */
 mark {
-  color: var(--type-color);
-  background-color: var(--type-glass-color);
+  color: rgba(var(--rlm-text-rgba, 51, 51, 51));
   text-decoration: underline;
 }
 
@@ -200,7 +199,7 @@ mark {
   position: relative;
   font-weight: normal;
   font-style: normal;
-  color: var(--rlm-text-color, #261f1f);
+  color: rgba(var(--rlm-text-rgba, 51, 51, 51));
   text-decoration: none;
   float: right;
   width: 0;
@@ -212,7 +211,7 @@ mark {
 
 .comment {
   @apply rounded-2 shadow-menu flex flex-col items-stretch;
-  background: var(--paper-color);
+  background: rgba(var(--rlm-card-rgba, 255, 255, 255));
   width: 240px;
   min-width: 240px;
   font-size: 16px;
@@ -238,7 +237,7 @@ mark {
 }
 
 .comment-wrapper.context-menu li:hover {
-  background-color: var(--paper-color);
+  background-color: rgba(var(--rlm-card-rgba, 255, 255, 255));
   cursor: default;
 }
 

@@ -448,6 +448,7 @@
         :: Populate a requested document
         ::
           %populate
+        ~&  "running populate"
         =/  id  [`@p`(slav %p -.path.act) (slav %ud -.+.path.act)]
         :_  this(d (~(put by d) id doc.act))
         :~  [%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.json] %ins %json !>(content.act)]~]]
@@ -708,15 +709,33 @@
           %make
         ?>  =(src.bowl our.bowl)
         =/  initspc  ^*  space
+        =/  adminroles   (insert:index roles.initspc ^-([@tas @tas] [%admin %admin]) our.bowl)
+        =/  memberroles  (insert:index adminroles ^-([@tas @tas] [%member %editor]) our.bowl)
+        =/  viewerroles  (insert:index memberroles ^-([@tas @tas] [%initiate %viewer]) our.bowl)
         =/  spc
         ?:  =(our.bowl (slav %p -.space.act))
-          =.  roles.initspc  (insert:index roles.initspc ^-([@tas @tas] [%member %editor]) our.bowl)
+          =.  roles.initspc  viewerroles
           initspc
         initspc
         `this(s (~(put by s) space.act spc))
         ::
-        :: Add a permission to a document
+        :: Change the permission of a document
         ::
+          %exchange-role
+        ?>  =(src.bowl our.bowl)
+        =/  spc  (~(got by s) space.act)
+        =/  id  [`@p`(slav %p -.item.act) (slav %ud -.+.item.act)]
+        =/  perm  (~(got by content.roles.spc) id)
+        =/  removed  (remove:index roles.spc id our.bowl)
+        =/  inserted  (insert:index removed [-.perm level.act] our.bowl)
+        =/  nspc
+          =.  roles.spc  inserted
+          spc
+        :_  this(s (~(put by s) space.act nspc))
+        :~  [%pass /space/updateall %agent [our.bowl %engram] %poke %post !>([%space %updateall space.act])]
+        ==
+        ::
+        :: Add a permission rule
           %addperm
         ?>  =(src.bowl our.bowl)
         =/  tospc  (~(got by s) space.act)

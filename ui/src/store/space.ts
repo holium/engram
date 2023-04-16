@@ -89,30 +89,57 @@ const mutations: MutationTree<SpaceState> = {
 const actions: ActionTree<SpaceState, RootState> = {
     load({ commit, dispatch }, payload: string): Promise<Space> {
         return new Promise<Space>((resolve) => {
-          const loadroles = () => {
-            (window as any).urbit.scry({ app: "engram", path: `/space${payload}/perms`}).then((res: any) => {
-              commit("loadroles", res);
-              resolve(res as Space);
-            }).catch(() => {
-              console.warn("space missing... retrying");
-              setTimeout(() => {
-                dispatch("load", payload).then((res) => { resolve(res); });
-              }, 200);
-            });
+          const loadroles = (): Promise<{ [key: string]: RolePermission }> => {
+            return new Promise((resolve) => {
+              (window as any).urbit.scry({ app: "engram", path: `/space${payload}/perms`}).then((res: any) => {
+                commit("loadroles", res);
+                resolve(res.roles);
+              }).catch(() => {
+                console.warn("space missing... retrying");
+                setTimeout(() => {
+                  dispatch("load", payload).then((res) => { resolve(res); });
+                }, 200);
+              });
+            })
           };
 
           (window as any).urbit.scry({ app: "spaces", path: `${payload}/members/~${(window as any).ship}` }).then((member: any) => {
             (window as any).urbit.scry({ app: "spaces", path: `${payload}` }).then((response: any) => {
                 commit("load", { ...response.space, myroles: member.member.roles});
+                console.log("merbership: ", member.member);
+                loadroles().then((roles: { [key: string]: RolePermission }) => {
+                  if(member.member.roles.includes("owner")) {
+                    console.log("space roles:", roles);
+                    let adminAccounted = false;
+                    let memberAccounted = false;
+                    let initiateAccounted = false;
+                    const toDel: Array<string> = [];
+                    Object.keys(roles).forEach((rule: string) => {
+                      if(roles[rule].role == "admin" && !adminAccounted) adminAccounted = true;
+                      else if(roles[rule].role == "member" && !memberAccounted) memberAccounted = true;
+                      else if(roles[rule].role == "initiate" && !initiateAccounted) initiateAccounted = true;
+                      else toDel.push(rule);
+                    });
+                    if(!adminAccounted) dispatch("addrole", { id: payload, perm: "admin", level: "admin" });
+                    if(!memberAccounted) dispatch("addrole", { id: payload, perm: "member", level: "editor" });
+                    if(!initiateAccounted) dispatch("addrole", { id: payload, perm: "initiate", level: "viewer" });
+                    toDel.forEach((rule: string) => {
+                      dispatch("removerole", {
+                        id: payload,
+                        timestamp: rule
+                      })
+                    })
+                  }
+                })
                 resolve(response.space);
               });
 
-              loadroles();
             }).catch((err: any) => {
               console.warn("space missing!!", err);
               commit("load", nullspace);
 
               loadroles();
+              resolve(nullspace);
             })
         })
     },
@@ -126,7 +153,7 @@ const actions: ActionTree<SpaceState, RootState> = {
     perms({}) {
       console.error("SHOULD NOT BE CALLING space/perms");
     },
-    addrole({ dispatch, state }, payload: { id: string, perm: string, level: string, type: string}): Promise<void> {
+    addrole({ dispatch, state }, payload: { id: string, perm: string, level: string}): Promise<void> {
       return new Promise((resolve) => {
         (window as any).urbit.poke({
           app: "engram",
@@ -160,6 +187,23 @@ const actions: ActionTree<SpaceState, RootState> = {
         })
       })
     },
+    exchangerole({ dispatch, state}, payload: { id: string, timestamp: string, level: string}): Promise<void> {
+      return new Promise((resolve) => {
+        (window as any).urbit.poke({
+          app: "engram",
+          mark: "post",
+          json: {
+            space: { "exchange-role": {
+              space: payload.id,
+              timestamp: payload.timestamp,
+              level: payload.level,
+            }}
+          }
+        }).then(() => {
+          dispatch("roles", payload.id);
+        })
+      })
+    }
 }
 
 export default {
