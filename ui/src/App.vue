@@ -1,7 +1,18 @@
 <template>
-  <div>
+  <div @mousemove="handleMouse">
     <component :is="contextmenu.dom" :contextmenu="contextmenu" v-if="contextmenu != null" style="z-index: 10"/>
     <router-view></router-view>
+    <div 
+      class="brand" 
+    >
+      <div 
+        ref="brand" 
+        class="brand-content font-azimuth" 
+        :style="{ 'background-image': `radial-gradient(circle at ${mouseX}px ${mouseY}px, rgba(var(--rlm-text-rgba, 51, 51, 51)) 0px, transparent 50px)`}"
+      >
+        deus vult
+      </div>
+    </div>
   </div>
 </template>
 
@@ -28,6 +39,8 @@ export default defineComponent({
   data() {
     return {
       contextmenu: null as any,
+      mouseX: 0,
+      mouseY: 0,
     }
   },
   methods: {
@@ -36,9 +49,37 @@ export default defineComponent({
     },
     closeMenu: function() {
       this.contextmenu = null;
+    },
+    handleMouse: function(event: MouseEvent) {
+      if(this.$refs['brand']) {
+        const box = (this.$refs['brand'] as any).getBoundingClientRect();
+        this.mouseX = event.clientY - box.top;
+        this.mouseY = event.clientX - box.left;
+      }
     }
   }
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+
+.brand-content {
+  font-weight: bold;
+  user-select: none;
+  color: transparent;
+  background-clip: text;
+}
+
+.brand {
+  font-size: 18px;
+  white-space: nowrap;
+  opacity: .5;
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  transform-origin: bottom left;
+  transform: rotate(90deg) translateX(-100%);
+  padding: 8px 16px;
+}
+
+</style>
