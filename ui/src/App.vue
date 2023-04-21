@@ -8,7 +8,7 @@
       <div 
         ref="brand" 
         class="brand-content font-azimuth" 
-        :style="{ 'background-image': `radial-gradient(circle at ${mouseX}px ${mouseY}px, rgba(var(--rlm-text-rgba, 51, 51, 51)) 0px, transparent 50px)`}"
+        :style="{ 'background-image': `radial-gradient(circle at ${mouseX}px ${mouseY}px, rgba(var(--rlm-text-rgba, 51, 51, 51)) 0px, transparent 24px)`}"
       >
         deus vult
       </div>
@@ -54,7 +54,7 @@ export default defineComponent({
       if(this.$refs['brand']) {
         const box = (this.$refs['brand'] as any).getBoundingClientRect();
         this.mouseX = event.clientY - box.top;
-        this.mouseY = event.clientX - box.left;
+        this.mouseY = box.width - event.clientX + box.left;
       }
     }
   }
@@ -79,7 +79,7 @@ export default defineComponent({
   left: 0px;
   transform-origin: bottom left;
   transform: rotate(90deg) translateX(-100%);
-  padding: 8px 16px;
+  padding: 8px 24px;
 }
 
 </style>
