@@ -10,7 +10,7 @@
         class="brand-content font-azimuth" 
         :style="{ 'background-image': `radial-gradient(circle at ${mouseX}px ${mouseY}px, rgba(var(--rlm-text-rgba, 51, 51, 51)) 0px, transparent 24px)`}"
       >
-        deus vult
+        soli deo gloria
       </div>
     </div>
   </div>
