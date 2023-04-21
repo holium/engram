@@ -611,7 +611,7 @@
             spacepeers
           ==
         :_  this
-          %+  turn  (online:engram [peers our.bowl now.bowl])
+          %+  turn  (weld peers ~[owner.fold])
             |=  peer=@p
             [%pass /folder/update %agent [peer %engram] %poke %post !>([%folder %update path.act])]
         ::
@@ -796,7 +796,7 @@
             spacepeers
           ==
         :_  this
-          %+  turn  (online:engram [peers our.bowl now.bowl])
+          %+  turn  peers
             |=  peer=@p
             [%pass /space/update %agent [peer %engram] %poke %post !>([%space %update space.act])]
         ::
