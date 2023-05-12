@@ -107,7 +107,12 @@
         =/  nfolders  ^-  folders  %-  ~(run by f.old)  |=  fol=folder-10  [id.fol owner.fol name.fol space.fol content.fol]
         `this(state [%11 t.old h.old nspaces ndocuments nfolders])
     %11
+        =/  json-mark  .^(vase %cr /(scot %p our.bowl)/engram/(scot %da now.bowl)/mar/json/hoon)
         :_  this(state old)
+        %+  weld
+        ::[%pass /engram/save %arvo %c [%info %engram-docs %& [`path`~[(crip (pathify:index id)) ~.json] %ins %json !>((enjs:index ncontent))]~]]
+          :~  ^-  card  [%pass /engram/update-json-mark %arvo %c [%info %engram-docs %& [/mar/json/hoon %ins %hoon json-mark]~]]
+          ==
         %+  weld  
           %+  turn  ~(tap in ~(key by s.old))
           |=  space=path
